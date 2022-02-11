@@ -1,0 +1,224 @@
+import Foundation
+import UIKit
+
+public class Dengage{
+    static var manager: DengageManager?
+    
+    static var dengage: DengageManager? {
+        get{
+            if self.manager == nil {
+                Logger.log(message: "Dengage not started correctly", argument: "")
+            }
+            return self.manager
+        }
+        set{
+            manager = newValue
+        }
+    }
+    
+    @objc public static func start(apiKey: String,
+                             application: UIApplication,
+                             launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
+                             dengageOptions options: DengageOptions = DengageOptions()) {
+        dengage = .init(with: apiKey,
+                        application: application,
+                        launchOptions:launchOptions,
+                        dengageOptions: options)
+    }
+    
+    @objc public static func register(deviceToken: Data) {
+        dengage?.register(deviceToken)
+    }
+    
+    @objc public static func set(contactKey: String?) {
+        dengage?.set(contactKey)
+    }
+    
+    @objc public static func set(deviceId: String) {
+        dengage?.config.set(deviceId: deviceId)
+    }
+    
+    @objc public static func set(permission: Bool){
+        dengage?.set(permission)
+    }
+    
+    @objc public static func getPermission() -> Bool {
+        dengage?.config.permission ?? false
+    }
+    
+    @objc public static func getDeviceId() -> String? {
+        dengage?.config.applicationIdentifier
+    }
+    
+    @objc public static func getContactKey() -> String? {
+        dengage?.config.getContactKey()
+    }
+    
+    @objc public static func getDeviceToken() -> String? {
+        dengage?.config.deviceToken
+    }
+    
+    //todo add objc
+    public static func getInboxMessages(offset: Int,
+                                        limit: Int = 20,
+                                        completion: @escaping (Result<[DengageMessage], Error>) -> Void) {
+        
+        dengage?.inboxManager.getInboxMessages(offset: offset, limit: limit) { result in
+            completion(result)
+        }
+    }
+    
+   public static func deleteInboxMessage(with id: String,
+                                         completion: @escaping (Result<Void, Error>) -> Void){
+        
+        dengage?.inboxManager.deleteInboxMessage(with: id) { result in
+            completion(result)
+        }
+    }
+    
+    public static func setInboxMessageAsClicked(with id: String,
+                                                      completion: @escaping (Result<Void, Error>) -> Void){
+        
+        dengage?.inboxManager.setInboxMessageAsClicked(with: id) { result in
+            completion(result)
+        }
+    }
+    
+    @objc public static func setTags(_ tags: [TagItem]){
+        dengage?.set(tags)
+    }
+    
+    @objc public static func promptForPushNotifications(){
+        dengage?.notificationManager.promptForPushNotifications()
+    }
+    
+    @objc public static func promptForPushNotifications(completion: @escaping (_ isUserGranted: Bool) -> Void) {
+        dengage?.notificationManager.promptForPushNotifications(callback: completion)
+    }
+    
+    @objc public static func setNavigation(screenName:String? = nil ){
+        dengage?.inAppManager.setNavigation(screenName:screenName)
+    }
+    
+    @objc public static func handleNotificationActionBlock(callback: @escaping (_ notificationResponse: UNNotificationResponse) -> Void) {
+        dengage?.notificationManager.openTriggerCompletionHandler = {
+            response in
+            callback(response)
+        }
+    }
+    
+    @objc static public func didReceiveNotificationRequest(_ bestAttemptContent: UNMutableNotificationContent?,
+                                                     withContentHandler contentHandler:  @escaping (UNNotificationContent) -> Void) {
+        DengageNotificationExtension.didReceiveNotificationRequest(bestAttemptContent, withContentHandler: contentHandler)
+    }
+    
+    @objc static public func didReceivePush(_ center: UNUserNotificationCenter,
+                                      _ response: UNNotificationResponse,
+                                      withCompletionHandler completionHandler: @escaping () -> Void) {
+        dengage?.notificationManager.didReceivePush(center, response, withCompletionHandler: completionHandler)
+    }
+    
+    @objc static public func didReceive(with userInfo: [AnyHashable: Any]) {
+        dengage?.notificationManager.didReceive(with: userInfo)
+    }
+    
+    @objc static public func pageView(parameters: [String: Any]){
+        dengage?.eventManager.pageView(parameters: parameters)
+    }
+    
+    @objc static public func addToCart(parameters: [String: Any]){
+        dengage?.eventManager.addToCart(parameters: parameters)
+    }
+    
+    @objc static public func removeFromCart(parameters: [String: Any]){
+        dengage?.eventManager.removeFromCart(parameters: parameters)
+    }
+    
+    @objc static public func viewCart(parameters: [String: Any]){
+        dengage?.eventManager.viewCart(parameters: parameters)
+    }
+    
+    @objc static public func beginCheckout(parameters: [String: Any]){
+        dengage?.eventManager.beginCheckout(parameters: parameters)
+    }
+    
+    @objc static public func order(parameters: [String: Any]){
+        dengage?.eventManager.order(parameters: parameters)
+    }
+    
+    @objc static public func cancelOrder(parameters: [String: Any]){
+        dengage?.eventManager.cancelOrder(parameters: parameters)
+    }
+    
+    @objc static public func search(parameters: [String: Any]){
+        dengage?.eventManager.search(parameters: parameters)
+    }
+    
+    @objc static public func addToWithList(parameters: [String: Any]){
+        dengage?.eventManager.addToWithList(parameters: parameters)
+    }
+    
+    @objc static public func removeFromWithList(parameters: [String: Any]){
+        dengage?.eventManager.removeFromWithList(parameters: parameters)
+    }
+    
+    @objc static public func sendCustomEvent(eventTable: String, parameters: [String: Any]){
+        dengage?.eventManager.sendCustomEvent(eventTable: eventTable, parameters: parameters)
+    }
+    
+    @objc static public func showTestPage(){
+        dengage?.showTestPage()
+    }
+    
+    @objc static public func setLog(isVisible: Bool){
+        Logger.isEnabled = isVisible
+    }
+    
+    static func syncSubscription() {
+        dengage?.sync()
+    }
+    
+
+}
+
+extension Dengage{
+    @objc public static func getInboxMessages(offset: Int,
+                                              limit: Int = 20,
+                                              success: @escaping (([DengageMessage]) -> Void),
+                                              error: @escaping ((Error) -> Void)) {
+        Dengage.getInboxMessages(offset: offset, limit: limit) { result in
+            switch result {
+            case .success(let messages):
+                success(messages)
+            case .failure(let errorValue):
+                error(errorValue)
+            }
+        }
+    }
+    
+    @objc public static func deleteInboxMessage(with id: String,
+                                                success: @escaping (() -> Void),
+                                                error: @escaping ((Error) -> Void)){
+        Dengage.deleteInboxMessage(with: id) { result in
+            switch result {
+            case .success(_):
+                success()
+            case .failure(let errorValue):
+                error(errorValue)
+            }
+        }
+    }
+    
+    @objc public static func setInboxMessageAsClicked(with id: String,
+                                                      success: @escaping (() -> Void),
+                                                      error: @escaping ((Error) -> Void)){
+        Dengage.setInboxMessageAsClicked(with: id) { result in
+            switch result {
+            case .success(_):
+                success()
+            case .failure(let errorValue):
+                error(errorValue)
+            }
+        }
+    }
+}
