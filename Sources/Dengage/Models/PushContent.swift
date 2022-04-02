@@ -5,7 +5,6 @@ import UserNotifications
 struct PushContent: Decodable{
     let messageSource: String?
     let targetURL: String?
-    let dengageSendId: String?
     let messageId: Int?
     let messageDetails: String?
     let transactionId: String?

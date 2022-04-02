@@ -22,7 +22,7 @@ final class DengageEventManager: DengageEventProtocolInterface {
         sendEvent(table: .sessionInfo, key: deviceId, params: ["session_id": session.sessionId])
     }
     
-    func sessionStart(referrer: String?, sendId: String?) {
+    func sessionStart(referrer: String?) {
         let session = sessionMagaer.createSession(restart: true)
         let deviceId = config.applicationIdentifier
         var params: [String: Any] = [:]
@@ -35,7 +35,8 @@ final class DengageEventManager: DengageEventProtocolInterface {
         }
         
         let channel = queryStringValue(for: "dn_channel", from: referrer)
-        if let sendId = queryStringValue(for: "dn_send_id", from: referrer) ?? sendId {
+        
+        if let sendId = queryStringValue(for: "dn_send_id", from: referrer) {
             params["send_id"] = sendId
             params["channel"] = channel?.lowercased() ?? "push"
         }
@@ -269,7 +270,7 @@ extension DengageEventManager {
 }
 
 protocol DengageEventProtocolInterface: AnyObject {
-    func sessionStart(referrer: String?, sendId: String?)
+    func sessionStart(referrer: String?)
     func eventSessionStart()
     func sendOpenEvet(request: OpenEventRequest)
     func sendTransactionalOpenEvet(request: TransactionalOpenEventRequest)

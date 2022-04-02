@@ -61,7 +61,7 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
         } else {
             if let targetUrl = content.message?.targetURL, !targetUrl.isEmpty {
                 openDeeplink(link: targetUrl)
-                eventManager.sessionStart(referrer: content.message?.targetURL, sendId: content.message?.dengageSendId)
+                eventManager.sessionStart(referrer: content.message?.targetURL)
             }
         }
         
@@ -75,7 +75,7 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
             guard config.options.disableOpenURL else { return }
             if let targetUrl = message.targetURL, !targetUrl.isEmpty {
                 openDeeplink(link: targetUrl)
-                eventManager.sessionStart(referrer: message.targetURL, sendId: message.dengageSendId)
+                eventManager.sessionStart(referrer: message.targetURL)
             }
         }else{
             Logger.log(message: "UserInfo parse failed")
