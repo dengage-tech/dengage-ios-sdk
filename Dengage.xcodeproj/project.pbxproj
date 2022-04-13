@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A00EFCBE280777B8004659DE /* RFMScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EFCBD280777B8004659DE /* RFMScore.swift */; };
+		A00EFCC328077869004659DE /* DengageRFMManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EFCC228077869004659DE /* DengageRFMManager.swift */; };
 		A0765BBF27CEB4700007215B /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765B8227CEB4700007215B /* Constants.swift */; };
 		A0765BC027CEB4700007215B /* DengageNotificationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765B8327CEB4700007215B /* DengageNotificationExtension.swift */; };
 		A0765BC127CEB4700007215B /* ThreadSafeContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765B8427CEB4700007215B /* ThreadSafeContainer.swift */; };
@@ -84,6 +86,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A00EFCBD280777B8004659DE /* RFMScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RFMScore.swift; sourceTree = "<group>"; };
+		A00EFCC228077869004659DE /* DengageRFMManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageRFMManager.swift; sourceTree = "<group>"; };
 		A0765B7627CEB4300007215B /* Dengage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Dengage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A0765B8227CEB4700007215B /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		A0765B8327CEB4700007215B /* DengageNotificationExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageNotificationExtension.swift; sourceTree = "<group>"; };
@@ -196,6 +200,7 @@
 				A0765BBC27CEB4700007215B /* DengageLog.swift */,
 				A0765BBD27CEB4700007215B /* DengageKeychain.swift */,
 				A0765BBE27CEB4700007215B /* DengageEventManager.swift */,
+				A00EFCC228077869004659DE /* DengageRFMManager.swift */,
 			);
 			path = Dengage;
 			sourceTree = "<group>";
@@ -255,6 +260,7 @@
 		A0765B9F27CEB4700007215B /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				A00EFCBD280777B8004659DE /* RFMScore.swift */,
 				A0765BA027CEB4700007215B /* Response */,
 				A0765BA227CEB4700007215B /* InAppMessage.swift */,
 				A0765BA327CEB4700007215B /* DengageMessage.swift */,
@@ -455,6 +461,7 @@
 				A0765BD927CEB4700007215B /* DengageMessage.swift in Sources */,
 				A0765BED27CEB4700007215B /* DengageManager.swift in Sources */,
 				A0765BD827CEB4700007215B /* InAppMessage.swift in Sources */,
+				A00EFCC328077869004659DE /* DengageRFMManager.swift in Sources */,
 				A0765BD427CEB4700007215B /* DengageInboxManager.swift in Sources */,
 				A0765BC427CEB4700007215B /* DengageSessionManager.swift in Sources */,
 				A0765BCB27CEB4700007215B /* TestInAppMessageViewController.swift in Sources */,
@@ -479,6 +486,7 @@
 				A0765BF027CEB4700007215B /* DengageEventManager.swift in Sources */,
 				A0765BE227CEB4700007215B /* MarkAsInAppMessageAsDismissedRequest.swift in Sources */,
 				A0765BE327CEB4700007215B /* GetInAppMessagesRequest.swift in Sources */,
+				A00EFCBE280777B8004659DE /* RFMScore.swift in Sources */,
 				A0765BC627CEB4700007215B /* DengageNetworking.swift in Sources */,
 				A0765BEE27CEB4700007215B /* DengageLog.swift in Sources */,
 				A0765BD527CEB4700007215B /* DengageLocalStorage.swift in Sources */,

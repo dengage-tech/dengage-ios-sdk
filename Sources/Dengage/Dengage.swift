@@ -17,9 +17,9 @@ public class Dengage{
     }
     
     @objc public static func start(apiKey: String,
-                             application: UIApplication,
-                             launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
-                             dengageOptions options: DengageOptions = DengageOptions()) {
+                                   application: UIApplication,
+                                   launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
+                                   dengageOptions options: DengageOptions = DengageOptions()) {
         dengage = .init(with: apiKey,
                         application: application,
                         launchOptions:launchOptions,
@@ -68,8 +68,8 @@ public class Dengage{
         }
     }
     
-   public static func deleteInboxMessage(with id: String,
-                                         completion: @escaping (Result<Void, Error>) -> Void){
+    public static func deleteInboxMessage(with id: String,
+                                          completion: @escaping (Result<Void, Error>) -> Void){
         
         dengage?.inboxManager.deleteInboxMessage(with: id) { result in
             completion(result)
@@ -77,7 +77,7 @@ public class Dengage{
     }
     
     public static func setInboxMessageAsClicked(with id: String,
-                                                      completion: @escaping (Result<Void, Error>) -> Void){
+                                                completion: @escaping (Result<Void, Error>) -> Void){
         
         dengage?.inboxManager.setInboxMessageAsClicked(with: id) { result in
             completion(result)
@@ -108,13 +108,13 @@ public class Dengage{
     }
     
     @objc static public func didReceiveNotificationRequest(_ bestAttemptContent: UNMutableNotificationContent?,
-                                                     withContentHandler contentHandler:  @escaping (UNNotificationContent) -> Void) {
+                                                           withContentHandler contentHandler:  @escaping (UNNotificationContent) -> Void) {
         DengageNotificationExtension.didReceiveNotificationRequest(bestAttemptContent, withContentHandler: contentHandler)
     }
     
     @objc static public func didReceivePush(_ center: UNUserNotificationCenter,
-                                      _ response: UNNotificationResponse,
-                                      withCompletionHandler completionHandler: @escaping () -> Void) {
+                                            _ response: UNNotificationResponse,
+                                            withCompletionHandler completionHandler: @escaping () -> Void) {
         dengage?.notificationManager.didReceivePush(center, response, withCompletionHandler: completionHandler)
     }
     
@@ -177,11 +177,25 @@ public class Dengage{
     static func syncSubscription() {
         dengage?.sync()
     }
-    
-
 }
 
-extension Dengage{
+extension Dengage {
+    public static func saveRFM(scores: [RFMScore]) {
+        dengage?.dengageRFMManager.saveRFM(scores: scores)
+    }
+    
+    public static func categoryView(id: String){
+        dengage?.dengageRFMManager.categoryView(id: id)
+    }
+    
+    public static func sortRFMItems(gender: RFMGender, items: [RFMItemProtocol]) -> [RFMItemProtocol] {
+        dengage?.dengageRFMManager.sortRFMItems(gender: gender,
+                                                items: items) ?? []
+    }
+}
+
+extension Dengage {
+    
     @objc public static func getInboxMessages(offset: Int,
                                               limit: Int = 20,
                                               success: @escaping (([DengageMessage]) -> Void),
