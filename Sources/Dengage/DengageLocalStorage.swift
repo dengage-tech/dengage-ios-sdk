@@ -29,6 +29,7 @@ final class DengageLocalStorage: NSObject {
         case lastFetchedInAppMessageTime = "lastFetchedInAppMessageTime"
         case inAppMessages = "inAppMessages"
         case inAppMessageShowTime = "inAppMessageShowTime"
+        case rfmScores = "rfmScores"
     }
 }
 
@@ -77,6 +78,29 @@ extension DengageLocalStorage {
             userDefaults.synchronize()
         } catch {
             Logger.log(message: "saving inapp message fail")
+        }
+    }
+    
+    func getrfmScores() -> [RFMScore] {
+        guard let messagesData = userDefaults.object(forKey: Key.rfmScores.rawValue) as? Data else { return [] }
+        let decoder = JSONDecoder()
+        do {
+            let messages = try decoder.decode([RFMScore].self, from: messagesData)
+            return messages
+        } catch {
+            Logger.log(message: "RFMScore fail")
+            return []
+        }
+    }
+    
+    func save(_ rfmScores: [RFMScore]){
+        let encoder = JSONEncoder()
+        do {
+            let encoded = try encoder.encode(rfmScores)
+            userDefaults.set(encoded, forKey: Key.rfmScores.rawValue)
+            userDefaults.synchronize()
+        } catch {
+            Logger.log(message: "rfmScores fail")
         }
     }
 }

@@ -14,6 +14,7 @@ public class DengageManager {
     var inboxManager: DengageInboxManagerInterface
     var inAppManager: DengageInAppMessageManagerInterface
     var notificationManager: DengageNotificationManagerInterface
+    var dengageRFMManager: DengageRFMManager
     
     var testPageWindow: UIWindow?
     
@@ -24,7 +25,7 @@ public class DengageManager {
         
         config = DengageConfiguration(integrationKey: apiKey, options: options)
         
-        // keychain ve userdefaults da daha once kayit edilenler confige eklenmiyor 
+        // keychain ve userdefaults da daha once kayit edilenler confige eklenmiyor
         self.application = application
         self.launchOptions = launchOptions
         self.options = options
@@ -41,6 +42,7 @@ public class DengageManager {
                                                               service: apiClient,
                                                               eventManager: eventManager,
                                                               launchOptions: launchOptions)
+        self.dengageRFMManager = DengageRFMManager()
         
         sync()
         getSDKParams()
@@ -179,4 +181,3 @@ extension DengageManager {
         testPageWindow?.makeKeyAndVisible()
     }
 }
-
