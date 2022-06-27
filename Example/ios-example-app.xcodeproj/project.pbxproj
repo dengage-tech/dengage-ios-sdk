@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		01F5BE90286980D200F90615 /* GeofenceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F5BE8F286980D200F90615 /* GeofenceViewController.swift */; };
 		A02A40E127CF93CD00D75B02 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = A02A40E027CF93CD00D75B02 /* Dengage */; };
 		A02A40E327CF93D800D75B02 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = A02A40E227CF93D800D75B02 /* Dengage */; };
 		A0765B6B27CEAF2B0007215B /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = A0765B6A27CEAF2B0007215B /* Dengage */; };
@@ -65,6 +66,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		01F5BE8F286980D200F90615 /* GeofenceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeofenceViewController.swift; sourceTree = "<group>"; };
 		A0765B6927CEAF040007215B /* dengage-ios-sdk */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "dengage-ios-sdk"; path = ..; sourceTree = "<group>"; };
 		A099517327AB600C0089D98D /* NoticationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NoticationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A099517527AB600C0089D98D /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -123,6 +125,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		01F5BE8E286980D200F90615 /* Geofence */ = {
+			isa = PBXGroup;
+			children = (
+				01F5BE8F286980D200F90615 /* GeofenceViewController.swift */,
+			);
+			path = Geofence;
+			sourceTree = "<group>";
+		};
 		A0765B6827CEAF040007215B /* Packages */ = {
 			isa = PBXGroup;
 			children = (
@@ -159,6 +169,7 @@
 				A09951A827ACB2940089D98D /* Event */,
 				A09951A527ACB1170089D98D /* InAppMessage */,
 				A09951A227ACB0BF0089D98D /* Tags */,
+				01F5BE8E286980D200F90615 /* Geofence */,
 				A099519E27ACAD4E0089D98D /* InboxMessage */,
 			);
 			path = Screens;
@@ -421,6 +432,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01F5BE90286980D200F90615 /* GeofenceViewController.swift in Sources */,
 				A0B884FE27B1CF44004D4360 /* RootViewController.swift in Sources */,
 				A0B8857B27B1F4E4004D4360 /* ContactKeyViewController.swift in Sources */,
 				A0F46C66275A85B0003A524C /* ViewController.swift in Sources */,
@@ -484,7 +496,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.testiospriya.NotifServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = DengageTestiOSPriyaNotiServiceExtProvLatestUDID;
+				PROVISIONING_PROFILE_SPECIFIER = DengageTestiOSPriyaNotiServiceExtProv;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -513,7 +525,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.testiospriya.NotifServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = DengageTestiOSPriyaNotiServiceExtProvLatestUDID;
+				PROVISIONING_PROFILE_SPECIFIER = DengageTestiOSPriyaNotiServiceExtProv;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -541,7 +553,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.testiospriya.ContentExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = DengageTestiOSPriyaContentExtProvLatestUDID;
+				PROVISIONING_PROFILE_SPECIFIER = DengageTestiOSPriyaContentExtProv;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -569,7 +581,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.testiospriya.ContentExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = DengageTestiOSPriyaContentExtProvLatestUDID;
+				PROVISIONING_PROFILE_SPECIFIER = DengageTestiOSPriyaContentExtProv;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -707,6 +719,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-example-app/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Dengage Example";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Dengage will use your location always and when in use!";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = " Dengage will use your location always!";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Dengage will use your location when in use!";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -719,7 +734,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.testiospriya;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = DengageTestiOSPriyaExampleAPPProvLatestUDID;
+				PROVISIONING_PROFILE_SPECIFIER = DengageTestiOSPriyaExampleAPPProv;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -740,6 +755,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-example-app/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Dengage Example";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Dengage will use your location always and when in use!";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = " Dengage will use your location always!";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Dengage will use your location when in use!";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -752,7 +770,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.testiospriya;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = DengageTestiOSPriyaExampleAPPProvLatestUDID;
+				PROVISIONING_PROFILE_SPECIFIER = DengageTestiOSPriyaExampleAPPProv;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

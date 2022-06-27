@@ -61,7 +61,10 @@ final class DengageNetworking {
             return config.eventURL
         case .push:
             return config.subscriptionURL
+        case .geofence:
+            return config.geofenceURL
         }
+        
     }
 }
 

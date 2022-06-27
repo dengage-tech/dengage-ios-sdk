@@ -236,3 +236,18 @@ extension Dengage {
         }
     }
 }
+
+
+//MARK: - Geofence
+extension Dengage{
+
+    @objc public static func requestLocationPermissions() {
+        dengage?.requestLocationPermissions()
+    }
+    
+    @objc public static func stopGeofence() {
+        dengage?.stopGeofence()
+    }
+    
+    
+}

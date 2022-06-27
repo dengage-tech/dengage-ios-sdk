@@ -36,4 +36,8 @@ final class ActionTableViewCell: UITableViewCell {
     func populateUI(with title: String){
         label.text = title
     }
+    
+    func setLabelFontSize(size: Int){
+        label.font = .boldSystemFont(ofSize: CGFloat(size))
+    }
 }
