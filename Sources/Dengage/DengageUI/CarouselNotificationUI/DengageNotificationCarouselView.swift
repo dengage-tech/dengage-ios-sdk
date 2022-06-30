@@ -26,7 +26,7 @@ public final class DengageNotificationCarouselView: UIView{
     var currentIndex : Int = 0
     var bestAttemptContent: UNMutableNotificationContent?
     var userInfo: [AnyHashable: Any]?
-    var targetURL: URL?
+    var targetUrl: URL?
     
     init() {
         super.init(frame: .zero)
@@ -102,7 +102,7 @@ extension DengageNotificationCarouselView: UICollectionViewDelegateFlowLayout {
 extension DengageNotificationCarouselView: UICollectionViewDelegate{
     
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let url = URL(string: payloads[indexPath.item].targetURL ?? "") ?? targetURL else { return }
+        guard let url = URL(string: payloads[indexPath.item].targetUrl ?? "") ?? targetUrl else { return }
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
 }
@@ -116,7 +116,7 @@ extension DengageNotificationCarouselView{
         UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [notification.request.identifier])
         
         self.userInfo = userInfo
-        self.targetURL = URL(string: (userInfo["targetUrl"] as? String) ?? "")
+        self.targetUrl = URL(string: (userInfo["targetUrl"] as? String) ?? "")
         let carouselContents = contents.compactMap{$0 as? NSDictionary}.compactMap(CarouselMessage.init(with:))
         self.payloads = carouselContents
         DispatchQueue.main.async {

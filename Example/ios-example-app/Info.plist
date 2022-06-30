@@ -3,8 +3,8 @@
 <plist version="1.0">
 <dict>
 	<key>DengageApiUrl</key>
-	<string>https://dev-push.dengage.com/</string>
+	<string>https://tr-push.dengage.com/</string>
 	<key>DengageEventApiUrl</key>
-	<string>https://dev-event.dengage.com</string>
+	<string>https://tr-event.dengage.com</string>
 </dict>
 </plist>

@@ -42,8 +42,20 @@ final class DengageNetworking {
                 do{
                     let responseObject = try decoder.decode(T.Response.self, from: data)
                     completion(.success(responseObject))
+                    
                 }catch let decodingError {
-                    completion(.failure(ServiceError.decoding(decodingError)))
+                    
+                    if httpResponse.statusCode == 200
+                    {
+                        Logger.log(message: "HTTP API STATUS CODE:\n", argument: httpResponse.statusCode.description)
+                        completion(.failure(ServiceError.noData))
+
+                    }
+                    else
+                    {
+                        completion(.failure(ServiceError.decoding(decodingError)))
+
+                    }
                 }
             default:
                 Logger.log(message: "API ERROR", argument: apiRequest.url?.absoluteString ?? "") //todo handle optional

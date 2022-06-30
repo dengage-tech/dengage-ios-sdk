@@ -6,7 +6,7 @@ import Foundation
     public let title: String?
     public let message: String?
     public let mediaURL: String?
-    public let targetURL: String?
+    public let targetUrl: String?
     public let receiveDate: Date?
     public var isClicked: Bool
     public let carouselItems: [CarouselItem]?
@@ -25,7 +25,7 @@ import Foundation
         let iosMediaUrl = json["iosMediaUrl"] as? String
         self.mediaURL = iosMediaUrl ?? json["mediaUrl"] as? String
         let iosTargetUrl = json["iosTargetUrl"] as? String
-        self.targetURL = iosTargetUrl ?? json["targetUrl"] as? String
+        self.targetUrl = iosTargetUrl ?? json["targetUrl"] as? String
         let receiveDateString = json["receiveDate"] as! String
         self.receiveDate = Utilities.convertDate(to: receiveDateString)
     }

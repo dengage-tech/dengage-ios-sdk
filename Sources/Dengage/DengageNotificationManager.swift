@@ -59,9 +59,9 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
                                                      didReceive: response,
                                                      withCompletionHandler: completionHandler)
         } else {
-            if let targetUrl = content.message?.targetURL, !targetUrl.isEmpty {
+            if let targetUrl = content.message?.targetUrl, !targetUrl.isEmpty {
                 openDeeplink(link: targetUrl)
-                eventManager.sessionStart(referrer: content.message?.targetURL)
+                eventManager.sessionStart(referrer: content.message?.targetUrl)
             }
         }
         
@@ -73,9 +73,9 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
            let message = try? JSONDecoder().decode(PushContent.self, from: jsonData)  {
             guard let messageSource = message.messageSource, MESSAGE_SOURCE == messageSource else { return }
             guard config.options.disableOpenURL else { return }
-            if let targetUrl = message.targetURL, !targetUrl.isEmpty {
+            if let targetUrl = message.targetUrl, !targetUrl.isEmpty {
                 openDeeplink(link: targetUrl)
-                eventManager.sessionStart(referrer: message.targetURL)
+                eventManager.sessionStart(referrer: message.targetUrl)
             }
         }else{
             Logger.log(message: "UserInfo parse failed")
@@ -98,7 +98,7 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
         guard let actionButtons = content.message?.actionButtons else { return }
                 
         for actionItem in actionButtons where actionItem.id == actionIdentifier {
-            guard let url = actionItem.targetURL, !url.isEmpty else { continue }
+            guard let url = actionItem.targetUrl, !url.isEmpty else { continue }
             openDeeplink(link: url)
         }
     }

@@ -4,7 +4,7 @@ import UserNotifications
 
 struct PushContent: Decodable{
     let messageSource: String?
-    let targetURL: String?
+    let targetUrl: String?
     let messageId: Int?
     let messageDetails: String?
     let transactionId: String?
@@ -15,7 +15,7 @@ struct PushContent: Decodable{
     
     struct PushAction: Decodable{
         let id: String?
-        let targetURL: String?
+        let targetUrl: String?
         let text: String?
     }
 }
