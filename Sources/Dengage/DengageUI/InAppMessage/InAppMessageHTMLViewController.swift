@@ -99,8 +99,18 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             self.delegate?.sendClickEvent(messageId: self.message.data.messageDetails,
                                           buttonId: buttonId)
         case "iosUrl":
-            guard let url = message.body as? String else {return}
-            self.delegate?.open(url: url)
+            
+            if message.body as? String == "Dn.promptPushPermission()"
+            {
+                delegate?.promptPushPermission()
+
+            }
+            else
+            {
+                guard let url = message.body as? String else {return}
+                self.delegate?.open(url: url)
+            }
+          
         case "setTags":
             guard let tagItemData = message.body as? [Dictionary<String,String>] else {return}
             let tagItems = tagItemData.map{TagItem.init(with: $0)}
