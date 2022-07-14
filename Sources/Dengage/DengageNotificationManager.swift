@@ -54,11 +54,8 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
         
         openTriggerCompletionHandler?(response)
     
-        if config.options.disableOpenURL {
-            center.delegate?.userNotificationCenter?(center,
-                                                     didReceive: response,
-                                                     withCompletionHandler: completionHandler)
-        } else {
+        if !config.options.disableOpenURL
+        {
             if let targetUrl = content.message?.targetUrl, !targetUrl.isEmpty {
                 openDeeplink(link: targetUrl)
                 eventManager.sessionStart(referrer: content.message?.targetUrl)
