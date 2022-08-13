@@ -3,11 +3,13 @@ import UIKit
 
 final class DengageInAppMessageManager:DengageInAppMessageManagerInterface {
     
+    
+       
     var config: DengageConfiguration
     var apiClient: DengageNetworking
-
     var inAppMessageWindow: UIWindow?
-    
+    var deeplinkURL: String?
+
     init(config: DengageConfiguration, service: DengageNetworking){
         self.config = config
         self.apiClient = service
@@ -114,6 +116,14 @@ extension DengageInAppMessageManager {
         showInAppMessage(inAppMessage: priorInAppMessage)
     }
     
+    
+    func handleInAppDeeplink(completion: @escaping (String) -> Void) {
+        
+        completion(self.deeplinkURL ?? "")
+
+        
+    }
+    
     func showInAppMessage(inAppMessage: InAppMessage) {
         markAsInAppMessageAsDisplayed(inAppMessageId: inAppMessage.data.messageDetails)
 
@@ -204,8 +214,16 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     }
     
     func open(url: String?) {
+        
         inAppMessageWindow = nil
+        
         guard let urlString = url, let url = URL(string: urlString) else { return }
+
+        self.deeplinkURL = urlString
+        self.handleInAppDeeplink { str in
+            
+            
+        }
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
     
@@ -216,6 +234,7 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     
     func sendClickEvent(messageId: String?, buttonId:String?) {
         inAppMessageWindow = nil
+
         setInAppMessageAsClicked(messageId, buttonId)
     }
     
@@ -226,6 +245,8 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     func close() {
         inAppMessageWindow = nil
     }
+    
+    
 }
 
 
@@ -233,4 +254,6 @@ protocol DengageInAppMessageManagerInterface: AnyObject{
     func fetchInAppMessages()
     func setNavigation(screenName: String?)
     func showInAppMessage(inAppMessage: InAppMessage)
+    func handleInAppDeeplink(completion: @escaping (String) -> Void)
+
 }

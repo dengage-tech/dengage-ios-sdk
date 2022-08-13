@@ -100,6 +100,15 @@ public class Dengage{
         dengage?.inAppManager.setNavigation(screenName:screenName)
     }
     
+    @objc public static func handleInAppDeeplink(completion: @escaping (String) -> Void) {
+        
+        dengage?.inAppManager.handleInAppDeeplink(completion: { url in
+            
+            completion(url)
+            
+        })
+    }
+    
     @objc public static func handleNotificationActionBlock(callback: @escaping (_ notificationResponse: UNNotificationResponse) -> Void) {
         dengage?.notificationManager.openTriggerCompletionHandler = {
             response in

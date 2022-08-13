@@ -32,10 +32,13 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
         let content = response.notification.request.content
         guard let messageSource = content.message?.messageSource,
               MESSAGE_SOURCE == messageSource else {
-                  center.delegate?.userNotificationCenter?(center,
-                                                           didReceive: response,
-                                                           withCompletionHandler: completionHandler)
-            return
+//                  center.delegate?.userNotificationCenter?(center,
+//                                                           didReceive: response,
+//                                                           withCompletionHandler: completionHandler)
+            
+            completionHandler()
+            
+           return
         }
         
         let actionIdentifier = response.actionIdentifier

@@ -8,9 +8,16 @@ final class InAppMessageHTMLViewController: UIViewController{
         return view
     }()
 
-    weak var delegate: InAppMessagesActionsDelegate?
+    var delegate: InAppMessagesActionsDelegate?
 
     let message:InAppMessage
+    
+    var hasTopNotch: Bool {
+        if #available(iOS 11.0, tvOS 11.0, *) {
+            return UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0 > 20
+        }
+        return false
+    }
     
     init(with message: InAppMessage) {
         self.message = message
@@ -24,6 +31,8 @@ final class InAppMessageHTMLViewController: UIViewController{
     override func loadView() {
         view = viewSource
     }
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -82,7 +91,23 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
         guard viewSource.webView.url?.absoluteString == "about:blank" else { return }
         viewSource.webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { (height, error) in
             guard let scrollHeight = height as? CGFloat else {return}
+            
             self.viewSource.height?.constant = scrollHeight
+            
+            if self.hasTopNotch
+            {
+                if self.message.data.content.props.position == .top
+                {
+                    self.viewSource.height?.constant = scrollHeight + 50
+
+                }
+
+            }
+            else
+            {
+                self.viewSource.height?.constant = scrollHeight + 20
+
+            }
         })
     }
 }
@@ -108,6 +133,7 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             else
             {
                 guard let url = message.body as? String else {return}
+                print("WKScriptMessage In app message \(url)")
                 self.delegate?.open(url: url)
             }
           
