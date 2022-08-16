@@ -261,7 +261,7 @@ extension DengageEventManager {
                 switch result {
                 case .success(_):
                     Logger.log(message: "Event success", argument: table)
-                case .failure(let error):
+                case .failure(_):
                     //Logger.log(message: "Event fail \(table)", argument: error.localizedDescription)
                     break
                 }
