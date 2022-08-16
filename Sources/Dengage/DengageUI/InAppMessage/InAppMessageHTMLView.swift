@@ -4,10 +4,12 @@ final class InAppMessageHTMLView: UIView{
     
     private(set) lazy var webView: WKWebView = {
         let view = WKWebView()
-        view.scrollView.isScrollEnabled = false
+        view.scrollView.isScrollEnabled = true
+        view.scrollView.showsVerticalScrollIndicator = false
         view.scrollView.bounces = false
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.masksToBounds = true
+       
         return view
     }()
     
@@ -30,7 +32,7 @@ final class InAppMessageHTMLView: UIView{
     
     private func setupUI(){
         addSubview(webView)
-        backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        backgroundColor = UIColor.clear
         
         leftConstraint = webView
             .leadingAnchor
@@ -64,6 +66,9 @@ final class InAppMessageHTMLView: UIView{
     
     private func set(radius:Int?){
         webView.layer.cornerRadius = CGFloat(radius ?? 0)
+        self.layer.cornerRadius = CGFloat(radius ?? 0)
+        self.clipsToBounds = true
+
     }
     
     private func set(maxWidth:CGFloat?){

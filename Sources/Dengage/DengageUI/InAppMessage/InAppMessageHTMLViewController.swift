@@ -70,11 +70,16 @@ final class InAppMessageHTMLViewController: UIViewController{
         viewSource.webView.configuration.userContentController.add(self, name: "promptPushPermission")
         viewSource.webView.configuration.userContentController.add(self, name: "setTags")
         viewSource.webView.loadHTMLString(message.data.content.props.html!, baseURL: nil)
+        
+        viewSource.webView.contentMode = .scaleAspectFit
+        viewSource.webView.sizeToFit()
+        viewSource.webView.autoresizesSubviews = true
     }
 }
 
 extension InAppMessageHTMLViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+                
         setWebViewHeight()
     }
     
@@ -92,7 +97,16 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
         viewSource.webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { (height, error) in
             guard let scrollHeight = height as? CGFloat else {return}
             
-            self.viewSource.height?.constant = scrollHeight
+            if scrollHeight > self.viewSource.frame.height
+            {
+                self.viewSource.height?.constant = self.viewSource.frame.height
+
+            }
+            else
+            {
+                self.viewSource.height?.constant = scrollHeight
+
+            }
             
             if self.hasTopNotch
             {
