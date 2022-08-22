@@ -3,13 +3,12 @@ import UIKit
 
 final class DengageInAppMessageManager:DengageInAppMessageManagerInterface {
     
-    
-       
     var config: DengageConfiguration
     var apiClient: DengageNetworking
     var inAppMessageWindow: UIWindow?
-    var deeplinkURL: String?
+    var openTriggerCompletionHandler: ((_ deeplinkURL: String) -> Void)?
 
+    
     init(config: DengageConfiguration, service: DengageNetworking){
         self.config = config
         self.apiClient = service
@@ -19,6 +18,7 @@ final class DengageInAppMessageManager:DengageInAppMessageManagerInterface {
 
 //MARK: - API
 extension DengageInAppMessageManager{
+    
     func fetchInAppMessages(){
         Logger.log(message: "fetchInAppMessages called")
         guard shouldFetchInAppMessages else {return}
@@ -117,13 +117,6 @@ extension DengageInAppMessageManager {
     }
     
     
-    func handleInAppDeeplink(completion: @escaping (String) -> Void) {
-        
-        completion(self.deeplinkURL ?? "")
-
-        
-    }
-    
     func showInAppMessage(inAppMessage: InAppMessage) {
         markAsInAppMessageAsDisplayed(inAppMessageId: inAppMessage.data.messageDetails)
 
@@ -219,11 +212,6 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
         
         guard let urlString = url, let url = URL(string: urlString) else { return }
 
-        self.deeplinkURL = urlString
-        self.handleInAppDeeplink { str in
-            
-            
-        }
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
     
@@ -234,7 +222,6 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     
     func sendClickEvent(messageId: String?, buttonId:String?) {
         inAppMessageWindow = nil
-
         setInAppMessageAsClicked(messageId, buttonId)
     }
     
@@ -246,6 +233,11 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
         inAppMessageWindow = nil
     }
     
+    func handleDeeplinkURL(url: String?) {
+        
+        openTriggerCompletionHandler?(url ?? "")
+        
+    }
     
 }
 
@@ -254,6 +246,6 @@ protocol DengageInAppMessageManagerInterface: AnyObject{
     func fetchInAppMessages()
     func setNavigation(screenName: String?)
     func showInAppMessage(inAppMessage: InAppMessage)
-    func handleInAppDeeplink(completion: @escaping (String) -> Void)
+    var openTriggerCompletionHandler: ((_ deeplinkURL: String) -> Void)? { get set }
 
 }

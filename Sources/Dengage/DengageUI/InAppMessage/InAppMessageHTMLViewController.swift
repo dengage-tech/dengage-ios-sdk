@@ -139,17 +139,9 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
                                           buttonId: buttonId)
         case "iosUrl":
             
-            if message.body as? String == "Dn.promptPushPermission()"
-            {
-                delegate?.promptPushPermission()
-
-            }
-            else
-            {
-                guard let url = message.body as? String else {return}
-                print("WKScriptMessage In app message \(url)")
-                self.delegate?.open(url: url)
-            }
+            guard let url = message.body as? String else {return}
+            
+            delegate?.handleDeeplinkURL(url: url)
           
         case "setTags":
             guard let tagItemData = message.body as? [Dictionary<String,String>] else {return}

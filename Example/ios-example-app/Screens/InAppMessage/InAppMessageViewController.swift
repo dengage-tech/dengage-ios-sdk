@@ -44,6 +44,12 @@ final class InAppMessageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        
+        Dengage.handleInAppDeeplink { deeplinkUrl in
+            
+            print("In App Message Deeplink Handle URL \(deeplinkUrl)")
+            
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
