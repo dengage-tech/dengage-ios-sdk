@@ -71,9 +71,11 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
     func didReceive(with userInfo: [AnyHashable: Any]) {
         if let jsonData = try? JSONSerialization.data(withJSONObject: userInfo, options: .prettyPrinted),
            let message = try? JSONDecoder().decode(PushContent.self, from: jsonData)  {
-            guard let messageSource = message.messageSource, MESSAGE_SOURCE == messageSource else { return }
-            guard config.options.disableOpenURL else { return }
-            if let targetUrl = message.targetUrl, !targetUrl.isEmpty {
+            if let messageSource = message.messageSource, MESSAGE_SOURCE == messageSource
+            {
+                
+            }
+            if let targetUrl = message.targetUrl, !targetUrl.isEmpty, !config.options.disableOpenURL {
                 openDeeplink(link: targetUrl)
                 eventManager.sessionStart(referrer: message.targetUrl)
             }
