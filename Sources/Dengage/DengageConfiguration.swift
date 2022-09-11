@@ -20,8 +20,15 @@ final class DengageConfiguration:Encodable {
     var deviceToken: String?
     let userAgent: String
     var permission: Bool
-    
     var inboxLastFetchedDate: Date?
+    
+    var realTimeCategoryPath: String?
+    var realTimeCartItemCount: String?
+    var realTimeCartAmount: String?
+    var city: String?
+    var state: String?
+    
+    var pageViewCount = 0
     
     init(integrationKey: String, options: DengageOptions) {
         subscriptionURL = DengageConfiguration.getSubscriptionURL()
@@ -64,6 +71,10 @@ final class DengageConfiguration:Encodable {
         return (DengageLocalStorage.shared.value(for: .lastFetchedInAppMessageTime) as? Double)
     }
     
+    var realTimeInAppMessageLastFetchedTime:Double? {
+        return (DengageLocalStorage.shared.value(for: .lastFetchedRealTimeInAppMessageTime) as? Double)
+    }
+    
     var inAppMessageShowTime: Double{
         return (DengageLocalStorage.shared.value(for: .inAppMessageShowTime) as? Double) ?? 0
     }
@@ -82,6 +93,34 @@ final class DengageConfiguration:Encodable {
     func set(permission: Bool){
         self.permission = permission
         DengageLocalStorage.shared.set(value: permission, for: .userPermission)
+    }
+    
+    func setCategory(path: String?) {
+        realTimeCategoryPath = path
+    }
+    
+    func setCart(itemCount: String?) {
+        realTimeCartItemCount = itemCount
+    }
+    
+    func setCart(amount: String?) {
+        realTimeCartAmount = amount
+    }
+    
+    func setState(name: String?) {
+        state = name
+    }
+    
+    func setCity(name: String?) {
+        city = name
+    }
+    
+    func incrementPageViewCount(){
+        pageViewCount += 1
+    }
+    
+    func resetPageViewCount(){
+        pageViewCount = 0
     }
     
     func getContactKey() -> String? {

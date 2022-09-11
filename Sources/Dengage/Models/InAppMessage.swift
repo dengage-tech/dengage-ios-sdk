@@ -1,6 +1,6 @@
 import Foundation
 
-struct InAppMessage: Codable{
+struct InAppMessage: Codable {
     let id: String
     let data: InAppMessageData
     var nextDisplayTime: Double?
@@ -10,24 +10,32 @@ struct InAppMessage: Codable{
         case data = "message_json"
         case nextDisplayTime = "nextDisplayTime"
     }
+    
+    static func mapRealTime(source: [InAppMessageData]) -> [InAppMessage] {
+        source.compactMap{item in
+            guard let id = item.publicId else { return nil }
+            return InAppMessage(id: id, data: item)
+        }
+    }
 }
 
-struct InAppMessageData: Codable{
-        let messageId: Int
-        let messageDetails: String?
-        let expireDate: String
-        let priority: Priority
-        let dengageSendId: Int
-        let dengageCampId: Int
-        let content: Content
-        let displayCondition: DisplayCondition
-        let displayTiming: DisplayTiming
+struct InAppMessageData: Codable {
+    let messageDetails: String?
+    let expireDate: String
+    let priority: Priority
+    let content: Content
+    let displayCondition: DisplayCondition
+    let displayTiming: DisplayTiming
+    let publicId: String?
+
+    var isRealTime: Bool {
+        return publicId != nil
+    }
 }
 
 struct Content: Codable {
     let type: ContentType
     let props: ContentParams
-    let targetUrl:String?
 }
 
 extension InAppMessage: Equatable {
@@ -39,8 +47,9 @@ extension InAppMessage: Equatable {
 extension Array where Element == InAppMessage {
     var sorted:[InAppMessage]{
         return (self as NSArray).sortedArray(comparator: { first, second -> ComparisonResult in
-            guard let first = first as? InAppMessage else {return .orderedSame}
-            guard let second = second as? InAppMessage else {return .orderedSame}
+            guard let first = first as? InAppMessage, !first.data.isRealTime else {return .orderedSame}
+            guard let second = second as? InAppMessage, !second.data.isRealTime else {return .orderedSame}
+            
             guard first.data.priority == second.data.priority else {
                 return first.data.priority.rawValue < second.data.priority.rawValue ? .orderedAscending : .orderedDescending
             }

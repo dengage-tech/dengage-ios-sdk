@@ -73,6 +73,42 @@ extension Date {
     var timeMiliseconds:TimeInterval{
         return self.timeIntervalSince1970 * 1000.0
     }
+    
+    var formattedDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: self)
+    }
+    
+    static var defaultFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }
+    
+    var dateWithoutTime: Date {
+        let dateString = Date.defaultFormatter.string(from: self)
+        guard let normalizedDate = Date.defaultFormatter.date(from: dateString) else { return Date() }
+        return normalizedDate
+    }
+    
+    var hour: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH"
+        return formatter.string(from: self)
+    }
+    
+    var weekDay: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE"
+        return formatter.string(from: self)
+    }
+    
+    var month: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM"
+        return formatter.string(from: self)
+    }
 }
 
 extension UIImageView {

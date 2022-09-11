@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A00B7DEF28CE936500E9BE41 /* RealTimeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00B7DEE28CE936500E9BE41 /* RealTimeViewController.swift */; };
 		A02A40E127CF93CD00D75B02 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = A02A40E027CF93CD00D75B02 /* Dengage */; };
 		A02A40E327CF93D800D75B02 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = A02A40E227CF93D800D75B02 /* Dengage */; };
 		A0765B6B27CEAF2B0007215B /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = A0765B6A27CEAF2B0007215B /* Dengage */; };
@@ -65,6 +66,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A00B7DEE28CE936500E9BE41 /* RealTimeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealTimeViewController.swift; sourceTree = "<group>"; };
 		A0765B6927CEAF040007215B /* dengage-ios-sdk */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "dengage-ios-sdk"; path = ..; sourceTree = "<group>"; };
 		A099517327AB600C0089D98D /* NoticationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NoticationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A099517527AB600C0089D98D /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -153,6 +155,7 @@
 		A099519B27ACAD260089D98D /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				A0C5082028CE900500514F05 /* RealTime */,
 				A0B8857927B1F4CF004D4360 /* ContactKey */,
 				A0B8857627B1F17D004D4360 /* DeviceInfo */,
 				A0B884FC27B1CE92004D4360 /* Root */,
@@ -220,6 +223,14 @@
 				A0B8857A27B1F4E4004D4360 /* ContactKeyViewController.swift */,
 			);
 			path = ContactKey;
+			sourceTree = "<group>";
+		};
+		A0C5082028CE900500514F05 /* RealTime */ = {
+			isa = PBXGroup;
+			children = (
+				A00B7DEE28CE936500E9BE41 /* RealTimeViewController.swift */,
+			);
+			path = RealTime;
 			sourceTree = "<group>";
 		};
 		A0F46C55275A85B0003A524C = {
@@ -421,6 +432,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A00B7DEF28CE936500E9BE41 /* RealTimeViewController.swift in Sources */,
 				A0B884FE27B1CF44004D4360 /* RootViewController.swift in Sources */,
 				A0B8857B27B1F4E4004D4360 /* ContactKeyViewController.swift in Sources */,
 				A0F46C66275A85B0003A524C /* ViewController.swift in Sources */,

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A00B7DE828CE928900E9BE41 /* VisitCountItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00B7DE728CE928900E9BE41 /* VisitCountItem.swift */; };
+		A00B7DED28CE92BD00E9BE41 /* DengageVisitCountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00B7DEC28CE92BD00E9BE41 /* DengageVisitCountManager.swift */; };
 		A00EFCBE280777B8004659DE /* RFMScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EFCBD280777B8004659DE /* RFMScore.swift */; };
 		A00EFCC328077869004659DE /* DengageRFMManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EFCC228077869004659DE /* DengageRFMManager.swift */; };
 		A0765BBF27CEB4700007215B /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765B8227CEB4700007215B /* Constants.swift */; };
@@ -59,6 +61,12 @@
 		A0765BEE27CEB4700007215B /* DengageLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765BBC27CEB4700007215B /* DengageLog.swift */; };
 		A0765BEF27CEB4700007215B /* DengageKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765BBD27CEB4700007215B /* DengageKeychain.swift */; };
 		A0765BF027CEB4700007215B /* DengageEventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765BBE27CEB4700007215B /* DengageEventManager.swift */; };
+		A0B3E16E28C56A8700D902E7 /* GetRealTimeMesagesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B3E16D28C56A8700D902E7 /* GetRealTimeMesagesRequest.swift */; };
+		A0B3E17B28C9163100D902E7 /* MarkAsRealTimeInAppMessageDisplayedRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B3E17A28C9163100D902E7 /* MarkAsRealTimeInAppMessageDisplayedRequest.swift */; };
+		A0B3E17D28C916E900D902E7 /* MarkAsRealTimeInAppMessageClickedRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B3E17C28C916E900D902E7 /* MarkAsRealTimeInAppMessageClickedRequest.swift */; };
+		A0B3E17F28C917D600D902E7 /* MarkAsRealTimeInAppMessageAsDismissedRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B3E17E28C917D600D902E7 /* MarkAsRealTimeInAppMessageAsDismissedRequest.swift */; };
+		A0B3E18128C9184300D902E7 /* FirstLaunchEventRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B3E18028C9184300D902E7 /* FirstLaunchEventRequest.swift */; };
+		A0B3E18328C91ED700D902E7 /* AppForegroundEventRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0B3E18228C91ED600D902E7 /* AppForegroundEventRequest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,6 +94,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A00B7DE728CE928900E9BE41 /* VisitCountItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitCountItem.swift; sourceTree = "<group>"; };
+		A00B7DEC28CE92BD00E9BE41 /* DengageVisitCountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageVisitCountManager.swift; sourceTree = "<group>"; };
 		A00EFCBD280777B8004659DE /* RFMScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RFMScore.swift; sourceTree = "<group>"; };
 		A00EFCC228077869004659DE /* DengageRFMManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageRFMManager.swift; sourceTree = "<group>"; };
 		A0765B7627CEB4300007215B /* Dengage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Dengage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -140,6 +150,12 @@
 		A0765BBD27CEB4700007215B /* DengageKeychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageKeychain.swift; sourceTree = "<group>"; };
 		A0765BBE27CEB4700007215B /* DengageEventManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageEventManager.swift; sourceTree = "<group>"; };
 		A092216727CED6D600BDA35E /* ios-example-app.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "ios-example-app.xcodeproj"; path = "Example/ios-example-app.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		A0B3E16D28C56A8700D902E7 /* GetRealTimeMesagesRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetRealTimeMesagesRequest.swift; sourceTree = "<group>"; };
+		A0B3E17A28C9163100D902E7 /* MarkAsRealTimeInAppMessageDisplayedRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkAsRealTimeInAppMessageDisplayedRequest.swift; sourceTree = "<group>"; };
+		A0B3E17C28C916E900D902E7 /* MarkAsRealTimeInAppMessageClickedRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkAsRealTimeInAppMessageClickedRequest.swift; sourceTree = "<group>"; };
+		A0B3E17E28C917D600D902E7 /* MarkAsRealTimeInAppMessageAsDismissedRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkAsRealTimeInAppMessageAsDismissedRequest.swift; sourceTree = "<group>"; };
+		A0B3E18028C9184300D902E7 /* FirstLaunchEventRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstLaunchEventRequest.swift; sourceTree = "<group>"; };
+		A0B3E18228C91ED600D902E7 /* AppForegroundEventRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppForegroundEventRequest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -201,6 +217,7 @@
 				A0765BBD27CEB4700007215B /* DengageKeychain.swift */,
 				A0765BBE27CEB4700007215B /* DengageEventManager.swift */,
 				A00EFCC228077869004659DE /* DengageRFMManager.swift */,
+				A00B7DEC28CE92BD00E9BE41 /* DengageVisitCountManager.swift */,
 			);
 			path = Dengage;
 			sourceTree = "<group>";
@@ -269,6 +286,7 @@
 				A0765BA627CEB4700007215B /* PushContent.swift */,
 				A0765BA727CEB4700007215B /* Request */,
 				A0765BB827CEB4700007215B /* TagItem.swift */,
+				A00B7DE728CE928900E9BE41 /* VisitCountItem.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -284,6 +302,7 @@
 		A0765BA727CEB4700007215B /* Request */ = {
 			isa = PBXGroup;
 			children = (
+				A0B3E17628C9160F00D902E7 /* RealTime */,
 				A0765BA827CEB4700007215B /* GetSDKParamsRequest.swift */,
 				A0765BA927CEB4700007215B /* InboxMessage */,
 				A0765BAD27CEB4700007215B /* InAppMessage */,
@@ -318,9 +337,11 @@
 		A0765BB227CEB4700007215B /* Event */ = {
 			isa = PBXGroup;
 			children = (
+				A0B3E18028C9184300D902E7 /* FirstLaunchEventRequest.swift */,
 				A0765BB327CEB4700007215B /* OpenEventRequest.swift */,
 				A0765BB427CEB4700007215B /* TransactionalOpenEventRequest.swift */,
 				A0765BB527CEB4700007215B /* EventRequest.swift */,
+				A0B3E18228C91ED600D902E7 /* AppForegroundEventRequest.swift */,
 			);
 			path = Event;
 			sourceTree = "<group>";
@@ -333,6 +354,17 @@
 				A092217227CED6D600BDA35E /* NotificationContentExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A0B3E17628C9160F00D902E7 /* RealTime */ = {
+			isa = PBXGroup;
+			children = (
+				A0B3E17A28C9163100D902E7 /* MarkAsRealTimeInAppMessageDisplayedRequest.swift */,
+				A0B3E17C28C916E900D902E7 /* MarkAsRealTimeInAppMessageClickedRequest.swift */,
+				A0B3E17E28C917D600D902E7 /* MarkAsRealTimeInAppMessageAsDismissedRequest.swift */,
+				A0B3E16D28C56A8700D902E7 /* GetRealTimeMesagesRequest.swift */,
+			);
+			path = RealTime;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -451,13 +483,16 @@
 				A0765BD327CEB4700007215B /* DengageInAppMessageUtils.swift in Sources */,
 				A0765BC027CEB4700007215B /* DengageNotificationExtension.swift in Sources */,
 				A0765BE827CEB4700007215B /* TagsRequest.swift in Sources */,
+				A00B7DED28CE92BD00E9BE41 /* DengageVisitCountManager.swift in Sources */,
 				A0765BEA27CEB4700007215B /* TagItem.swift in Sources */,
 				A0765BE627CEB4700007215B /* TransactionalOpenEventRequest.swift in Sources */,
 				A0765BE927CEB4700007215B /* MakeSubscriptionRequest.swift in Sources */,
 				A0765BCE27CEB4700007215B /* DeviceInfoViewController.swift in Sources */,
 				A0765BEC27CEB4700007215B /* Dengage.swift in Sources */,
 				A0765BD027CEB4700007215B /* InAppMessagesActionsDelegate.swift in Sources */,
+				A0B3E18328C91ED700D902E7 /* AppForegroundEventRequest.swift in Sources */,
 				A0765BCA27CEB4700007215B /* TestPageViewController.swift in Sources */,
+				A0B3E17F28C917D600D902E7 /* MarkAsRealTimeInAppMessageAsDismissedRequest.swift in Sources */,
 				A0765BD927CEB4700007215B /* DengageMessage.swift in Sources */,
 				A0765BED27CEB4700007215B /* DengageManager.swift in Sources */,
 				A0765BD827CEB4700007215B /* InAppMessage.swift in Sources */,
@@ -467,6 +502,7 @@
 				A0765BCB27CEB4700007215B /* TestInAppMessageViewController.swift in Sources */,
 				A0765BDC27CEB4700007215B /* PushContent.swift in Sources */,
 				A0765BC827CEB4700007215B /* CarouselMessage.swift in Sources */,
+				A0B3E17D28C916E900D902E7 /* MarkAsRealTimeInAppMessageClickedRequest.swift in Sources */,
 				A0765BE427CEB4700007215B /* MarkAsInAppMessageDisplayedRequest.swift in Sources */,
 				A0765BC127CEB4700007215B /* ThreadSafeContainer.swift in Sources */,
 				A0765BD127CEB4700007215B /* InAppMessageHTMLViewController.swift in Sources */,
@@ -480,7 +516,9 @@
 				A0765BE727CEB4700007215B /* EventRequest.swift in Sources */,
 				A0765BC327CEB4700007215B /* DengageUtilities.swift in Sources */,
 				A0765BD627CEB4700007215B /* DengageNotificationManager.swift in Sources */,
+				A0B3E17B28C9163100D902E7 /* MarkAsRealTimeInAppMessageDisplayedRequest.swift in Sources */,
 				A0765BD227CEB4700007215B /* InAppMessageHTMLView.swift in Sources */,
+				A00B7DE828CE928900E9BE41 /* VisitCountItem.swift in Sources */,
 				A0765BCF27CEB4700007215B /* TestPageTableViewCell.swift in Sources */,
 				A0765BDD27CEB4700007215B /* GetSDKParamsRequest.swift in Sources */,
 				A0765BF027CEB4700007215B /* DengageEventManager.swift in Sources */,
@@ -488,11 +526,13 @@
 				A0765BE327CEB4700007215B /* GetInAppMessagesRequest.swift in Sources */,
 				A00EFCBE280777B8004659DE /* RFMScore.swift in Sources */,
 				A0765BC627CEB4700007215B /* DengageNetworking.swift in Sources */,
+				A0B3E16E28C56A8700D902E7 /* GetRealTimeMesagesRequest.swift in Sources */,
 				A0765BEE27CEB4700007215B /* DengageLog.swift in Sources */,
 				A0765BD527CEB4700007215B /* DengageLocalStorage.swift in Sources */,
 				A0765BE127CEB4700007215B /* MarkAsInAppMessageClickedRequest.swift in Sources */,
 				A0765BBF27CEB4700007215B /* Constants.swift in Sources */,
 				A0765BDB27CEB4700007215B /* ContentParams.swift in Sources */,
+				A0B3E18128C9184300D902E7 /* FirstLaunchEventRequest.swift in Sources */,
 				A0765BDF27CEB4700007215B /* DeleteMessagesRequest.swift in Sources */,
 				A0765BC727CEB4700007215B /* DengageNotificationCarouselView.swift in Sources */,
 				A0765BC527CEB4700007215B /* DengageAPIRequest.swift in Sources */,

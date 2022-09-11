@@ -109,13 +109,40 @@ public class Dengage{
         })
     }
     
+    @objc public static func showRealTimeInApp(
+        screenName: String? = nil,
+        params: Dictionary<String, String>? = nil
+    ) {
+        dengage?.inAppManager.setNavigation(screenName:screenName, params: params)
+    }
+    
+    @objc public static func setCategory(path: String?) {
+        dengage?.config.setCategory(path: path)
+    }
+    
+    @objc public static func setCart(itemCount: String?) {
+        dengage?.config.setCart(itemCount: itemCount)
+    }
+    
+    @objc public static func setCart(amount: String?) {
+        dengage?.config.setCart(amount: amount)
+    }
+    
+    @objc public static func setState(name: String?) {
+        dengage?.config.setState(name: name)
+    }
+
+    @objc public static func setCity(name: String?) {
+        dengage?.config.setCity(name: name)
+    }
+    
     @objc public static func handleNotificationActionBlock(callback: @escaping (_ notificationResponse: UNNotificationResponse) -> Void) {
         dengage?.notificationManager.openTriggerCompletionHandler = {
             response in
             callback(response)
         }
     }
-    
+
     @objc static public func didReceiveNotificationRequest(_ bestAttemptContent: UNMutableNotificationContent?,
                                                            withContentHandler contentHandler:  @escaping (UNNotificationContent) -> Void) {
         DengageNotificationExtension.didReceiveNotificationRequest(bestAttemptContent, withContentHandler: contentHandler)

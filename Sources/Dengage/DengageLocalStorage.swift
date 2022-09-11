@@ -27,9 +27,16 @@ final class DengageLocalStorage: NSObject {
         case configParams = "configParams"
         case lastFetchedConfigTime = "lastFetchedConfigTime"
         case lastFetchedInAppMessageTime = "lastFetchedInAppMessageTime"
+        case lastFetchedRealTimeInAppMessageTime = "lastFetchedRealTimeInAppMessageTime"
         case inAppMessages = "inAppMessages"
         case inAppMessageShowTime = "inAppMessageShowTime"
         case rfmScores = "rfmScores"
+        case session = "session"
+        case firstLaunchTime = "firstLaunchTime"
+        case lastSessionStartTime = "lastSessionStartTime"
+        case lastSessionDuration = "lastSessionDuration"
+        case lastVisitTime = "lastVisitTime"
+        case visitCounts = "visitCounts"
     }
 }
 
@@ -70,7 +77,7 @@ extension DengageLocalStorage {
         }
     }
     
-    func save(_ inappMessages:[InAppMessage]){
+    func save(_ inappMessages: [InAppMessage]){
         let encoder = JSONEncoder()
         do {
             let encoded = try encoder.encode(inappMessages)
@@ -101,6 +108,57 @@ extension DengageLocalStorage {
             userDefaults.synchronize()
         } catch {
             Logger.log(message: "rfmScores fail")
+        }
+    }
+    
+    func save(_ session: Session?){
+        let encoder = JSONEncoder()
+        do {
+            let encoded = try encoder.encode(session)
+            userDefaults.set(encoded, forKey: Key.session.rawValue)
+            userDefaults.synchronize()
+        } catch {
+            Logger.log(message: "session record fail")
+        }
+    }
+    
+    func getSession() -> Session? {
+        guard
+            let sessionData = userDefaults.object(forKey: Key.session.rawValue) as? Data
+        else {
+            return nil
+        }
+
+        let decoder = JSONDecoder()
+        do {
+            let session = try decoder.decode(Session.self, from: sessionData)
+            return session
+        } catch {
+            Logger.log(message: "session not found")
+            return nil
+        }
+    }
+    
+    func save(_ visitCounts: [VisitCountItem]) {
+        let encoder = JSONEncoder()
+        do {
+            let encoded = try encoder.encode(visitCounts)
+            userDefaults.set(encoded, forKey: Key.visitCounts.rawValue)
+            userDefaults.synchronize()
+        } catch {
+            Logger.log(message: "VisitCounts save fail")
+        }
+    }
+    
+    func getVisitCounts() -> [VisitCountItem] {
+        guard let messagesData = userDefaults.object(forKey: Key.visitCounts.rawValue) as? Data else { return [] }
+        let decoder = JSONDecoder()
+        do {
+            let messages = try decoder.decode([VisitCountItem].self, from: messagesData)
+            return messages
+        } catch {
+            Logger.log(message: "VisitCounts get fail")
+            return []
         }
     }
 }

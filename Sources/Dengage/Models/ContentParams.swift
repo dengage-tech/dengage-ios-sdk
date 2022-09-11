@@ -31,7 +31,7 @@ enum ContentType:String, Codable{
 struct ScreenDataFilter: Codable{
         let dataName: String
         let type: String
-        let operatorType: OperatorType
+        let operatorType: ComparisonType
         let value: String
     
     enum CodingKeys: String, CodingKey {
@@ -43,7 +43,7 @@ struct ScreenDataFilter: Codable{
 }
 
 struct ScreenNameFilter: Codable{
-    let operatorType: OperatorType
+    let operatorType: ComparisonType
     let value: [String]
     
     enum CodingKeys: String, CodingKey {
@@ -54,16 +54,59 @@ struct ScreenNameFilter: Codable{
 
 struct DisplayCondition: Codable{
     let screenNameFilters: [ScreenNameFilter]?
-//    let screenDataFilters:[ScreenDataFilter]?
+    let ruleSet: RuleSet?
+}
+struct RuleSet: Codable {
+    let logicOperator: RulesOperatorType
+    let rules: [Rule]
+}
+
+struct Rule: Codable {
+    let logicOperatorBetweenCriterions: RulesOperatorType
+    let criterions: [Criterion]
+}
+
+struct Criterion: Codable {
+    let id: Int
+    let parameter: String
+    let dataType: CriterionDataType
+    let comparison: ComparisonType
+    let values: [String]
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(Int.self, forKey: .id)
+        parameter = try container.decode(String.self, forKey: .parameter)
+        comparison = try container.decode(ComparisonType.self, forKey: .comparison)
+        values = try container.decode([String].self, forKey: .values)
+        dataType = (try? container.decode(CriterionDataType.self, forKey: .dataType)) ?? .TEXT
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case parameter
+        case dataType
+        case comparison
+        case values
+    }
+}
+
+enum CriterionDataType: String, Codable {
+    case DATETIME
+    case INT
+    case TEXT
+    case TEXTLIST
+    case INTRANGE
+    case BOOL
+    case VISITCOUNTPASTXDAYS
 }
 
 struct DisplayTiming: Codable{
-    let triggerBy: TriggerBy
     let delay: Int?
     let showEveryXMinutes: Int?
 }
 
-enum OperatorType: String, Codable {
+enum ComparisonType: String, Codable {
     case EQUALS
     case NOT_EQUALS
     case LIKE
@@ -74,15 +117,20 @@ enum OperatorType: String, Codable {
     case NOT_ENDS_WITH
     case IN
     case NOT_IN
+    case GREATER_THAN
+    case GREATER_EQUAL
+    case LESS_THAN
+    case LESS_EQUAL
+    case BETWEEN
+}
+
+enum RulesOperatorType: String, Codable {
+    case AND
+    case OR
 }
 
 enum Priority: Int, Codable {
     case high = 1
     case medium = 2
     case low = 3
-}
-
-enum TriggerBy: String, Codable {
-    case navigation = "NAVIGATION"
-    case event = "EVENT"
 }

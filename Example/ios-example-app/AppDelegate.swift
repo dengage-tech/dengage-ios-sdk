@@ -8,8 +8,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
 
-//        _p_l_AvDJy5os_s_l_CWOx_p_l_wSaoGA4BtNDjxnqO_p_l_Go_p_l_WSu6VdnlIUNi1Yb7C9FhsfeAbwUg9uH9vLXaG_s_l_0UqGh2yBjRYY6RK15NahUFP9J8JI1D6FcphiLPskqz8HqUKRAxvG_p_l_Ks7g0_p_l_LNkG97N_p_l_oc3PjTegYw_e_q__e_q_
-        Dengage.start(apiKey: "_p_l_AvDJy5os_s_l_CWOx_p_l_wSaoGA4BtNDjxnqO_p_l_Go_p_l_WSu6VdnlIUNi1Yb7C9FhsfeAbwUg9uH9vLXaG_s_l_0UqGh2yBjRYY6RK15NahUFP9J8JI1D6FcphiLPskqz8HqUKRAxvG_p_l_Ks7g0_p_l_LNkG97N_p_l_oc3PjTegYw_e_q__e_q_", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
+        Dengage.start(apiKey: "PsHLRo5s7ZS3_s_l__s_l_1IFxXry9kNEv_p_l_AiQdnF0gECEEPw6fzOk3Cr7AyiGj0wVRrHJpzteAJoCjx2mQBEptYHkcdlZFn7aaY1Gwsm7YzWzqanwDQg5HP6VnZ454vIdjoJ4LWbcJk0dS_s_l_Tm5QesvbGSqybQ_e_q__e_q_",
+                      application: application,
+                      launchOptions: launchOptions,
+                      dengageOptions: DengageOptions())
         UNUserNotificationCenter.current().delegate = self
         window = UIWindow(frame: UIScreen.main.bounds)
         let rootViewController = RootViewController()
@@ -19,7 +21,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if #available(iOS 13.0, *) {
             window?.overrideUserInterfaceStyle = .light
         }
-      
         return true
     }
 }
@@ -68,3 +69,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
         return true
     }
 }
+// model guncelleme
+// session algoritma
+// durationlari gonderme murat mail
+// custom fonksiyonlar
+// rule engine
