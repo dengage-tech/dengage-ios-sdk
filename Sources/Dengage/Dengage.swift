@@ -16,6 +16,7 @@ public class Dengage{
         }
     }
     
+    
     @objc public static func start(apiKey: String,
                                    application: UIApplication,
                                    launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
@@ -26,8 +27,30 @@ public class Dengage{
                         dengageOptions: options)
     }
     
+    
+    @objc public static func initWithLaunchOptions(categories: Set<UNNotificationCategory>,application: UIApplication,withLaunchOptions: [UIApplication.LaunchOptionsKey: Any],badgeCountReset: Bool = false)
+    {
+        let key =  DengageLocalStorage.shared.value(for: .integrationKey) as? String
+
+        self.start(apiKey: key ?? "", application: application, launchOptions: withLaunchOptions, dengageOptions: DengageOptions())
+        
+    }
+    
+    @objc public static func setIntegrationKey(key: String) {
+       
+        DengageLocalStorage.shared.set(value: key, for: .integrationKey)
+    }
+    
     @objc public static func register(deviceToken: Data) {
         dengage?.register(deviceToken)
+    }
+    
+    @objc public static func setContactKey(contactKey: String?) {
+        self.set(contactKey: contactKey)
+    }
+    
+    @objc public static func getContactKey(contactKey: String?) -> String{
+        return self.getContactKey() ?? ""
     }
     
     @objc public static func set(contactKey: String?) {
@@ -40,6 +63,11 @@ public class Dengage{
     
     @objc public static func set(permission: Bool){
         dengage?.set(permission)
+    }
+    
+    @objc public static func setUserPermission(permission: Bool) {
+
+        self.set(permission: permission)
     }
     
     @objc public static func getPermission() -> Bool {
@@ -56,6 +84,21 @@ public class Dengage{
     
     @objc public static func getDeviceToken() -> String? {
         dengage?.config.deviceToken
+    }
+    
+    @objc public static func setToken(token: String) {
+        dengage?.config.set(token: token)
+    }
+    
+    
+    @objc public static func setLogStatus(isVisible: Bool) {
+        
+        self.setLog(isVisible: isVisible)
+    }
+    
+    @objc public static func setDeviceId(applicationIdentifier: String) {
+        
+        self.set(deviceId: applicationIdentifier)
     }
     
     //todo add objc
