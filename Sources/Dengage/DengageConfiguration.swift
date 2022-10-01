@@ -20,7 +20,8 @@ final class DengageConfiguration:Encodable {
     var deviceToken: String?
     let userAgent: String
     var permission: Bool
-    
+    let geofenceURL: URL
+
     var inboxLastFetchedDate: Date?
     
     init(integrationKey: String, options: DengageOptions) {
@@ -39,6 +40,8 @@ final class DengageConfiguration:Encodable {
         self.userAgent = UserAgentUtils.userAgent
         self.permission = DengageConfiguration.getPermission()
         self.deviceToken = DengageConfiguration.getToken()
+        geofenceURL = DengageConfiguration.getGeofenceUrl()
+
     }
     
     var contactKey: (key: String, type:String) {
@@ -115,6 +118,18 @@ final class DengageConfiguration:Encodable {
         
         guard let apiURL = URL(string: apiURLString) else {
             fatalError("[DENGAGE] 'DengageEventApiUrl' not correct on plist file")
+        }
+ 
+        return apiURL
+    }
+    
+    private static func getGeofenceUrl() -> URL {
+        guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageGeofenceApiUrl") as? String else {
+            fatalError("[DENGAGE] 'DengageGeofenceApiUrl' not found on plist file")
+        }
+        
+        guard let apiURL = URL(string: apiURLString) else {
+            fatalError("[DENGAGE] 'DengageGeofenceApiUrl' not correct on plist file")
         }
  
         return apiURL

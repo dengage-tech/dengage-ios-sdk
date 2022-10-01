@@ -30,6 +30,7 @@
 		A0F46C66275A85B0003A524C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F46C65275A85B0003A524C /* ViewController.swift */; };
 		A0F46C6B275A85B1003A524C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A0F46C6A275A85B1003A524C /* Assets.xcassets */; };
 		A0F46C6E275A85B1003A524C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0F46C6C275A85B1003A524C /* LaunchScreen.storyboard */; };
+		D6472F4E28E88D670076523C /* GeofenceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6472F4D28E88D670076523C /* GeofenceViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,6 +92,7 @@
 		A0F46C6A275A85B1003A524C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A0F46C6D275A85B1003A524C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A0F46C6F275A85B1003A524C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D6472F4D28E88D670076523C /* GeofenceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeofenceViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,6 +162,7 @@
 				A09951A527ACB1170089D98D /* InAppMessage */,
 				A09951A227ACB0BF0089D98D /* Tags */,
 				A099519E27ACAD4E0089D98D /* InboxMessage */,
+				D6472F4C28E88D670076523C /* Geofence */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -265,6 +268,14 @@
 				A099518827AC9CE80089D98D /* UserNotificationsUI.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D6472F4C28E88D670076523C /* Geofence */ = {
+			isa = PBXGroup;
+			children = (
+				D6472F4D28E88D670076523C /* GeofenceViewController.swift */,
+			);
+			path = Geofence;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -421,6 +432,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D6472F4E28E88D670076523C /* GeofenceViewController.swift in Sources */,
 				A0B884FE27B1CF44004D4360 /* RootViewController.swift in Sources */,
 				A0B8857B27B1F4E4004D4360 /* ContactKeyViewController.swift in Sources */,
 				A0F46C66275A85B0003A524C /* ViewController.swift in Sources */,
