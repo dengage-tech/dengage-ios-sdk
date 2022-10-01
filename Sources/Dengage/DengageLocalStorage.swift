@@ -22,6 +22,7 @@ final class DengageLocalStorage: NSObject {
         case applicationIdentifier = "ApplicationIdentifier"
         case contactKey = "ContactKey"
         case token = "Token"
+        case integrationKey = "integrationKey"
         case userPermission = "userPermission"
         case inboxMessages = "inboxMessages"
         case configParams = "configParams"
