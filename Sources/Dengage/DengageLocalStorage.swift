@@ -30,6 +30,8 @@ final class DengageLocalStorage: NSObject {
         case inAppMessages = "inAppMessages"
         case inAppMessageShowTime = "inAppMessageShowTime"
         case rfmScores = "rfmScores"
+        case integrationKey = "integrationKey"
+
     }
 }
 
