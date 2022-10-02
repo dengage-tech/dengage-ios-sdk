@@ -31,9 +31,38 @@ extension DengageInAppMessageManager{
         apiClient.send(request: request) { [weak self] result in
             switch result {
             case .success(let response):
-                let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchIntervalInMin)
-                DengageLocalStorage.shared.set(value: nextFetchTime, for: .lastFetchedInAppMessageTime)
+                let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchexpiredMessagesFetchIntervalInMin)
+                DengageLocalStorage.shared.set(value: nextFetchTime, for: .expiredMessagesFetchIntervalInMin)
+                
                 self?.addInAppMessagesIfNeeded(response)
+                
+                self?.fetchInAppExpiredMessages()
+                
+            case .failure(let error):
+                Logger.log(message: "fetchInAppMessages_ERROR", argument: error.localizedDescription)
+            }
+        }
+        
+        
+        
+    }
+    
+    func fetchInAppExpiredMessages(){
+        Logger.log(message: "fetchInAppExpiredMessages called")
+        guard expiredMessagesFetchIntervalInMin else {return}
+        if DengageLocalStorage.shared.getInAppMessages().count == 0
+        {
+            return
+        }
+        guard let remoteConfig = config.remoteConfiguration, let accountName = remoteConfig.accountName ,let appid = remoteConfig.appId else { return }
+        Logger.log(message: "fetchInAppMessages request started")
+        let request = ExpiredInAppMessageRequest.init(accountName: accountName, contactKey: config.contactKey.key, appid: appid)
+        apiClient.send(request: request) { [weak self] result in
+            switch result {
+            case .success(let response):
+                let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchexpiredMessagesFetchIntervalInMin)
+                DengageLocalStorage.shared.set(value: nextFetchTime, for: .expiredMessagesFetchIntervalInMin)
+                self?.removeExpiredInAppMessageFromCache(response)
             case .failure(let error):
                 Logger.log(message: "fetchInAppMessages_ERROR", argument: error.localizedDescription)
             }
@@ -185,6 +214,17 @@ extension DengageInAppMessageManager {
         DengageLocalStorage.shared.save(previousMessages.filter{($0.data.messageDetails ?? "") != messageId})
     }
     
+    
+    private func removeExpiredInAppMessageFromCache(_ messages:[InAppMessage]){
+        let previousMessages = DengageLocalStorage.shared.getInAppMessages()
+        for msg in messages
+        {
+            DengageLocalStorage.shared.save(previousMessages.filter{($0.id) != msg.id})
+
+        }
+    }
+    
+    
     private var isEnabledInAppMessage:Bool{
         guard let config = self.config.remoteConfiguration,
               config.accountName != nil else {return false}
@@ -196,6 +236,13 @@ extension DengageInAppMessageManager {
         guard isEnabledInAppMessage else {return false}
         guard let lastFetchedTime = config.inAppMessageLastFetchedTime else {return true}
         guard Date().timeMiliseconds >= lastFetchedTime else {return false}
+        return true
+    }
+    
+    private var expiredMessagesFetchIntervalInMin:Bool{
+        guard isEnabledInAppMessage else {return false}
+        guard let expiredMessagesFetchIntervalInMin = config.expiredMessagesFetchIntervalInMin else {return true}
+        guard Date().timeMiliseconds >= expiredMessagesFetchIntervalInMin else {return false}
         return true
     }
     
@@ -252,8 +299,10 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
 
 protocol DengageInAppMessageManagerInterface: AnyObject{
     func fetchInAppMessages()
+    func fetchInAppExpiredMessages()
     func setNavigation(screenName: String?)
     func showInAppMessage(inAppMessage: InAppMessage)
     func handleInAppDeeplink(completion: @escaping (String) -> Void)
+    
 
 }

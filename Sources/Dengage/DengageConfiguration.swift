@@ -50,6 +50,7 @@ final class DengageConfiguration:Encodable {
         return (key, type)
     }
     
+    
     var shouldFetchFromAPI: Bool {
         guard let date = inboxLastFetchedDate else { return true}
         if let diff = Calendar.current.dateComponents([.minute], from: date, to: Date()).minute,
@@ -65,6 +66,10 @@ final class DengageConfiguration:Encodable {
     
     var inAppMessageLastFetchedTime:Double? {
         return (DengageLocalStorage.shared.value(for: .lastFetchedInAppMessageTime) as? Double)
+    }
+    
+    var expiredMessagesFetchIntervalInMin:Double? {
+        return (DengageLocalStorage.shared.value(for: .expiredMessagesFetchIntervalInMin) as? Double)
     }
     
     var inAppMessageShowTime: Double{
