@@ -50,11 +50,21 @@ struct ScreenNameFilter: Codable{
         case operatorType = "operator"
         case value
     }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        operatorType = try container.decode(ComparisonType.self, forKey: .operatorType)
+        value = (try? container.decode([String].self, forKey: .value)) ?? []
+    }
 }
 
 struct DisplayCondition: Codable{
     let screenNameFilters: [ScreenNameFilter]?
     let ruleSet: RuleSet?
+    
+    var hasRules: Bool {
+        return !(ruleSet?.rules ?? []).isEmpty
+    }
 }
 struct RuleSet: Codable {
     let logicOperator: RulesOperatorType

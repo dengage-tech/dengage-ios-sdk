@@ -74,6 +74,8 @@ final class DengageNetworking {
             return config.eventURL
         case .push:
             return config.subscriptionURL
+        case .inapp:
+            return config.inAppURL
         }
     }
 }

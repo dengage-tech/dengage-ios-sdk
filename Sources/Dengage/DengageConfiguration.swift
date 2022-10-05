@@ -7,6 +7,7 @@ final class DengageConfiguration:Encodable {
     
     let subscriptionURL: URL
     let eventURL: URL
+    let inAppURL: URL
     let deviceCountryCode: String
     let deviceLanguage: String
     let deviceTimeZone: String
@@ -33,6 +34,7 @@ final class DengageConfiguration:Encodable {
     init(integrationKey: String, options: DengageOptions) {
         subscriptionURL = DengageConfiguration.getSubscriptionURL()
         eventURL = DengageConfiguration.getEventUrl()
+        inAppURL = DengageConfiguration.getInAppURL()
         deviceCountryCode = DengageConfiguration.getDeviceCountry()
         deviceLanguage = Locale.current.languageCode ?? "Null"
         deviceTimeZone = TimeZone.current.abbreviation() ?? "Null"
@@ -156,6 +158,18 @@ final class DengageConfiguration:Encodable {
             fatalError("[DENGAGE] 'DengageEventApiUrl' not correct on plist file")
         }
  
+        return apiURL
+    }
+    
+    private static func getInAppURL() -> URL {
+        guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageInAppApiUrl") as? String else {
+            return getSubscriptionURL()
+        }
+
+        guard let apiURL = URL(string: apiURLString) else {
+            return getSubscriptionURL()
+        }
+        
         return apiURL
     }
     

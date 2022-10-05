@@ -56,7 +56,7 @@ extension DengageInAppMessageManager{
             case .success(let response):
                 let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchIntervalInMin)
                 DengageLocalStorage.shared.set(value: nextFetchTime, for: .lastFetchedRealTimeInAppMessageTime)
-                self?.addInAppMessagesIfNeeded(InAppMessage.mapRealTime(source: response))
+                self?.addInAppMessagesIfNeeded(InAppMessage.mapRealTime(source: response), forRealTime: true)
             case .failure(let error):
                 Logger.log(message: "fetchRealTimeInAppMessages_ERROR", argument: error.localizedDescription)
             }
@@ -276,14 +276,33 @@ extension DengageInAppMessageManager {
         DengageLocalStorage.shared.save(updatedMessages)
     }
     
-    private func addInAppMessagesIfNeeded(_ messages:[InAppMessage]){
+    private func addInAppMessagesIfNeeded(_ messages:[InAppMessage], forRealTime: Bool = false){
         DispatchQueue.main.async {
-            var previousMessages = DengageLocalStorage.shared.getInAppMessages()
-            previousMessages.removeAll{ message in
-                messages.contains{ $0.id == message.id }
+            if forRealTime {
+                var previousMessages = DengageLocalStorage.shared.getInAppMessages()
+                previousMessages.removeAll{ message in
+                    messages.contains{ $0.id == message.id } && message.data.isRealTime
+                }
+                previousMessages.append(contentsOf: messages)
+                                
+                var updatedMessages = [InAppMessage]()
+                
+                for message in messages where previousMessages.contains(where: {$0.id == message.id}) {
+                    let updatedMessage = InAppMessage(id: message.id,
+                                                      data: message.data,
+                                                      nextDisplayTime: message.nextDisplayTime)
+                    updatedMessages.append(updatedMessage)
+                }
+                DengageLocalStorage.shared.save(updatedMessages)
+            } else {
+                var previousMessages = DengageLocalStorage.shared.getInAppMessages()
+                previousMessages.removeAll{ message in
+                    messages.contains{ $0.id == message.id }
+                }
+                previousMessages.append(contentsOf: messages)
+                DengageLocalStorage.shared.save(previousMessages)
             }
-            previousMessages.append(contentsOf: messages)
-           DengageLocalStorage.shared.save(previousMessages)
+
         }
     }
     

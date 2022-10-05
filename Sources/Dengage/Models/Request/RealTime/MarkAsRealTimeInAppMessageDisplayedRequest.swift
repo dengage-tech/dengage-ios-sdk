@@ -5,7 +5,7 @@ struct MarkAsRealTimeInAppMessageDisplayedRequest: APIRequest{
     typealias Response = EmptyResponse
 
     let method: HTTPMethod = .get
-    let enpointType: EndpointType = .push
+    let enpointType: EndpointType = .inapp
     let path: String = "/realtime-inapp/event"
 
     let httpBody: Data? = nil

@@ -5,7 +5,7 @@ struct AppForegroundEventRequest: APIRequest {
     typealias Response = EmptyResponse
 
     let method: HTTPMethod = .post
-    let enpointType: EndpointType = .push
+    let enpointType: EndpointType = .inapp
     let path: String = "/realtime-inapp/event"
     
     var queryParameters: [URLQueryItem] {

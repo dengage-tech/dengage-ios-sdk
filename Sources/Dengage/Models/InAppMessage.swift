@@ -47,17 +47,38 @@ extension InAppMessage: Equatable {
 extension Array where Element == InAppMessage {
     var sorted:[InAppMessage]{
         return (self as NSArray).sortedArray(comparator: { first, second -> ComparisonResult in
-            guard let first = first as? InAppMessage, !first.data.isRealTime else {return .orderedSame}
-            guard let second = second as? InAppMessage, !second.data.isRealTime else {return .orderedSame}
-            
-            guard first.data.priority == second.data.priority else {
-                return first.data.priority.rawValue < second.data.priority.rawValue ? .orderedAscending : .orderedDescending
+            guard
+                let first = first as? InAppMessage,
+                let second = second as? InAppMessage
+            else {
+                return .orderedSame
             }
-            guard let firstExpireDate = Utilities.convertDate(to: first.data.expireDate) else {return .orderedSame}
-            guard let secondExpireDate = Utilities.convertDate(to: first.data.expireDate) else {return .orderedSame}
-            return firstExpireDate.compare(secondExpireDate)
-
+            
+            if first.data.isRealTime != second.data.isRealTime {
+                return first.data.isRealTime && !second.data.isRealTime ? .orderedDescending : .orderedAscending
+            } else {
+                guard first.data.priority == second.data.priority else {
+                    return first.data.priority.rawValue < second.data.priority.rawValue ? .orderedAscending : .orderedDescending
+                }
+                    
+                let firstHasRules = first.data.displayCondition.hasRules
+                let secondHasRules = second.data.displayCondition.hasRules
+                
+                if first.data.isRealTime && second.data.isRealTime && firstHasRules != secondHasRules {
+                    return firstHasRules && !secondHasRules ? .orderedDescending : .orderedAscending
+                } else {
+                    guard
+                        let firstExpireDate = Utilities.convertDate(to: first.data.expireDate),
+                        let secondExpireDate = Utilities.convertDate(to: first.data.expireDate)
+                    else {
+                        return .orderedSame
+                    }
+                    
+                    return firstExpireDate.compare(secondExpireDate)
+                }
+            }
         }) as? [InAppMessage] ?? []
     }
 }
 
+// -1 .orderedAscending
