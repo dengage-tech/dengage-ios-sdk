@@ -20,7 +20,10 @@ struct InAppMessage: Codable {
 }
 
 struct InAppMessageData: Codable {
-    let messageDetails: String?
+    var messageDetails: String? {
+        return messageDetailId ?? publicId
+    }
+    let messageDetailId: String?
     let expireDate: String
     let priority: Priority
     let content: Content
@@ -30,6 +33,16 @@ struct InAppMessageData: Codable {
 
     var isRealTime: Bool {
         return publicId != nil
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case messageDetailId = "messageDetails"
+        case expireDate = "expireDate"
+        case priority = "priority"
+        case content = "content"
+        case displayCondition = "displayCondition"
+        case displayTiming = "displayTiming"
+        case publicId = "publicId"
     }
 }
 

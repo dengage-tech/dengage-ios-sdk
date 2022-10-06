@@ -34,7 +34,7 @@ final class DengageInAppMessageUtils{
                                                                                           params: params,
                                                                                           config: config)
             }
-            return inAppMessageWithScreenName ?? inAppMessageWithoutScreenName
+            return inAppMessageWithScreenName
         }else{
            return inAppMessageWithoutScreenName
         }
@@ -71,6 +71,7 @@ final class DengageInAppMessageUtils{
     }
     
     private class func isDisplayTimeAvailable(for inAppMessage: InAppMessage)  -> Bool {
+        return true
         return (inAppMessage.data.displayTiming.showEveryXMinutes == nil ||
                 inAppMessage.data.displayTiming.showEveryXMinutes == 0 ||
                 (inAppMessage.nextDisplayTime ?? Date().timeMiliseconds) <= Date().timeMiliseconds)
@@ -86,6 +87,7 @@ final class DengageInAppMessageUtils{
         
         switch ruleSet.logicOperator {
         case .AND:
+            print(message.data.publicId)
             return ruleSet.rules.allSatisfy{ rule in
                 operateDisplay(for: rule, with: params, config: config)
             }
@@ -262,7 +264,7 @@ final class DengageInAppMessageUtils{
             ruleParam.isEmpty == false,
             userParam.isEmpty == false
         else {
-            return true
+            return false
         }
 
         switch operatorType {

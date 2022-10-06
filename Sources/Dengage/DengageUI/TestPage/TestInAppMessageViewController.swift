@@ -191,7 +191,7 @@ extension TestInAppMessageViewController {
         static func createInAppMessage(with contentParams: ContentParams) -> InAppMessage{
             let content = Content(type: .html,
                                   props: contentParams)
-            let data = InAppMessageData(messageDetails: "messageDetails",
+            let data = InAppMessageData(messageDetailId: "messageDetails",
                                         expireDate: "2030-10-11T12:00:00.000Z",
                                         priority: .high,
                                         content: content,
