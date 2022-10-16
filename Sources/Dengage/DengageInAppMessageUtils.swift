@@ -130,27 +130,27 @@ final class DengageInAppMessageUtils{
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.realTimeCategoryPath)
+                           userParam: config.realTimeCategoryPath ?? "")
         case .CART_ITEM_COUNT:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.realTimeCartItemCount)
+                           userParam: config.realTimeCartItemCount ?? "0")
         case .CART_AMOUNT:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.realTimeCartAmount)
+                           userParam: config.realTimeCartAmount ?? "0")
         case .STATE:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.state)
+                           userParam: config.state ?? "")
         case .CITY:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.city)
+                           userParam: config.city ?? "")
         case .TIMEZONE:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
