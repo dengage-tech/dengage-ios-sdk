@@ -49,6 +49,7 @@ struct InAppMessageData: Codable {
 struct Content: Codable {
     let type: ContentType
     let props: ContentParams
+    let contentId: String?
 }
 
 extension InAppMessage: Equatable {

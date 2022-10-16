@@ -11,7 +11,7 @@ struct MarkAsRealTimeInAppMessageDisplayedRequest: APIRequest{
     let httpBody: Data? = nil
     
     var queryParameters: [URLQueryItem] {
-        [
+        var parameters = [
             URLQueryItem(name: "accid", value: accountName),
             URLQueryItem(name: "ckey", value: contactKey),
             URLQueryItem(name: "did", value: deviceID),
@@ -21,6 +21,11 @@ struct MarkAsRealTimeInAppMessageDisplayedRequest: APIRequest{
             URLQueryItem(name: "campid", value: campaignId),
             URLQueryItem(name: "campparams", value: id)
         ]
+        
+        if let contentId = contentId {
+            parameters.append(URLQueryItem(name: "content_id", value: contentId))
+        }
+        return parameters
     }
     
     let id: String
@@ -30,4 +35,5 @@ struct MarkAsRealTimeInAppMessageDisplayedRequest: APIRequest{
     let sessionId: String
     let campaignId: String // publicID
     let appId: String
+    let contentId: String?
 }

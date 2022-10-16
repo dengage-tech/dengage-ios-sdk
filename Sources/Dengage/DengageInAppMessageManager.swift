@@ -139,7 +139,8 @@ extension DengageInAppMessageManager{
                                                                  deviceID: config.applicationIdentifier,
                                                                  sessionId: sessionManager.currentSessionId,
                                                                  campaignId: publicId,
-                                                                 appId: appId)
+                                                                 appId: appId,
+                                                                 contentId: message.data.content.contentId)
         
         apiClient.send(request: request) { result in
             switch result {
@@ -166,7 +167,8 @@ extension DengageInAppMessageManager{
                                                                buttonId: buttonId,
                                                                sessionId: sessionManager.currentSessionId,
                                                                campaignId: publicId,
-                                                               appid: remoteConfig.appId ?? "")
+                                                               appid: remoteConfig.appId ?? "",
+                                                               contentId: message.data.content.contentId)
         
         apiClient.send(request: request) { [weak self] result in
             switch result {
@@ -192,7 +194,8 @@ extension DengageInAppMessageManager{
                                                                    deviceID: config.applicationIdentifier,
                                                                    sessionId: sessionManager.currentSessionId,
                                                                    campaignId: publicId,
-                                                                   appId: remoteConfig.appId ?? "")
+                                                                   appId: remoteConfig.appId ?? "",
+                                                                   contentId: message.data.content.contentId)
         
         apiClient.send(request: request) { result in
             switch result {

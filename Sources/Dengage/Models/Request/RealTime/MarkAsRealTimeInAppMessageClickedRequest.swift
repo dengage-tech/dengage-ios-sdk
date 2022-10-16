@@ -24,6 +24,9 @@ struct MarkAsRealTimeInAppMessageClickedRequest: APIRequest{
         if let buttonId = buttonId {
             parameters.append(URLQueryItem(name: "button_id", value: buttonId))
         }
+        if let contentId = contentId {
+            parameters.append(URLQueryItem(name: "content_id", value: contentId))
+        }
         return parameters
     }
     let id: String
@@ -34,4 +37,5 @@ struct MarkAsRealTimeInAppMessageClickedRequest: APIRequest{
     let sessionId: String
     let campaignId: String
     let appid: String
+    let contentId: String?
 }
