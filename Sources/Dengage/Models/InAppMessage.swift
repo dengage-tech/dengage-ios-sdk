@@ -4,11 +4,13 @@ struct InAppMessage: Codable {
     let id: String
     let data: InAppMessageData
     var nextDisplayTime: Double?
+    var showCount: Int?
     
     enum CodingKeys: String, CodingKey {
         case id = "smsg_id"
         case data = "message_json"
         case nextDisplayTime = "nextDisplayTime"
+        case showCount = "showCount"
     }
     
     static func mapRealTime(source: [InAppMessageData]) -> [InAppMessage] {
@@ -17,6 +19,22 @@ struct InAppMessage: Codable {
             return InAppMessage(id: id, data: item)
         }
     }
+    
+    func isDisplayTimeAvailable() -> Bool{
+        return (data.displayTiming.showEveryXMinutes == nil ||
+                data.displayTiming.showEveryXMinutes == 0 ||
+                (nextDisplayTime ?? Date().timeMiliseconds) <= Date().timeMiliseconds) &&
+        (data.displayTiming.maxShowCount == nil ||
+         data.displayTiming.maxShowCount == 0 ||
+         (showCount ?? 0) < (data.displayTiming.maxShowCount ?? 0))
+    }
+    
+//    private class func isDisplayTimeAvailable(for inAppMessage: InAppMessage)  -> Bool {
+//        return true
+//        return (inAppMessage.data.displayTiming.showEveryXMinutes == nil ||
+//                inAppMessage.data.displayTiming.showEveryXMinutes == 0 ||
+//                (inAppMessage.nextDisplayTime ?? Date().timeMiliseconds) <= Date().timeMiliseconds)
+//    }
 }
 
 struct InAppMessageData: Codable {

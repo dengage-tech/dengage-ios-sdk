@@ -234,13 +234,20 @@ extension DengageInAppMessageManager {
         } else {
             markAsInAppMessageAsDisplayed(inAppMessageId: inAppMessage.data.messageDetails)
         }
-        if let showEveryXMinutes = inAppMessage.data.displayTiming.showEveryXMinutes, showEveryXMinutes != 0 {
-            var updatedMessage = inAppMessage
+        var updatedMessage = inAppMessage
+        if let showEveryXMinutes = inAppMessage.data.displayTiming.showEveryXMinutes,
+           showEveryXMinutes != 0 {
             updatedMessage.nextDisplayTime = Date().timeMiliseconds + Double(showEveryXMinutes) * 60000.0
+            updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
             updateInAppMessageOnCache(updatedMessage)
         } else {
-            removeInAppMessageFromCache(inAppMessage.data
-                                            .messageDetails ?? "")
+            if updatedMessage.data.isRealTime {
+                updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
+                 updateInAppMessageOnCache(updatedMessage)
+             } else {
+                 removeInAppMessageFromCache(inAppMessage.data
+                                                 .messageDetails ?? "")
+             }
         }
         let inappShowTime = (Date().timeMiliseconds) + (config.remoteConfiguration?.minSecBetweenMessages ?? 0.0)
         DengageLocalStorage.shared.set(value: inappShowTime, for: .inAppMessageShowTime)
@@ -293,7 +300,8 @@ extension DengageInAppMessageManager {
                 for message in messages where previousMessages.contains(where: {$0.id == message.id}) {
                     let updatedMessage = InAppMessage(id: message.id,
                                                       data: message.data,
-                                                      nextDisplayTime: message.nextDisplayTime)
+                                                      nextDisplayTime: message.nextDisplayTime,
+                                                      showCount: message.showCount)
                     updatedMessages.append(updatedMessage)
                 }
                 DengageLocalStorage.shared.save(updatedMessages)

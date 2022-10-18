@@ -23,14 +23,14 @@ final class DengageInAppMessageUtils{
                                      config: DengageConfiguration) -> InAppMessage? {
         
         let inAppMessageWithoutScreenName = inAppMessages.sorted.first { message -> Bool in
-            return (message.data.displayCondition.screenNameFilters ?? []).isEmpty && isDisplayTimeAvailable(for: message) && operateRealTimeValues(message: message, params: params, config: config)
+            return (message.data.displayCondition.screenNameFilters ?? []).isEmpty && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message, params: params, config: config)
         }
         
         if let screenName = screenName, !screenName.isEmpty{
             let inAppMessageWithScreenName = inAppMessages.sorted.first { message -> Bool in
                 return message.data.displayCondition.screenNameFilters?.first{ nameFilter -> Bool in
                     return operateScreenValues(value: nameFilter.value, for: screenName, operatorType: nameFilter.operatorType)
-                } != nil && isDisplayTimeAvailable(for: message) && operateRealTimeValues(message: message,
+                } != nil && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message,
                                                                                           params: params,
                                                                                           config: config)
             }
@@ -70,13 +70,6 @@ final class DengageInAppMessageUtils{
         }
     }
     
-    private class func isDisplayTimeAvailable(for inAppMessage: InAppMessage)  -> Bool {
-        return true
-        return (inAppMessage.data.displayTiming.showEveryXMinutes == nil ||
-                inAppMessage.data.displayTiming.showEveryXMinutes == 0 ||
-                (inAppMessage.nextDisplayTime ?? Date().timeMiliseconds) <= Date().timeMiliseconds)
-    }
-    
     // Real Time
     
     private class func operateRealTimeValues(message: InAppMessage,
@@ -87,7 +80,6 @@ final class DengageInAppMessageUtils{
         
         switch ruleSet.logicOperator {
         case .AND:
-            print(message.data.publicId)
             return ruleSet.rules.allSatisfy{ rule in
                 operateDisplay(for: rule, with: params, config: config)
             }
@@ -248,7 +240,26 @@ final class DengageInAppMessageUtils{
                            for: criterion.dataType,
                            ruleParam: criterion.values,
                            userParam: "iphone")
-            
+        case .PUSH_PERMISSION:
+            return operate(with: criterion.comparison,
+                           for: criterion.dataType,
+                           ruleParam: criterion.values,
+                           userParam: config.permission.description)
+        case .VISIT_COUNT:
+            guard (criterion.dataType == .VISITCOUNTPASTXDAYS && !criterion.values.isEmpty) else { return true }
+            guard let visitCountData = criterion.values.first else { return true }
+            let data = Data(visitCountData.utf8)
+            let decoder = JSONDecoder()
+            do {
+                let visitCount = try decoder.decode(VisitCountData.self,
+                                                    from: data)
+                return operate(with: criterion.comparison,
+                               for: CriterionDataType.INT,
+                               ruleParam: [visitCount.count.description],
+                               userParam: DengageVisitCountManager.findVisitCount(pastDayCount: visitCount.timeAmount).description)
+            } catch {
+                 return true
+            }
         }
     }
     
@@ -264,14 +275,14 @@ final class DengageInAppMessageUtils{
             ruleParam.isEmpty == false,
             userParam.isEmpty == false
         else {
-            return false
+            return true
         }
 
         switch operatorType {
         case .EQUALS:
             return ruleParam.first{$0.lowercased() == userParam.lowercased()} != nil
         case .NOT_EQUALS:
-            return ruleParam.first{$0.lowercased() == userParam.lowercased()} != nil
+            return ruleParam.first{$0.lowercased() == userParam.lowercased()} == nil
         case .LIKE:
             return ruleParam.first { userParam.lowercased().contains($0.lowercased()) } != nil
         case .NOT_LIKE:
@@ -359,7 +370,11 @@ enum SpecialRuleParameter: String {
     case LAST_VISIT = "dn.last_visit_ts"
     case BRAND_NAME = "dn.brand_name"
     case MODEL_NAME = "dn.model_nam"
+    case PUSH_PERMISSION = "dn.wp_perm"
+    case VISIT_COUNT = "dn.visit_count"
 }
 
-
-
+struct VisitCountData: Codable {
+    let count: Int
+    let timeAmount: Int
+}

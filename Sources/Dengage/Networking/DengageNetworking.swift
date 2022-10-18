@@ -56,7 +56,6 @@ final class DengageNetworking {
 
                     }
                     completion(.failure(ServiceError.decoding(decodingError)))
-
                 }
             default:
                 Logger.log(message: "API ERROR", argument: apiRequest.url?.absoluteString ?? "") //todo handle optional
@@ -87,6 +86,7 @@ internal enum ServiceError: Error {
     case socialMediaReauth
     case fail(Int)
     case decoding(Error)
+
 }
 
 // MARK: - Extensions
