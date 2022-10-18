@@ -1,7 +1,7 @@
 import Foundation
 
 final class DengageNetworking {
-
+    
     let config: DengageConfiguration
     let session: URLSession
     
@@ -11,7 +11,7 @@ final class DengageNetworking {
         self.config  = config
         self.session = session
     }
-
+    
     func send<T: APIRequest>(request: T, completion: @escaping (Result<T.Response, Error>) -> Void) {
         let decoder = JSONDecoder()
         let baseURL = createBaseURL(for: request.enpointType)
@@ -27,8 +27,8 @@ final class DengageNetworking {
                 completion(.failure(ServiceError.noHttpResponse))
                 return
             }
-
-           if let data = data  {
+            
+            if let data = data  {
                 Logger.log(message: "HTTP API RESPONSE:\n", argument: data.pretty)
             }
             Logger.log(message: "HTTP API STATUS CODE:\n", argument: httpResponse.statusCode.description)
@@ -49,12 +49,12 @@ final class DengageNetworking {
                     {
                         Logger.log(message: "HTTP API STATUS CODE:\n", argument: httpResponse.statusCode.description)
                         completion(.failure(ServiceError.noData))
-
+                        
                     }
                     else
                     {
                         completion(.failure(ServiceError.decoding(decodingError)))
-
+                        
                     }
                 }
             default:
