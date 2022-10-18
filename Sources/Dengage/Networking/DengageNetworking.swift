@@ -28,7 +28,7 @@ final class DengageNetworking {
                 return
             }
 
-            if let data = data  {
+$            if let data = data  {
                 Logger.log(message: "HTTP API RESPONSE:\n", argument: data.pretty)
             }
             Logger.log(message: "HTTP API STATUS CODE:\n", argument: httpResponse.statusCode.description)
@@ -75,6 +75,9 @@ final class DengageNetworking {
             return config.subscriptionURL
         case .geofence:
             return config.geofenceURL
+        case .deviceId:
+            return config.dengageDeviceIdApiUrl
+            
         }
     }
 }

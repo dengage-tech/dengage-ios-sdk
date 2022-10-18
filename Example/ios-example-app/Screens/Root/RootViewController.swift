@@ -22,6 +22,14 @@ class RootViewController: UIViewController {
         self.title = "Dengage Example App"
         view.addSubview(tableView)
         tableView.fillSuperview()
+        
+        DispatchQueue.main.async {
+            
+            Dengage.setNavigation(screenName: "")
+
+        }
+        
+
     }
 }
 
