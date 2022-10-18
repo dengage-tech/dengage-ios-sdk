@@ -288,3 +288,15 @@ extension Dengage {
         }
     }
 }
+
+//MARK: - DengageDeviceIdApiUrl
+extension Dengage{
+
+    @objc public static func sendDeviceIdToServer(route:String , token : String) {
+        DengageLocalStorage.shared.set(value: route, for: .deviceIdRoute)
+        dengage?.dengageDeviceIdSendToServer(token: token)
+    }
+    
+    
+    
+}

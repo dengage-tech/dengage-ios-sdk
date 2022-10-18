@@ -73,6 +73,8 @@ final class DengageNetworking {
             return config.eventURL
         case .push:
             return config.subscriptionURL
+        case .deviceId:
+            return config.dengageDeviceIdApiUrl
         }
     }
 }

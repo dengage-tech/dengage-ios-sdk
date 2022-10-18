@@ -157,6 +157,21 @@ extension DengageManager {
             }
         }
     }
+    
+    func dengageDeviceIdSendToServer(token : String){
+        Logger.log(message: "dengageDeviceIdSendToServer Started")
+        let request = DeviceIdApiRequest.init(device_id:config.applicationIdentifier, token: token)
+        apiClient.send(request: request) { result in
+            switch result {
+            case .success(let response):
+                
+                Logger.log(message: "dengageDeviceIdSendToServer \(response)")
+                
+            case .failure:
+                Logger.log(message: "SDK PARAMS Config fetchin failed")
+            }
+        }
+    }
 }
 
 @objc public class DengageOptions: NSObject {

@@ -20,7 +20,8 @@ final class DengageConfiguration:Encodable {
     var deviceToken: String?
     let userAgent: String
     var permission: Bool
-    
+    let dengageDeviceIdApiUrl: URL
+
     var inboxLastFetchedDate: Date?
     
     init(integrationKey: String, options: DengageOptions) {
@@ -39,6 +40,8 @@ final class DengageConfiguration:Encodable {
         self.userAgent = UserAgentUtils.userAgent
         self.permission = DengageConfiguration.getPermission()
         self.deviceToken = DengageConfiguration.getToken()
+        dengageDeviceIdApiUrl = DengageConfiguration.dengageDeviceIdApiUrl()
+
     }
     
     var contactKey: (key: String, type:String) {
@@ -131,6 +134,18 @@ final class DengageConfiguration:Encodable {
         guard let countryName = NSLocale(localeIdentifier: "en_US").displayName(forKey: NSLocale.Key.identifier,
                                                                                 value: countryId) else { return "Null" }
         return countryName
+    }
+    
+    private static func dengageDeviceIdApiUrl() -> URL {
+        guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageDeviceIdApiUrl") as? String else {
+            fatalError("[DENGAGE] 'DengageDeviceIdApiUrl' not found on plist file")
+        }
+        
+        guard let apiURL = URL(string: apiURLString) else {
+            fatalError("[DENGAGE] 'DengageDeviceIdApiUrl' not correct on plist file")
+        }
+ 
+        return apiURL
     }
     
     private static func getAppVersion() -> String {
