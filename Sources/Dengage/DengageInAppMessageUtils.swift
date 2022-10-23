@@ -272,8 +272,7 @@ final class DengageInAppMessageUtils{
         guard
             let ruleParam = ruleParam,
             let userParam = userParam,
-            ruleParam.isEmpty == false,
-            userParam.isEmpty == false
+            ruleParam.isEmpty == false
         else {
             return true
         }
