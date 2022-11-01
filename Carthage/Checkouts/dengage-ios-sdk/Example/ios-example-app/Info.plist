@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>DengageApiUrl</key>
+	<string>https://dev-push.dengage.com/</string>
+	<key>DengageDeviceIdApiUrl</key>
+	<string>https://magento.232.dengage.shobii.com/rest/</string>
+	<key>DengageEventApiUrl</key>
+	<string>https://dev-event.dengage.com</string>
+</dict>
+</plist>
