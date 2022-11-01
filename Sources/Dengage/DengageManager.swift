@@ -134,9 +134,9 @@ extension DengageManager {
             fetchSDK()
         }else if (DengageLocalStorage.shared.value(for: .lastFetchedConfigTime) as? Date) == nil {
             fetchSDK()
-        }else{
-            inAppManager.fetchInAppMessages()
         }
+        
+        inAppManager.fetchInAppMessages()
     }
     
     private func fetchSDK(){

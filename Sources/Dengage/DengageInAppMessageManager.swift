@@ -167,7 +167,7 @@ extension DengageInAppMessageManager {
         let inappShowTime = (Date().timeMiliseconds) + (config.remoteConfiguration?.minSecBetweenMessages ?? 0.0)
         DengageLocalStorage.shared.set(value: inappShowTime, for: .inAppMessageShowTime)
         
-        let delay = inAppMessage.data.displayTiming.delay ?? 0
+        let delay = 0 //inAppMessage.data.displayTiming.delay ?? 0
 
         DispatchQueue.main.asyncAfter(deadline: .now() + Double(delay)) {
             self.showInAppMessageController(with: inAppMessage)
