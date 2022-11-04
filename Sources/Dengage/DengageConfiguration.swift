@@ -30,7 +30,7 @@ final class DengageConfiguration:Encodable {
         eventURL = DengageConfiguration.getEventUrl()
         deviceCountryCode = DengageConfiguration.getDeviceCountry()
         deviceLanguage = Locale.current.languageCode ?? "Null"
-        deviceTimeZone = TimeZone.current.abbreviation() ?? "Null"
+        deviceTimeZone = TimeZone.current.identifier
         appVersion = DengageConfiguration.getAppVersion()
         applicationIdentifier = DengageConfiguration.getApplicationId()
         advertisingIdentifier = DengageConfiguration.getAdvertisingId()
