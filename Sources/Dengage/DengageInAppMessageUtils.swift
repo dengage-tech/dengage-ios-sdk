@@ -260,6 +260,49 @@ final class DengageInAppMessageUtils{
             } catch {
                  return true
             }
+        case .SEGMENT:
+            guard
+                let visitorInfo = DengageLocalStorage.shared.getVisitorInfo(),
+                let segments = visitorInfo.segments,
+                !segments.isEmpty
+            else {return true}
+            return operateVisitorRule(with: criterion.comparison,
+                                      for: criterion.dataType,
+                                      ruleParam: criterion.values,
+                                      userParam: segments.map{String($0)})
+        case .TAG:
+            guard
+                let visitorInfo = DengageLocalStorage.shared.getVisitorInfo(),
+                let tags = visitorInfo.tags,
+                !tags.isEmpty
+            else {return true}
+            return operateVisitorRule(with: criterion.comparison,
+                                      for: criterion.dataType,
+                                      ruleParam: criterion.values,
+                                      userParam: tags.map{String($0)})
+        }
+    }
+    
+    private class func operateVisitorRule(
+        with operatorType: ComparisonType,
+        for dataType: CriterionDataType,
+        ruleParam: [String]? = nil,
+        userParam: [String]? = nil
+    ) -> Bool {
+        guard
+            let ruleParam = ruleParam, let userParam = userParam, dataType == .TEXTLIST
+        else {
+            return true
+        }
+        let isRuleContainsUserParam = userParam.first(where: {ruleParam.contains($0)}) != nil
+           // visitor rules only work with IN and NOT_IN operator
+        switch operatorType {
+        case .IN:
+            return isRuleContainsUserParam
+        case .NOT_IN:
+            return !isRuleContainsUserParam
+        default:
+            return true
         }
     }
     
@@ -371,6 +414,8 @@ enum SpecialRuleParameter: String {
     case MODEL_NAME = "dn.model_nam"
     case PUSH_PERMISSION = "dn.wp_perm"
     case VISIT_COUNT = "dn.visit_count"
+    case SEGMENT = "dn.segment"
+    case TAG = "dn.tag"
 }
 
 struct VisitCountData: Codable {

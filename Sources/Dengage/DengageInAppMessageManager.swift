@@ -23,6 +23,7 @@ final class DengageInAppMessageManager:DengageInAppMessageManagerInterface {
 extension DengageInAppMessageManager{
     func fetchInAppMessages(){
         fetchRealTimeMessages()
+        getVisitorInfo()
         Logger.log(message: "fetchInAppMessages called")
         guard shouldFetchInAppMessages else {return}
         guard let remoteConfig = config.remoteConfiguration, let accountName = remoteConfig.accountName else { return }
@@ -59,6 +60,23 @@ extension DengageInAppMessageManager{
                 self?.addInAppMessagesIfNeeded(InAppMessage.mapRealTime(source: response), forRealTime: true)
             case .failure(let error):
                 Logger.log(message: "fetchRealTimeInAppMessages_ERROR", argument: error.localizedDescription)
+            }
+        }
+    }
+    
+    private func getVisitorInfo(){
+        guard let remoteConfig = config.remoteConfiguration,
+              let accountName = remoteConfig.accountName
+        else { return }
+        let request = GetVisitorInfoRequest(accountName: accountName,
+                                            contactKey: config.contactKey.key,
+                                            deviceID: config.applicationIdentifier)
+        apiClient.send(request: request) { result in
+            switch result {
+            case .success(let response):
+                DengageLocalStorage.shared.set(value: response, for: .visitorInfo)
+            case .failure(let error):
+                Logger.log(message: "getVisitorInfo_ERROR", argument: error.localizedDescription)
             }
         }
     }

@@ -37,6 +37,7 @@ final class DengageLocalStorage: NSObject {
         case lastSessionDuration = "lastSessionDuration"
         case lastVisitTime = "lastVisitTime"
         case visitCounts = "visitCounts"
+        case visitorInfo = "visitorInfo"
     }
 }
 
@@ -159,6 +160,34 @@ extension DengageLocalStorage {
         } catch {
             Logger.log(message: "VisitCounts get fail")
             return []
+        }
+    }
+    
+    func save(_ visitorInfo: VisitorInfo) {
+        let encoder = JSONEncoder()
+        do {
+            let encoded = try encoder.encode(visitorInfo)
+            userDefaults.set(encoded, forKey: Key.visitorInfo.rawValue)
+            userDefaults.synchronize()
+        } catch {
+            Logger.log(message: "VisitorInfo fail")
+        }
+    }
+    
+    func getVisitorInfo() -> VisitorInfo? {
+        guard
+            let infoData = userDefaults.object(forKey: Key.visitorInfo.rawValue) as? Data
+        else {
+            return nil
+        }
+
+        let decoder = JSONDecoder()
+        do {
+            let info = try decoder.decode(VisitorInfo.self, from: infoData)
+            return info
+        } catch {
+            Logger.log(message: "VisitorInfo not found")
+            return nil
         }
     }
 }
