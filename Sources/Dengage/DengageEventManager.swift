@@ -4,26 +4,26 @@ final class DengageEventManager: DengageEventProtocolInterface {
     
     private let config: DengageConfiguration
     private let service: DengageNetworking
-    private let sessionMagaer: DengageSessionManagerInterface
+    private let sessionManager: DengageSessionManagerInterface
     private var eventQueue: DispatchQueue!
 
     init(config: DengageConfiguration,
          service: DengageNetworking,
-         sessionManager: DengageSessionManagerInterface = DengageSessionManager()){
+         sessionManager: DengageSessionManagerInterface){
         self.config = config
         self.service = service
-        self.sessionMagaer = sessionManager
+        self.sessionManager = sessionManager
         eventQueue = DispatchQueue(label: "com.dengage.event", qos: .utility)
     }
     
     func eventSessionStart(){
         let deviceId = config.applicationIdentifier
-        let session = sessionMagaer.createSession(restart: true)
+        let session = sessionManager.createSession(force: false)
         sendEvent(table: .sessionInfo, key: deviceId, params: ["session_id": session.sessionId])
     }
     
     func sessionStart(referrer: String?) {
-        let session = sessionMagaer.createSession(restart: true)
+        let session = sessionManager.createSession(force: false)
         let deviceId = config.applicationIdentifier
         var params: [String: Any] = [:]
 
@@ -76,22 +76,22 @@ extension DengageEventManager {
     
     func pageView(parameters: [String: Any]) {
         var params = parameters
-        params["session_id"] = sessionMagaer.currentSessionId
+        params["session_id"] = sessionManager.currentSessionId
         sendEvent(table: .pageView, key: config.applicationIdentifier, params: params)
     }
     
     func search(parameters: [String: Any]) {
         var params = parameters
-        params["session_id"] = sessionMagaer.currentSessionId
+        params["session_id"] = sessionManager.currentSessionId
         sendEvent(table: .searchEvents, key: config.applicationIdentifier, params: params)
     }
     
     func order(parameters: [String: Any]) {
         var params = parameters
-        let sessionId = sessionMagaer.currentSessionId
+        let sessionId = sessionManager.currentSessionId
         let deviceId = config.applicationIdentifier
         
-        params["session_id"] = sessionMagaer.currentSessionId
+        params["session_id"] = sessionManager.currentSessionId
         params["event_type"] = "order"
         
         let cartItems = params["cartItems"] as? [[String: Any]] ?? []
@@ -111,7 +111,7 @@ extension DengageEventManager {
     
     func cancelOrder(parameters: [String: Any]) {
         var params = parameters
-        let sessionId = sessionMagaer.currentSessionId
+        let sessionId = sessionManager.currentSessionId
         let deviceId = config.applicationIdentifier
         
         params["session_id"] = sessionId
@@ -170,7 +170,7 @@ extension DengageEventManager {
     
     func sendCustomEvent(eventTable: String, parameters: [String: Any]) {
         var params = parameters
-        params["session_id"] = sessionMagaer.currentSessionId
+        params["session_id"] = sessionManager.currentSessionId
         sendEventRequest(table: eventTable, key: config.applicationIdentifier, params: params)
     }
 }
@@ -183,7 +183,7 @@ extension DengageEventManager {
                            parameters: [String: Any]) {
         var params = parameters
 
-        let sessionId = sessionMagaer.currentSessionId
+        let sessionId = sessionManager.currentSessionId
         let deviceId = config.applicationIdentifier
         let eventId = Utilities.generateUUID()
         

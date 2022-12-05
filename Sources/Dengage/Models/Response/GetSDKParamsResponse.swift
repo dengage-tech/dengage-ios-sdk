@@ -6,6 +6,8 @@ struct GetSDKParamsResponse: Codable {
     let inAppEnabled: Bool
     let subscriptionEnabled: Bool
     let appId: String?
+    let realTimeInAppEnabled: Bool
+    let realTimeInAppSessionTimeoutMinutes: Int
 
     private let inAppFetchIntervalInMin: Int
     private let inAppMinSecBetweenMessages: Int
@@ -36,6 +38,9 @@ struct GetSDKParamsResponse: Codable {
         inAppMinSecBetweenMessages = (try? container.decode(Int.self, forKey: .inAppMinSecBetweenMessages)) ?? 0
         expiredMessagesFetchIntervalInMin = (try? container.decode(Int.self, forKey: .expiredMessagesFetchIntervalInMin)) ?? 0
         appId = try? container.decode(String.self, forKey: .appId)
+        
+        realTimeInAppEnabled = (try? container.decode(Bool.self, forKey: .realTimeInAppEnabled)) ?? false
+        realTimeInAppSessionTimeoutMinutes = (try? container.decode(Int.self, forKey: .realTimeInAppSessionTimeoutMinutes)) ?? 1800
 
     }
     
@@ -49,5 +54,7 @@ struct GetSDKParamsResponse: Codable {
         case inAppMinSecBetweenMessages
         case expiredMessagesFetchIntervalInMin
         case appId
+        case realTimeInAppEnabled
+        case realTimeInAppSessionTimeoutMinutes
     }
 }

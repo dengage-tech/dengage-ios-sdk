@@ -30,14 +30,15 @@ public class DengageManager {
         self.launchOptions = launchOptions
         self.options = options
         self.apiClient = DengageNetworking(config: config)
-        self.sessionManager = DengageSessionManager()
+        self.sessionManager = DengageSessionManager(config: config)
         self.inboxManager = DengageInboxManager(config: config, service: apiClient)
         self.eventManager = DengageEventManager(config: config,
                                                 service: apiClient,
                                                 sessionManager: sessionManager)
         self.inAppManager = DengageInAppMessageManager.init(config: config,
-                                                            service: apiClient)
-        
+                                                            service: apiClient,
+                                                            sessionManager: sessionManager)
+
         self.notificationManager = DengageNotificationManager(config: config,
                                                               service: apiClient,
                                                               eventManager: eventManager,
@@ -72,6 +73,8 @@ extension DengageManager {
         if previous != contactKey {
             let newKey = (contactKey?.isEmpty ?? true) ? nil : contactKey
             DengageLocalStorage.shared.set(value: newKey, for: .contactKey)
+            _ = sessionManager.createSession(force: true)
+            resetUsageStats()
             Dengage.syncSubscription()
         }
     }
@@ -154,6 +157,7 @@ extension DengageManager {
                 DengageLocalStorage.shared.saveConfig(with: response)
                 DengageLocalStorage.shared.set(value: Date(), for: .lastFetchedConfigTime)
                 self.inAppManager.fetchInAppMessages()
+                self.sendFirstLaunchTimeIfNeeded()
                 self.inAppManager.fetchInAppExpiredMessages()
 
             case .failure:
@@ -161,6 +165,40 @@ extension DengageManager {
             }
         }
     }
+    
+    
+    private func resetUsageStats() {
+        DengageLocalStorage.shared.set(value: nil, for: .visitCounts)
+        DengageLocalStorage.shared.set(value: nil, for: .lastSessionStartTime)
+        DengageLocalStorage.shared.set(value: nil, for: .lastVisitTime)
+        DengageLocalStorage.shared.set(value: nil, for: .lastSessionDuration)
+    }
+    
+    private func sendFirstLaunchTimeIfNeeded() {
+        guard (DengageLocalStorage.shared.value(for: .firstLaunchTime) as? Double) == nil else { return }
+        guard
+            let accountName = config.remoteConfiguration?.accountName,
+            let appId = config.remoteConfiguration?.appId
+        else {
+            return
+        }
+        let request = FirstLaunchEventRequest(sessionId: sessionManager.currentSessionId,
+                                              contactKey: config.contactKey.key,
+                                              deviceId: config.applicationIdentifier,
+                                              accountName: accountName,
+                                              appId: appId)
+        apiClient.send(request: request) { result in
+            switch result {
+            case .success(_):
+                DengageLocalStorage.shared.set(value: Date().timeIntervalSince1970,
+                                               for: .firstLaunchTime)
+                Logger.log(message: "FirstLaunchTime success")
+            case .failure:
+                Logger.log(message: "FirstLaunchTime failed")
+            }
+        }
+    }
+    
     
     func dengageDeviceIdSendToServer(token : String){
         Logger.log(message: "dengageDeviceIdSendToServer Started")

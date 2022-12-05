@@ -75,6 +75,8 @@ final class DengageNetworking {
             return config.subscriptionURL
         case .deviceId:
             return config.dengageDeviceIdApiUrl
+        case .inapp:
+            return config.inAppURL
         }
     }
 }
