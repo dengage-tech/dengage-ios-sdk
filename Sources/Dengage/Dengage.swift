@@ -170,6 +170,14 @@ public class Dengage{
         dengage?.notificationManager.didReceivePush(center, response, withCompletionHandler: completionHandler)
     }
     
+    
+    @objc public static func setPartnerDeviceId(adid: String?) {
+       
+        DengageLocalStorage.shared.set(value: adid, for: .PartnerDeviceId)
+
+        dengage?.config.setPartnerDeviceId(adid: adid)
+    }
+    
     @objc static public func didReceive(with userInfo: [AnyHashable: Any]) {
         dengage?.notificationManager.didReceive(with: userInfo)
     }

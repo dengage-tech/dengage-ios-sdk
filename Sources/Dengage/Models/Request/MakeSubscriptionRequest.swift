@@ -9,6 +9,8 @@ struct MakeSubscriptionRequest: APIRequest {
     let enpointType: EndpointType = .push
     let path: String = "/api/device/subscription"
 
+   
+    
     var httpBody: Data?{
         let parameters = ["integrationKey": config.integrationKey,
                           "token": config.deviceToken ?? "",
@@ -22,6 +24,7 @@ struct MakeSubscriptionRequest: APIRequest {
                           "country": config.deviceCountryCode,
                           "language": config.deviceLanguage,
                           "timezone": config.deviceTimeZone,
+                          "partner_device_id": config.getPartnerDeviceID() ?? "",
                           "advertisingId" : config.advertisingIdentifier as Any]
         return parameters.json
     }

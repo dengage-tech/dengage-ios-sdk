@@ -21,6 +21,7 @@ final class DengageConfiguration:Encodable {
     let userAgent: String
     var permission: Bool
     let dengageDeviceIdApiUrl: URL
+    var partnerDeviceId: String?
 
     var inboxLastFetchedDate: Date?
     
@@ -81,6 +82,11 @@ final class DengageConfiguration:Encodable {
         deviceToken = token
     }
     
+    func setPartnerDeviceId(adid: String?){
+        DengageLocalStorage.shared.set(value: adid, for: .PartnerDeviceId)
+        partnerDeviceId = adid
+    }
+    
     func set(deviceId: String){
         DengageLocalStorage.shared.set(value: deviceId, for: .applicationIdentifier)
         DengageKeychain.set(deviceId, forKey: .applicationIdentifier)
@@ -99,6 +105,13 @@ final class DengageConfiguration:Encodable {
     private static func getToken() -> String? {
         return DengageLocalStorage.shared.value(for: .token) as? String
     }
+    
+    func getPartnerDeviceID()-> String?
+    {
+        return DengageLocalStorage.shared.value(for: .PartnerDeviceId) as? String
+
+    }
+
     
     static func getPermission() -> Bool{
         return DengageLocalStorage.shared.value(for: .userPermission) as? Bool ?? true
@@ -137,15 +150,17 @@ final class DengageConfiguration:Encodable {
     }
     
     private static func dengageDeviceIdApiUrl() -> URL {
-        guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageDeviceIdApiUrl") as? String else {
-            fatalError("[DENGAGE] 'DengageDeviceIdApiUrl' not found on plist file")
-        }
         
-        guard let apiURL = URL(string: apiURLString) else {
-            fatalError("[DENGAGE] 'DengageDeviceIdApiUrl' not correct on plist file")
+        guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageDeviceIdApiUrl") as? String else {
+            return getSubscriptionURL()
         }
- 
+
+        guard let apiURL = URL(string: apiURLString) else {
+            return getSubscriptionURL()
+        }
+
         return apiURL
+        
     }
     
     private static func getAppVersion() -> String {

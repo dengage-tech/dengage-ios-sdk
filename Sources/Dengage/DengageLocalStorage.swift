@@ -33,6 +33,8 @@ final class DengageLocalStorage: NSObject {
         case integrationKey = "integrationKey"
         case expiredMessagesFetchIntervalInMin = "expiredMessagesFetchIntervalInMin"
         case deviceIdRoute = "deviceIdRoute"
+        case PartnerDeviceId = "PartnerDeviceId"
+
 
     }
 }
