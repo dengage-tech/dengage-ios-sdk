@@ -15,7 +15,7 @@ public class DengageManager {
     var inAppManager: DengageInAppMessageManagerInterface
     var notificationManager: DengageNotificationManagerInterface
     var dengageRFMManager: DengageRFMManager
-    
+
     var testPageWindow: UIWindow?
     
     init(with apiKey: String,
@@ -124,6 +124,8 @@ extension DengageManager {
             }
         }
     }
+    
+    
 }
 
 //MARK: - Private

@@ -21,6 +21,7 @@ final class DengageConfiguration:Encodable {
     let userAgent: String
     var permission: Bool
     let dengageDeviceIdApiUrl: URL
+    var partnerDeviceId: String?
 
     var inboxLastFetchedDate: Date?
     var realTimeCategoryPath: String?
@@ -105,6 +106,17 @@ final class DengageConfiguration:Encodable {
     func set(permission: Bool){
         self.permission = permission
         DengageLocalStorage.shared.set(value: permission, for: .userPermission)
+    }
+    
+    func setPartnerDeviceId(adid: String?){
+        DengageLocalStorage.shared.set(value: adid, for: .PartnerDeviceId)
+        partnerDeviceId = adid
+    }
+    
+    func getPartnerDeviceID()-> String?
+    {
+        return DengageLocalStorage.shared.value(for: .PartnerDeviceId) as? String
+
     }
     
     func setCategory(path: String?) {
