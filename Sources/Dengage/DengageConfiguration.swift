@@ -22,6 +22,7 @@ final class DengageConfiguration:Encodable {
     var permission: Bool
     let geofenceURL: URL
     let dengageDeviceIdApiUrl: URL
+    var partnerDeviceId: String?
 
     var inboxLastFetchedDate: Date?
     
@@ -94,9 +95,21 @@ final class DengageConfiguration:Encodable {
         DengageLocalStorage.shared.set(value: permission, for: .userPermission)
     }
     
+    func setPartnerDeviceId(adid: String?){
+        DengageLocalStorage.shared.set(value: adid, for: .PartnerDeviceId)
+        partnerDeviceId = adid
+    }
+    
     func getContactKey() -> String? {
         DengageLocalStorage.shared.value(for: .contactKey) as? String
     }
+    
+    func getPartnerDeviceID()-> String?
+    {
+        return DengageLocalStorage.shared.value(for: .PartnerDeviceId) as? String
+
+    }
+
     
     private static func getToken() -> String? {
         return DengageLocalStorage.shared.value(for: .token) as? String
@@ -143,15 +156,17 @@ final class DengageConfiguration:Encodable {
     }
     
     private static func dengageDeviceIdApiUrl() -> URL {
-        guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageDeviceIdApiUrl") as? String else {
-            fatalError("[DENGAGE] 'DengageDeviceIdApiUrl' not found on plist file")
-        }
         
-        guard let apiURL = URL(string: apiURLString) else {
-            fatalError("[DENGAGE] 'DengageDeviceIdApiUrl' not correct on plist file")
+        guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageDeviceIdApiUrl") as? String else {
+            return getSubscriptionURL()
         }
- 
+
+        guard let apiURL = URL(string: apiURLString) else {
+            return getSubscriptionURL()
+        }
+
         return apiURL
+        
     }
     
     private static func getDeviceCountry() -> String {
