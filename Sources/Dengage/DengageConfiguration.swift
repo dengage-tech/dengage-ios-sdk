@@ -21,6 +21,7 @@ final class DengageConfiguration:Encodable {
     let userAgent: String
     var permission: Bool
     let dengageDeviceIdApiUrl: URL
+    var partnerDeviceId: String?
 
     var inboxLastFetchedDate: Date?
     var realTimeCategoryPath: String?
@@ -97,6 +98,12 @@ final class DengageConfiguration:Encodable {
         DengageLocalStorage.shared.set(value: token, for: .token)
         deviceToken = token
     }
+    
+    func setPartnerDeviceId(adid: String?){
+        DengageLocalStorage.shared.set(value: adid, for: .PartnerDeviceId)
+        partnerDeviceId = adid
+    }
+    
     
     func set(deviceId: String){
         DengageLocalStorage.shared.set(value: deviceId, for: .applicationIdentifier)
@@ -207,15 +214,17 @@ final class DengageConfiguration:Encodable {
     }
     
     private static func dengageDeviceIdApiUrl() -> URL {
-        guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageDeviceIdApiUrl") as? String else {
-            fatalError("[DENGAGE] 'DengageDeviceIdApiUrl' not found on plist file")
-        }
         
-        guard let apiURL = URL(string: apiURLString) else {
-            fatalError("[DENGAGE] 'DengageDeviceIdApiUrl' not correct on plist file")
+        guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageDeviceIdApiUrl") as? String else {
+            return getSubscriptionURL()
         }
- 
+
+        guard let apiURL = URL(string: apiURLString) else {
+            return getSubscriptionURL()
+        }
+
         return apiURL
+        
     }
     
     private static func getAppVersion() -> String {

@@ -179,6 +179,11 @@ public class Dengage{
         dengage?.config.setCity(name: name)
     }
     
+    @objc public static func setPartnerDeviceId(adid: String?) {
+        dengage?.config.setPartnerDeviceId(adid: adid)
+    }
+    
+    
     @objc public static func handleNotificationActionBlock(callback: @escaping (_ notificationResponse: UNNotificationResponse) -> Void) {
         dengage?.notificationManager.openTriggerCompletionHandler = {
             response in
