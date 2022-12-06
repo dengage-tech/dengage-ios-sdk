@@ -22,14 +22,6 @@ class RootViewController: UIViewController {
         self.title = "Dengage Example App"
         view.addSubview(tableView)
         tableView.fillSuperview()
-        
-        DispatchQueue.main.async {
-            
-            Dengage.setNavigation(screenName: "")
-
-        }
-        
-
     }
 }
 
@@ -63,19 +55,19 @@ extension RootViewController: UITableViewDelegate{
             self.navigationController?.pushViewController(EventViewController(), animated: true)
         case .inAppMessage:
             self.navigationController?.pushViewController(InAppMessageViewController(), animated: true)
+        case .realTime:
+            self.navigationController?.pushViewController(RealTimeViewController(), animated: true)
         case .tags:
             self.navigationController?.pushViewController(TagsViewController(), animated: true)
         case .testPage:
             Dengage.showTestPage()
-        case .geofence:
-            self.navigationController?.pushViewController(GeofenceViewController(), animated: true)
         }
     }
 }
 
 extension RootViewController{
     enum Actions: CaseIterable{
-        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage, tags, testPage, geofence
+        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage
         var title: String{
             switch self{
             case .allowNotification:
@@ -90,12 +82,12 @@ extension RootViewController{
                 return "SEND CUSTOM EVENT"
             case .inAppMessage:
                 return "IN APP MESSAGES"
+            case .realTime:
+                return "REAL TIME IN APP MESSAGES"
             case .tags:
                 return "SET TAGS"
             case .testPage:
                 return "DENGAGE TEST PAGE"
-            case .geofence:
-                return "GEOFENCE"
             }
         }
     }

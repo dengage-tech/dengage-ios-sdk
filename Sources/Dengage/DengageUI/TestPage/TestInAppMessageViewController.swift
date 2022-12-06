@@ -191,19 +191,15 @@ extension TestInAppMessageViewController {
         static func createInAppMessage(with contentParams: ContentParams) -> InAppMessage{
             let content = Content(type: .html,
                                   props: contentParams,
-                                  targetUrl: nil)
-            let data = InAppMessageData(messageId: 0,
-                                        messageDetails: "messageDetails",
+                                  contentId: "")
+            let data = InAppMessageData(messageDetailId: "messageDetails",
                                         expireDate: "2030-10-11T12:00:00.000Z",
                                         priority: .high,
-                                        dengageSendId: 1,
-                                        dengageCampId: 1,
                                         content: content,
-                                        displayCondition: .init(screenNameFilters: []),
-                                        displayTiming: .init(triggerBy: .navigation,
-                                                             delay: 0,
-                                                             showEveryXMinutes: 0))
-            return InAppMessage(id: "1", data: data, nextDisplayTime: 0)
+                                        displayCondition: .init(screenNameFilters: [], ruleSet: nil), displayTiming: .init(delay: 0,
+                                                                                                                           showEveryXMinutes: 0,
+                                                                                                                           maxShowCount: 1), publicId: nil)
+            return InAppMessage(id:"", data: data, nextDisplayTime: 0)
         }
         
         struct HTML{

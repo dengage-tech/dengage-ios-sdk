@@ -135,7 +135,7 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
         switch message.name {
         case "sendClick":
             let buttonId = message.body as? String
-            self.delegate?.sendClickEvent(messageId: self.message.data.messageDetails,
+            self.delegate?.sendClickEvent(message: self.message,
                                           buttonId: buttonId)
         case "iosUrl":
             
@@ -158,7 +158,7 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
         case "promptPushPermission":
             delegate?.promptPushPermission()
         case "dismiss":
-            delegate?.sendDissmissEvent(messageId: self.message.data.messageDetails)
+            delegate?.sendDissmissEvent(message: self.message)
         case "close":
             delegate?.close()
         default:

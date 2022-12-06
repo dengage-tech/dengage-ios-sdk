@@ -31,6 +31,7 @@
 		A0F46C6B275A85B1003A524C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A0F46C6A275A85B1003A524C /* Assets.xcassets */; };
 		A0F46C6E275A85B1003A524C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0F46C6C275A85B1003A524C /* LaunchScreen.storyboard */; };
 		D6472F4E28E88D670076523C /* GeofenceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6472F4D28E88D670076523C /* GeofenceViewController.swift */; };
+		D6810E69293F341200611E55 /* RealTimeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6810E68293F341200611E55 /* RealTimeViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,6 +94,7 @@
 		A0F46C6D275A85B1003A524C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A0F46C6F275A85B1003A524C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D6472F4D28E88D670076523C /* GeofenceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeofenceViewController.swift; sourceTree = "<group>"; };
+		D6810E68293F341200611E55 /* RealTimeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealTimeViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,6 +157,7 @@
 		A099519B27ACAD260089D98D /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				D6810E67293F341200611E55 /* RealTime */,
 				A0B8857927B1F4CF004D4360 /* ContactKey */,
 				A0B8857627B1F17D004D4360 /* DeviceInfo */,
 				A0B884FC27B1CE92004D4360 /* Root */,
@@ -276,6 +279,14 @@
 				D6472F4D28E88D670076523C /* GeofenceViewController.swift */,
 			);
 			path = Geofence;
+			sourceTree = "<group>";
+		};
+		D6810E67293F341200611E55 /* RealTime */ = {
+			isa = PBXGroup;
+			children = (
+				D6810E68293F341200611E55 /* RealTimeViewController.swift */,
+			);
+			path = RealTime;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -439,6 +450,7 @@
 				A099519D27ACAD380089D98D /* InboxMessagesViewController.swift in Sources */,
 				A0B8857527B1E979004D4360 /* ActionTableViewCell.swift in Sources */,
 				A0B8857827B1F197004D4360 /* DeviceInfoViewController.swift in Sources */,
+				D6810E69293F341200611E55 /* RealTimeViewController.swift in Sources */,
 				A0F46C62275A85B0003A524C /* AppDelegate.swift in Sources */,
 				A09951A427ACB0D30089D98D /* TagsViewController.swift in Sources */,
 				A09951AA27ACB2A30089D98D /* EventViewController.swift in Sources */,

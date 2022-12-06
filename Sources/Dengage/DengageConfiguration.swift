@@ -20,10 +20,18 @@ final class DengageConfiguration:Encodable {
     var deviceToken: String?
     let userAgent: String
     var permission: Bool
-    let geofenceURL: URL
     let dengageDeviceIdApiUrl: URL
 
     var inboxLastFetchedDate: Date?
+    var realTimeCategoryPath: String?
+    var realTimeCartItemCount: String?
+    var realTimeCartAmount: String?
+    var city: String?
+    var state: String?
+    var pageViewCount = 0
+    let inAppURL: URL
+    let geofenceURL: URL
+
     
     init(integrationKey: String, options: DengageOptions) {
         subscriptionURL = DengageConfiguration.getSubscriptionURL()
@@ -41,9 +49,11 @@ final class DengageConfiguration:Encodable {
         self.userAgent = UserAgentUtils.userAgent
         self.permission = DengageConfiguration.getPermission()
         self.deviceToken = DengageConfiguration.getToken()
+        inAppURL = DengageConfiguration.getInAppURL()
         geofenceURL = DengageConfiguration.getGeofenceUrl()
+
         dengageDeviceIdApiUrl = DengageConfiguration.dengageDeviceIdApiUrl()
-    
+
     }
     
     var contactKey: (key: String, type:String) {
@@ -51,7 +61,6 @@ final class DengageConfiguration:Encodable {
         let type = getContactKey() != nil ? "c" : "d"
         return (key, type)
     }
-    
     
     var shouldFetchFromAPI: Bool {
         guard let date = inboxLastFetchedDate else { return true}
@@ -66,6 +75,11 @@ final class DengageConfiguration:Encodable {
         return DengageLocalStorage.shared.getConfig()
     }
     
+    var realTimeInAppMessageLastFetchedTime:Double? {
+          return (DengageLocalStorage.shared.value(for: .lastFetchedRealTimeInAppMessageTime) as? Double)
+      }
+
+    
     var inAppMessageLastFetchedTime:Double? {
         return (DengageLocalStorage.shared.value(for: .lastFetchedInAppMessageTime) as? Double)
     }
@@ -73,6 +87,7 @@ final class DengageConfiguration:Encodable {
     var expiredMessagesFetchIntervalInMin:Double? {
         return (DengageLocalStorage.shared.value(for: .expiredMessagesFetchIntervalInMin) as? Double)
     }
+    
     
     var inAppMessageShowTime: Double{
         return (DengageLocalStorage.shared.value(for: .inAppMessageShowTime) as? Double) ?? 0
@@ -92,6 +107,34 @@ final class DengageConfiguration:Encodable {
     func set(permission: Bool){
         self.permission = permission
         DengageLocalStorage.shared.set(value: permission, for: .userPermission)
+    }
+    
+    func setCategory(path: String?) {
+        realTimeCategoryPath = path
+    }
+    
+    func setCart(itemCount: String?) {
+        realTimeCartItemCount = itemCount
+    }
+    
+    func setCart(amount: String?) {
+        realTimeCartAmount = amount
+    }
+    
+    func setState(name: String?) {
+        state = name
+    }
+    
+    func setCity(name: String?) {
+        city = name
+    }
+    
+    func incrementPageViewCount(){
+        pageViewCount += 1
+    }
+    
+    func resetPageViewCount(){
+        pageViewCount = 0
     }
     
     func getContactKey() -> String? {
@@ -118,18 +161,6 @@ final class DengageConfiguration:Encodable {
         return apiURL
     }
     
-    private static func getEventUrl() -> URL {
-        guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageEventApiUrl") as? String else {
-            fatalError("[DENGAGE] 'DengageEventApiUrl' not found on plist file")
-        }
-        
-        guard let apiURL = URL(string: apiURLString) else {
-            fatalError("[DENGAGE] 'DengageEventApiUrl' not correct on plist file")
-        }
- 
-        return apiURL
-    }
-    
     private static func getGeofenceUrl() -> URL {
         guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageGeofenceApiUrl") as? String else {
             fatalError("[DENGAGE] 'DengageGeofenceApiUrl' not found on plist file")
@@ -142,6 +173,39 @@ final class DengageConfiguration:Encodable {
         return apiURL
     }
     
+    
+    private static func getEventUrl() -> URL {
+        guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageEventApiUrl") as? String else {
+            fatalError("[DENGAGE] 'DengageEventApiUrl' not found on plist file")
+        }
+        
+        guard let apiURL = URL(string: apiURLString) else {
+            fatalError("[DENGAGE] 'DengageEventApiUrl' not correct on plist file")
+        }
+ 
+        return apiURL
+    }
+    
+    private static func getInAppURL() -> URL {
+            guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageInAppApiUrl") as? String else {
+                return getSubscriptionURL()
+            }
+
+            guard let apiURL = URL(string: apiURLString) else {
+                return getSubscriptionURL()
+            }
+
+            return apiURL
+        }
+    
+    private static func getDeviceCountry() -> String {
+        guard let regionCode = Locale.current.regionCode else { return "Null" }
+        let countryId = Locale.identifier(fromComponents: [NSLocale.Key.countryCode.rawValue: regionCode])
+        guard let countryName = NSLocale(localeIdentifier: "en_US").displayName(forKey: NSLocale.Key.identifier,
+                                                                                value: countryId) else { return "Null" }
+        return countryName
+    }
+    
     private static func dengageDeviceIdApiUrl() -> URL {
         guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageDeviceIdApiUrl") as? String else {
             fatalError("[DENGAGE] 'DengageDeviceIdApiUrl' not found on plist file")
@@ -152,24 +216,6 @@ final class DengageConfiguration:Encodable {
         }
  
         return apiURL
-    }
-    
-    private static func getDeviceCountry() -> String {
-        guard let regionCode = Locale.current.regionCode else { return "Null" }
-        let countryId = Locale.identifier(fromComponents: [NSLocale.Key.countryCode.rawValue: regionCode])
-        guard let countryName = NSLocale(localeIdentifier: "en_US").displayName(forKey: NSLocale.Key.identifier,
-                                                                                value: countryId) else { return "Null" }
-        return countryName
-    }
-    
-    static func dengageDeviceIdRouteUrl() -> String {
-        
-        if let deviceIdRoute = DengageLocalStorage.shared.value(for: .deviceIdRoute) as? String {
-            return deviceIdRoute
-        }
-        
-        return ""
-        
     }
     
     private static func getAppVersion() -> String {

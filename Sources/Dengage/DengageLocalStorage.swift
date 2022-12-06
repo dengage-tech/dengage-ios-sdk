@@ -30,6 +30,8 @@ final class DengageLocalStorage: NSObject {
         case lastFetchedInAppMessageTime = "lastFetchedInAppMessageTime"
         case inAppMessages = "inAppMessages"
         case inAppMessageShowTime = "inAppMessageShowTime"
+        case lastFetchedRealTimeInAppMessageTime = "lastFetchedRealTimeInAppMessageTime"
+
         case rfmScores = "rfmScores"
         case options = "options"
         case apiKey = "apiKey"
@@ -44,6 +46,13 @@ final class DengageLocalStorage: NSObject {
         case geofenceLastFailedStoppedLocation = "geofenceLastFailedStoppedLocation"
         case expiredMessagesFetchIntervalInMin = "expiredMessagesFetchIntervalInMin"
         case deviceIdRoute = "deviceIdRoute"
+        case session = "session"
+        case firstLaunchTime = "firstLaunchTime"
+        case lastSessionStartTime = "lastSessionStartTime"
+        case lastSessionDuration = "lastSessionDuration"
+        case lastVisitTime = "lastVisitTime"
+        case visitCounts = "visitCounts"
+        case visitorInfo = "visitorInfo"
 
     }
 }
@@ -95,6 +104,86 @@ extension DengageLocalStorage {
             Logger.log(message: "saving inapp message fail")
         }
     }
+    
+    func save(_ session: Session?){
+        let encoder = JSONEncoder()
+        do {
+            let encoded = try encoder.encode(session)
+            userDefaults.set(encoded, forKey: Key.session.rawValue)
+            userDefaults.synchronize()
+        } catch {
+            Logger.log(message: "session record fail")
+        }
+    }
+    
+    func getSession() -> Session? {
+        guard
+            let sessionData = userDefaults.object(forKey: Key.session.rawValue) as? Data
+        else {
+            return nil
+        }
+        
+        let decoder = JSONDecoder()
+        do {
+            let session = try decoder.decode(Session.self, from: sessionData)
+            return session
+        } catch {
+            Logger.log(message: "session not found")
+            return nil
+        }
+    }
+    
+    func save(_ visitCounts: [VisitCountItem]) {
+        let encoder = JSONEncoder()
+        do {
+            let encoded = try encoder.encode(visitCounts)
+            userDefaults.set(encoded, forKey: Key.visitCounts.rawValue)
+            userDefaults.synchronize()
+        } catch {
+            Logger.log(message: "VisitCounts save fail")
+        }
+    }
+    
+    func getVisitCounts() -> [VisitCountItem] {
+        guard let messagesData = userDefaults.object(forKey: Key.visitCounts.rawValue) as? Data else { return [] }
+        let decoder = JSONDecoder()
+        do {
+            let messages = try decoder.decode([VisitCountItem].self, from: messagesData)
+            return messages
+        } catch {
+            Logger.log(message: "VisitCounts get fail")
+            return []
+        }
+    }
+    
+    func save(_ visitorInfo: VisitorInfo) {
+        let encoder = JSONEncoder()
+        do {
+            let encoded = try encoder.encode(visitorInfo)
+            userDefaults.set(encoded, forKey: Key.visitorInfo.rawValue)
+            userDefaults.synchronize()
+        } catch {
+            Logger.log(message: "VisitorInfo fail")
+        }
+    }
+    
+    func getVisitorInfo() -> VisitorInfo? {
+        guard
+            let infoData = userDefaults.object(forKey: Key.visitorInfo.rawValue) as? Data
+        else {
+            return nil
+        }
+        
+        let decoder = JSONDecoder()
+        do {
+            let info = try decoder.decode(VisitorInfo.self, from: infoData)
+            return info
+        } catch {
+            Logger.log(message: "VisitorInfo not found")
+            return nil
+        }
+    }
+    
     
     func getrfmScores() -> [RFMScore] {
         guard let messagesData = userDefaults.object(forKey: Key.rfmScores.rawValue) as? Data else { return [] }

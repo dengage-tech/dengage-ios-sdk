@@ -77,6 +77,8 @@ final class DengageNetworking {
             return config.geofenceURL
         case .deviceId:
             return config.dengageDeviceIdApiUrl
+        case .inapp:
+            return config.inAppURL
             
         }
     }
