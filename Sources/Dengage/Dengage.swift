@@ -180,6 +180,9 @@ public class Dengage{
     }
     
     @objc public static func setPartnerDeviceId(adid: String?) {
+       
+        DengageLocalStorage.shared.set(value: adid, for: .PartnerDeviceId)
+
         dengage?.config.setPartnerDeviceId(adid: adid)
     }
     

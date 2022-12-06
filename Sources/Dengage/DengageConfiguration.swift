@@ -145,7 +145,14 @@ final class DengageConfiguration:Encodable {
     }
     
     func getContactKey() -> String? {
+        
         DengageLocalStorage.shared.value(for: .contactKey) as? String
+    }
+    
+    func getPartnerDeviceID()-> String?
+    {
+        return DengageLocalStorage.shared.value(for: .PartnerDeviceId) as? String
+
     }
     
     private static func getToken() -> String? {
