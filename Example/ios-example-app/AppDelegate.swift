@@ -9,7 +9,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
 
 //        _p_l_AvDJy5os_s_l_CWOx_p_l_wSaoGA4BtNDjxnqO_p_l_Go_p_l_WSu6VdnlIUNi1Yb7C9FhsfeAbwUg9uH9vLXaG_s_l_0UqGh2yBjRYY6RK15NahUFP9J8JI1D6FcphiLPskqz8HqUKRAxvG_p_l_Ks7g0_p_l_LNkG97N_p_l_oc3PjTegYw_e_q__e_q_
-        Dengage.start(apiKey: "TvSgLCc7Q_p_l_evpAK_p_l_MNdkk1fRoucLOyMyV2z2FN4_p_l_XXfZeriWBjg8KcDnAbCaZ2AOZiV_p_l_x5OvwvH2c9Kd2Ox7_s_l_HVMwtxCgqmonYKTIRTFP_p_l_BECGbjSLr_s_l_keumauwEqB_p_l_eU_p_l_RQ1FEYI5qMzHqg1NyPPA_e_q__e_q_", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
+        
+        //"TvSgLCc7Q_p_l_evpAK_p_l_MNdkk1fRoucLOyMyV2z2FN4_p_l_XXfZeriWBjg8KcDnAbCaZ2AOZiV_p_l_x5OvwvH2c9Kd2Ox7_s_l_HVMwtxCgqmonYKTIRTFP_p_l_BECGbjSLr_s_l_keumauwEqB_p_l_eU_p_l_RQ1FEYI5qMzHqg1NyPPA_e_q__e_q_"
+        
+        Dengage.start(apiKey: "_p_l_AvDJy5os_s_l_CWOx_p_l_wSaoGA4BtNDjxnqO_p_l_Go_p_l_WSu6VdnlIUNi1Yb7C9FhsfeAbwUg9uH9vLXaG_s_l_0UqGh2yBjRYY6RK15NahUFP9J8JI1D6FcphiLPskqz8HqUKRAxvG_p_l_Ks7g0_p_l_LNkG97N_p_l_oc3PjTegYw_e_q__e_q_", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
         UNUserNotificationCenter.current().delegate = self
         window = UIWindow(frame: UIScreen.main.bounds)
         let rootViewController = RootViewController()
