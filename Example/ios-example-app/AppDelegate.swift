@@ -23,6 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             window?.overrideUserInterfaceStyle = .light
         }
       
+        Dengage.inAppLinkConfiguration(openInAppBrowser: true, retrieveLinkOnSameScreen: false, deeplink: "netflix.com")
         return true
     }
 }

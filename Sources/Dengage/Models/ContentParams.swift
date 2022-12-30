@@ -66,6 +66,7 @@ enum ContentType:String, Codable{
     case popOutModal = "POP_OUT_MODAL"
     case fullScreen = "FULL_SCREEN"
     case html = "HTML"
+    case inAppBrowser = "inAppBrowser"
 }
 
 struct ScreenDataFilter: Codable{

@@ -9,7 +9,8 @@ final class DengageInAppMessageManager:DengageInAppMessageManagerInterface {
     var inAppMessageWindow: UIWindow?
     var deeplinkURL: String?
     let sessionManager: DengageSessionManagerInterface
-    
+    var inAppBrowserWindow: UIWindow?
+
     init(config: DengageConfiguration,
          service: DengageNetworking,
          sessionManager: DengageSessionManagerInterface) {
@@ -303,7 +304,7 @@ extension DengageInAppMessageManager {
         }
         let inappShowTime = (Date().timeMiliseconds) + (config.remoteConfiguration?.minSecBetweenMessages ?? 0.0)
         DengageLocalStorage.shared.set(value: inappShowTime, for: .inAppMessageShowTime)
-        
+
         let delay = inAppMessage.data.displayTiming.delay ?? 0
         
         DispatchQueue.main.asyncAfter(deadline: .now() + Double(delay)) {
@@ -318,17 +319,64 @@ extension DengageInAppMessageManager {
             let controller = InAppMessageHTMLViewController(with: message)
             controller.delegate = self
             self.createInAppWindow(for: controller)
+                    
+            
         default:
             break
         }
     }
     
+    private func showInAppBrowserController(with url:String)
+    {
+        
+        let controller = InAppBrowserViewController(with: url)
+        controller.delegate = self
+        self.createInAppBrowserWindow(for: controller)
+        
+    }
+    
+    private func createInAppBrowserWindow(for controller: UIViewController)
+    {
+        if let topNotch = UIApplication.shared.delegate?.window??.safeAreaInsets.top
+        {
+            if topNotch > 20
+            {
+                let frame = CGRect(x: 0, y: topNotch, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - topNotch)
+                inAppBrowserWindow = UIWindow(frame: frame)
+                inAppBrowserWindow?.rootViewController = controller
+                inAppBrowserWindow?.windowLevel = UIWindow.Level(rawValue: 2)
+                inAppBrowserWindow?.makeKeyAndVisible()
+            }
+            else
+            {
+                let frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                inAppBrowserWindow = UIWindow(frame: frame)
+                inAppBrowserWindow?.rootViewController = controller
+                inAppBrowserWindow?.windowLevel = UIWindow.Level(rawValue: 2)
+                inAppBrowserWindow?.makeKeyAndVisible()
+            }
+        }
+        else
+        {
+            let frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+            inAppBrowserWindow = UIWindow(frame: frame)
+            inAppBrowserWindow?.rootViewController = controller
+            inAppBrowserWindow?.windowLevel = UIWindow.Level(rawValue: 2)
+            inAppBrowserWindow?.makeKeyAndVisible()
+        }
+        
+       
+        
+    }
+    
     private func createInAppWindow(for controller: UIViewController){
+        
         let frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
         inAppMessageWindow = UIWindow(frame: frame)
         inAppMessageWindow?.rootViewController = controller
         inAppMessageWindow?.windowLevel = UIWindow.Level(rawValue: 2)
         inAppMessageWindow?.makeKeyAndVisible()
+        
     }
     
     private func updateInAppMessageOnCache(_ message: InAppMessage){
@@ -520,18 +568,9 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
             }
             else if !RetrieveLinkOnSameScreen && OpenInAppBrowser
             {
-                let frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
-                let inAppMessageWindow = UIWindow(frame: frame)
-                if let url = URL(string: url ?? "") {
-                    let config = SFSafariViewController.Configuration()
-                    config.entersReaderIfAvailable = true
-                    
-                    let controller = SFSafariViewController(url: url, configuration: config)
-                    inAppMessageWindow.rootViewController = controller
-                    inAppMessageWindow.windowLevel = UIWindow.Level(rawValue: 2)
-                    inAppMessageWindow.makeKeyAndVisible()
-                    
-                }
+                guard let urlString = url else { return }
+
+                self.showInAppBrowserController(with: urlString)
                 
             }
             else
@@ -573,6 +612,11 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
         inAppMessageWindow = nil
     }
     
+    func closeInAppBrowser()
+    {
+        inAppBrowserWindow = nil
+
+    }
     
 }
 

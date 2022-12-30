@@ -11,7 +11,6 @@ final class InAppMessageHTMLViewController: UIViewController{
     var delegate: InAppMessagesActionsDelegate?
 
     let message:InAppMessage
-    let config: DengageConfiguration
 
     var hasTopNotch: Bool {
         if #available(iOS 11.0, tvOS 11.0, *) {
