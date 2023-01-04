@@ -9,7 +9,6 @@ struct MakeSubscriptionRequest: APIRequest {
     let enpointType: EndpointType = .push
     let path: String = "/api/device/subscription"
 
-   
     
     var httpBody: Data?{
         let parameters = ["integrationKey": config.integrationKey,
