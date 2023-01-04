@@ -524,64 +524,71 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     func open(url: String?) {
         
         inAppMessageWindow = nil
+                
+        guard let urlDeeplink = url, let urlStr = URL(string: urlDeeplink) else { return }
         
         let deeplink = config.getDeeplink()
         let RetrieveLinkOnSameScreen = config.getRetrieveLinkOnSameScreen()
         let OpenInAppBrowser = config.getOpenInAppBrowser()
         
-        if deeplink == url
+        if deeplink != ""
         {
-            if RetrieveLinkOnSameScreen
+            if urlDeeplink.contains(deeplink) || deeplink.contains(urlDeeplink)
             {
-                guard let urlString = url else { return }
-                
-                self.deeplinkURL = urlString
-                self.handleInAppDeeplink { str in
+                if RetrieveLinkOnSameScreen
+                {
+                    guard let urlString = url else { return }
                     
-                    
+                    self.deeplinkURL = urlString
+                    self.handleInAppDeeplink { str in
+                        
+                        
+                    }
                 }
+                else
+                {
+                   
+                    
+                    self.deeplinkURL = urlDeeplink
+                    self.handleInAppDeeplink { str in
+                        
+                        
+                    }
+                    UIApplication.shared.open(urlStr, options: [:], completionHandler: nil)
+                }
+              
             }
             else
             {
-                guard let urlString = url, let url = URL(string: urlString) else { return }
-                
-                self.deeplinkURL = urlString
-                self.handleInAppDeeplink { str in
-                    
+                if RetrieveLinkOnSameScreen && !OpenInAppBrowser
+                {
+                    self.deeplinkURL = urlDeeplink
+                    self.handleInAppDeeplink { str in
+                        
+                        
+                    }
+                }
+                else if !RetrieveLinkOnSameScreen && OpenInAppBrowser
+                {
+                    self.showInAppBrowserController(with: urlDeeplink)
                     
                 }
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                else
+                {
+                    self.deeplinkURL = urlDeeplink
+                    
+                    UIApplication.shared.open(urlStr, options: [:], completionHandler: nil)
+                }
             }
-          
         }
         else
         {
-            if RetrieveLinkOnSameScreen && !OpenInAppBrowser
-            {
-                guard let urlString = url else { return }
-                
-                self.deeplinkURL = urlString
-                self.handleInAppDeeplink { str in
-                    
-                    
-                }
-            }
-            else if !RetrieveLinkOnSameScreen && OpenInAppBrowser
-            {
-                guard let urlString = url else { return }
-
-                self.showInAppBrowserController(with: urlString)
-                
-            }
-            else
-            {
-                guard let urlString = url, let url = URL(string: urlString) else { return }
-                
-                self.deeplinkURL = urlString
-                
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-            }
+            
+            self.deeplinkURL = urlDeeplink
+            
+            UIApplication.shared.open(urlStr , options: [:], completionHandler: nil)
         }
+      
         
    
     }
