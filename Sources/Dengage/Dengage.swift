@@ -186,6 +186,11 @@ public class Dengage{
         dengage?.config.setPartnerDeviceId(adid: adid)
     }
     
+    @objc public static func inAppLinkConfiguration(openInAppBrowser : Bool,  retrieveLinkOnSameScreen : Bool , deeplink : String)
+    {
+        dengage?.config.setinAppLinkConfiguration(openInAppBrowser: openInAppBrowser, retrieveLinkOnSameScreen: retrieveLinkOnSameScreen, deeplink: deeplink)
+
+    }
     
     @objc public static func handleNotificationActionBlock(callback: @escaping (_ notificationResponse: UNNotificationResponse) -> Void) {
         dengage?.notificationManager.openTriggerCompletionHandler = {

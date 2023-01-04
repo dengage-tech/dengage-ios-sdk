@@ -6,4 +6,6 @@ protocol InAppMessagesActionsDelegate:AnyObject{
     func promptPushPermission()
     func close()
     func setTags(tags:[TagItem])
+    func closeInAppBrowser()
+
 }

@@ -106,3 +106,42 @@ final class InAppMessageHTMLView: UIView{
         return (UIScreen.main.bounds.width * ((margin ?? 1.0) / 100))
     }
 }
+
+
+final class InAppBrowserView: UIView{
+    
+    private(set) lazy var webView: WKWebView = {
+        let view = WKWebView()
+        view.scrollView.isScrollEnabled = true
+        view.scrollView.showsVerticalScrollIndicator = false
+        view.scrollView.bounces = false
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.masksToBounds = true
+       
+        return view
+    }()
+    
+    init() {
+        super.init(frame: .init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
+        setupUI()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupUI(){
+        addSubview(webView)
+        backgroundColor = UIColor.clear
+        
+        
+    }
+    
+    private func set(radius:Int?){
+        webView.layer.cornerRadius = CGFloat(radius ?? 0)
+        self.layer.cornerRadius = CGFloat(radius ?? 0)
+        self.clipsToBounds = true
+
+    }
+   
+}

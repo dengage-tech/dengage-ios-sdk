@@ -8,6 +8,7 @@ final class DengageInAppMessageManager:DengageInAppMessageManagerInterface {
     var inAppMessageWindow: UIWindow?
     var deeplinkURL: String?
     let sessionManager: DengageSessionManagerInterface
+    var inAppBrowserWindow: UIWindow?
 
     init(config: DengageConfiguration,
          service: DengageNetworking,
@@ -322,6 +323,49 @@ extension DengageInAppMessageManager {
         }
     }
     
+    private func showInAppBrowserController(with url:String)
+    {
+        
+        let controller = InAppBrowserViewController(with: url)
+        controller.delegate = self
+        self.createInAppBrowserWindow(for: controller)
+        
+    }
+    
+    private func createInAppBrowserWindow(for controller: UIViewController)
+    {
+        if let topNotch = UIApplication.shared.delegate?.window??.safeAreaInsets.top
+        {
+            if topNotch > 20
+            {
+                let frame = CGRect(x: 0, y: topNotch, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - topNotch)
+                inAppBrowserWindow = UIWindow(frame: frame)
+                inAppBrowserWindow?.rootViewController = controller
+                inAppBrowserWindow?.windowLevel = UIWindow.Level(rawValue: 2)
+                inAppBrowserWindow?.makeKeyAndVisible()
+            }
+            else
+            {
+                let frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                inAppBrowserWindow = UIWindow(frame: frame)
+                inAppBrowserWindow?.rootViewController = controller
+                inAppBrowserWindow?.windowLevel = UIWindow.Level(rawValue: 2)
+                inAppBrowserWindow?.makeKeyAndVisible()
+            }
+        }
+        else
+        {
+            let frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+            inAppBrowserWindow = UIWindow(frame: frame)
+            inAppBrowserWindow?.rootViewController = controller
+            inAppBrowserWindow?.windowLevel = UIWindow.Level(rawValue: 2)
+            inAppBrowserWindow?.makeKeyAndVisible()
+        }
+        
+       
+        
+    }
+    
     private func createInAppWindow(for controller: UIViewController){
         let frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
         inAppMessageWindow = UIWindow(frame: frame)
@@ -475,15 +519,73 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     func open(url: String?) {
         
         inAppMessageWindow = nil
+                
+        guard let urlDeeplink = url, let urlStr = URL(string: urlDeeplink) else { return }
         
-        guard let urlString = url, let url = URL(string: urlString) else { return }
-
-        self.deeplinkURL = urlString
-        self.handleInAppDeeplink { str in
-            
-            
+        let deeplink = config.getDeeplink()
+        let RetrieveLinkOnSameScreen = config.getRetrieveLinkOnSameScreen()
+        let OpenInAppBrowser = config.getOpenInAppBrowser()
+        
+        if deeplink != ""
+        {
+            if urlDeeplink.contains(deeplink) || deeplink.contains(urlDeeplink)
+            {
+                if RetrieveLinkOnSameScreen
+                {
+                    guard let urlString = url else { return }
+                    
+                    self.deeplinkURL = urlString
+                    self.handleInAppDeeplink { str in
+                        
+                        
+                    }
+                }
+                else
+                {
+                   
+                    
+                    self.deeplinkURL = urlDeeplink
+                    self.handleInAppDeeplink { str in
+                        
+                        
+                    }
+                    UIApplication.shared.open(urlStr, options: [:], completionHandler: nil)
+                }
+              
+            }
+            else
+            {
+                if RetrieveLinkOnSameScreen && !OpenInAppBrowser
+                {
+                    self.deeplinkURL = urlDeeplink
+                    self.handleInAppDeeplink { str in
+                        
+                        
+                    }
+                }
+                else if !RetrieveLinkOnSameScreen && OpenInAppBrowser
+                {
+                    self.showInAppBrowserController(with: urlDeeplink)
+                    
+                }
+                else
+                {
+                    self.deeplinkURL = urlDeeplink
+                    
+                    UIApplication.shared.open(urlStr, options: [:], completionHandler: nil)
+                }
+            }
         }
-        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        else
+        {
+            
+            self.deeplinkURL = urlDeeplink
+            
+            UIApplication.shared.open(urlStr , options: [:], completionHandler: nil)
+        }
+      
+        
+   
     }
     
     func sendDissmissEvent(message: InAppMessage) {
@@ -512,7 +614,11 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
         inAppMessageWindow = nil
     }
     
-    
+    func closeInAppBrowser()
+    {
+        inAppBrowserWindow = nil
+
+    }
 }
 
 
