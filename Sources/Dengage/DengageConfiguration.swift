@@ -230,15 +230,17 @@ final class DengageConfiguration:Encodable {
     }
     
     private static func dengageDeviceIdApiUrl() -> URL {
-        guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageDeviceIdApiUrl") as? String else {
-            fatalError("[DENGAGE] 'DengageDeviceIdApiUrl' not found on plist file")
-        }
         
-        guard let apiURL = URL(string: apiURLString) else {
-            fatalError("[DENGAGE] 'DengageDeviceIdApiUrl' not correct on plist file")
+        guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageDeviceIdApiUrl") as? String else {
+            return getSubscriptionURL()
         }
- 
+
+        guard let apiURL = URL(string: apiURLString) else {
+            return getSubscriptionURL()
+        }
+
         return apiURL
+     
     }
     
     private static func getAppVersion() -> String {
