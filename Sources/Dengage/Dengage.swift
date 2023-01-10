@@ -63,6 +63,7 @@ public class Dengage{
     
     @objc public static func set(permission: Bool){
         dengage?.set(permission)
+        
     }
     
     @objc public static func setUserPermission(permission: Bool) {
@@ -201,6 +202,13 @@ public class Dengage{
     
     @objc static public func didReceiveNotificationRequest(_ bestAttemptContent: UNMutableNotificationContent?,
                                                            withContentHandler contentHandler:  @escaping (UNNotificationContent) -> Void) {
+        
+        if #available(iOS 15.0, *) {
+            bestAttemptContent?.interruptionLevel = .timeSensitive
+        } else {
+            // Fallback on earlier versions
+        }
+        
         DengageNotificationExtension.didReceiveNotificationRequest(bestAttemptContent, withContentHandler: contentHandler)
     }
     
