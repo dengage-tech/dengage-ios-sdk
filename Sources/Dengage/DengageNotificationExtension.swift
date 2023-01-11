@@ -21,6 +21,12 @@ final class DengageNotificationExtension {
             Logger.log(message: "title or subtitle not found")
             return
         }
+        
+        if #available(iOS 15.0, *) {
+            bestAttemptContent.interruptionLevel = .timeSensitive
+        } else {
+            // Fallback on earlier versions
+        }
                 
         addActionButtonsIfNeeded(bestAttemptContent)
         

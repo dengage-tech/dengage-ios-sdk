@@ -113,6 +113,12 @@ extension DengageNotificationCarouselView{
         guard let userInfo = bestAttemptContent?.userInfo,
               let contents = userInfo["carouselContent"] as? [AnyObject] else { return }
                 
+        if #available(iOS 15.0, *) {
+            self.bestAttemptContent?.interruptionLevel = .timeSensitive
+        } else {
+            // Fallback on earlier versions
+        }
+        
         UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [notification.request.identifier])
         
         self.userInfo = userInfo

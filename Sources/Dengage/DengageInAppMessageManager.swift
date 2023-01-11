@@ -334,15 +334,26 @@ extension DengageInAppMessageManager {
     
     private func createInAppBrowserWindow(for controller: UIViewController)
     {
-        if let topNotch = UIApplication.shared.delegate?.window??.safeAreaInsets.top
-        {
-            if topNotch > 20
+        if #available(iOS 11.0, *) {
+          
+            if let topNotch = UIApplication.shared.delegate?.window??.safeAreaInsets.top
             {
-                let frame = CGRect(x: 0, y: topNotch, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - topNotch)
-                inAppBrowserWindow = UIWindow(frame: frame)
-                inAppBrowserWindow?.rootViewController = controller
-                inAppBrowserWindow?.windowLevel = UIWindow.Level(rawValue: 2)
-                inAppBrowserWindow?.makeKeyAndVisible()
+                if topNotch > 20
+                {
+                    let frame = CGRect(x: 0, y: topNotch, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - topNotch)
+                    inAppBrowserWindow = UIWindow(frame: frame)
+                    inAppBrowserWindow?.rootViewController = controller
+                    inAppBrowserWindow?.windowLevel = UIWindow.Level(rawValue: 2)
+                    inAppBrowserWindow?.makeKeyAndVisible()
+                }
+                else
+                {
+                    let frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                    inAppBrowserWindow = UIWindow(frame: frame)
+                    inAppBrowserWindow?.rootViewController = controller
+                    inAppBrowserWindow?.windowLevel = UIWindow.Level(rawValue: 2)
+                    inAppBrowserWindow?.makeKeyAndVisible()
+                }
             }
             else
             {
@@ -352,17 +363,21 @@ extension DengageInAppMessageManager {
                 inAppBrowserWindow?.windowLevel = UIWindow.Level(rawValue: 2)
                 inAppBrowserWindow?.makeKeyAndVisible()
             }
-        }
-        else
-        {
-            let frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+            
+            
+            
+        } else {
+        //backward compatibility to previous versions?
+            
+            let frame = CGRect(x: 0, y: 20, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
             inAppBrowserWindow = UIWindow(frame: frame)
             inAppBrowserWindow?.rootViewController = controller
             inAppBrowserWindow?.windowLevel = UIWindow.Level(rawValue: 2)
             inAppBrowserWindow?.makeKeyAndVisible()
+            
+            
         }
-        
-       
+
         
     }
     
