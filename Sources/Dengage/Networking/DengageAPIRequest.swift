@@ -43,6 +43,7 @@ extension APIRequest {
     func asURLRequest(with baseURL:URL) -> URLRequest {
         var urlComps = URLComponents(string: baseURL.absoluteString + path)!
         urlComps.queryItems = queryParameters.filter { $0.value != nil }
+        urlComps.percentEncodedQuery = urlComps.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
         var urlRequest = URLRequest(url: urlComps.url!)
         let headers = bindDefaultHeaders(with: headers)
         headers.forEach{ header in

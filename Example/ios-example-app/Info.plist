@@ -9,6 +9,6 @@
 	<key>DengageEventApiUrl</key>
 	<string>https://us-event.dengage.com</string>
 	<key>DengageInAppApiUrl</key>
-	<string>https://us-push.dengage.com</string>
+	<string>https://us-push.dengage.com/</string>
 </dict>
 </plist>
