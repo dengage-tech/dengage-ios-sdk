@@ -215,7 +215,7 @@ extension DengageManager {
                 Logger.log(message: "dengageDeviceIdSendToServer \(response)")
                 
             case .failure:
-                Logger.log(message: "SDK PARAMS Config fetchin failed")
+                Logger.log(message: "Sending dengage device id to server failed")
             }
         }
     }
