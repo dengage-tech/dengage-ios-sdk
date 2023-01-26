@@ -91,6 +91,7 @@ extension DengageInAppMessageManager{
     }
     
     private func getVisitorInfo(){
+        guard isEnabledRealTimeInAppMessage else {return}
         guard let remoteConfig = config.remoteConfiguration,
               let accountName = remoteConfig.accountName
         else { return }
