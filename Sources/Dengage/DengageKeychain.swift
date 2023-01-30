@@ -1,7 +1,7 @@
 import Security
 import Foundation
 
-final class DengageKeychain {
+class DengageKeychain {
 
     private static var lastResultCode: OSStatus = noErr
     private static let coreFoundationBooleanTrue: CFBoolean = kCFBooleanTrue

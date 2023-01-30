@@ -24,6 +24,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             window?.overrideUserInterfaceStyle = .light
         }
         
+        
+        
+        Dengage.set(deviceId: "123456")
+        
+        Dengage.syncSDK()
+        
+        
+        
+        
         return true
     }
 }
