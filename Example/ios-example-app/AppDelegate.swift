@@ -1,5 +1,9 @@
 import UIKit
 import Dengage
+import FirebaseCrashlytics
+import Firebase
+
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -25,6 +29,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       
         Dengage.setLog(isVisible: true)
         Dengage.inAppLinkConfiguration(openInAppBrowser: false, retrieveLinkOnSameScreen: false, deeplink: "pazarama.app://")
+        
+        FirebaseApp.configure()
+        
+        Dengage.set(deviceId: "123456")
+        
+        Dengage.syncSDK()
+        
+        
+        
+        
         return true
     }
 }

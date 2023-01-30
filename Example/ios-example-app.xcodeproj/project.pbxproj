@@ -31,6 +31,8 @@
 		A0F46C6B275A85B1003A524C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A0F46C6A275A85B1003A524C /* Assets.xcassets */; };
 		A0F46C6E275A85B1003A524C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0F46C6C275A85B1003A524C /* LaunchScreen.storyboard */; };
 		D65523DA2938F393004360B8 /* RealTimeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65523D92938F393004360B8 /* RealTimeViewController.swift */; };
+		D6D489E72982965300286969 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = D6D489E62982965300286969 /* FirebaseCrashlytics */; };
+		D6D489EA29829A3D00286969 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D6D489E929829A3D00286969 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,6 +95,7 @@
 		A0F46C6D275A85B1003A524C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A0F46C6F275A85B1003A524C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D65523D92938F393004360B8 /* RealTimeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealTimeViewController.swift; sourceTree = "<group>"; };
+		D6D489E929829A3D00286969 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +122,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A0765B6B27CEAF2B0007215B /* Dengage in Frameworks */,
+				D6D489E72982965300286969 /* FirebaseCrashlytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -228,6 +232,7 @@
 		A0F46C55275A85B0003A524C = {
 			isa = PBXGroup;
 			children = (
+				D6D489E929829A3D00286969 /* GoogleService-Info.plist */,
 				A0765B6827CEAF040007215B /* Packages */,
 				A0F46C60275A85B0003A524C /* ios-example-app */,
 				A099517427AB600C0089D98D /* NoticationExtension */,
@@ -339,6 +344,7 @@
 			name = "ios-example-app";
 			packageProductDependencies = (
 				A0765B6A27CEAF2B0007215B /* Dengage */,
+				D6D489E62982965300286969 /* FirebaseCrashlytics */,
 			);
 			productName = "ios-example-app";
 			productReference = A0F46C5E275A85B0003A524C /* ios-example-app.app */;
@@ -374,6 +380,9 @@
 				Base,
 			);
 			mainGroup = A0F46C55275A85B0003A524C;
+			packageReferences = (
+				D6D489E52982965300286969 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			productRefGroup = A0F46C5F275A85B0003A524C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -405,6 +414,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A0F46C6E275A85B1003A524C /* LaunchScreen.storyboard in Resources */,
+				D6D489EA29829A3D00286969 /* GoogleService-Info.plist in Resources */,
 				A0F46C6B275A85B1003A524C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -715,6 +725,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-example-app/Info.plist";
@@ -812,6 +823,17 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		D6D489E52982965300286969 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		A02A40E027CF93CD00D75B02 /* Dengage */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -824,6 +846,11 @@
 		A0765B6A27CEAF2B0007215B /* Dengage */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Dengage;
+		};
+		D6D489E62982965300286969 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D6D489E52982965300286969 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -148,7 +148,8 @@ extension DengageManager {
         
     }
     
-    private func fetchSDK(){
+    func fetchSDK(){
+        
         Logger.log(message: "fetchSDK Started")
         let request = GetSDKParamsRequest(integrationKey: config.integrationKey,
                                           deviceId: config.applicationIdentifier)

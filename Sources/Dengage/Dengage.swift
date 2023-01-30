@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 
 public class Dengage{
+    
     static var manager: DengageManager?
     
     static var dengage: DengageManager? {
@@ -59,6 +60,13 @@ public class Dengage{
     
     @objc public static func set(deviceId: String) {
         dengage?.config.set(deviceId: deviceId)
+        
+    }
+    
+    @objc public static func syncSDK() {
+       
+        dengage?.sync()
+        
     }
     
     @objc public static func set(permission: Bool){
