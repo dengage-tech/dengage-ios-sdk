@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'Dengage'
-  s.version          = '5.13.1'
+  s.version          = '5.14.1'
   s.summary          = 'Dengage SDK'
   s.description      = 'Customer Driven Marketing with built-in Customer Data Platform powered by full marketing automation capabilities'
   s.homepage         = 'https://github.com/dengage-tech/dengage-ios-sdk'
