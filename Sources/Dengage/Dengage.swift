@@ -193,9 +193,9 @@ public class Dengage{
         dengage?.config.setPartnerDeviceId(adid: adid)
     }
     
-    @objc public static func inAppLinkConfiguration(openInAppBrowser : Bool,  retrieveLinkOnSameScreen : Bool , deeplink : String)
+    @objc public static func inAppLinkConfiguration(deeplink : String)
     {
-        dengage?.config.setinAppLinkConfiguration(openInAppBrowser: openInAppBrowser, retrieveLinkOnSameScreen: retrieveLinkOnSameScreen, deeplink: deeplink)
+        dengage?.config.setinAppLinkConfiguration(deeplink: deeplink)
 
     }
     

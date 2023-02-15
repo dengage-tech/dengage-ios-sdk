@@ -30,6 +30,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         Dengage.syncSDK()
         
+        Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
+
         
         
         

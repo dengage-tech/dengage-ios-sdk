@@ -104,10 +104,9 @@ final class DengageConfiguration:Encodable {
         partnerDeviceId = adid
     }
     
-    func setinAppLinkConfiguration(openInAppBrowser : Bool,  retrieveLinkOnSameScreen : Bool , deeplink : String){
+    func setinAppLinkConfiguration( deeplink : String){
 
-        DengageLocalStorage.shared.set(value: openInAppBrowser, for: .openInAppBrowser)
-        DengageLocalStorage.shared.set(value: retrieveLinkOnSameScreen, for: .retrieveLinkOnSameScreen)
+        
         DengageLocalStorage.shared.set(value: deeplink, for: .deeplink)
 
     }

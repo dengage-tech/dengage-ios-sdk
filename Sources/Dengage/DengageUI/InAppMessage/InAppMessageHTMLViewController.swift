@@ -11,7 +11,7 @@ final class InAppMessageHTMLViewController: UIViewController{
     var delegate: InAppMessagesActionsDelegate?
 
     let message:InAppMessage
-    
+
     var hasTopNotch: Bool {
         if #available(iOS 11.0, tvOS 11.0, *) {
             return UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0 > 20
@@ -66,6 +66,7 @@ final class InAppMessageHTMLViewController: UIViewController{
         viewSource.webView.configuration.userContentController.add(self, name: "dismiss")
         viewSource.webView.configuration.userContentController.add(self, name: "close")
         viewSource.webView.configuration.userContentController.add(self, name: "iosUrl")
+        viewSource.webView.configuration.userContentController.add(self, name: "iosUrlN")
         viewSource.webView.configuration.userContentController.add(self, name: "sendClick")
         viewSource.webView.configuration.userContentController.add(self, name: "promptPushPermission")
         viewSource.webView.configuration.userContentController.add(self, name: "setTags")
@@ -137,20 +138,39 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             let buttonId = message.body as? String
             self.delegate?.sendClickEvent(message: self.message,
                                           buttonId: buttonId)
-        case "iosUrl":
+
+        case "iosUrlN":
+             
+            print("WKScriptMessage In app message \(message.body)")
+            guard let dict = message.body as? [String:Any] else {return}
             
-            if message.body as? String == "Dn.promptPushPermission()"
+            if let openInAppBrowser = dict["openInAppBrowser"] as? Bool
             {
-                delegate?.promptPushPermission()
+                DengageLocalStorage.shared.set(value: openInAppBrowser, for: .openInAppBrowser)
 
             }
-            else
+            if let retrieveLinkOnSameScreen = dict["retrieveLinkOnSameScreen"] as? Bool
             {
-                guard let url = message.body as? String else {return}
-                print("WKScriptMessage In app message \(url)")
-                self.delegate?.open(url: url)
+                DengageLocalStorage.shared.set(value: retrieveLinkOnSameScreen, for: .retrieveLinkOnSameScreen)
+
             }
-          
+                        
+            
+            if let deeplink = dict["deeplink"] as? String
+            {
+                if deeplink == "Dn.promptPushPermission()"
+                {
+                    delegate?.promptPushPermission()
+
+                }
+                else
+                {
+                    
+                    self.delegate?.open(url: deeplink)
+                }
+
+            }
+
         case "setTags":
             guard let tagItemData = message.body as? [Dictionary<String,String>] else {return}
             let tagItems = tagItemData.map{TagItem.init(with: $0)}
@@ -170,11 +190,16 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
 extension InAppMessageHTMLViewController{
     fileprivate var javascriptInterface:String{
         return """
-        var Dn = {
+        var Dn =  {
             iosUrl: (url) => {
                 window.webkit.messageHandlers.iosUrl.postMessage(url);
             },
+            iosUrlN:(url,inbr,ret) => {
+        
+                window.webkit.messageHandlers.iosUrlN.postMessage({deeplink : url,openInAppBrowser : inbr,retrieveLinkOnSameScreen : ret});
+            },
             androidUrl: (url) => {},
+            androidUrlN: (url,inbr,ret) => {},
             sendClick: (eventName) => {
                 window.webkit.messageHandlers.sendClick.postMessage(eventName);
             },
