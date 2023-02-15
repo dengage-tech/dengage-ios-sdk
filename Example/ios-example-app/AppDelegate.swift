@@ -1,7 +1,5 @@
 import UIKit
 import Dengage
-import FirebaseCrashlytics
-import Firebase
 
 
 @main
@@ -30,7 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Dengage.setLog(isVisible: true)
         Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
         
-        FirebaseApp.configure()
+       
         
         Dengage.set(deviceId: "123456")
         
