@@ -19,6 +19,8 @@ final class DengageLocalStorage: NSObject {
     }
     
     enum Key: String{
+        
+        case lastSyncdSubscription = "lastSyncdSubscription"
         case applicationIdentifier = "ApplicationIdentifier"
         case contactKey = "ContactKey"
         case token = "Token"
@@ -45,6 +47,22 @@ final class DengageLocalStorage: NSObject {
         case openInAppBrowser = "openInAppBrowser"
         case retrieveLinkOnSameScreen = "retrieveLinkOnSameScreen"
         case deeplink = "deeplink"
+        case integrationKeySubscription = "integrationKeySubscription"
+        case tokenSubscription = "tokenSubscription"
+        case contactKeySubscription = "contactKeySubscription"
+        case permissionSubscription = "permissionSubscription"
+        case udidSubscription = "udidSubscription"
+        case carrierIdSubscription = "carrierIdSubscription"
+        case appVersionSubscription = "appVersionSubscription"
+        case sdkVersionSubscription = "sdkVersionSubscription"
+        case tokenTypeSubscription = "tokenTypeSubscription"
+        case countrySubscription = "countrySubscription"
+        case carrierlanguage = "carrierlanguage"
+        case timezoneSubscription = "timezoneSubscription"
+        case partner_device_idSubscription = "partner_device_idSubscription"
+        case advertisingIdSubscription = "advertisingIdSubscription"
+        case languageSubscription = "languageSubscription"
+        
 
     }
 }

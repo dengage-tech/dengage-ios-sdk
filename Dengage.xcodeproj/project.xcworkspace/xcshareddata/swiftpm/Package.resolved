@@ -24,17 +24,8 @@
         "repositoryURL": "https://github.com/firebase/firebase-ios-sdk.git",
         "state": {
           "branch": null,
-          "revision": "dce2e1abc6c0d5e830ff1cffe3f8633fda64001e",
-          "version": "10.3.0"
-        }
-      },
-      {
-        "package": "GoogleTagManager",
-        "repositoryURL": "https://github.com/googleanalytics/google-tag-manager-ios-sdk.git",
-        "state": {
-          "branch": null,
-          "revision": "96d84a5efe169f68d1d3cefd9ed1c8a0c6c6114a",
-          "version": "7.4.2"
+          "revision": "7e80c25b51c2ffa238879b07fbfc5baa54bb3050",
+          "version": "9.6.0"
         }
       },
       {
@@ -42,8 +33,8 @@
         "repositoryURL": "https://github.com/google/GoogleAppMeasurement.git",
         "state": {
           "branch": null,
-          "revision": "71eb6700dd53a851473c48d392f00a3ab26699a6",
-          "version": "10.1.0"
+          "revision": "c1cfde8067668027b23a42c29d11c246152fe046",
+          "version": "9.6.0"
         }
       },
       {
@@ -78,8 +69,8 @@
         "repositoryURL": "https://github.com/google/gtm-session-fetcher.git",
         "state": {
           "branch": null,
-          "revision": "efda500b6d9858d38a76dbfbfa396bd644692e4a",
-          "version": "3.0.0"
+          "revision": "5ccda3981422a84186387dbb763ba739178b529c",
+          "version": "2.3.0"
         }
       },
       {
