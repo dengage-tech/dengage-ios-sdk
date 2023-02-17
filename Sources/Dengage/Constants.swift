@@ -1,13 +1,6 @@
 import Foundation
 
-
-var SUBSCRIPTION_SERVICE_URL = "https://push.dengage.com"
-var EVENT_SERVICE_URL = "https://event.dengage.com"
-
-let DEVICE_EVENT_QUEUE = "device-event-queue"
-let SUBSCRIPTION_QUEUE = "subscription-queue"
-
-let SDK_VERSION = "5.0.8"
+let SDK_VERSION = "5.16.1"
 let SUIT_NAME = "group.dengage"
 let DEFAULT_CARRIER_ID = "1"
 let MESSAGE_SOURCE = "DENGAGE"

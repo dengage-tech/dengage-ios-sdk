@@ -110,6 +110,13 @@ extension DengageNotificationCarouselView: UICollectionViewDelegate{
 extension DengageNotificationCarouselView{
     public func didReceive(_ notification: UNNotification) {
         self.bestAttemptContent = (notification.request.content.mutableCopy() as? UNMutableNotificationContent)
+        
+        if #available(iOS 15.0, *) {
+            self.bestAttemptContent?.interruptionLevel = .timeSensitive
+        } else {
+            // Fallback on earlier versions
+        }
+        
         guard let userInfo = bestAttemptContent?.userInfo,
               let contents = userInfo["carouselContent"] as? [AnyObject] else { return }
                 

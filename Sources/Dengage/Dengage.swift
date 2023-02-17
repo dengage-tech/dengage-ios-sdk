@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 
 public class Dengage{
+    
     static var manager: DengageManager?
     
     static var dengage: DengageManager? {
@@ -16,6 +17,7 @@ public class Dengage{
         }
     }
     
+    
     @objc public static func start(apiKey: String,
                                    application: UIApplication,
                                    launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
@@ -26,8 +28,30 @@ public class Dengage{
                         dengageOptions: options)
     }
     
+    
+    @objc public static func initWithLaunchOptions(categories: Set<UNNotificationCategory>? = nil,application: UIApplication,withLaunchOptions: [UIApplication.LaunchOptionsKey: Any],badgeCountReset: Bool = false)
+    {
+        let key =  DengageLocalStorage.shared.value(for: .integrationKey) as? String
+
+        self.start(apiKey: key ?? "", application: application, launchOptions: withLaunchOptions, dengageOptions: DengageOptions())
+        
+    }
+    
+    @objc public static func setIntegrationKey(key: String) {
+       
+        DengageLocalStorage.shared.set(value: key, for: .integrationKey)
+    }
+    
     @objc public static func register(deviceToken: Data) {
         dengage?.register(deviceToken)
+    }
+    
+    @objc public static func setContactKey(contactKey: String?) {
+        self.set(contactKey: contactKey)
+    }
+    
+    @objc public static func getContactKey(contactKey: String?) -> String{
+        return self.getContactKey() ?? ""
     }
     
     @objc public static func set(contactKey: String?) {
@@ -36,10 +60,24 @@ public class Dengage{
     
     @objc public static func set(deviceId: String) {
         dengage?.config.set(deviceId: deviceId)
+        
+    }
+    
+    @objc public static func syncSDK() {
+       
+       
+        dengage?.sync()
+        
     }
     
     @objc public static func set(permission: Bool){
         dengage?.set(permission)
+        
+    }
+    
+    @objc public static func setUserPermission(permission: Bool) {
+
+        self.set(permission: permission)
     }
     
     @objc public static func getPermission() -> Bool {
@@ -56,6 +94,21 @@ public class Dengage{
     
     @objc public static func getDeviceToken() -> String? {
         dengage?.config.deviceToken
+    }
+    
+    @objc public static func setToken(token: String) {
+        dengage?.config.set(token: token)
+    }
+    
+    
+    @objc public static func setLogStatus(isVisible: Bool) {
+        
+        self.setLog(isVisible: isVisible)
+    }
+    
+    @objc public static func setDeviceId(applicationIdentifier: String) {
+        
+        self.set(deviceId: applicationIdentifier)
     }
     
     //todo add objc
@@ -109,6 +162,46 @@ public class Dengage{
         })
     }
     
+    @objc public static func showRealTimeInApp(
+        screenName: String? = nil,
+        params: Dictionary<String, String>? = nil
+    ) {
+        dengage?.inAppManager.setNavigation(screenName:screenName, params: params)
+    }
+    
+    @objc public static func setCategory(path: String?) {
+        dengage?.config.setCategory(path: path)
+    }
+    
+    @objc public static func setCart(itemCount: String?) {
+        dengage?.config.setCart(itemCount: itemCount)
+    }
+    
+    @objc public static func setCart(amount: String?) {
+        dengage?.config.setCart(amount: amount)
+    }
+    
+    @objc public static func setState(name: String?) {
+        dengage?.config.setState(name: name)
+    }
+
+    @objc public static func setCity(name: String?) {
+        dengage?.config.setCity(name: name)
+    }
+    
+    @objc public static func setPartnerDeviceId(adid: String?) {
+       
+        DengageLocalStorage.shared.set(value: adid, for: .PartnerDeviceId)
+
+        dengage?.config.setPartnerDeviceId(adid: adid)
+    }
+    
+    @objc public static func inAppLinkConfiguration(deeplink : String)
+    {
+        dengage?.config.setinAppLinkConfiguration(deeplink: deeplink)
+
+    }
+    
     @objc public static func handleNotificationActionBlock(callback: @escaping (_ notificationResponse: UNNotificationResponse) -> Void) {
         dengage?.notificationManager.openTriggerCompletionHandler = {
             response in
@@ -118,6 +211,13 @@ public class Dengage{
     
     @objc static public func didReceiveNotificationRequest(_ bestAttemptContent: UNMutableNotificationContent?,
                                                            withContentHandler contentHandler:  @escaping (UNNotificationContent) -> Void) {
+        
+        if #available(iOS 15.0, *) {
+            bestAttemptContent?.interruptionLevel = .timeSensitive
+        } else {
+            // Fallback on earlier versions
+        }
+        
         DengageNotificationExtension.didReceiveNotificationRequest(bestAttemptContent, withContentHandler: contentHandler)
     }
     
@@ -244,4 +344,16 @@ extension Dengage {
             }
         }
     }
+}
+
+//MARK: - DengageDeviceIdApiUrl
+extension Dengage{
+
+    @objc public static func sendDeviceIdToServer(route:String , token : String) {
+        DengageLocalStorage.shared.set(value: route, for: .deviceIdRoute)
+        dengage?.dengageDeviceIdSendToServer(token: token)
+    }
+    
+    
+    
 }

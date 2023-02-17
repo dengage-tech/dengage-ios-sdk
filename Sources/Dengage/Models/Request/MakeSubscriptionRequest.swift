@@ -22,6 +22,7 @@ struct MakeSubscriptionRequest: APIRequest {
                           "country": config.deviceCountryCode,
                           "language": config.deviceLanguage,
                           "timezone": config.deviceTimeZone,
+                          "partner_device_id": config.getPartnerDeviceID() ?? "",
                           "advertisingId" : config.advertisingIdentifier as Any]
         return parameters.json
     }

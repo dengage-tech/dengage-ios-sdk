@@ -15,7 +15,11 @@ final class DengageLog{
     
     private func saveLog(message: String){
         if logCount == 200 {
-            logs.remove(at: 0)
+            if logCount > 0
+            {
+                logs.remove(at: 0)
+
+            }
             logs.append(message)
         }else{
             logs[logCount] = message

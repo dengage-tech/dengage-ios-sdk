@@ -11,6 +11,46 @@ struct ContentParams: Codable {
     let marginLeft: CGFloat?
     let marginRight: CGFloat?
     let dismissOnTouchOutside: Bool
+    
+    enum CodingKeys: String, CodingKey {
+        case position
+        case shouldAnimate
+        case html
+        case maxWidth
+        case radius
+        case marginTop
+        case marginBottom
+        case marginLeft
+        case marginRight
+        case dismissOnTouchOutside
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        position = (try? container.decode(ContentPosition.self, forKey: .position)) ?? .top
+        shouldAnimate = (try? container.decode(Bool.self, forKey: .shouldAnimate)) ?? true
+        html = try? container.decode(String.self, forKey: .html)
+        maxWidth = try? container.decode(CGFloat.self, forKey: .maxWidth)
+        radius = try? container.decode(Int.self, forKey: .radius)
+        marginTop = try? container.decode(CGFloat.self, forKey: .marginTop)
+        marginBottom = try? container.decode(CGFloat.self, forKey: .marginBottom)
+        marginLeft = try? container.decode(CGFloat.self, forKey: .marginLeft)
+        marginRight = try? container.decode(CGFloat.self, forKey: .marginRight)
+        dismissOnTouchOutside = (try? container.decode(Bool.self, forKey: .dismissOnTouchOutside)) ?? true
+    }
+    
+    init(position: ContentPosition, shouldAnimate: Bool, html: String?, maxWidth: CGFloat?, radius: Int?, marginTop: CGFloat?, marginBottom: CGFloat?, marginLeft: CGFloat?, marginRight: CGFloat?, dismissOnTouchOutside: Bool) {
+        self.position = position
+        self.shouldAnimate = shouldAnimate
+        self.html = html
+        self.maxWidth = maxWidth
+        self.radius = radius
+        self.marginTop = marginTop
+        self.marginBottom = marginBottom
+        self.marginLeft = marginLeft
+        self.marginRight = marginRight
+        self.dismissOnTouchOutside = dismissOnTouchOutside
+    }
 }
 
 enum ContentPosition: String, Codable {
@@ -26,12 +66,13 @@ enum ContentType:String, Codable{
     case popOutModal = "POP_OUT_MODAL"
     case fullScreen = "FULL_SCREEN"
     case html = "HTML"
+    case inAppBrowser = "inAppBrowser"
 }
 
 struct ScreenDataFilter: Codable{
         let dataName: String
         let type: String
-        let operatorType: OperatorType
+        let operatorType: ComparisonType
         let value: String
     
     enum CodingKeys: String, CodingKey {
@@ -43,27 +84,81 @@ struct ScreenDataFilter: Codable{
 }
 
 struct ScreenNameFilter: Codable{
-    let operatorType: OperatorType
+    let operatorType: ComparisonType
     let value: [String]
     
     enum CodingKeys: String, CodingKey {
         case operatorType = "operator"
         case value
     }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        operatorType = try container.decode(ComparisonType.self, forKey: .operatorType)
+        value = (try? container.decode([String].self, forKey: .value)) ?? []
+    }
 }
 
 struct DisplayCondition: Codable{
     let screenNameFilters: [ScreenNameFilter]?
-//    let screenDataFilters:[ScreenDataFilter]?
+    let ruleSet: RuleSet?
+    
+    var hasRules: Bool {
+        return !(ruleSet?.rules ?? []).isEmpty
+    }
+}
+struct RuleSet: Codable {
+    let logicOperator: RulesOperatorType
+    let rules: [Rule]
+}
+
+struct Rule: Codable {
+    let logicOperatorBetweenCriterions: RulesOperatorType
+    let criterions: [Criterion]
+}
+
+struct Criterion: Codable {
+    let id: Int
+    let parameter: String
+    let dataType: CriterionDataType
+    let comparison: ComparisonType
+    let values: [String]
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(Int.self, forKey: .id)
+        parameter = try container.decode(String.self, forKey: .parameter)
+        comparison = try container.decode(ComparisonType.self, forKey: .comparison)
+        dataType = (try? container.decode(CriterionDataType.self, forKey: .dataType)) ?? .TEXT
+        values = try container.decode([String].self, forKey: .values)
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case parameter
+        case dataType
+        case comparison
+        case values
+    }
+}
+
+enum CriterionDataType: String, Codable {
+    case DATETIME
+    case INT
+    case TEXT
+    case TEXTLIST
+    case INTRANGE
+    case BOOL
+    case VISITCOUNTPASTXDAYS
 }
 
 struct DisplayTiming: Codable{
-    let triggerBy: TriggerBy
     let delay: Int?
     let showEveryXMinutes: Int?
+    let maxShowCount: Int?
 }
 
-enum OperatorType: String, Codable {
+enum ComparisonType: String, Codable {
     case EQUALS
     case NOT_EQUALS
     case LIKE
@@ -74,15 +169,20 @@ enum OperatorType: String, Codable {
     case NOT_ENDS_WITH
     case IN
     case NOT_IN
+    case GREATER_THAN
+    case GREATER_EQUAL
+    case LESS_THAN
+    case LESS_EQUAL
+    case BETWEEN
+}
+
+enum RulesOperatorType: String, Codable {
+    case AND
+    case OR
 }
 
 enum Priority: Int, Codable {
     case high = 1
     case medium = 2
     case low = 3
-}
-
-enum TriggerBy: String, Codable {
-    case navigation = "NAVIGATION"
-    case event = "EVENT"
 }
