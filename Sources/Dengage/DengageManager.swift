@@ -111,10 +111,10 @@ extension DengageManager {
         let partner_device_idSubscription = DengageLocalStorage.shared.value(for: .partner_device_idSubscription) as? String
         let advertisingIdSubscription = DengageLocalStorage.shared.value(for: .advertisingIdSubscription) as? String
         
-        let integrationKey = DengageLocalStorage.shared.value(for: .integrationKey) as? String
-        let token = DengageLocalStorage.shared.value(for: .token) as? String
-        let contactKey = DengageLocalStorage.shared.value(for: .contactKey) as? String
-        let userPermission = DengageLocalStorage.shared.value(for: .userPermission) as? Bool
+        let integrationKey = self.config.integrationKey
+        let token = self.config.deviceToken
+        let contactKey = self.config.getContactKey()
+        let userPermission = self.config.permission
         let udid = self.config.applicationIdentifier
         let carrierId = self.config.getCarrierIdentifier
         let appVersion = self.config.appVersion
@@ -122,7 +122,11 @@ extension DengageManager {
         let country = self.config.deviceCountryCode
         let language = self.config.deviceLanguage
         let timezone = self.config.deviceTimeZone
-        let PartnerDeviceId = DengageLocalStorage.shared.value(for: .PartnerDeviceId) as? String
+        var PartnerDeviceId = ""
+        if let partnerId = DengageLocalStorage.shared.value(for: .PartnerDeviceId) as? String
+        {
+            PartnerDeviceId = partnerId
+        }
         let advertisingId = self.config.advertisingIdentifier
         
         if integrationKeySubscription != integrationKey
@@ -197,8 +201,10 @@ extension DengageManager {
             let nextSyncedSubscription = lastSyncedSubscription.addingTimeInterval(1200)
             let currentSyncedSubscription = Date()
             
-            if nextSyncedSubscription > currentSyncedSubscription
+            if currentSyncedSubscription > nextSyncedSubscription
             {
+                DengageLocalStorage.shared.set(value: Date(), for: .lastSyncdSubscription)
+
                 makeSubscriptionRequestAPICall()
             }
 
@@ -221,7 +227,6 @@ extension DengageManager {
             case .success(_):
                 Logger.log(message: "sync success")
                 
-                DengageLocalStorage.shared.set(value: Date(), for: .lastSyncdSubscription)
                 
                 DengageLocalStorage.shared.set(value: self.config.integrationKey, for: .integrationKeySubscription)
                 DengageLocalStorage.shared.set(value: self.config.deviceToken, for: .tokenSubscription)
