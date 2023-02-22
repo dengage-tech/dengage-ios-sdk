@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-public class Dengage{
+public class Dengage  {
     
     static var manager: DengageManager?
     
@@ -153,14 +153,7 @@ public class Dengage{
         dengage?.inAppManager.setNavigation(screenName:screenName)
     }
     
-    @objc public static func handleInAppDeeplink(completion: @escaping (String) -> Void) {
-        
-        dengage?.inAppManager.handleInAppDeeplink(completion: { url in
-            
-            completion(url)
-            
-        })
-    }
+    
     
     @objc public static func showRealTimeInApp(
         screenName: String? = nil,
@@ -354,6 +347,18 @@ extension Dengage{
         dengage?.dengageDeviceIdSendToServer(token: token)
     }
     
-    
+    @objc public static func handleInAppDeeplink(completion: @escaping (String) -> Void) {
+        
+        dengage?.inAppManager.returnAfterDeeplinkRecieved = { deeplink in
+            
+            completion(deeplink)
+            
+        }
+        
+        
+     
+    }
     
 }
+
+

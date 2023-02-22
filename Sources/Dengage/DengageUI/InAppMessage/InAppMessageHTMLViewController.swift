@@ -9,6 +9,7 @@ final class InAppMessageHTMLViewController: UIViewController{
     }()
 
     var delegate: InAppMessagesActionsDelegate?
+    
 
     let message:InAppMessage
     
@@ -61,10 +62,12 @@ final class InAppMessageHTMLViewController: UIViewController{
      }
     
     private func setupJavascript(){
+        
         let userScript = WKUserScript(source: javascriptInterface,
                                       injectionTime: WKUserScriptInjectionTime.atDocumentEnd,
                                       forMainFrameOnly: true)
         viewSource.webView.configuration.userContentController.addUserScript(userScript)
+        
         if #available(iOS 14.0, *) {
             viewSource.webView.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
         } else {

@@ -26,6 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
       
         Dengage.setLog(isVisible: true)
+        
         Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
         
        

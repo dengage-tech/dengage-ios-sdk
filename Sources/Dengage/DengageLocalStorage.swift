@@ -62,6 +62,7 @@ final class DengageLocalStorage: NSObject {
         case partner_device_idSubscription = "partner_device_idSubscription"
         case advertisingIdSubscription = "advertisingIdSubscription"
         case languageSubscription = "languageSubscription"
+        case delayForInAppMessage = "delayForInAppMessage"
         
 
     }

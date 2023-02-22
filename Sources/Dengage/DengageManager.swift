@@ -12,7 +12,7 @@ public class DengageManager {
     var eventManager: DengageEventProtocolInterface
     var sessionManager: DengageSessionManagerInterface
     var inboxManager: DengageInboxManagerInterface
-    var inAppManager: DengageInAppMessageManagerInterface
+    var inAppManager: DengageInAppMessageManager
     var notificationManager: DengageNotificationManagerInterface
     var dengageRFMManager: DengageRFMManager
 
