@@ -31,7 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
        
         
-        Dengage.set(deviceId: "123456")
+     //   Dengage.set(deviceId: "123456")
         
         Dengage.syncSDK()
         

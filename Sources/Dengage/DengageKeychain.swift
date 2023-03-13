@@ -9,7 +9,7 @@ final class DengageKeychain {
     private static let accessLevel = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
     
     @discardableResult
-    static func set(_ value: String, forKey key: Key) -> Bool {
+    static func set(_ value: String, forKey key: String) -> Bool {
         defer {
             lock.unlock()
         }
@@ -20,7 +20,7 @@ final class DengageKeychain {
         remove(key)
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: key.rawValue,
+            kSecAttrAccount as String: key,
             kSecValueData as String: value,
             kSecAttrAccessible as String: accessLevel
         ]
@@ -29,16 +29,16 @@ final class DengageKeychain {
     }
 
     @discardableResult
-    static func remove(_ key: Key) -> Bool {
+    static func remove(_ key: String) -> Bool {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: key.rawValue
+            kSecAttrAccount as String: key
         ]
         lastResultCode = SecItemDelete(query as CFDictionary)
         return lastResultCode == noErr
     }
     
-    static func string(forKey key: Key) -> String? {
+    static func string(forKey key: String) -> String? {
         defer {
             lock.unlock()
         }
@@ -46,7 +46,7 @@ final class DengageKeychain {
         var result: AnyObject?
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: key.rawValue,
+            kSecAttrAccount as String: key,
             kSecMatchLimit as String: kSecMatchLimitOne,
             kSecReturnData as String: coreFoundationBooleanTrue
         ]
@@ -60,8 +60,3 @@ final class DengageKeychain {
     }
 }
 
-extension DengageKeychain{
-    enum Key: String{
-        case applicationIdentifier = "DengageApplicationIdentifier"
-    }
-}

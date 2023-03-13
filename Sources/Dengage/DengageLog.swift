@@ -9,8 +9,9 @@ final class DengageLog{
     var logs = Array(repeating: "", count: 200)
     var logCount = 0
     func log(message: String, argument: String = "") {
+        
         os_log("[DENGAGE] %@ %@", log: .default, type: .debug, message, argument)
-        saveLog(message: String(format: "[DENGAGE] %@ %@", message, argument))
+       // saveLog(message: String(format: "[DENGAGE] %@ %@", message, argument))
     }
     
     private func saveLog(message: String){

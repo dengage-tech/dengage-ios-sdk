@@ -79,7 +79,7 @@ extension DengageManager {
         }
     }
     
-    func set(_ deviceId: String){
+    func set(_ deviceId: String, withIdentifier : String?){
         let previous = self.config.applicationIdentifier
         if previous != deviceId {
             self.config.set(deviceId: deviceId)
