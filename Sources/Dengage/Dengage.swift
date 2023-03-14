@@ -151,13 +151,16 @@ public class Dengage{
     }
     
     @objc public static func handleInAppDeeplink(completion: @escaping (String) -> Void) {
-        
-        dengage?.inAppManager.handleInAppDeeplink(completion: { url in
-            
-            completion(url)
-            
-        })
-    }
+
+          dengage?.inAppManager.returnAfterDeeplinkRecieved = { deeplink in
+
+              completion(deeplink)
+
+          }
+
+
+
+      }
     
     @objc public static func showRealTimeInApp(
         screenName: String? = nil,

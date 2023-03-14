@@ -19,7 +19,6 @@ final class DengageLocalStorage: NSObject {
     }
     
     enum Key: String{
-        case applicationIdentifier = "ApplicationIdentifier"
         case contactKey = "ContactKey"
         case token = "Token"
         case PartnerDeviceId = "PartnerDeviceId"

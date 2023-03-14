@@ -6,7 +6,7 @@ final class DengageInAppMessageManager:DengageInAppMessageManagerInterface {
     var config: DengageConfiguration
     var apiClient: DengageNetworking
     var inAppMessageWindow: UIWindow?
-    var deeplinkURL: String?
+    public var returnAfterDeeplinkRecieved : ((String) -> Void)?
     let sessionManager: DengageSessionManagerInterface
     var inAppBrowserWindow: UIWindow?
 
@@ -273,14 +273,6 @@ extension DengageInAppMessageManager {
         let inAppMessages = DengageInAppMessageUtils.findNotExpiredInAppMessages(untilDate: Date(), messages)
         guard let priorInAppMessage = DengageInAppMessageUtils.findPriorInAppMessage(inAppMessages: inAppMessages, screenName: screenName, config: config) else {return}
         showInAppMessage(inAppMessage: priorInAppMessage)
-    }
-    
-    
-    func handleInAppDeeplink(completion: @escaping (String) -> Void) {
-        
-        completion(self.deeplinkURL ?? "")
-
-        
     }
     
     func showInAppMessage(inAppMessage: InAppMessage) {
@@ -552,21 +544,15 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
                 {
                     guard let urlString = url else { return }
                     
-                    self.deeplinkURL = urlString
-                    self.handleInAppDeeplink { str in
-                        
-                        
-                    }
+                    self.returnAfterDeeplinkRecieved!(urlDeeplink)
+
                 }
                 else
                 {
                    
                     
-                    self.deeplinkURL = urlDeeplink
-                    self.handleInAppDeeplink { str in
-                        
-                        
-                    }
+                    self.returnAfterDeeplinkRecieved!(urlDeeplink)
+
                     UIApplication.shared.open(urlStr, options: [:], completionHandler: nil)
                 }
               
@@ -575,11 +561,8 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
             {
                 if RetrieveLinkOnSameScreen && !OpenInAppBrowser
                 {
-                    self.deeplinkURL = urlDeeplink
-                    self.handleInAppDeeplink { str in
-                        
-                        
-                    }
+                    self.returnAfterDeeplinkRecieved!(urlDeeplink)
+
                 }
                 else if !RetrieveLinkOnSameScreen && OpenInAppBrowser
                 {
@@ -587,18 +570,14 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
                     
                 }
                 else
-                {
-                    self.deeplinkURL = urlDeeplink
-                    
+                {                    
                     UIApplication.shared.open(urlStr, options: [:], completionHandler: nil)
                 }
             }
         }
         else
         {
-            
-            self.deeplinkURL = urlDeeplink
-            
+                        
             UIApplication.shared.open(urlStr , options: [:], completionHandler: nil)
         }
       
@@ -644,7 +623,6 @@ protocol DengageInAppMessageManagerInterface: AnyObject{
     func fetchInAppMessages()
     func setNavigation(screenName: String?, params: Dictionary<String,String>?)
     func showInAppMessage(inAppMessage: InAppMessage)
-    func handleInAppDeeplink(completion: @escaping (String) -> Void)
     func fetchInAppExpiredMessages()
 
 
