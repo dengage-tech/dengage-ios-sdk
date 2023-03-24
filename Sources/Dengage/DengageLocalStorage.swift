@@ -72,6 +72,7 @@ final class DengageLocalStorage: NSObject {
         case advertisingIdSubscription = "advertisingIdSubscription"
         case languageSubscription = "languageSubscription"
         case lastSyncdSubscription = "lastSyncdSubscription"
+        case lastPushPayload = "lastPushPayload"
 
     }
 }

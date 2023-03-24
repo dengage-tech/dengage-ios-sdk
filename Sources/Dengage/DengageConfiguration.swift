@@ -100,8 +100,26 @@ final class DengageConfiguration:Encodable {
     }
     
     func setPartnerDeviceId(adid: String?){
-        DengageLocalStorage.shared.set(value: adid, for: .PartnerDeviceId)
-        partnerDeviceId = adid
+        
+        if let partnerId = DengageLocalStorage.shared.value(for: .PartnerDeviceId) as? String
+        {
+            if partnerId != adid
+            {
+                DengageLocalStorage.shared.set(value: adid, for: .PartnerDeviceId)
+                partnerDeviceId = adid
+                Dengage.syncSubscription()
+
+            }
+        }
+        else
+        {
+            DengageLocalStorage.shared.set(value: adid, for: .PartnerDeviceId)
+            partnerDeviceId = adid
+            Dengage.syncSubscription()
+            
+        }
+
+        
     }
     
     func setinAppLinkConfiguration( deeplink : String){
@@ -130,8 +148,18 @@ final class DengageConfiguration:Encodable {
     }
     
     func set(deviceId: String){
-        DengageKeychain.set(deviceId, forKey: "\(Bundle.main.bundleIdentifier ?? "applicationIdentifier")")
-        applicationIdentifier = deviceId
+        
+        DengageKeychain.set(deviceId, forKey: "\(Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier")")
+        let previous = self.applicationIdentifier
+        
+        if previous != deviceId {
+            
+           applicationIdentifier = deviceId
+           Dengage.syncSubscription()
+            
+        }
+        
+        
     }
     
     func set(permission: Bool){

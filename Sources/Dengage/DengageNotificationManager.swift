@@ -41,6 +41,15 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
            return
         }
         
+        do {
+            let data =  try JSONSerialization.data(withJSONObject: content.userInfo, options: JSONSerialization.WritingOptions.prettyPrinted)
+            let convertedString = String(data: data, encoding: String.Encoding.utf8)
+            DengageLocalStorage.shared.set(value: convertedString, for: .lastPushPayload)
+        } catch let myJSONError {
+            print(myJSONError)
+        }
+        
+        
         let actionIdentifier = response.actionIdentifier
         switch actionIdentifier {
         case UNNotificationDismissActionIdentifier:
@@ -71,6 +80,16 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
     func didReceive(with userInfo: [AnyHashable: Any]) {
         if let jsonData = try? JSONSerialization.data(withJSONObject: userInfo, options: .prettyPrinted),
            let message = try? JSONDecoder().decode(PushContent.self, from: jsonData)  {
+            
+            do {
+                let data =  try JSONSerialization.data(withJSONObject: userInfo, options: JSONSerialization.WritingOptions.prettyPrinted)
+                let convertedString = String(data: data, encoding: String.Encoding.utf8)
+                DengageLocalStorage.shared.set(value: convertedString, for: .lastPushPayload)
+            } catch let myJSONError {
+                print(myJSONError)
+            }
+            
+            
             if let messageSource = message.messageSource, MESSAGE_SOURCE == messageSource
             {
                 

@@ -93,6 +93,14 @@ public class Dengage{
         dengage?.config.deviceToken
     }
     
+    @objc public static func getLastPushPayload() -> String? {
+        
+        let pushPayload = DengageLocalStorage.shared.value(for: .lastPushPayload) as? String
+        DengageLocalStorage.shared.set(value: "", for: .lastPushPayload)
+        return pushPayload
+        
+    }
+    
     @objc public static func setToken(token: String) {
         dengage?.config.set(token: token)
     }
@@ -191,8 +199,6 @@ public class Dengage{
     
     @objc public static func setPartnerDeviceId(adid: String?) {
        
-        DengageLocalStorage.shared.set(value: adid, for: .PartnerDeviceId)
-
         dengage?.config.setPartnerDeviceId(adid: adid)
     }
     
@@ -284,7 +290,7 @@ public class Dengage{
     }
     
     static func syncSubscription() {
-        dengage?.sync()
+        dengage?.makeSubscriptionRequestAPICall()
     }
 }
 
