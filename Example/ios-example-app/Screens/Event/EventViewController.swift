@@ -54,16 +54,12 @@ final class EventViewController: UIViewController {
     
     @objc private func didTapSendButton(){
 
-        
-        Dengage.setNavigation(screenName: "Event")
-
-        
-//        let eventName = eventNameTextField.text ?? ""
-//        let parameters:Dictionary = stackView.arrangedSubviews
-//            .compactMap{$0 as? EventParameterItemView}
-//            .compactMap{$0.values}
-//            .reduce(into: [:]) { $0[$1.0] = $1.1 }
-//        Dengage.sendCustomEvent(eventTable: eventName, parameters: parameters)
+        let eventName = eventNameTextField.text ?? ""
+        let parameters:Dictionary = stackView.arrangedSubviews
+            .compactMap{$0 as? EventParameterItemView}
+            .compactMap{$0.values}
+            .reduce(into: [:]) { $0[$1.0] = $1.1 }
+        Dengage.sendCustomEvent(eventTable: eventName, parameters: parameters)
         
     }
     
