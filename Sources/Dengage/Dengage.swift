@@ -65,7 +65,6 @@ public class Dengage  {
     
     @objc public static func syncSDK() {
        
-       
         dengage?.sync()
         
     }
@@ -184,8 +183,6 @@ public class Dengage  {
     
     @objc public static func setPartnerDeviceId(adid: String?) {
        
-        DengageLocalStorage.shared.set(value: adid, for: .PartnerDeviceId)
-
         dengage?.config.setPartnerDeviceId(adid: adid)
     }
     
@@ -276,8 +273,8 @@ public class Dengage  {
         Logger.isEnabled = isVisible
     }
     
-    static func syncSubscription() {
-        dengage?.sync()
+   static func syncSubscription() {
+        dengage?.makeSubscriptionRequestAPICall()
     }
 }
 

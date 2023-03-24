@@ -79,11 +79,11 @@ extension DengageManager {
         }
     }
     
-    func set(_ deviceId: String, withIdentifier : String?){
+    func set(_ deviceId: String){
         let previous = self.config.applicationIdentifier
         if previous != deviceId {
             self.config.set(deviceId: deviceId)
-            Dengage.syncSubscription()
+           Dengage.syncSubscription()
         }
     }
     
@@ -123,78 +123,78 @@ extension DengageManager {
         let language = self.config.deviceLanguage
         let timezone = self.config.deviceTimeZone
         var PartnerDeviceId = ""
+        
         if let partnerId = DengageLocalStorage.shared.value(for: .PartnerDeviceId) as? String
         {
             PartnerDeviceId = partnerId
         }
         let advertisingId = self.config.advertisingIdentifier
         
-        if integrationKeySubscription != integrationKey
+        if (integrationKeySubscription != nil) && (integrationKeySubscription != integrationKey)
         {
             makeSubscriptionRequestAPICall()
 
         }
-        else if token != tokenSubscription
+        else if (tokenSubscription != nil) && (token != tokenSubscription)
         {
             makeSubscriptionRequestAPICall()
 
         }
-        else if contactKey != contactKeySubscription
+        else if (contactKey != nil) &&  (contactKey != contactKeySubscription)
         {
             makeSubscriptionRequestAPICall()
 
         }
-        else if userPermission != permissionSubscription
+        else if (permissionSubscription != nil) &&  (userPermission != permissionSubscription)
         {
             makeSubscriptionRequestAPICall()
 
         }
-        else if udidSubscription != udid
+        else if (udidSubscription != nil) &&  (udidSubscription != udid)
         {
             makeSubscriptionRequestAPICall()
 
         }
-        else if carrierIdSubscription != carrierId
+        else if (carrierIdSubscription != nil) && (carrierIdSubscription != carrierId)
         {
             makeSubscriptionRequestAPICall()
 
         }
-        else if appVersionSubscription != appVersion
+        else if (appVersionSubscription != nil) && (appVersionSubscription != appVersion)
         {
             makeSubscriptionRequestAPICall()
 
         }
-        else if sdkVersionSubscription != sdkVersion
+        else if (sdkVersionSubscription != nil) && (sdkVersionSubscription != sdkVersion)
         {
             makeSubscriptionRequestAPICall()
 
         }
-        else if countrySubscription != country
+        else if (countrySubscription != nil) && (countrySubscription != country)
         {
             makeSubscriptionRequestAPICall()
 
         }
-        else if language != languageSubscription
+        else if (languageSubscription != nil) && (language != languageSubscription)
         {
             makeSubscriptionRequestAPICall()
 
         }
-        else if timezone != timezoneSubscription
+        else if (timezoneSubscription != nil) && timezone != timezoneSubscription
         {
             makeSubscriptionRequestAPICall()
 
         }
-        else if PartnerDeviceId != partner_device_idSubscription
+        else if (partner_device_idSubscription != nil) &&  (PartnerDeviceId != partner_device_idSubscription)
         {
             makeSubscriptionRequestAPICall()
 
         }
-        else if advertisingIdSubscription != advertisingId
+        else if (advertisingIdSubscription != nil) &&  advertisingIdSubscription != advertisingId
         {
             makeSubscriptionRequestAPICall()
 
         }
-        
         
         if let lastSyncedSubscription = DengageLocalStorage.shared.value(for: .lastSyncdSubscription) as? Date
         {
@@ -211,6 +211,7 @@ extension DengageManager {
         }
         else
         {
+            DengageLocalStorage.shared.set(value: Date(), for: .lastSyncdSubscription)
             makeSubscriptionRequestAPICall()
         }
     

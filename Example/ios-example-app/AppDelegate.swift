@@ -28,14 +28,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Dengage.setLog(isVisible: true)
         
         Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
+               
+        Dengage.setPartnerDeviceId(adid: "terhfhgf")
         
-       
+        Dengage.set(deviceId: "3434444343434343")
         
-     //   Dengage.set(deviceId: "123456")
+        Dengage.set(contactKey: "36243786")
         
-        Dengage.syncSDK()
-        
-        
+        Dengage.set(permission: false)
         
         
         return true

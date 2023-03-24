@@ -19,6 +19,12 @@ final class InboxMessagesViewController: UIViewController {
         super.viewDidLoad()
 
         view.addSubview(tableView)
+        
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.estimatedRowHeight = 100
+        tableView.rowHeight = 100
+        
         tableView.fillSuperview()
         fetchMessages()
     }
