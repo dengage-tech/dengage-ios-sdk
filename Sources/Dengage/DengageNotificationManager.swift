@@ -11,7 +11,7 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
     private let notificationCenter = UNUserNotificationCenter.current()
     
     var openTriggerCompletionHandler: ((_ notificationResponse: UNNotificationResponse) -> Void)?
-
+    
     init(config: DengageConfiguration,
          service: DengageNetworking,
          eventManager: DengageEventProtocolInterface,
@@ -32,13 +32,23 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
         let content = response.notification.request.content
         guard let messageSource = content.message?.messageSource,
               MESSAGE_SOURCE == messageSource else {
-//                  center.delegate?.userNotificationCenter?(center,
-//                                                           didReceive: response,
-//                                                           withCompletionHandler: completionHandler)
+            //                  center.delegate?.userNotificationCenter?(center,
+            //                                                           didReceive: response,
+            //                                                           withCompletionHandler: completionHandler)
+            
+          
             
             completionHandler()
             
-           return
+            return
+        }
+        
+        do {
+            let data =  try JSONSerialization.data(withJSONObject: content.userInfo, options: JSONSerialization.WritingOptions.prettyPrinted)
+            let convertedString = String(data: data, encoding: String.Encoding.utf8)
+            DengageLocalStorage.shared.set(value: convertedString, for: .lastPushPayload)
+        } catch let myJSONError {
+            print(myJSONError)
         }
         
         let actionIdentifier = response.actionIdentifier
@@ -56,7 +66,7 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
         }
         
         openTriggerCompletionHandler?(response)
-    
+        
         if !config.options.disableOpenURL
         {
             if let targetUrl = content.message?.targetUrl, !targetUrl.isEmpty {
@@ -71,6 +81,16 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
     func didReceive(with userInfo: [AnyHashable: Any]) {
         if let jsonData = try? JSONSerialization.data(withJSONObject: userInfo, options: .prettyPrinted),
            let message = try? JSONDecoder().decode(PushContent.self, from: jsonData)  {
+            
+            do {
+                let data =  try JSONSerialization.data(withJSONObject: userInfo, options: JSONSerialization.WritingOptions.prettyPrinted)
+                let convertedString = String(data: data, encoding: String.Encoding.utf8)
+                DengageLocalStorage.shared.set(value: convertedString, for: .lastPushPayload)
+            } catch let myJSONError {
+                print(myJSONError)
+            }
+            
+            
             if let messageSource = message.messageSource, MESSAGE_SOURCE == messageSource
             {
                 
@@ -95,10 +115,10 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
     }
     
     private func checkTargetUrlInActionButtons(content: UNNotificationContent,
-                                             actionIdentifier: String) {
+                                               actionIdentifier: String) {
         
         guard let actionButtons = content.message?.actionButtons else { return }
-                
+        
         for actionItem in actionButtons where actionItem.id == actionIdentifier {
             guard let url = actionItem.targetUrl, !url.isEmpty else { continue }
             openDeeplink(link: url)
@@ -125,7 +145,7 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
         
         if let transactionId = content.message?.transactionId {
             Logger.log(message: "BUTTON_ID is", argument: String(transactionId))
-
+            
             let request = TransactionalOpenEventRequest(integrationKey: config.integrationKey,
                                                         transactionId: transactionId,
                                                         messageId: messageId,
@@ -155,7 +175,7 @@ extension DengageNotificationManager{
                 Dengage.register(deviceToken: Data())
                 return
             }
-
+            
             self.getNotificationSettings()
             Logger.log(message: "PERMISSION_GRANTED", argument: String(granted))
         }

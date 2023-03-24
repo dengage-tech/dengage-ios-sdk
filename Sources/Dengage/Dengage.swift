@@ -95,6 +95,14 @@ public class Dengage  {
         dengage?.config.deviceToken
     }
     
+    @objc public static func getLastPushPayload() -> String? {
+        
+        let pushPayload = DengageLocalStorage.shared.value(for: .lastPushPayload) as? String
+        DengageLocalStorage.shared.set(value: "", for: .lastPushPayload)
+        return pushPayload
+        
+    }
+    
     @objc public static func setToken(token: String) {
         dengage?.config.set(token: token)
     }

@@ -67,7 +67,8 @@ import Dengage
     @objc private func didTapNavigationButton(){
         guard let text = screenNameTextField.text else {return}
        
-        Dengage.setNavigation(screenName: text)
+        Dengage.setNavigation(screenName: "InApp")
+
        
         Dengage.handleInAppDeeplink { url in
             

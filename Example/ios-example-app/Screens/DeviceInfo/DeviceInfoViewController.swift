@@ -18,6 +18,9 @@ class DeviceInfoViewController: UIViewController {
         view.addSubview(textView)
         textView.fillSuperview(horizontalPadding: 16, verticalPadding: 8)
         getInfo()
+        
+        Dengage.setNavigation(screenName: "Device")
+        
     }
     
     func getInfo(){

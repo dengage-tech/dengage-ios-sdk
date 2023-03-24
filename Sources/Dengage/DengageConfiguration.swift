@@ -99,7 +99,7 @@ final class DengageConfiguration:Encodable {
     
     func set(deviceId: String){
         
-        DengageKeychain.set(deviceId, forKey: "\(Bundle.main.bundleIdentifier ?? "applicationIdentifier")")
+        DengageKeychain.set(deviceId, forKey: "\(Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier")")
         let previous = self.applicationIdentifier
         
         if previous != deviceId {
@@ -275,18 +275,20 @@ final class DengageConfiguration:Encodable {
     
     static func getApplicationId() -> String {
         
+        let appBundleID = Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier"
+        
         if let uuidString = DengageKeychain.string(forKey: "DengageApplicationIdentifier"), !uuidString.isEmpty {
             
             DengageKeychain.remove("DengageApplicationIdentifier")
-            DengageKeychain.set(uuidString, forKey: "\(Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier")")
+            DengageKeychain.set(uuidString, forKey: appBundleID)
             
         }
         
-        if let uuidString = DengageKeychain.string(forKey: "\(Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier")"), !uuidString.isEmpty {
+        if let uuidString = DengageKeychain.string(forKey: appBundleID), !uuidString.isEmpty {
             return uuidString
         } else {
             let uuidString = NSUUID().uuidString.lowercased()
-            DengageKeychain.set(uuidString, forKey: "\(Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier")")
+            DengageKeychain.set(uuidString, forKey: appBundleID)
             return uuidString
         }
     }
