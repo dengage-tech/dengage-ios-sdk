@@ -6,14 +6,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
         // Override point for customization after application launch.
 
 //        _p_l_AvDJy5os_s_l_CWOx_p_l_wSaoGA4BtNDjxnqO_p_l_Go_p_l_WSu6VdnlIUNi1Yb7C9FhsfeAbwUg9uH9vLXaG_s_l_0UqGh2yBjRYY6RK15NahUFP9J8JI1D6FcphiLPskqz8HqUKRAxvG_p_l_Ks7g0_p_l_LNkG97N_p_l_oc3PjTegYw_e_q__e_q_
-       
+               
         Dengage.setPartnerDeviceId(adid: "21412413")
-        
 
         Dengage.start(apiKey: "_p_l_AvDJy5os_s_l_CWOx_p_l_wSaoGA4BtNDjxnqO_p_l_Go_p_l_WSu6VdnlIUNi1Yb7C9FhsfeAbwUg9uH9vLXaG_s_l_0UqGh2yBjRYY6RK15NahUFP9J8JI1D6FcphiLPskqz8HqUKRAxvG_p_l_Ks7g0_p_l_LNkG97N_p_l_oc3PjTegYw_e_q__e_q_", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
+        
         UNUserNotificationCenter.current().delegate = self
         window = UIWindow(frame: UIScreen.main.bounds)
         let rootViewController = RootViewController()
@@ -23,15 +24,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if #available(iOS 13.0, *) {
             window?.overrideUserInterfaceStyle = .light
         }
+                
+       // Dengage.set(deviceId: "123456")
         
+       // Dengage.syncSDK()
         
-        
-        Dengage.set(deviceId: "123456")
-        
-        Dengage.syncSDK()
-        
-        Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
+      //  Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
 
+        Dengage.promptForPushNotifications { isUserGranted in
+            
+            
+        }
         
         
         

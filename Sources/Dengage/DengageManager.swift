@@ -65,12 +65,13 @@ extension DengageManager {
             token = deviceToken.map { data in String(format: "%02.2hhx", data) }.joined()
         }
         
-        threadContainer.write { [weak self] in
-            self?.config.set(token: token)
+        let previous = self.config.deviceToken
+        if previous != token {
+            self.config.set(token: token)
             Logger.log(message: "sync Started token", argument: token)
+            Dengage.syncSubscription()
         }
         
-        Dengage.syncSubscription()
     }
     
     func set(_ contactKey: String?){
