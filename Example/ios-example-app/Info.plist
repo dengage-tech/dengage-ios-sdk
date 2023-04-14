@@ -10,5 +10,9 @@
 	<string>https://us-event.dengage.com</string>
 	<key>DengageInAppApiUrl</key>
 	<string>https://us-push.dengage.com/</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 </dict>
 </plist>

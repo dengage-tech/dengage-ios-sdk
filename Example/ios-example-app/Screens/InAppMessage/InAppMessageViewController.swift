@@ -54,6 +54,16 @@ import Dengage
         super.viewWillAppear(animated)
         deviceIdTextView.text = "Device Id:\n" + (Dengage.getDeviceId() ?? "") + "\nContact Key:\n" + (Dengage.getContactKey() ?? "")
     }
+     
+     override func viewDidAppear(_ animated: Bool) {
+         
+         super.viewDidAppear(animated)
+         
+         Dengage.setNavigation(screenName: "priya")
+         
+         Dengage.setNavigation()
+
+     }
     
     private func setupUI(){
         title = "In-App"
@@ -67,7 +77,6 @@ import Dengage
     @objc private func didTapNavigationButton(){
         guard let text = screenNameTextField.text else {return}
        
-        Dengage.setNavigation(screenName: text)
 
        
         Dengage.handleInAppDeeplink { url in

@@ -27,12 +27,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       
         Dengage.setLog(isVisible: true)
         
-        Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
+        Dengage.promptForPushNotifications { isUserGranted in
+            
+            
+        }
         
-        Dengage.set(permission: true)
-        
-        Dengage.set(contactKey: "rtrtyr")
-               
+//        Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
+//        
+//        
+//        Dengage.set(contactKey: "rtrtyr")
+//        
+//        Dengage.setContactKey(contactKey: "rrrrr")
+//               
+//        
+//        Dengage.set(deviceId: "kkkhjghfg")
+//
+//        
+//        Dengage.sendDeviceIdToServer(route: "V1/dengage/sync/mobile/customerData", token: "cti234bdj1ev4u4c0pk2l1z370vmgtah")
        
         return true
     }
@@ -42,6 +53,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
 
     func application(_ application: UIApplication,
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        
+        print("didRegisterForRemoteNotificationsWithDeviceToken")
         Dengage.register(deviceToken: deviceToken)
     }
 

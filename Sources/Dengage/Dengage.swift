@@ -43,7 +43,7 @@ public class Dengage  {
     }
     
     @objc public static func register(deviceToken: Data) {
-        dengage?.register(deviceToken)
+         dengage?.register(deviceToken)
     }
     
     @objc public static func setContactKey(contactKey: String?) {
