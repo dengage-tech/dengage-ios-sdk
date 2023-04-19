@@ -40,7 +40,11 @@ final class InAppMessageHTMLViewController: UIViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         setupJavascript()
+        
+        
         viewSource.setupConstaints(for: message.data.content.props)
+            
+        
         
         if let isPresent = message.data.content.props.html?.contains("Dn.iosUrlN") {
             
@@ -87,6 +91,8 @@ final class InAppMessageHTMLViewController: UIViewController{
         viewSource.webView.contentMode = .scaleAspectFit
         viewSource.webView.sizeToFit()
         viewSource.webView.autoresizesSubviews = true
+        self.viewSource.webView.backgroundColor = .blue
+
     }
 }
 
@@ -110,6 +116,19 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
         viewSource.webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { (height, error) in
             guard let scrollHeight = height as? CGFloat else {return}
             
+            
+            //self.viewSource.frame.origin.x = 20
+            
+            //self.viewSource.frame.size.width = self.viewSource.frame.size.width - 40
+            
+            if self.message.data.content.props.position == .middle
+            {
+                self.viewSource.leftConstraint?.constant = 32
+                self.viewSource.rightConstraint?.constant = -32
+            }
+            
+            
+
             if scrollHeight > self.viewSource.frame.height
             {
                 self.viewSource.height?.constant = self.viewSource.frame.height

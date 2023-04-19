@@ -58,13 +58,15 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
         Dengage.register(deviceToken: deviceToken)
     }
 
-    func application(_ application: UIApplication,
-                     didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
-        Dengage.didReceive(with: userInfo)
-    }
+    
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("Failed to register for notifications: \(error.localizedDescription)")
+    }
+    
+    func application(_ application: UIApplication,
+                     didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
+        Dengage.didReceive(with: userInfo)
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter,
