@@ -13,11 +13,11 @@ final class InAppMessageHTMLView: UIView{
         return view
     }()
     
-    private var bottomConstraint: NSLayoutConstraint?
-    private var centerConstraint: NSLayoutConstraint?
-    private var topConstraint: NSLayoutConstraint?
-    private var leftConstraint: NSLayoutConstraint?
-    private var rightConstraint: NSLayoutConstraint?
+     var bottomConstraint: NSLayoutConstraint?
+     var centerConstraint: NSLayoutConstraint?
+     var topConstraint: NSLayoutConstraint?
+     var leftConstraint: NSLayoutConstraint?
+     var rightConstraint: NSLayoutConstraint?
 
     var height: NSLayoutConstraint?
     

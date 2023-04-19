@@ -107,6 +107,15 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
         viewSource.webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { (height, error) in
             guard let scrollHeight = height as? CGFloat else {return}
             
+            
+            if self.message.data.content.props.position == .middle
+            {
+                self.viewSource.leftConstraint?.constant = 32
+                self.viewSource.rightConstraint?.constant = -32
+            }
+            
+            
+            
             if scrollHeight > self.viewSource.frame.height
             {
                 self.viewSource.height?.constant = self.viewSource.frame.height
