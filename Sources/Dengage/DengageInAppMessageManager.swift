@@ -268,7 +268,13 @@ extension DengageInAppMessageManager{
 extension DengageInAppMessageManager {
     
     func setNavigation(screenName: String? = nil, params: Dictionary<String,String>? = nil) {
+        
         guard !(config.inAppMessageShowTime != 0 && Date().timeMiliseconds < config.inAppMessageShowTime) else {return}
+        
+        inAppShowTimer.invalidate()
+        
+        DengageLocalStorage.shared.set(value: false, for: .cancelInAppMessage)
+        
         let messages = DengageLocalStorage.shared.getInAppMessages()
         guard !messages.isEmpty else {return}
         let inAppMessages = DengageInAppMessageUtils.findNotExpiredInAppMessages(untilDate: Date(), messages)
@@ -283,11 +289,6 @@ extension DengageInAppMessageManager {
     }
     
     func showInAppMessage(inAppMessage: InAppMessage) {
-        
-        inAppShowTimer.invalidate()
-        
-        DengageLocalStorage.shared.set(value: false, for: .cancelInAppMessage)
-
         
         let inappShowTime = (Date().timeMiliseconds) + (config.remoteConfiguration?.minSecBetweenMessages ?? 0.0)
         DengageLocalStorage.shared.set(value: inappShowTime, for: .inAppMessageShowTime)

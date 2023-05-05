@@ -23,6 +23,12 @@ class RootViewController: UIViewController {
         view.addSubview(tableView)
         tableView.fillSuperview()
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        Dengage.setNavigation()
+
+        
+    }
 }
 
 extension RootViewController: UITableViewDataSource{

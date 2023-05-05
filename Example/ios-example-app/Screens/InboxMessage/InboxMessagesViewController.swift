@@ -21,6 +21,9 @@ final class InboxMessagesViewController: UIViewController {
         view.addSubview(tableView)
         tableView.fillSuperview()
         fetchMessages()
+        
+        Dengage.setNavigation()
+
     }
     
     func fetchMessages(){
