@@ -158,6 +158,11 @@ public class Dengage{
         dengage?.inAppManager.setNavigation(screenName:screenName)
     }
     
+    
+    @objc public static func removeInAppMessageDisplay(){
+        dengage?.inAppManager.removeInAppMessageDisplay()
+    }
+    
     @objc public static func handleInAppDeeplink(completion: @escaping (String) -> Void) {
 
           dengage?.inAppManager.returnAfterDeeplinkRecieved = { deeplink in

@@ -9,6 +9,7 @@ final class DengageInAppMessageManager:DengageInAppMessageManagerInterface {
     public var returnAfterDeeplinkRecieved : ((String) -> Void)?
     let sessionManager: DengageSessionManagerInterface
     var inAppBrowserWindow: UIWindow?
+    var inAppShowTimer = Timer()
 
     init(config: DengageConfiguration,
          service: DengageNetworking,
@@ -275,35 +276,61 @@ extension DengageInAppMessageManager {
         showInAppMessage(inAppMessage: priorInAppMessage)
     }
     
+    func removeInAppMessageDisplay() {
+        
+        DengageLocalStorage.shared.set(value: true, for: .cancelInAppMessage)
+        
+    }
+    
     func showInAppMessage(inAppMessage: InAppMessage) {
-        if inAppMessage.data.isRealTime {
-            markAsRealTimeInAppMessageAsDisplayed(message: inAppMessage)
-        } else {
-            markAsInAppMessageAsDisplayed(inAppMessageId: inAppMessage.data.messageDetails)
-        }
-        var updatedMessage = inAppMessage
-        if let showEveryXMinutes = inAppMessage.data.displayTiming.showEveryXMinutes,
-           showEveryXMinutes != 0 {
-            updatedMessage.nextDisplayTime = Date().timeMiliseconds + Double(showEveryXMinutes) * 60000.0
-            updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
-            updateInAppMessageOnCache(updatedMessage)
-        } else {
-            if updatedMessage.data.isRealTime {
-                updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
-                 updateInAppMessageOnCache(updatedMessage)
-             } else {
-                 removeInAppMessageFromCache(inAppMessage.data
-                                                 .messageDetails ?? "")
-             }
-        }
+        
+        inAppShowTimer.invalidate()
+        
+        DengageLocalStorage.shared.set(value: false, for: .cancelInAppMessage)
+
+        
         let inappShowTime = (Date().timeMiliseconds) + (config.remoteConfiguration?.minSecBetweenMessages ?? 0.0)
         DengageLocalStorage.shared.set(value: inappShowTime, for: .inAppMessageShowTime)
-        
-        let delay = inAppMessage.data.displayTiming.delay ?? 0
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + Double(delay)) {
-            self.showInAppMessageController(with: inAppMessage)
-        }
+        let delay = inAppMessage.data.displayTiming.delay ?? 0
+        
+        inAppShowTimer = Timer.scheduledTimer(withTimeInterval: Double(delay), repeats: false, block: { _ in
+            
+            if let cancelInAppMessage = DengageLocalStorage.shared.value(for: .cancelInAppMessage) as? Bool
+            {
+                if !cancelInAppMessage
+                {
+                    if inAppMessage.data.isRealTime {
+                        self.markAsRealTimeInAppMessageAsDisplayed(message: inAppMessage)
+                    } else {
+                        self.markAsInAppMessageAsDisplayed(inAppMessageId: inAppMessage.data.messageDetails)
+                    }
+                    var updatedMessage = inAppMessage
+                    if let showEveryXMinutes = inAppMessage.data.displayTiming.showEveryXMinutes,
+                       showEveryXMinutes != 0 {
+                        updatedMessage.nextDisplayTime = Date().timeMiliseconds + Double(showEveryXMinutes) * 60000.0
+                        updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
+                        self.updateInAppMessageOnCache(updatedMessage)
+                    } else {
+                        if updatedMessage.data.isRealTime {
+                            updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
+                            self.updateInAppMessageOnCache(updatedMessage)
+                        } else {
+                            self.removeInAppMessageFromCache(inAppMessage.data
+                                .messageDetails ?? "")
+                        }
+                    }
+                    
+                    self.showInAppMessageController(with: inAppMessage)
+                }
+            }
+            
+           
+            
+        })
+    
+            
+      
     }
     
     private func showInAppMessageController(with message:InAppMessage){
@@ -624,6 +651,8 @@ protocol DengageInAppMessageManagerInterface: AnyObject{
     func setNavigation(screenName: String?, params: Dictionary<String,String>?)
     func showInAppMessage(inAppMessage: InAppMessage)
     func fetchInAppExpiredMessages()
+    func removeInAppMessageDisplay()
+
 
 
 }
