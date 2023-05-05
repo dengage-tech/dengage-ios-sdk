@@ -88,20 +88,7 @@ extension DengageInAppMessageManager{
                 let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchIntervalInMin)
                 DengageLocalStorage.shared.set(value: nextFetchTime, for: .lastFetchedRealTimeInAppMessageTime)
                 let arrRealTimeInAppMessages = InAppMessage.mapRealTime(source: response)
-                self?.addInAppMessagesIfNeeded(arrRealTimeInAppMessages, forRealTime: true)
-                var valueSourceIsPresent = false
-                for msgRealTimeInApp in arrRealTimeInAppMessages
-                {
-                    if msgRealTimeInApp.data.displayCondition.ruleSet?.rules[0].criterions[0].valueSource == "SERVER_SIDE"
-                    {
-                        valueSourceIsPresent = true
-                    }
-                }
-                
-                if valueSourceIsPresent
-                {
-                    self?.getVisitorInfo()
-                }
+                self?.addInAppMessagesIfNeeded(arrRealTimeInAppMessages, forRealTime: true)               
                 
             case .failure(let error):
                 Logger.log(message: "fetchRealTimeInAppMessages_ERROR", argument: error.localizedDescription)
