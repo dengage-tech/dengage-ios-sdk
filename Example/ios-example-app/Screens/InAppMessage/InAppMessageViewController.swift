@@ -59,10 +59,16 @@ import Dengage
          
          super.viewDidAppear(animated)
          
-         Dengage.setNavigation(screenName: "priya")
+         Dengage.setNavigation(screenName: "p4")
          
-         Dengage.setNavigation()
 
+     }
+     
+     override func viewWillDisappear(_ animated: Bool) {
+         
+         super.viewWillDisappear(animated)
+         
+         Dengage.removeInAppMessageDisplay()
      }
     
     private func setupUI(){

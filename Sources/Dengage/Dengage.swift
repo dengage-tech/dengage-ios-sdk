@@ -161,6 +161,10 @@ public class Dengage  {
     }
     
     
+    @objc public static func removeInAppMessageDisplay(){
+        dengage?.inAppManager.removeInAppMessageDisplay()
+    }
+    
     
     @objc public static func showRealTimeInApp(
         screenName: String? = nil,

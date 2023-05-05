@@ -32,6 +32,8 @@ final class DengageLocalStorage: NSObject {
         case lastFetchedRealTimeInAppMessageTime = "lastFetchedRealTimeInAppMessageTime"
         case PartnerDeviceId = "PartnerDeviceId"
         case inAppMessageShowTime = "inAppMessageShowTime"
+        case cancelInAppMessage = "cancelInAppMessage"
+
         case rfmScores = "rfmScores"
         case integrationKey = "integrationKey"
         case expiredMessagesFetchIntervalInMin = "expiredMessagesFetchIntervalInMin"

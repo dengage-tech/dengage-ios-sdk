@@ -19,7 +19,16 @@ class DeviceInfoViewController: UIViewController {
         textView.fillSuperview(horizontalPadding: 16, verticalPadding: 8)
         getInfo()
         
+        Dengage.setNavigation(screenName: "p1")
 
+
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        
+        super.viewWillDisappear(animated)
+        
+        Dengage.removeInAppMessageDisplay()
     }
     
     func getInfo(){
