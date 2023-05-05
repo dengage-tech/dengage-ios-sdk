@@ -7,7 +7,7 @@ var EVENT_SERVICE_URL = "https://event.dengage.com"
 let DEVICE_EVENT_QUEUE = "device-event-queue"
 let SUBSCRIPTION_QUEUE = "subscription-queue"
 
-let SDK_VERSION = "5.26.2"
+let SDK_VERSION = "5.27.2"
 let SUIT_NAME = "group.dengage"
 let DEFAULT_CARRIER_ID = "1"
 let MESSAGE_SOURCE = "DENGAGE"
