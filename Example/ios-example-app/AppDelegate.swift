@@ -25,6 +25,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         Dengage.setLog(isVisible: true)
+        
+        Dengage.setDevelopmentStatus(isDebug: true)
                 
        // Dengage.set(deviceId: "123456")
         

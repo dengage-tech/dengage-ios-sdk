@@ -116,6 +116,12 @@ public class Dengage{
         self.set(deviceId: applicationIdentifier)
     }
     
+    @objc public static func setDevelopmentStatus(isDebug:Bool)
+    {
+        DengageLocalStorage.shared.set(value: isDebug, for: .appEnvironment)
+
+    }
+    
     //todo add objc
     public static func getInboxMessages(offset: Int,
                                         limit: Int = 20,
