@@ -28,6 +28,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       
         Dengage.setLog(isVisible: true)
         
+        Dengage.setDevelopmentStatus(isDebug: false)
+        
         Dengage.promptForPushNotifications { isUserGranted in
             
             

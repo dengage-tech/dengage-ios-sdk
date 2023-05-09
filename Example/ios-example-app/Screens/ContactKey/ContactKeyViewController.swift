@@ -43,6 +43,7 @@ class ContactKeyViewController: UIViewController {
         super.viewWillDisappear(animated)
         
         Dengage.removeInAppMessageDisplay()
+        
     }
     
     @objc private func didTapSaveButton() {
