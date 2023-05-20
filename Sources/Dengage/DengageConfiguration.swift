@@ -105,6 +105,7 @@ final class DengageConfiguration:Encodable {
         if previous != deviceId {
             
            applicationIdentifier = deviceId
+            Dengage.callVisitorInfoAPI()
            Dengage.syncSubscription()
             
         }

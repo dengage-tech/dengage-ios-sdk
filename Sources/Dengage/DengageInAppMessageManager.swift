@@ -29,7 +29,7 @@ public class DengageInAppMessageManager:DengageInAppMessageManagerInterface {
 extension DengageInAppMessageManager{
     func fetchInAppMessages(){
         fetchRealTimeMessages()
-        getVisitorInfo()
+       // getVisitorInfo()
         Logger.log(message: "fetchInAppMessages called")
         guard shouldFetchInAppMessages else {return}
         guard let remoteConfig = config.remoteConfiguration, let accountName = remoteConfig.accountName else { return }
@@ -96,8 +96,8 @@ extension DengageInAppMessageManager{
         }
     }
     
-    private func getVisitorInfo(){
-        guard isEnabledRealTimeInAppMessage else {return}
+    public func getVisitorInfo(){
+       // guard isEnabledRealTimeInAppMessage else {return}
         guard let remoteConfig = config.remoteConfiguration,
               let accountName = remoteConfig.accountName
         else { return }
@@ -107,14 +107,17 @@ extension DengageInAppMessageManager{
         apiClient.send(request: request) { result in
             switch result {
             case .success(let response):
+                 
+                            
+                DengageLocalStorage.shared.save(response)
+
                 
-                if let segment = response.segments?.count , let tag = response.tags?.count
-                {
-                    if   segment > 0 &&  tag > 0
-                    {
-                        DengageLocalStorage.shared.set(value: response, for: .visitorInfo)
-                    }
-                }
+//                if let segment = response.segments?.count , let tag = response.tags?.count
+//                {
+//                    if   segment > 0 &&  tag > 0
+//                    {
+//                    }
+//                }
                 
                 
             case .failure(let error):
@@ -334,8 +337,6 @@ extension DengageInAppMessageManager {
                     self.showInAppMessageController(with: inAppMessage)
                 }
             }
-            
-           
             
         })
     

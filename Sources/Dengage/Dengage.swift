@@ -158,6 +158,12 @@ public class Dengage  {
         dengage?.notificationManager.promptForPushNotifications()
     }
     
+    @objc public static func callVisitorInfoAPI(){
+        
+        dengage?.inAppManager.getVisitorInfo()
+        
+    }
+    
     @objc public static func promptForPushNotifications(completion: @escaping (_ isUserGranted: Bool) -> Void) {
         dengage?.notificationManager.promptForPushNotifications(callback: completion)
     }
