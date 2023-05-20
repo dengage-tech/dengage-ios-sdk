@@ -122,6 +122,12 @@ public class Dengage{
 
     }
     
+    @objc public static func callVisitorInfoAPI(){
+        
+        dengage?.inAppManager.getVisitorInfo()
+        
+    }
+    
     //todo add objc
     public static func getInboxMessages(offset: Int,
                                         limit: Int = 20,
