@@ -97,7 +97,8 @@ extension DengageInAppMessageManager{
     }
     
     public func getVisitorInfo(){
-       // guard isEnabledRealTimeInAppMessage else {return}
+       
+        guard isEnabledRealTimeInAppMessage else {return}
         guard let remoteConfig = config.remoteConfiguration,
               let accountName = remoteConfig.accountName
         else { return }
@@ -111,13 +112,6 @@ extension DengageInAppMessageManager{
                             
                 DengageLocalStorage.shared.save(response)
 
-                
-//                if let segment = response.segments?.count , let tag = response.tags?.count
-//                {
-//                    if   segment > 0 &&  tag > 0
-//                    {
-//                    }
-//                }
                 
                 
             case .failure(let error):
