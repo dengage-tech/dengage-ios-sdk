@@ -127,7 +127,6 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
                 self.viewSource.rightConstraint?.constant = -32
             }
             
-            
 
             if scrollHeight > self.viewSource.frame.height
             {

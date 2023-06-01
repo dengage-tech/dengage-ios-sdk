@@ -135,6 +135,26 @@ final class DengageInAppMessageUtils{
                     }
 
                 }
+                else if criterion.dataType == .DATETIME
+                {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                    guard let visitorInfoDate = dateFormatter.date(from: userParam) else { return false }
+                    
+                    guard let serverDate = dateFormatter.date(from: criterion.values.first ?? "") else { return false }
+
+                    let diffInDays = self.compareDate(serverDate: serverDate, visitorInfoDate: visitorInfoDate)
+                    
+                    if diffInDays == 0
+                    {
+                        return true
+                    }
+                    else
+                    {
+                        return false
+                    }
+                    
+                }
                 else
                 {
                     return operate(with: criterion.comparison,
@@ -451,6 +471,15 @@ final class DengageInAppMessageUtils{
         let today = cal.startOfDay(for: Date())
         let date = cal.startOfDay(for: birthday)
         let components = cal.dateComponents([.day, .month], from: date)
+        let nextDate = cal.nextDate(after: today, matching: components, matchingPolicy: .nextTimePreservingSmallerComponents)
+        return cal.dateComponents([.day], from: today, to: nextDate ?? today).day ?? 0
+    }
+    
+    private class func compareDate(serverDate: Date , visitorInfoDate : Date) -> Int {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: visitorInfoDate)
+        let date = cal.startOfDay(for: serverDate)
+        let components = cal.dateComponents([.day, .month , .year], from: date)
         let nextDate = cal.nextDate(after: today, matching: components, matchingPolicy: .nextTimePreservingSmallerComponents)
         return cal.dateComponents([.day], from: today, to: nextDate ?? today).day ?? 0
     }

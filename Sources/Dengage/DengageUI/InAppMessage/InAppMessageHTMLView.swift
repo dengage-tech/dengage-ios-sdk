@@ -32,7 +32,7 @@ final class InAppMessageHTMLView: UIView{
     
     private func setupUI(){
         addSubview(webView)
-        backgroundColor = UIColor.clear
+        backgroundColor = UIColor.orange
         
         leftConstraint = webView
             .leadingAnchor
@@ -132,7 +132,7 @@ final class InAppBrowserView: UIView{
     
     private func setupUI(){
         addSubview(webView)
-        backgroundColor = UIColor.clear
+        backgroundColor = UIColor.green
         
         
     }

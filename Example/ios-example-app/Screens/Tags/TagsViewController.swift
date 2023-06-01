@@ -81,7 +81,7 @@ final class TagsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        Dengage.setNavigation()
+      //  Dengage.setNavigation()
     }
     
     override func viewWillAppear(_ animated: Bool) {
