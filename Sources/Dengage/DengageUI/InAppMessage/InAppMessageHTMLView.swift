@@ -32,7 +32,7 @@ final class InAppMessageHTMLView: UIView{
     
     private func setupUI(){
         addSubview(webView)
-        backgroundColor = UIColor.orange
+        backgroundColor = UIColor.clear
         
         leftConstraint = webView
             .leadingAnchor
@@ -74,6 +74,8 @@ final class InAppMessageHTMLView: UIView{
     private func set(maxWidth:CGFloat?){
         guard let width = maxWidth else {return}
         webView.widthAnchor.constraint(lessThanOrEqualToConstant: width).isActive = true
+        
+        
     }
     
     func setupConstaints(for params: ContentParams){
@@ -90,6 +92,7 @@ final class InAppMessageHTMLView: UIView{
             topConstraint?.isActive = true
         case .middle:
             centerConstraint?.isActive = true
+            break
         case .bottom:
             bottomConstraint?.isActive = true
         case .full:
@@ -132,7 +135,7 @@ final class InAppBrowserView: UIView{
     
     private func setupUI(){
         addSubview(webView)
-        backgroundColor = UIColor.green
+        backgroundColor = UIColor.clear
         
         
     }

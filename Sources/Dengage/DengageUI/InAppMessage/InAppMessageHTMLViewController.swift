@@ -123,10 +123,10 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
             
             if self.message.data.content.props.position == .middle
             {
-                self.viewSource.leftConstraint?.constant = 32
-                self.viewSource.rightConstraint?.constant = -32
+                self.viewSource.leftConstraint?.constant = 12
+                self.viewSource.rightConstraint?.constant = -12
             }
-            
+//            
 
             if scrollHeight > self.viewSource.frame.height
             {
@@ -144,7 +144,6 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
                 if self.message.data.content.props.position == .top
                 {
                     self.viewSource.height?.constant = scrollHeight + 50
-
                 }
 
             }
