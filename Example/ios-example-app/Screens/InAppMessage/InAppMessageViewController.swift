@@ -63,7 +63,7 @@ final class InAppMessageViewController: UIViewController {
     @objc private func didTapNavigationButton(){
         guard let text = screenNameTextField.text else {return}
        
-        Dengage.setNavigation(screenName: "p4")
+        Dengage.setNavigation()
         Dengage.handleInAppDeeplink { str in
             
         }

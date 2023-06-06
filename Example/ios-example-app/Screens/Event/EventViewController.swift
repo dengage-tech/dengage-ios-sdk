@@ -40,7 +40,7 @@ final class EventViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        Dengage.setNavigation(screenName: "p3")
+        //Dengage.setNavigation(screenName: "p3")
 
     }
     

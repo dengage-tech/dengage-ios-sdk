@@ -22,7 +22,7 @@ final class InboxMessagesViewController: UIViewController {
         tableView.fillSuperview()
         fetchMessages()
         
-        Dengage.setNavigation()
+       // Dengage.setNavigation()
 
     }
     

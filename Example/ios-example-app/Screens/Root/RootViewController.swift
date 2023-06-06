@@ -25,7 +25,7 @@ class RootViewController: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        Dengage.setNavigation()
+      //  Dengage.setNavigation()
 
         
     }

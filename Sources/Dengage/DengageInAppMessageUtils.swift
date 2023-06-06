@@ -135,6 +135,82 @@ final class DengageInAppMessageUtils{
                     }
 
                 }
+                else if criterion.dataType == .DATETIME
+                {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                    guard let visitorInfoDate = dateFormatter.date(from: userParam) else { return false }
+                    
+                    guard let serverDate = dateFormatter.date(from: criterion.values.first ?? "") else { return false }
+                    
+                    let result = self.compareDate(visitorInfoDate: visitorInfoDate, serverDate: serverDate)
+                    
+                
+                    switch criterion.comparison {
+                    case .EQUALS:
+                        if result == .orderedSame
+                        {
+                            return true
+                        }
+                        else
+                        {
+                            return false
+                        }
+                    case .NOT_EQUALS:
+                        
+                        if result != .orderedSame
+                        {
+                            return true
+                        }
+                        else
+                        {
+                            return false
+                        }
+                        
+                    case .LATER_THAN:
+                        if result == .orderedDescending
+                        {
+                            return true
+                        }
+                        else
+                        {
+                            return false
+                        }
+                    case .LATER_EQUAL:
+                        if result == .orderedDescending || result == .orderedSame
+                        {
+                            return true
+                        }
+                        else
+                        {
+                            return false
+                        }
+                    case .LESS_THAN:
+                        
+                        if result == .orderedAscending
+                        {
+                            return true
+                        }
+                        else
+                        {
+                            return false
+                        }
+                    case .LESS_EQUAL:
+                        if result == .orderedDescending || result == .orderedSame
+                        {
+                            return true
+                        }
+                        else
+                        {
+                            return false
+                        }
+                    default:
+                        return true
+                    }
+                    
+                    
+                    
+                }
                 else
                 {
                     return operate(with: criterion.comparison,
@@ -453,6 +529,12 @@ final class DengageInAppMessageUtils{
         let components = cal.dateComponents([.day, .month], from: date)
         let nextDate = cal.nextDate(after: today, matching: components, matchingPolicy: .nextTimePreservingSmallerComponents)
         return cal.dateComponents([.day], from: today, to: nextDate ?? today).day ?? 0
+    }
+    
+    private class func compareDate(visitorInfoDate : Date , serverDate: Date) -> ComparisonResult {
+        let cal = Calendar.current
+        let result = cal.compare(visitorInfoDate, to: serverDate, toGranularity: .day)
+        return result
     }
 }
 

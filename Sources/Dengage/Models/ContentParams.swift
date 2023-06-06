@@ -173,6 +173,8 @@ enum ComparisonType: String, Codable {
     case LESS_THAN
     case LESS_EQUAL
     case BETWEEN
+    case LATER_THAN
+    case LATER_EQUAL
 }
 
 enum RulesOperatorType: String, Codable {
