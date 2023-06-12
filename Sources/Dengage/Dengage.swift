@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import StoreKit
 
 public class Dengage  {
     
@@ -21,19 +22,42 @@ public class Dengage  {
     @objc public static func start(apiKey: String,
                                    application: UIApplication,
                                    launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
-                                   dengageOptions options: DengageOptions = DengageOptions()) {
+                                   dengageOptions options: DengageOptions = DengageOptions() , deviceId : String? = nil, contactKey : String? = nil , partnerDeviceId :String? = nil) {
         dengage = .init(with: apiKey,
                         application: application,
                         launchOptions:launchOptions,
                         dengageOptions: options)
+        
+        if deviceId != nil && deviceId != ""
+        {
+            dengage?.config.set(deviceId: deviceId ?? "")
+
+        }
+        
+        if partnerDeviceId != nil && partnerDeviceId != ""
+        {
+            dengage?.config.setPartnerDeviceId(adid: partnerDeviceId)
+
+        }
+        
+        if contactKey != nil && contactKey != ""
+        {
+            dengage?.set(contactKey)
+
+        }
+        
+
+        
     }
     
     
-    @objc public static func initWithLaunchOptions(categories: Set<UNNotificationCategory>? = nil,application: UIApplication,withLaunchOptions: [UIApplication.LaunchOptionsKey: Any],badgeCountReset: Bool = false)
+    @objc public static func initWithLaunchOptions(categories: Set<UNNotificationCategory>? = nil,application: UIApplication,withLaunchOptions: [UIApplication.LaunchOptionsKey: Any],badgeCountReset: Bool = false, deviceId : String? = nil , contactKey : String? = nil , partnerDeviceId :String? = nil)
     {
         let key =  DengageLocalStorage.shared.value(for: .integrationKey) as? String
 
-        self.start(apiKey: key ?? "", application: application, launchOptions: withLaunchOptions, dengageOptions: DengageOptions())
+        self.start(apiKey: key ?? "", application: application, launchOptions: withLaunchOptions, dengageOptions: DengageOptions(),deviceId: deviceId,contactKey: contactKey,partnerDeviceId: partnerDeviceId)
+        
+        
         
     }
     
@@ -356,6 +380,12 @@ extension Dengage {
             case .failure(let errorValue):
                 error(errorValue)
             }
+        }
+    }
+    
+    public static func showRatingView() {
+        if #available( iOS 10.3,*){
+            SKStoreReviewController.requestReview()
         }
     }
 }

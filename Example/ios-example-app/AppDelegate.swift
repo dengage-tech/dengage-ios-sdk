@@ -44,6 +44,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //               
 //        
        Dengage.set(deviceId: "kkkhjghfg")
+        
+      //  Dengage.setPartnerDeviceId(adid: <#T##String?#>)
 //
 //        
 //        Dengage.sendDeviceIdToServer(route: "V1/dengage/sync/mobile/customerData", token: "cti234bdj1ev4u4c0pk2l1z370vmgtah")
