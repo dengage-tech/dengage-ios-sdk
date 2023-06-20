@@ -15,8 +15,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // us
         //hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol
         
-        Dengage.start(apiKey: "YF2_p_l_NN4KRoXaSDN4BTp4Nr4K03bE00JoMQnbUh3HMadY_p_l_n30hGw_p_l_PhKypwxdE5kATWY_s_l_jKlrRHTSOAC5rC4ptsk0w0BwE94H8N940O79fIGjXwL23cnAb5RjA9432isGw3gv4J4e3J5_s_l_lRo3_s_l__p_l_IQaw_e_q__e_q_", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
-        UNUserNotificationCenter.current().delegate = self
+        Dengage.start(apiKey: "hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
+        //UNUserNotificationCenter.current().delegate = self
         window = UIWindow(frame: UIScreen.main.bounds)
         let rootViewController = RootViewController()
         let navigationController = UINavigationController(rootViewController: rootViewController)
@@ -34,6 +34,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             
             
         }
+    
+        
+        
+        
         
 //        Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
 //        
@@ -43,7 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        Dengage.setContactKey(contactKey: "rrrrr")
 //               
 //        
-       Dengage.set(deviceId: "kkkhjghfg")
+     //  Dengage.set(deviceId: "kkkhjghfg")
         
       //  Dengage.setPartnerDeviceId(adid: <#T##String?#>)
 //
@@ -74,7 +78,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
         Dengage.didReceive(with: userInfo)
     }
     
-    func userNotificationCenter(_ center: UNUserNotificationCenter,
+ /*   func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler completionHandler: @escaping () -> Void){
         Dengage.didReceivePush(center, response, withCompletionHandler: completionHandler)
@@ -101,5 +105,5 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
         print("UIApplication.OpenURLOptionsKey \(url.host ?? "")")
         
         return true
-    }
+    }*/
 }

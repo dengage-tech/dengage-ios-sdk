@@ -95,6 +95,10 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
             {
                 
             }
+            
+            sendEventWithDetails(messageId: message.messageId, messageDetails: message.messageDetails, transactionId: message.transactionId)
+
+            
             if let targetUrl = message.targetUrl, !targetUrl.isEmpty, !config.options.disableOpenURL {
                 openDeeplink(link: targetUrl)
                 eventManager.sessionStart(referrer: message.targetUrl)
@@ -165,6 +169,44 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
             UIApplication.shared.applicationIconBadgeNumber = 0
         }
     }
+    
+    private func sendEventWithDetails(messageId: Int?,messageDetails: String?,transactionId:String?) {
+        
+        guard let messageId = messageId else {
+            Logger.log(message: "MSG_ID is not found")
+            return
+        }
+        Logger.log(message: "MSG_ID is", argument: String(messageId))
+        
+        guard let messageDetails = messageDetails else {
+            Logger.log(message: "MSG_DETAILS is not found")
+            return
+        }
+        Logger.log(message: "MSG_DETAILS is", argument: messageDetails)
+                
+        if let transactionId = transactionId {
+            Logger.log(message: "BUTTON_ID is", argument: String(transactionId))
+            
+            let request = TransactionalOpenEventRequest(integrationKey: config.integrationKey,
+                                                        transactionId: transactionId,
+                                                        messageId: messageId ,
+                                                        messageDetails: messageDetails,
+                                                        buttonId: nil)
+            
+            eventManager.sendTransactionalOpenEvet(request: request)
+        } else {
+            let request = OpenEventRequest(integrationKey: config.integrationKey,
+                                           messageId: messageId ,
+                                           messageDetails: messageDetails,
+                                           buttonId: nil)
+            eventManager.sendOpenEvet(request: request)
+        }
+        
+        if config.options.badgeCountReset == true {
+            UIApplication.shared.applicationIconBadgeNumber = 0
+        }
+    }
+    
 }
 
 extension DengageNotificationManager{
