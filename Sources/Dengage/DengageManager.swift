@@ -13,7 +13,7 @@ public class DengageManager {
     var sessionManager: DengageSessionManagerInterface
     var inboxManager: DengageInboxManagerInterface
     var inAppManager: DengageInAppMessageManager
-    var notificationManager: DengageNotificationManagerInterface
+    var notificationManager: DengageNotificationManager
     var dengageRFMManager: DengageRFMManager
 
     var testPageWindow: UIWindow?

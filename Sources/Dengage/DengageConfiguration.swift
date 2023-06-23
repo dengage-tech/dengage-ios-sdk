@@ -46,6 +46,7 @@ final class DengageConfiguration:Encodable {
         getCarrierIdentifier = DengageConfiguration.getCarrierId()
         sdkVersion = SDK_VERSION
         self.integrationKey = integrationKey
+        DengageLocalStorage.shared.set(value: integrationKey, for: .integrationKey)
         self.options = options
         self.userAgent = UserAgentUtils.userAgent
         self.permission = DengageConfiguration.getPermission()

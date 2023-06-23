@@ -5,7 +5,9 @@ import StoreKit
 public class Dengage  {
     
     static var manager: DengageManager?
-    
+    static var center = UNUserNotificationCenter.current()
+    static var notificationDelegate = DengageNotificationDelegate()
+
     static var dengage: DengageManager? {
         get{
             if self.manager == nil {
@@ -23,10 +25,18 @@ public class Dengage  {
                                    application: UIApplication,
                                    launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
                                    dengageOptions options: DengageOptions = DengageOptions() , deviceId : String? = nil, contactKey : String? = nil , partnerDeviceId :String? = nil) {
+        
+        let currentNotificationCenter = center.delegate
+        notificationDelegate.delegate = currentNotificationCenter
+        center.delegate = notificationDelegate
+        
+        
         dengage = .init(with: apiKey,
                         application: application,
                         launchOptions:launchOptions,
                         dengageOptions: options)
+        
+        
         
         if deviceId != nil && deviceId != ""
         {
@@ -51,12 +61,31 @@ public class Dengage  {
     }
     
     
+    @objc public static func start(apiKey: String,
+                                   application: UIApplication,
+                                   launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
+                                   dengageOptions options: DengageOptions = DengageOptions() ,internalNotificationDelegate : Bool = false , deviceId : String? = nil, contactKey : String? = nil , partnerDeviceId :String? = nil) {
+       
+        let currentNotificationCenter = center.delegate
+        notificationDelegate.delegate = currentNotificationCenter
+        center.delegate = notificationDelegate
+        
+        dengage = .init(with: apiKey,
+                        application: application,
+                        launchOptions:launchOptions,
+                        dengageOptions: options)
+        
+        
+        
+        
+    }
+    
     @objc public static func initWithLaunchOptions(categories: Set<UNNotificationCategory>? = nil,application: UIApplication,withLaunchOptions: [UIApplication.LaunchOptionsKey: Any],badgeCountReset: Bool = false, deviceId : String? = nil , contactKey : String? = nil , partnerDeviceId :String? = nil)
     {
         let key =  DengageLocalStorage.shared.value(for: .integrationKey) as? String
 
+
         self.start(apiKey: key ?? "", application: application, launchOptions: withLaunchOptions, dengageOptions: DengageOptions(),deviceId: deviceId,contactKey: contactKey,partnerDeviceId: partnerDeviceId)
-        
         
         
     }
@@ -179,7 +208,27 @@ public class Dengage  {
     }
     
     @objc public static func promptForPushNotifications(){
-        dengage?.notificationManager.promptForPushNotifications()
+        
+        center.requestAuthorization(options: [.alert, .sound, .badge]) { [self] granted, _ in
+            guard granted else {
+                Logger.log(message: "PERMISSION_NOT_GRANTED", argument: String(granted))
+                Dengage.register(deviceToken: Data())
+               
+                return
+            }
+            
+            guard !(dengage?.config.options.disableRegisterForRemoteNotifications ?? false) else { return }
+            center.getNotificationSettings { settings in
+                
+                guard settings.authorizationStatus == .authorized else { return }
+                
+                DispatchQueue.main.async {
+                    Logger.log(message: "REGISTER_TOKEN")
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
+            }
+            Logger.log(message: "PERMISSION_GRANTED", argument: String(granted))
+        }
     }
     
     @objc public static func callVisitorInfoAPI(){
@@ -187,11 +236,7 @@ public class Dengage  {
         dengage?.inAppManager.getVisitorInfo()
         
     }
-    
-    @objc public static func promptForPushNotifications(completion: @escaping (_ isUserGranted: Bool) -> Void) {
-        dengage?.notificationManager.promptForPushNotifications(callback: completion)
-    }
-    
+   
     @objc public static func setNavigation(screenName:String? = nil ){
         dengage?.inAppManager.setNavigation(screenName:screenName)
     }
@@ -241,11 +286,12 @@ public class Dengage  {
     }
     
     @objc public static func handleNotificationActionBlock(callback: @escaping (_ notificationResponse: UNNotificationResponse) -> Void) {
-        dengage?.notificationManager.openTriggerCompletionHandler = {
+        notificationDelegate.openTriggerCompletionHandler = {
             response in
             callback(response)
         }
     }
+    
     
     @objc static public func didReceiveNotificationRequest(_ bestAttemptContent: UNMutableNotificationContent?,
                                                            withContentHandler contentHandler:  @escaping (UNNotificationContent) -> Void) {
@@ -258,17 +304,7 @@ public class Dengage  {
         
         DengageNotificationExtension.didReceiveNotificationRequest(bestAttemptContent, withContentHandler: contentHandler)
     }
-    
-    @objc static public func didReceivePush(_ center: UNUserNotificationCenter,
-                                            _ response: UNNotificationResponse,
-                                            withCompletionHandler completionHandler: @escaping () -> Void) {
-        dengage?.notificationManager.didReceivePush(center, response, withCompletionHandler: completionHandler)
-    }
-    
-    @objc static public func didReceive(with userInfo: [AnyHashable: Any]) {
-        dengage?.notificationManager.didReceive(with: userInfo)
-    }
-    
+   
     @objc static public func pageView(parameters: [String: Any]){
         dengage?.eventManager.pageView(parameters: parameters)
     }
