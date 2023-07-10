@@ -66,6 +66,8 @@ final class DengageLocalStorage: NSObject {
         case delayForInAppMessage = "delayForInAppMessage"
         case lastPushPayload = "lastPushPayload"
         case appEnvironment = "appEnvironment"
+        
+        case setInternalNotificationDelegate = "setInternalNotificationDelegate"
 
 
     }

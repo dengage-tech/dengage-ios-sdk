@@ -15,11 +15,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // us
         //hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol
         
-        Dengage.start(apiKey: "hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
+       // Dengage.start(apiKey: "hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
         
-//        Dengage.start(apiKey: "hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol", application: application, launchOptions: launchOptions, internalNotificationDelegate: true)
+        Dengage.start(apiKey: "hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol", application: application, launchOptions: launchOptions,internalNotificationDelegate: true)
         
-        //UNUserNotificationCenter.current().delegate = self
+      //  UNUserNotificationCenter.current().delegate = self
         window = UIWindow(frame: UIScreen.main.bounds)
         let rootViewController = RootViewController()
         let navigationController = UINavigationController(rootViewController: rootViewController)
@@ -89,7 +89,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
         
     }
     
- /*   func userNotificationCenter(_ center: UNUserNotificationCenter,
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler completionHandler: @escaping () -> Void){
         Dengage.didReceivePush(center, response, withCompletionHandler: completionHandler)
@@ -116,5 +116,5 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
         print("UIApplication.OpenURLOptionsKey \(url.host ?? "")")
         
         return true
-    }*/
+    }
 }

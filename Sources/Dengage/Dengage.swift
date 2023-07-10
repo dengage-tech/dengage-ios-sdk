@@ -24,11 +24,21 @@ public class Dengage  {
     @objc public static func start(apiKey: String,
                                    application: UIApplication,
                                    launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
-                                   dengageOptions options: DengageOptions = DengageOptions() , deviceId : String? = nil, contactKey : String? = nil , partnerDeviceId :String? = nil) {
+                                   dengageOptions options: DengageOptions = DengageOptions() , deviceId : String? = nil, contactKey : String? = nil , partnerDeviceId :String? = nil, setInternalNotificationDelegate : Bool = false) {
         
-        let currentNotificationCenter = center.delegate
-        notificationDelegate.delegate = currentNotificationCenter
-        center.delegate = notificationDelegate
+        DengageLocalStorage.shared.set(value: false, for: .setInternalNotificationDelegate)
+
+        
+        if setInternalNotificationDelegate
+        {
+            DengageLocalStorage.shared.set(value: true, for: .setInternalNotificationDelegate)
+            let currentNotificationCenter = center.delegate
+            notificationDelegate.delegate = currentNotificationCenter
+            center.delegate = notificationDelegate
+            
+        }
+        
+       
         
         
         dengage = .init(with: apiKey,
@@ -64,11 +74,20 @@ public class Dengage  {
     @objc public static func start(apiKey: String,
                                    application: UIApplication,
                                    launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
-                                   dengageOptions options: DengageOptions = DengageOptions() ,internalNotificationDelegate : Bool = false , deviceId : String? = nil, contactKey : String? = nil , partnerDeviceId :String? = nil) {
+                                   dengageOptions options: DengageOptions = DengageOptions() ,internalNotificationDelegate : Bool = false , deviceId : String? = nil, contactKey : String? = nil , partnerDeviceId :String? = nil , setInternalNotificationDelegate : Bool = false) {
        
-        let currentNotificationCenter = center.delegate
-        notificationDelegate.delegate = currentNotificationCenter
-        center.delegate = notificationDelegate
+        DengageLocalStorage.shared.set(value: false, for: .setInternalNotificationDelegate)
+
+        
+        if setInternalNotificationDelegate
+        {
+            DengageLocalStorage.shared.set(value: true, for: .setInternalNotificationDelegate)
+
+            let currentNotificationCenter = center.delegate
+            notificationDelegate.delegate = currentNotificationCenter
+            center.delegate = notificationDelegate
+        }
+        
         
         dengage = .init(with: apiKey,
                         application: application,
@@ -305,6 +324,16 @@ public class Dengage  {
         DengageNotificationExtension.didReceiveNotificationRequest(bestAttemptContent, withContentHandler: contentHandler)
     }
    
+    @objc static public func didReceivePush(_ center: UNUserNotificationCenter,
+                                            _ response: UNNotificationResponse,
+                                            withCompletionHandler completionHandler: @escaping () -> Void) {
+        dengage?.notificationManager?.didReceivePush(center, response, withCompletionHandler: completionHandler)
+    }
+    
+    @objc static public func didReceive(with userInfo: [AnyHashable: Any]) {
+        dengage?.notificationManager?.didReceive(with: userInfo)
+    }
+    
     @objc static public func pageView(parameters: [String: Any]){
         dengage?.eventManager.pageView(parameters: parameters)
     }
