@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import StoreKit
 
 public class Dengage{
     static var manager: DengageManager?
@@ -308,6 +309,12 @@ public class Dengage{
     
     static func syncSubscription() {
         dengage?.makeSubscriptionRequestAPICall()
+    }
+    
+    public static func showRatingView() {
+        if #available( iOS 10.3,*){
+            SKStoreReviewController.requestReview()
+        }
     }
 }
 
