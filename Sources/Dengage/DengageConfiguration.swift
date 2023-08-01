@@ -297,7 +297,7 @@ final class DengageConfiguration:Encodable {
     
     static func getAdvertisingId() -> String{
         
-        var advertisingId = ""
+       /* var advertisingId = ""
         
         if #available(iOS 14, *) {
             ATTrackingManager.requestTrackingAuthorization { status in
@@ -337,7 +337,14 @@ final class DengageConfiguration:Encodable {
         }
         
         
-        return advertisingId
+        return advertisingId */
+        
+        guard ASIdentifierManager.shared().isAdvertisingTrackingEnabled,
+              ASIdentifierManager.shared().advertisingIdentifier.isNotEmpty else {
+            return ""
+        }
+        
+        return ASIdentifierManager.shared().advertisingIdentifier.uuidString.lowercased()
         
         
     }
