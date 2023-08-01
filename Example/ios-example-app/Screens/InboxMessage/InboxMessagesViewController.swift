@@ -6,9 +6,7 @@ final class InboxMessagesViewController: UIViewController {
 
     private lazy var tableView: UITableView = {
         let view = UITableView()
-        view.delegate = self
-        view.dataSource = self
-        view.estimatedRowHeight = 60
+        
         view.backgroundColor = .white
         view.register(InboxMessageTableViewCell.self, forCellReuseIdentifier: "InboxMessageTableViewCell")
         return view
@@ -20,10 +18,7 @@ final class InboxMessagesViewController: UIViewController {
 
         view.addSubview(tableView)
         
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.estimatedRowHeight = 100
-        tableView.rowHeight = 100
+       
         
         tableView.fillSuperview()
         fetchMessages()
@@ -40,11 +35,17 @@ final class InboxMessagesViewController: UIViewController {
             }
         }
         
-        DispatchQueue.main.async {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: {
             
+            self.tableView.delegate = self
+            self.tableView.dataSource = self
+            self.tableView.estimatedRowHeight = 100
+            self.tableView.rowHeight = 100
             self.tableView.reloadData()
 
-        }
+        })
+        
+       
     }
 }
 
@@ -70,8 +71,16 @@ extension InboxMessagesViewController: UITableViewDelegate{
 
         Dengage.setInboxMessageAsClicked(with: item.id) { [weak self] _ in
             
-            
+           
         }
+        
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: {
+            
+            
+            self.tableView.reloadData()
+
+        })
     }
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
