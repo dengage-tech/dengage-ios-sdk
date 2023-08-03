@@ -616,7 +616,7 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     func open(url: String?) {
         
         inAppMessageWindow = nil
-        
+                
         guard let urlDeeplink = url, let urlStr = URL(string: urlDeeplink) else { return }
         
         let deeplink = config.getDeeplink()
@@ -629,27 +629,22 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
             {
                 if RetrieveLinkOnSameScreen
                 {
-                    guard let urlString = url else { return }
-                    
                     self.returnAfterDeeplinkRecieved!(urlDeeplink)
-                    
                 }
                 else
                 {
-                    
-                    
+                   
                     self.returnAfterDeeplinkRecieved!(urlDeeplink)
-                    
                     UIApplication.shared.open(urlStr, options: [:], completionHandler: nil)
                 }
-                
+              
             }
             else
             {
                 if RetrieveLinkOnSameScreen && !OpenInAppBrowser
                 {
                     self.returnAfterDeeplinkRecieved!(urlDeeplink)
-                    
+
                 }
                 else if !RetrieveLinkOnSameScreen && OpenInAppBrowser
                 {
@@ -664,12 +659,21 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
         }
         else
         {
-            
-            UIApplication.shared.open(urlStr , options: [:], completionHandler: nil)
+            if RetrieveLinkOnSameScreen && !OpenInAppBrowser
+            {
+                self.returnAfterDeeplinkRecieved!(urlDeeplink)
+
+            }
+            else
+            {
+                UIApplication.shared.open(urlStr , options: [:], completionHandler: nil)
+
+            }
+                        
         }
+      
         
-        
-        
+   
     }
     
     func sendDissmissEvent(message: InAppMessage) {

@@ -108,14 +108,6 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
             guard let scrollHeight = height as? CGFloat else {return}
             
             
-            if self.message.data.content.props.position == .middle
-            {
-                self.viewSource.leftConstraint?.constant = 12
-                self.viewSource.rightConstraint?.constant = -12
-            }
-            
-            
-            
             if scrollHeight > self.viewSource.frame.height
             {
                 self.viewSource.height?.constant = self.viewSource.frame.height
