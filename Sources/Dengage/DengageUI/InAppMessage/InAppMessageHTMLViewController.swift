@@ -91,7 +91,6 @@ final class InAppMessageHTMLViewController: UIViewController{
         viewSource.webView.contentMode = .scaleAspectFit
         viewSource.webView.sizeToFit()
         viewSource.webView.autoresizesSubviews = true
-        self.viewSource.webView.backgroundColor = .blue
 
     }
 }
@@ -116,18 +115,6 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
         viewSource.webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { (height, error) in
             guard let scrollHeight = height as? CGFloat else {return}
             
-            
-            //self.viewSource.frame.origin.x = 20
-            
-            //self.viewSource.frame.size.width = self.viewSource.frame.size.width - 40
-            
-            if self.message.data.content.props.position == .middle
-            {
-                self.viewSource.leftConstraint?.constant = 12
-                self.viewSource.rightConstraint?.constant = -12
-            }
-//            
-
             if scrollHeight > self.viewSource.frame.height
             {
                 self.viewSource.height?.constant = self.viewSource.frame.height
@@ -144,6 +131,7 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
                 if self.message.data.content.props.position == .top
                 {
                     self.viewSource.height?.constant = scrollHeight + 50
+
                 }
 
             }
@@ -152,6 +140,8 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
                 self.viewSource.height?.constant = scrollHeight + 20
 
             }
+
+            
         })
     }
 }

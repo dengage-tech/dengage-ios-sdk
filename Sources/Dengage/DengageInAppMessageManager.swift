@@ -674,8 +674,17 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
         }
         else
         {
+            if RetrieveLinkOnSameScreen && !OpenInAppBrowser
+            {
+                self.returnAfterDeeplinkRecieved!(urlDeeplink)
+
+            }
+            else
+            {
+                UIApplication.shared.open(urlStr , options: [:], completionHandler: nil)
+
+            }
                         
-            UIApplication.shared.open(urlStr , options: [:], completionHandler: nil)
         }
       
         

@@ -73,7 +73,7 @@ import Dengage
     
     private func setupUI(){
         title = "In-App"
-        view.backgroundColor = .lightGray
+        view.backgroundColor = .white
         view.addSubview(stackView)
         stackView.topAnchor.constraint(equalTo: view.topAnchor, constant: 80).isActive = true
         stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15).isActive = true
