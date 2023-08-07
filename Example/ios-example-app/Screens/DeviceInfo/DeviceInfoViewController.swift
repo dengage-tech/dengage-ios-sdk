@@ -20,6 +20,8 @@ class DeviceInfoViewController: UIViewController {
         getInfo()
         
         Dengage.setNavigation(screenName: "p1")
+        
+      //  Dengage.showRatingView()
 
 
     }
