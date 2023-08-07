@@ -21,7 +21,6 @@ final class DengageLocalStorage: NSObject {
     enum Key: String{
         
         case lastSyncdSubscription = "lastSyncdSubscription"
-        case applicationIdentifier = "ApplicationIdentifier"
         case contactKey = "ContactKey"
         case token = "Token"
         case userPermission = "userPermission"
@@ -33,6 +32,8 @@ final class DengageLocalStorage: NSObject {
         case lastFetchedRealTimeInAppMessageTime = "lastFetchedRealTimeInAppMessageTime"
         case PartnerDeviceId = "PartnerDeviceId"
         case inAppMessageShowTime = "inAppMessageShowTime"
+        case cancelInAppMessage = "cancelInAppMessage"
+
         case rfmScores = "rfmScores"
         case integrationKey = "integrationKey"
         case expiredMessagesFetchIntervalInMin = "expiredMessagesFetchIntervalInMin"
@@ -62,7 +63,10 @@ final class DengageLocalStorage: NSObject {
         case partner_device_idSubscription = "partner_device_idSubscription"
         case advertisingIdSubscription = "advertisingIdSubscription"
         case languageSubscription = "languageSubscription"
-        
+        case delayForInAppMessage = "delayForInAppMessage"
+        case lastPushPayload = "lastPushPayload"
+        case appEnvironment = "appEnvironment"
+
 
     }
 }

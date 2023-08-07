@@ -103,12 +103,26 @@ final class DengageInboxManager: DengageInboxManagerInterface {
     }
 
     private func markLocalMessageIfNeeded(with id: String?) {
+            
         guard let messageId = id else { return }
-        let message = inboxMessages.first(where: {$0.id == messageId})
-        message?.isClicked = true
-        inboxMessages = inboxMessages.filter {$0.id != messageId}
-        guard let readedMessage = message else { return }
-        inboxMessages.append(readedMessage)
+        
+        for i in 0...inboxMessages.count - 1
+        {
+            var readedMessage = inboxMessages[i]
+
+            if readedMessage.id == messageId
+            {
+                readedMessage.isClicked = true
+                inboxMessages[i] = readedMessage
+                break
+            }
+        }
+    
+//        let message = inboxMessages.first(where: {$0.id == messageId})
+//        message?.isClicked = true
+//        inboxMessages = inboxMessages.filter {$0.id != messageId}
+//        guard let readedMessage = message else { return }
+//        inboxMessages.append(readedMessage)
     }
 }
 

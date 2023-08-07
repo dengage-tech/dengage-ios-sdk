@@ -9,6 +9,7 @@ final class InAppMessageHTMLViewController: UIViewController{
     }()
 
     var delegate: InAppMessagesActionsDelegate?
+    
 
     let message:InAppMessage
     
@@ -39,7 +40,11 @@ final class InAppMessageHTMLViewController: UIViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         setupJavascript()
+        
+        
         viewSource.setupConstaints(for: message.data.content.props)
+            
+        
         
         if let isPresent = message.data.content.props.html?.contains("Dn.iosUrlN") {
             
@@ -61,10 +66,12 @@ final class InAppMessageHTMLViewController: UIViewController{
      }
     
     private func setupJavascript(){
+        
         let userScript = WKUserScript(source: javascriptInterface,
                                       injectionTime: WKUserScriptInjectionTime.atDocumentEnd,
                                       forMainFrameOnly: true)
         viewSource.webView.configuration.userContentController.addUserScript(userScript)
+        
         if #available(iOS 14.0, *) {
             viewSource.webView.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
         } else {
@@ -84,6 +91,7 @@ final class InAppMessageHTMLViewController: UIViewController{
         viewSource.webView.contentMode = .scaleAspectFit
         viewSource.webView.sizeToFit()
         viewSource.webView.autoresizesSubviews = true
+
     }
 }
 
@@ -132,6 +140,8 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
                 self.viewSource.height?.constant = scrollHeight + 20
 
             }
+
+            
         })
     }
 }
@@ -159,6 +169,10 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
                 {
                     delegate?.promptPushPermission()
 
+                }
+                else if message.body as? String == "DN.SHOWRATING()"
+                {
+                    Dengage.showRatingView()
                 }
                 else
                 {
@@ -202,9 +216,12 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
                     delegate?.promptPushPermission()
 
                 }
+                else if deeplink == "DN.SHOWRATING()"
+                {
+                    Dengage.showRatingView()
+                }
                 else
                 {
-                    
                     self.delegate?.open(url: deeplink)
                 }
 

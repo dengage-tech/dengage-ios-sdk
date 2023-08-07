@@ -2,7 +2,7 @@
 import UIKit
 import Dengage
 
-final class InAppMessageViewController: UIViewController {
+ class InAppMessageViewController: UIViewController {
 
     private lazy var deviceIdTextView:UITextView = {
         let view = UITextView()
@@ -44,16 +44,32 @@ final class InAppMessageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        Dengage.handleInAppDeeplink { str in
-            
-            //get deeplink
-        }
+        
+        
+        
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         deviceIdTextView.text = "Device Id:\n" + (Dengage.getDeviceId() ?? "") + "\nContact Key:\n" + (Dengage.getContactKey() ?? "")
     }
+     
+     override func viewDidAppear(_ animated: Bool) {
+         
+         super.viewDidAppear(animated)
+         
+         Dengage.setNavigation()
+         
+
+     }
+     
+     override func viewWillDisappear(_ animated: Bool) {
+         
+         super.viewWillDisappear(animated)
+         
+         Dengage.removeInAppMessageDisplay()
+     }
     
     private func setupUI(){
         title = "In-App"
@@ -67,7 +83,13 @@ final class InAppMessageViewController: UIViewController {
     @objc private func didTapNavigationButton(){
         guard let text = screenNameTextField.text else {return}
        
-        Dengage.setNavigation(screenName: text)
+
+       
+        Dengage.handleInAppDeeplink { url in
+            
+          print(url)
+            
+        }
         
 
         view.endEditing(true)
@@ -86,4 +108,6 @@ extension InAppMessageViewController:UITextFieldDelegate{
         navigationButton.setTitleColor(.blue, for: .normal)
         return true
     }
+    
+    
 }

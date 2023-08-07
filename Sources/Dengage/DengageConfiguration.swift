@@ -2,6 +2,7 @@ import Foundation
 import AdSupport
 import CoreTelephony
 import UIKit
+import AppTrackingTransparency
 
 final class DengageConfiguration:Encodable {
     
@@ -98,9 +99,19 @@ final class DengageConfiguration:Encodable {
     }
     
     func set(deviceId: String){
-        DengageLocalStorage.shared.set(value: deviceId, for: .applicationIdentifier)
-        DengageKeychain.set(deviceId, forKey: .applicationIdentifier)
-        applicationIdentifier = deviceId
+        
+        DengageKeychain.set(deviceId, forKey: "\(Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier")")
+        let previous = self.applicationIdentifier
+        
+        if previous != deviceId {
+            
+           applicationIdentifier = deviceId
+            Dengage.callVisitorInfoAPI()
+           Dengage.syncSubscription()
+            
+        }
+        
+        
     }
     
     func set(permission: Bool){
@@ -109,8 +120,26 @@ final class DengageConfiguration:Encodable {
     }
     
     func setPartnerDeviceId(adid: String?){
-        DengageLocalStorage.shared.set(value: adid, for: .PartnerDeviceId)
-        partnerDeviceId = adid
+        
+        if let partnerId = DengageLocalStorage.shared.value(for: .PartnerDeviceId) as? String
+        {
+            if partnerId != adid
+            {
+                DengageLocalStorage.shared.set(value: adid, for: .PartnerDeviceId)
+                partnerDeviceId = adid
+                Dengage.syncSubscription()
+
+            }
+        }
+        else
+        {
+            DengageLocalStorage.shared.set(value: adid, for: .PartnerDeviceId)
+            partnerDeviceId = adid
+            Dengage.syncSubscription()
+            
+        }
+
+        
     }
     
     func setinAppLinkConfiguration(deeplink : String){
@@ -247,27 +276,77 @@ final class DengageConfiguration:Encodable {
     }
     
     static func getApplicationId() -> String {
-        if let uuidString = DengageLocalStorage.shared.value(for: .applicationIdentifier) as? String, !uuidString.isEmpty {
-            DengageKeychain.set(uuidString, forKey: .applicationIdentifier)
-            return uuidString
-        } else if let uuidString = DengageKeychain.string(forKey: .applicationIdentifier), !uuidString.isEmpty {
-            DengageLocalStorage.shared.set(value: uuidString, for: .applicationIdentifier)
+        
+        let appBundleID = Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier"
+        
+        if let uuidString = DengageKeychain.string(forKey: "DengageApplicationIdentifier"), !uuidString.isEmpty {
+            
+            DengageKeychain.remove("DengageApplicationIdentifier")
+            DengageKeychain.set(uuidString, forKey: appBundleID)
+            
+        }
+        
+        if let uuidString = DengageKeychain.string(forKey: appBundleID), !uuidString.isEmpty {
             return uuidString
         } else {
             let uuidString = NSUUID().uuidString.lowercased()
-            DengageLocalStorage.shared.set(value: uuidString, for: .applicationIdentifier)
-            DengageKeychain.set(uuidString, forKey: .applicationIdentifier)
+            DengageKeychain.set(uuidString, forKey: appBundleID)
             return uuidString
         }
     }
     
     static func getAdvertisingId() -> String{
+        
+       /* var advertisingId = ""
+        
+        if #available(iOS 14, *) {
+            ATTrackingManager.requestTrackingAuthorization { status in
+                switch status {
+                case .authorized:
+                    // Tracking authorization dialog was shown
+                    // and we are authorized
+                    print("Authorized")
+                    
+                    // Now that we are authorized we can get the IDFA
+                    advertisingId =  ASIdentifierManager.shared().advertisingIdentifier.uuidString.lowercased()
+
+                    
+                case .denied:
+                    // Tracking authorization dialog was
+                    // shown and permission is denied
+                    print("Denied")
+                case .notDetermined:
+                    // Tracking authorization dialog has not been shown
+                    print("Not Determined")
+                case .restricted:
+                    print("Restricted")
+                @unknown default:
+                    print("Unknown")
+                }
+            }
+        } else {
+            // Fallback on earlier versions
+            
+            guard ASIdentifierManager.shared().isAdvertisingTrackingEnabled,
+                  ASIdentifierManager.shared().advertisingIdentifier.isNotEmpty else {
+                return ""
+            }
+            
+            return ASIdentifierManager.shared().advertisingIdentifier.uuidString.lowercased()
+            
+        }
+        
+        
+        return advertisingId */
+        
         guard ASIdentifierManager.shared().isAdvertisingTrackingEnabled,
               ASIdentifierManager.shared().advertisingIdentifier.isNotEmpty else {
             return ""
         }
         
         return ASIdentifierManager.shared().advertisingIdentifier.uuidString.lowercased()
+        
+        
     }
     
     static func getCarrierId() -> String { // *.*

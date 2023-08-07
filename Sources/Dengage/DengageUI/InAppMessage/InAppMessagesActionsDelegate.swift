@@ -9,3 +9,4 @@ protocol InAppMessagesActionsDelegate:AnyObject{
     func closeInAppBrowser()
 
 }
+

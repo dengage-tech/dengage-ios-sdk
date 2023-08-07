@@ -122,6 +122,7 @@ struct Criterion: Codable {
     let parameter: String
     let dataType: CriterionDataType
     let comparison: ComparisonType
+    let valueSource : String
     let values: [String]
     
     init(from decoder: Decoder) throws {
@@ -131,6 +132,8 @@ struct Criterion: Codable {
         comparison = try container.decode(ComparisonType.self, forKey: .comparison)
         dataType = (try? container.decode(CriterionDataType.self, forKey: .dataType)) ?? .TEXT
         values = try container.decode([String].self, forKey: .values)
+        valueSource = try container.decode(String.self, forKey: .valueSource)
+
     }
     
     enum CodingKeys: String, CodingKey {
@@ -139,6 +142,7 @@ struct Criterion: Codable {
         case dataType
         case comparison
         case values
+        case valueSource
     }
 }
 
@@ -174,6 +178,9 @@ enum ComparisonType: String, Codable {
     case LESS_THAN
     case LESS_EQUAL
     case BETWEEN
+    case LATER_THAN
+    case LATER_EQUAL
+
 }
 
 enum RulesOperatorType: String, Codable {

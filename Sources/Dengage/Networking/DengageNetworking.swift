@@ -18,6 +18,9 @@ final class DengageNetworking {
         var apiRequest = request.asURLRequest(with: baseURL)
         apiRequest.setValue(config.userAgent, forHTTPHeaderField: "User-Agent")
         
+        Logger.log(message: "API REQUEST URL", argument: "\(apiRequest)")
+
+        
         if let body = apiRequest.httpBody {
             Logger.log(message: "HTTP REQUEST BODY:\n", argument: body.pretty)
         }
@@ -29,7 +32,9 @@ final class DengageNetworking {
             }
 
             if let data = data  {
-                Logger.log(message: "HTTP API RESPONSE:\n", argument: data.pretty)
+                
+                
+                Logger.log(message: "HTTP API RESPONSE:\n \(apiRequest.url)", argument: data.pretty)
             }
             Logger.log(message: "HTTP API STATUS CODE:\n", argument: httpResponse.statusCode.description)
             switch httpResponse.statusCode {

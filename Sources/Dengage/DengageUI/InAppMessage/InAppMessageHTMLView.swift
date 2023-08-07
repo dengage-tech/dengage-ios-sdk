@@ -77,7 +77,7 @@ final class InAppMessageHTMLView: UIView{
     }
     
     func setupConstaints(for params: ContentParams){
-        set(maxWidth: params.maxWidth)
+        //set(maxWidth: params.maxWidth)
         set(radius: params.radius)
         topConstraint?.constant = getVerticalByPercentage(for: params.marginTop)
         bottomConstraint?.constant = -getVerticalByPercentage(for:params.marginBottom)
@@ -103,10 +103,20 @@ final class InAppMessageHTMLView: UIView{
     }
     
     func getHorizaltalByPercentage(for margin: CGFloat?) -> CGFloat {
-        return (UIScreen.main.bounds.width * ((margin ?? 1.0) / 100))
+        
+        if margin == 0
+        {
+            return (UIScreen.main.bounds.width * (4 / 100))
+
+        }
+        else
+        {
+            return (UIScreen.main.bounds.width * ((margin ?? 1.0) / 100))
+
+        }
+        
     }
 }
-
 
 final class InAppBrowserView: UIView{
     

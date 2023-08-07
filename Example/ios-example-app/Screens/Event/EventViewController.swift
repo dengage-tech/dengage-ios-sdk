@@ -40,6 +40,15 @@ final class EventViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        
+        Dengage.setNavigation(screenName: "p3")
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        
+        super.viewWillDisappear(animated)
+        
+        Dengage.removeInAppMessageDisplay()
     }
     
     private func setupUI(){
@@ -60,6 +69,7 @@ final class EventViewController: UIViewController {
             .compactMap{$0.values}
             .reduce(into: [:]) { $0[$1.0] = $1.1 }
         Dengage.sendCustomEvent(eventTable: eventName, parameters: parameters)
+        
     }
     
     @objc private func didTapAddParameterButton(){

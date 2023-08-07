@@ -110,10 +110,126 @@ final class DengageInAppMessageUtils{
                                with params: [String:String]? = nil,
                                config: DengageConfiguration) -> Bool {
         guard let specialRule = SpecialRuleParameter(rawValue: criterion.parameter) else {
-            return operate(with: criterion.comparison,
-                           for: criterion.dataType,
-                           ruleParam: criterion.values,
-                           userParam: params?[criterion.parameter])
+            
+            if checkVisitorInfoAttr(parameter: criterion.parameter) != ""
+            {
+                let userParam = checkVisitorInfoAttr(parameter: criterion.parameter)
+                
+                if criterion.parameter == "dn.master_contact.birth_date"
+                {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                    guard let formatedStartDate = dateFormatter.date(from: userParam) else { return false }
+
+                    let diffInDays = self.daysUntil(birthday: formatedStartDate)
+                    
+                    let diffInDaysStr = "\(diffInDays)"
+                    
+                    if diffInDaysStr == criterion.values.first
+                    {
+                        return true
+                    }
+                    else
+                    {
+                        return false
+                    }
+
+                }
+                else if criterion.dataType == .DATETIME
+                {
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+                    guard let visitorInfoDate = dateFormatter.date(from: userParam) else { return false }
+                    
+                    guard let serverDate = dateFormatter.date(from: criterion.values.first ?? "") else { return false }
+                    
+                    let result = self.compareDate(visitorInfoDate: visitorInfoDate, serverDate: serverDate)
+                    
+                
+                    switch criterion.comparison {
+                    case .EQUALS:
+                        if result == .orderedSame
+                        {
+                            return true
+                        }
+                        else
+                        {
+                            return false
+                        }
+                    case .NOT_EQUALS:
+                        
+                        if result != .orderedSame
+                        {
+                            return true
+                        }
+                        else
+                        {
+                            return false
+                        }
+                        
+                    case .LATER_THAN:
+                        if result == .orderedDescending
+                        {
+                            return true
+                        }
+                        else
+                        {
+                            return false
+                        }
+                    case .LATER_EQUAL:
+                        if result == .orderedDescending || result == .orderedSame
+                        {
+                            return true
+                        }
+                        else
+                        {
+                            return false
+                        }
+                    case .LESS_THAN:
+                        
+                        if result == .orderedAscending
+                        {
+                            return true
+                        }
+                        else
+                        {
+                            return false
+                        }
+                    case .LESS_EQUAL:
+                        if result == .orderedDescending || result == .orderedSame
+                        {
+                            return true
+                        }
+                        else
+                        {
+                            return false
+                        }
+                    default:
+                        return true
+                    }
+                    
+                    
+                    
+                }
+                else
+                {
+                    return operate(with: criterion.comparison,
+                                   for: criterion.dataType,
+                                   ruleParam: criterion.values,
+                                   userParam: userParam)
+                }
+                
+               
+            }
+            else
+            {
+                return operate(with: criterion.comparison,
+                               for: criterion.dataType,
+                               ruleParam: criterion.values,
+                               userParam: params?[criterion.parameter])
+            }
+            
+           
         }
         
         
@@ -280,6 +396,8 @@ final class DengageInAppMessageUtils{
                                       for: criterion.dataType,
                                       ruleParam: criterion.values,
                                       userParam: tags.map{String($0)})
+            
+    
         }
     }
     
@@ -385,6 +503,39 @@ final class DengageInAppMessageUtils{
             return true
         }
     }
+    
+    private class func checkVisitorInfoAttr(parameter : String) -> String
+    {
+        if parameter != ""
+        {
+            let visitorInfo = DengageLocalStorage.shared.getVisitorInfo()
+            var attribute = visitorInfo?.Attrs
+            
+            if attribute?[parameter] != nil
+            {
+                return "\(attribute?[parameter] ?? "")"
+            }
+            
+        }
+        
+        return ""
+
+    }
+    
+    private class func daysUntil(birthday: Date) -> Int {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: Date())
+        let date = cal.startOfDay(for: birthday)
+        let components = cal.dateComponents([.day, .month], from: date)
+        let nextDate = cal.nextDate(after: today, matching: components, matchingPolicy: .nextTimePreservingSmallerComponents)
+        return cal.dateComponents([.day], from: today, to: nextDate ?? today).day ?? 0
+    }
+    
+    private class func compareDate(visitorInfoDate : Date , serverDate: Date) -> ComparisonResult {
+        let cal = Calendar.current
+        let result = cal.compare(visitorInfoDate, to: serverDate, toGranularity: .day)
+        return result
+    }
 }
 
 
@@ -416,6 +567,8 @@ enum SpecialRuleParameter: String {
     case VISIT_COUNT = "dn.visit_count"
     case SEGMENT = "dn.segment"
     case TAG = "dn.tag"
+
+
 }
 
 struct VisitCountData: Codable {
