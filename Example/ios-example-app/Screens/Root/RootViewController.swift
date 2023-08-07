@@ -61,13 +61,15 @@ extension RootViewController: UITableViewDelegate{
             self.navigationController?.pushViewController(TagsViewController(), animated: true)
         case .testPage:
             Dengage.showTestPage()
+        case .rating:
+            Dengage.showRatingView()
         }
     }
 }
 
 extension RootViewController{
     enum Actions: CaseIterable{
-        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage
+        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage ,rating
         var title: String{
             switch self{
             case .allowNotification:
@@ -88,6 +90,8 @@ extension RootViewController{
                 return "SET TAGS"
             case .testPage:
                 return "DENGAGE TEST PAGE"
+            case .rating:
+                return "APPSTORE REVIEW"
             }
         }
     }
