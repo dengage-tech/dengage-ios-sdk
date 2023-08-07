@@ -216,13 +216,12 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
                     delegate?.promptPushPermission()
 
                 }
-                else if message.body as? String == "DN.SHOWRATING()"
+                else if deeplink == "DN.SHOWRATING()"
                 {
                     Dengage.showRatingView()
                 }
                 else
                 {
-                    
                     self.delegate?.open(url: deeplink)
                 }
 
