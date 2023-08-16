@@ -18,6 +18,6 @@ struct GetVisitorInfoRequest: APIRequest {
     }
 
     let accountName: String
-    let contactKey: String
+    let contactKey: String?
     let deviceID: String
 }

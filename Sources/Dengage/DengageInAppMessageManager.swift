@@ -96,8 +96,26 @@ extension DengageInAppMessageManager{
         guard let remoteConfig = config.remoteConfiguration,
               let accountName = remoteConfig.accountName
         else { return }
+        
+        var cKey : String?
+        
+        if config.contactKey.key == ""
+        {
+            cKey = nil
+        }
+        else if config.contactKey.key == config.applicationIdentifier
+        {
+            cKey = nil
+
+        }
+        else
+        {
+            cKey = config.contactKey.key
+
+        }
+        
         let request = GetVisitorInfoRequest(accountName: accountName,
-                                            contactKey: config.contactKey.key,
+                                            contactKey: cKey,
                                             deviceID: config.applicationIdentifier)
         apiClient.send(request: request) { result in
             switch result {

@@ -128,11 +128,7 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
                 }
 
             }
-            else
-            {
-                self.viewSource.height?.constant = scrollHeight + 20
-
-            }
+            
         })
     }
 }
