@@ -1,7 +1,7 @@
 import Foundation
 final class DengageInboxManager: DengageInboxManagerInterface {
     
-    private var inboxMessages = [DengageMessage]()
+    var inboxMessages = [DengageMessage]()
     private let config: DengageConfiguration
     private let apiClient: DengageNetworking
     
