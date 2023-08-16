@@ -16,6 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol
         
         Dengage.start(apiKey: "hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
+        
         UNUserNotificationCenter.current().delegate = self
         window = UIWindow(frame: UIScreen.main.bounds)
         let rootViewController = RootViewController()
@@ -38,12 +39,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
 //        
 //        
-//        Dengage.set(contactKey: "rtrtyr")
+     //   Dengage.set(contactKey: "rtrtyr")
 //        
-//        Dengage.setContactKey(contactKey: "rrrrr")
+      // Dengage.setContactKey(contactKey: "rrrrr")
 //               
 //        
-       Dengage.set(deviceId: "kkkhjghfg")
+     //  Dengage.set(deviceId: "kkkhjghfg")
         
       //  Dengage.setPartnerDeviceId(adid: <#T##String?#>)
 //
