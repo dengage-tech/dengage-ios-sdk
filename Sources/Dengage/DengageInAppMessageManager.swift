@@ -346,10 +346,10 @@ extension DengageInAppMessageManager {
                     
                     self.showInAppMessageController(with: inAppMessage)
                 }
+                
+            }
             
         }
-        
-    
             
       
     }
