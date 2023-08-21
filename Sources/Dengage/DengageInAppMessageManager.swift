@@ -305,10 +305,10 @@ extension DengageInAppMessageManager {
         
         let inappShowTime = (Date().timeMiliseconds) + (config.remoteConfiguration?.minSecBetweenMessages ?? 0.0)
         DengageLocalStorage.shared.set(value: inappShowTime, for: .inAppMessageShowTime)
-        
+
         let delay = inAppMessage.data.displayTiming.delay ?? 0
         
-        inAppShowTimer = Timer.scheduledTimer(withTimeInterval: Double(delay), repeats: false, block: { _ in
+        DispatchQueue.main.asyncAfter(deadline: .now() + Double(delay)) {
             
             if let cancelInAppMessage = DengageLocalStorage.shared.value(for: .cancelInAppMessage) as? Bool
             {
@@ -337,14 +337,12 @@ extension DengageInAppMessageManager {
                     
                     self.showInAppMessageController(with: inAppMessage)
                 }
+                
             }
             
+        }
             
-            
-        })
-        
-        
-        
+      
     }
     
     private func showInAppMessageController(with message:InAppMessage){

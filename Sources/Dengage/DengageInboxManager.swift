@@ -26,7 +26,8 @@ final class DengageInboxManager: DengageInboxManagerInterface {
                                          type: config.contactKey.type,
                                          offset: offset,
                                          limit: limit,
-                                         deviceId: config.applicationIdentifier)
+                                         deviceId: config.applicationIdentifier,
+                                         appid: remoteConfig.appId ?? "")
         
         if offset == 0 && !inboxMessages.isEmpty && !config.shouldFetchFromAPI{
             completion(.success(inboxMessages))
