@@ -43,7 +43,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        Dengage.setContactKey(contactKey: "rrrrr")
 //               
 //        
-   //    Dengage.set(deviceId: "kkkhjghfg")
+       Dengage.set(deviceId: "priya123")
         
       //  Dengage.setPartnerDeviceId(adid: <#T##String?#>)
 //

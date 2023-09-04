@@ -19,9 +19,9 @@ class DeviceInfoViewController: UIViewController {
         textView.fillSuperview(horizontalPadding: 16, verticalPadding: 8)
         getInfo()
         
-       // Dengage.setNavigation(screenName: "p1")
+        Dengage.setNavigation(screenName: "p1")
         
-        Dengage.showRatingView()
+       // Dengage.showRatingView()
 
 
     }
