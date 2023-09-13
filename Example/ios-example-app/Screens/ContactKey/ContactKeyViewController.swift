@@ -1,6 +1,9 @@
 
 import UIKit
 import Dengage
+import AppTrackingTransparency
+import AdSupport
+
 class ContactKeyViewController: UIViewController {
 
     private lazy var textField:UITextField = {
@@ -35,7 +38,30 @@ class ContactKeyViewController: UIViewController {
         view.addSubview(stackView)
         stackView.fillSafeArea(with: .init(top: 8, left: 16, bottom: 8, right: 16))
         
-       Dengage.setNavigation(screenName: "p2")
+     //  Dengage.setNavigation(screenName: "p2")
+        
+        
+       /* if #available(iOS 14, *) {
+            ATTrackingManager.requestTrackingAuthorization { status in
+                switch status {
+                case .authorized:
+                    // Tracking authorization dialog was shown
+                    // and we are authorized
+                    print("Authorized")
+                case .denied:
+                    // Tracking authorization dialog was
+                    // shown and permission is denied
+                    print("Denied")
+                case .notDetermined:
+                    // Tracking authorization dialog has not been shown
+                    print("Not Determined")
+                case .restricted:
+                    print("Restricted")
+                @unknown default:
+                    print("Unknown")
+                }
+            }
+        } */
     }
     
     override func viewWillDisappear(_ animated: Bool) {
