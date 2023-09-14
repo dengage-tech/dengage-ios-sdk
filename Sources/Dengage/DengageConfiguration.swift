@@ -2,6 +2,7 @@ import Foundation
 import AdSupport
 import CoreTelephony
 import UIKit
+import AppTrackingTransparency
 
 final class DengageConfiguration:Encodable {
     
