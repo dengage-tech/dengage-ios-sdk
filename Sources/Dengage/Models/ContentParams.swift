@@ -67,6 +67,8 @@ enum ContentType:String, Codable{
     case fullScreen = "FULL_SCREEN"
     case html = "HTML"
     case inAppBrowser = "inAppBrowser"
+    case banner = "BANNER"
+
 }
 
 struct ScreenDataFilter: Codable{

@@ -33,9 +33,9 @@ final class DengageNetworking {
 
             if let data = data  {
                 
-                
                 Logger.log(message: "HTTP API RESPONSE:\n \(apiRequest.url)", argument: data.pretty)
             }
+            
             Logger.log(message: "HTTP API STATUS CODE:\n", argument: httpResponse.statusCode.description)
             switch httpResponse.statusCode {
             case 200..<300:

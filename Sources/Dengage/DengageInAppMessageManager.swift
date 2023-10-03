@@ -285,6 +285,7 @@ extension DengageInAppMessageManager{
 extension DengageInAppMessageManager {
     
     func setNavigation(screenName: String? = nil, params: Dictionary<String,String>? = nil) {
+        
         guard !(config.inAppMessageShowTime != 0 && Date().timeMiliseconds < config.inAppMessageShowTime) else {return}
         
         inAppShowTimer.invalidate()
@@ -293,8 +294,11 @@ extension DengageInAppMessageManager {
 
         let messages = DengageLocalStorage.shared.getInAppMessages()
         guard !messages.isEmpty else {return}
+        
         let inAppMessages = DengageInAppMessageUtils.findNotExpiredInAppMessages(untilDate: Date(), messages)
-        guard let priorInAppMessage = DengageInAppMessageUtils.findPriorInAppMessage(inAppMessages: inAppMessages, screenName: screenName, config: config) else {return}
+        
+        guard let priorInAppMessage = DengageInAppMessageUtils.findPriorInAppMessage(inAppMessages: inAppMessages, screenName: screenName, params:params, config: config) else {return}
+       
         
         let delay = priorInAppMessage.data.displayTiming.delay ?? 0
         
@@ -455,10 +459,30 @@ extension DengageInAppMessageManager {
                 
                 if previousMessages.count > 0
                 {
-                   
-                    for message in previousMessages where messages.contains(where: {$0.id != message.id}) {
+                    for msg in messages
+                    {
+                        let arrMessages = previousMessages.filter({$0.id == msg.id})
                         
-                        previousMessages.append(message)
+                        
+                        if arrMessages.count == 0
+                        {
+                            previousMessages.append(msg)
+
+                        }
+                        else if arrMessages.count == 1
+                        {
+                            previousMessages = previousMessages.filter({$0.id != msg.id})
+                            previousMessages.append(msg)
+                            DengageLocalStorage.shared.save(previousMessages)
+
+                        }
+                        else
+                        {
+                            previousMessages = previousMessages.filter({$0.id != msg.id})
+                            DengageLocalStorage.shared.save(previousMessages)
+                        }
+
+                        
                     }
                     
                 }
@@ -466,16 +490,9 @@ extension DengageInAppMessageManager {
                 {
                      previousMessages.append(contentsOf: messages)
 
+ 
                 }
-                
-                
-                
-//                previousMessages.removeAll{ message in
-//                    messages.contains{ $0.id == message.id } && message.data.isRealTime
-//                }
-                
-                
-              //  previousMessages.append(contentsOf: messages)
+
                 
                 var updatedMessages = [InAppMessage]()
                 
@@ -487,7 +504,7 @@ extension DengageInAppMessageManager {
                                                       showCount: message.showCount)
                     updatedMessages.append(updatedMessage)
                 }
-                DengageLocalStorage.shared.save(updatedMessages)
+                DengageLocalStorage.shared.save(updatedMessages) 
             }
             else {
                 var previousMessages = DengageLocalStorage.shared.getInAppMessages()
@@ -732,6 +749,7 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     }
     
     func close() {
+        
         inAppMessageWindow = nil
     }
     

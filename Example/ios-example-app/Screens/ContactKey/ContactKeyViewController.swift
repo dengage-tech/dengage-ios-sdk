@@ -38,10 +38,11 @@ class ContactKeyViewController: UIViewController {
         view.addSubview(stackView)
         stackView.fillSafeArea(with: .init(top: 8, left: 16, bottom: 8, right: 16))
         
-     //  Dengage.setNavigation(screenName: "p2")
+     //  Dengage.setNavigation(screenName: "p1")
         
+       // Dengage.showRealTimeInApp(screenName: "p1",params: ["": ""])
         
-       /* if #available(iOS 14, *) {
+      /* if #available(iOS 14, *) {
             ATTrackingManager.requestTrackingAuthorization { status in
                 switch status {
                 case .authorized:
@@ -61,7 +62,7 @@ class ContactKeyViewController: UIViewController {
                     print("Unknown")
                 }
             }
-        } */
+        }*/
     }
     
     override func viewWillDisappear(_ animated: Bool) {
