@@ -67,13 +67,18 @@ extension RootViewController: UITableViewDelegate{
             self.navigationController?.pushViewController(TagsViewController(), animated: true)
         case .testPage:
             Dengage.showTestPage()
+            
+        case .geoFence:
+            self.navigationController?.pushViewController(GeofenceViewController(), animated: true)
+
+            
         }
     }
 }
 
 extension RootViewController{
     enum Actions: CaseIterable{
-        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage
+        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage , geoFence
         var title: String{
             switch self{
             case .allowNotification:
@@ -94,6 +99,9 @@ extension RootViewController{
                 return "SET TAGS"
             case .testPage:
                 return "DENGAGE TEST PAGE"
+            case .geoFence:
+                return "GEO FENCE"
+
             }
         }
     }

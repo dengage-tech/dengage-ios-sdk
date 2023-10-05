@@ -439,10 +439,30 @@ extension DengageInAppMessageManager {
                 
                 if previousMessages.count > 0
                 {
-                   
-                    for message in previousMessages where messages.contains(where: {$0.id != message.id}) {
+                    for msg in messages
+                    {
+                        let arrMessages = previousMessages.filter({$0.id == msg.id})
                         
-                        previousMessages.append(message)
+                        
+                        if arrMessages.count == 0
+                        {
+                            previousMessages.append(msg)
+
+                        }
+                        else if arrMessages.count == 1
+                        {
+                            previousMessages = previousMessages.filter({$0.id != msg.id})
+                            previousMessages.append(msg)
+                            DengageLocalStorage.shared.save(previousMessages)
+
+                        }
+                        else
+                        {
+                            previousMessages = previousMessages.filter({$0.id != msg.id})
+                            DengageLocalStorage.shared.save(previousMessages)
+                        }
+
+                        
                     }
                     
                 }
@@ -450,16 +470,9 @@ extension DengageInAppMessageManager {
                 {
                      previousMessages.append(contentsOf: messages)
 
+ 
                 }
-                
-                
-                
-//                previousMessages.removeAll{ message in
-//                    messages.contains{ $0.id == message.id } && message.data.isRealTime
-//                }
-                
-                
-              //  previousMessages.append(contentsOf: messages)
+
                 
                 var updatedMessages = [InAppMessage]()
                 
