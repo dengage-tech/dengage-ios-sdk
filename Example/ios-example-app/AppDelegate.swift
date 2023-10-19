@@ -33,25 +33,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       
         Dengage.setLog(isVisible: true)
         
-        Dengage.setDevelopmentStatus(isDebug: true)
+     //   Dengage.setDevelopmentStatus(isDebug: true)
         
-        Dengage.set(deviceId: "priya@1928142609")
+     //   Dengage.set(deviceId: "priya@1928142609")
         
         Dengage.promptForPushNotifications { isUserGranted in
             
             
         }
         
-        Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
+       // Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
 //        
 //        
-//        Dengage.set(contactKey: "rtrtyr")
+       // Dengage.set(contactKey: "sdcdsdd")
 //        
 //        Dengage.setContactKey(contactKey: "rrrrr")
 //               
 //        
         
-      //  Dengage.setPartnerDeviceId(adid: <#T##String?#>)
+      // Dengage.setPartnerDeviceId(adid: "783278iydukjqe")
 //
 //        
 //        Dengage.sendDeviceIdToServer(route: "V1/dengage/sync/mobile/customerData", token: "cti234bdj1ev4u4c0pk2l1z370vmgtah")

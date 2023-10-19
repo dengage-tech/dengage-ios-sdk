@@ -42,7 +42,7 @@ final class InAppMessageHTMLViewController: UIViewController{
         setupJavascript()
         
         
-        viewSource.setupConstaints(for: message.data.content.props)
+        viewSource.setupConstaints(for: message.data.content.props , message : message)
             
         
         
