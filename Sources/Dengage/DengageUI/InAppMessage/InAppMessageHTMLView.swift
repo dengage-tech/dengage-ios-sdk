@@ -20,7 +20,7 @@ final class InAppMessageHTMLView: UIView{
     private var rightConstraint: NSLayoutConstraint?
 
     var height: NSLayoutConstraint?
-    
+
     init() {
         super.init(frame: .zero)
         setupUI()
@@ -32,8 +32,7 @@ final class InAppMessageHTMLView: UIView{
     
     private func setupUI(){
         addSubview(webView)
-        backgroundColor = UIColor.clear
-        
+        backgroundColor = UIColor.init(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.5)
         leftConstraint = webView
             .leadingAnchor
             .constraint(lessThanOrEqualTo: leadingAnchor,
@@ -76,13 +75,13 @@ final class InAppMessageHTMLView: UIView{
         webView.widthAnchor.constraint(lessThanOrEqualToConstant: width).isActive = true
     }
     
-    func setupConstaints(for params: ContentParams){
+    func setupConstaints(for params: ContentParams , message :InAppMessage){
         //set(maxWidth: params.maxWidth)
         set(radius: params.radius)
         topConstraint?.constant = getVerticalByPercentage(for: params.marginTop)
         bottomConstraint?.constant = -getVerticalByPercentage(for:params.marginBottom)
-        leftConstraint?.constant = getHorizaltalByPercentage(for:params.marginLeft)
-        rightConstraint?.constant = -getHorizaltalByPercentage(for:params.marginRight)
+        leftConstraint?.constant = getHorizaltalByPercentage(for:params.marginLeft, message: message)
+        rightConstraint?.constant = -getHorizaltalByPercentage(for:params.marginRight, message: message)
         leftConstraint?.isActive = true
         rightConstraint?.isActive = true
         switch params.position{
@@ -102,22 +101,49 @@ final class InAppMessageHTMLView: UIView{
         return (UIScreen.main.bounds.height * ((margin ?? 1.0) / 100))
     }
     
-    func getHorizaltalByPercentage(for margin: CGFloat?) -> CGFloat {
+    func getHorizaltalByPercentage(for margin: CGFloat? , message : InAppMessage) -> CGFloat {
+        
         
         if margin == 0
         {
-            return (UIScreen.main.bounds.width * (4 / 100))
+            if message.data.content.props.position == .full
+            {
+                
+                return (UIScreen.main.bounds.width * ((margin ?? 1.0) / 100))
 
+
+            }
+            else if message.data.content.props.position == .top
+            {
+                
+                return (UIScreen.main.bounds.width * ((margin ?? 1.0) / 100))
+
+
+            }
+            else if message.data.content.props.position == .bottom
+            {
+                
+                return (UIScreen.main.bounds.width * ((margin ?? 1.0) / 100))
+
+
+            }
+
+            else
+            {
+                return (UIScreen.main.bounds.width * (4 / 100))
+
+            }
         }
         else
         {
             return (UIScreen.main.bounds.width * ((margin ?? 1.0) / 100))
 
         }
+       
         
+
     }
 }
-
 
 final class InAppBrowserView: UIView{
     
@@ -143,7 +169,7 @@ final class InAppBrowserView: UIView{
     
     private func setupUI(){
         addSubview(webView)
-        backgroundColor = UIColor.clear
+        backgroundColor = UIColor.init(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.5)
         
         
     }
@@ -156,3 +182,4 @@ final class InAppBrowserView: UIView{
     }
    
 }
+

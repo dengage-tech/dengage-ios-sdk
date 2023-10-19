@@ -39,8 +39,9 @@ final class InAppMessageHTMLViewController: UIViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         setupJavascript()
-        viewSource.setupConstaints(for: message.data.content.props)
         
+        viewSource.setupConstaints(for: message.data.content.props , message : message)
+
         if let isPresent = message.data.content.props.html?.contains("Dn.iosUrlN") {
             
             self.isIosURLNPresent = isPresent
