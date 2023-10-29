@@ -72,18 +72,24 @@ extension InboxMessagesViewController: UITableViewDelegate{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let item = self.messages[indexPath.row]
 
-        Dengage.setInboxMessageAsClicked(with: item.id) { [weak self] _ in
-            
-           
+        
+        for msg in self.messages
+        {
+            Dengage.setInboxMessageAsClicked(with: msg.id) { [weak self] _ in
+                
+               
+            }
         }
         
+       
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: {
-            
-            
-            self.tableView.reloadData()
-
-        })
+        
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: {
+//
+//
+//            self.tableView.reloadData()
+//
+//        })
     }
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true

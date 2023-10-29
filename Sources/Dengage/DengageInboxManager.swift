@@ -107,18 +107,21 @@ final class DengageInboxManager: DengageInboxManagerInterface {
             
         guard let messageId = id else { return }
         
-        for i in 0...inboxMessages.count - 1
+        if inboxMessages.count > 0
         {
-            var readedMessage = inboxMessages[i]
-
-            if readedMessage.id == messageId
+            for i in 0...inboxMessages.count - 1
             {
-                readedMessage.isClicked = true
-                inboxMessages[i] = readedMessage
-                break
+                var readedMessage = inboxMessages[i]
+
+                if readedMessage.id == messageId
+                {
+                    readedMessage.isClicked = true
+                    inboxMessages[i] = readedMessage
+                    break
+                }
             }
         }
-    
+  
 //        let message = inboxMessages.first(where: {$0.id == messageId})
 //        message?.isClicked = true
 //        inboxMessages = inboxMessages.filter {$0.id != messageId}
