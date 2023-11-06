@@ -8,6 +8,8 @@ struct GetRealTimeMesagesRequest: APIRequest {
     let enpointType: EndpointType = .inapp
     var path: String {
         return "api/realtime-inapp/\(accountName)/\(appId)/campaign.json"
+        
+        
     }
 
     let queryParameters: [URLQueryItem] = []
