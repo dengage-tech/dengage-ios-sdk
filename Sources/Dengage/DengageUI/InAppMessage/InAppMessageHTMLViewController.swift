@@ -9,6 +9,7 @@ final class InAppMessageHTMLViewController: UIViewController{
     }()
 
     var delegate: InAppMessagesActionsDelegate?
+    
 
     let message:InAppMessage
     
@@ -40,8 +41,11 @@ final class InAppMessageHTMLViewController: UIViewController{
         super.viewDidLoad()
         setupJavascript()
         
+        
         viewSource.setupConstaints(for: message.data.content.props , message : message)
-
+            
+        
+        
         if let isPresent = message.data.content.props.html?.contains("Dn.iosUrlN") {
             
             self.isIosURLNPresent = isPresent
@@ -57,15 +61,18 @@ final class InAppMessageHTMLViewController: UIViewController{
             self.viewSource.webView.alpha = 0.0
              
          },completion: { (finished: Bool) in
+             self.delegate?.sendDissmissEvent(message: self.message)
              self.delegate?.close()
          })
      }
     
     private func setupJavascript(){
+        
         let userScript = WKUserScript(source: javascriptInterface,
                                       injectionTime: WKUserScriptInjectionTime.atDocumentEnd,
                                       forMainFrameOnly: true)
         viewSource.webView.configuration.userContentController.addUserScript(userScript)
+        
         if #available(iOS 14.0, *) {
             viewSource.webView.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
         } else {
@@ -85,6 +92,7 @@ final class InAppMessageHTMLViewController: UIViewController{
         viewSource.webView.contentMode = .scaleAspectFit
         viewSource.webView.sizeToFit()
         viewSource.webView.autoresizesSubviews = true
+
     }
 }
 
@@ -108,7 +116,6 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
         viewSource.webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { (height, error) in
             guard let scrollHeight = height as? CGFloat else {return}
             
-            
             if scrollHeight > self.viewSource.frame.height
             {
                 self.viewSource.height?.constant = self.viewSource.frame.height
@@ -129,6 +136,7 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
                 }
 
             }
+
             
         })
     }
@@ -223,7 +231,7 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
         case "dismiss":
             delegate?.sendDissmissEvent(message: self.message)
         case "close":
-            
+            delegate?.sendDissmissEvent(message: self.message)
             if !isIosURLNPresent
             {
                 delegate?.close()
@@ -231,7 +239,7 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             }
             
         case "closeN":
-            
+            delegate?.sendDissmissEvent(message: self.message)
             delegate?.close()
 
         default:

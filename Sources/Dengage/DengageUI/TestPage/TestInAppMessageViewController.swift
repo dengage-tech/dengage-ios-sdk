@@ -74,7 +74,7 @@ extension TestInAppMessageViewController {
                                                   marginBottom: 5,
                                                   marginLeft: 5,
                                                   marginRight: 5,
-                                                  dismissOnTouchOutside: true)
+                                                  dismissOnTouchOutside: true, backgroundColor: "#ffffff")
                 let message = createInAppMessage(with: contentParams)
                 return InAppMessageTest(title: "Banner (image + button + close) (TOP + radius)", data: message)
             }
@@ -89,7 +89,7 @@ extension TestInAppMessageViewController {
                                                   marginBottom: 5,
                                                   marginLeft: 5,
                                                   marginRight: 5,
-                                                  dismissOnTouchOutside: true)
+                                                  dismissOnTouchOutside: true, backgroundColor: "#ffffff")
                 let message = createInAppMessage(with: contentParams)
                 return InAppMessageTest(title: "Banner (image + button + close) (BOTTOM + radius)", data: message)
             }
@@ -107,7 +107,7 @@ extension TestInAppMessageViewController {
                                                   marginBottom: 5,
                                                   marginLeft: 5,
                                                   marginRight: 5,
-                                                  dismissOnTouchOutside: true)
+                                                  dismissOnTouchOutside: true, backgroundColor: "#ffffff")
                 let message = createInAppMessage(with: contentParams)
                 return InAppMessageTest(title: "Image Modal (Button) (MIDDLE)", data: message)
             }
@@ -122,7 +122,7 @@ extension TestInAppMessageViewController {
                                                   marginBottom: 5,
                                                   marginLeft: 5,
                                                   marginRight: 5,
-                                                  dismissOnTouchOutside: true)
+                                                  dismissOnTouchOutside: true, backgroundColor: "#ffffff")
                 let message = createInAppMessage(with: contentParams)
                 return InAppMessageTest(title: "Image Modal (Button) (MIDDLE + radius)", data: message)
             }
@@ -137,7 +137,7 @@ extension TestInAppMessageViewController {
                                                   marginBottom: 5,
                                                   marginLeft: 5,
                                                   marginRight: 5,
-                                                  dismissOnTouchOutside: true)
+                                                  dismissOnTouchOutside: true, backgroundColor: "#ffffff")
                 let message = createInAppMessage(with: contentParams)
                 return InAppMessageTest(title: "Image Modal-Text (Button) (MIDDLE)", data: message)
             }
@@ -152,7 +152,7 @@ extension TestInAppMessageViewController {
                                                   marginBottom: 5,
                                                   marginLeft: 5,
                                                   marginRight: 5,
-                                                  dismissOnTouchOutside: true)
+                                                  dismissOnTouchOutside: true, backgroundColor: "#ffffff")
                 let message = createInAppMessage(with: contentParams)
                 return InAppMessageTest(title: "Image Modal-Text (Button) (MIDDLE) (Radius)", data: message)
             }
@@ -167,7 +167,7 @@ extension TestInAppMessageViewController {
                                                   marginBottom: nil,
                                                   marginLeft: nil,
                                                   marginRight: nil,
-                                                  dismissOnTouchOutside: true)
+                                                  dismissOnTouchOutside: true, backgroundColor: "#ffffff")
                 let message = createInAppMessage(with: contentParams)
                 return InAppMessageTest(title: "Full Image (Button) (FULL)", data: message)
             }
@@ -182,7 +182,7 @@ extension TestInAppMessageViewController {
                                                   marginBottom: nil,
                                                   marginLeft: nil,
                                                   marginRight: nil,
-                                                  dismissOnTouchOutside: true)
+                                                  dismissOnTouchOutside: true, backgroundColor: "#ffffff")
                 let message = createInAppMessage(with: contentParams)
                 return InAppMessageTest(title: "Full Image Text (Button) (FULL)", data: message)
             }

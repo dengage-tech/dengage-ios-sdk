@@ -32,7 +32,6 @@ final class InAppMessageHTMLView: UIView{
     
     private func setupUI(){
         addSubview(webView)
-        backgroundColor = UIColor.init(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.5)
         leftConstraint = webView
             .leadingAnchor
             .constraint(lessThanOrEqualTo: leadingAnchor,
@@ -77,6 +76,18 @@ final class InAppMessageHTMLView: UIView{
     
     func setupConstaints(for params: ContentParams , message :InAppMessage){
         //set(maxWidth: params.maxWidth)
+        
+        if let color = params.backgroundColor
+        {
+            backgroundColor = UIColor.init(hex: color)
+
+        }
+        else
+        {
+            backgroundColor = UIColor.clear
+
+        }
+        
         set(radius: params.radius)
         topConstraint?.constant = getVerticalByPercentage(for: params.marginTop)
         bottomConstraint?.constant = -getVerticalByPercentage(for:params.marginBottom)
@@ -169,7 +180,6 @@ final class InAppBrowserView: UIView{
     
     private func setupUI(){
         addSubview(webView)
-        backgroundColor = UIColor.init(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 0.5)
         
         
     }
@@ -183,3 +193,30 @@ final class InAppBrowserView: UIView{
    
 }
 
+extension UIColor {
+    public convenience init?(hex: String) {
+        let r, g, b, a: CGFloat
+
+        if hex.hasPrefix("#") {
+            let start = hex.index(hex.startIndex, offsetBy: 1)
+            let hexColor = String(hex[start...])
+
+            if hexColor.count == 8 {
+                let scanner = Scanner(string: hexColor)
+                var hexNumber: UInt64 = 0
+
+                if scanner.scanHexInt64(&hexNumber) {
+                    r = CGFloat((hexNumber & 0xff000000) >> 24) / 255
+                    g = CGFloat((hexNumber & 0x00ff0000) >> 16) / 255
+                    b = CGFloat((hexNumber & 0x0000ff00) >> 8) / 255
+                    a = CGFloat(hexNumber & 0x000000ff) / 255
+
+                    self.init(red: r, green: g, blue: b, alpha: a)
+                    return
+                }
+            }
+        }
+
+        return nil
+    }
+}
