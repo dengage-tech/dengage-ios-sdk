@@ -38,7 +38,7 @@ class ContactKeyViewController: UIViewController {
         view.addSubview(stackView)
         stackView.fillSafeArea(with: .init(top: 8, left: 16, bottom: 8, right: 16))
         
-     //  Dengage.setNavigation(screenName: "p1")
+       Dengage.setNavigation(screenName: "p1")
         
        // Dengage.showRealTimeInApp(screenName: "p1",params: ["": ""])
         

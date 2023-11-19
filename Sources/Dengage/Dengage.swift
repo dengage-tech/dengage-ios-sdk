@@ -20,12 +20,12 @@ public class Dengage  {
     
     
     @objc public static func start(apiKey: String,
-                                   application: UIApplication,
+                                   application: UIApplication? = nil,
                                    launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
                                    dengageOptions options: DengageOptions = DengageOptions() , deviceId : String? = nil, contactKey : String? = nil , partnerDeviceId :String? = nil) {
-        dengage = .init(with: apiKey,
-                        application: application,
-                        launchOptions:launchOptions,
+        
+        
+        dengage = .init(with: apiKey,launchOptions:launchOptions,
                         dengageOptions: options)
         
         if deviceId != nil && deviceId != ""

@@ -288,7 +288,7 @@ extension DengageInAppMessageManager {
         
         guard !(config.inAppMessageShowTime != 0 && Date().timeMiliseconds < config.inAppMessageShowTime) else {return}
         
-        inAppShowTimer.invalidate()
+      //  inAppShowTimer.invalidate()
         
         DengageLocalStorage.shared.set(value: false, for: .cancelInAppMessage)
 
@@ -317,6 +317,7 @@ extension DengageInAppMessageManager {
     func showInAppMessage(inAppMessage: InAppMessage) {
         
         let inappShowTime = (Date().timeMiliseconds) + (config.remoteConfiguration?.minSecBetweenMessages ?? 0.0)
+        
         DengageLocalStorage.shared.set(value: inappShowTime, for: .inAppMessageShowTime)
 
         let delay = inAppMessage.data.displayTiming.delay ?? 0

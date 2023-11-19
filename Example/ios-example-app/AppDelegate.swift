@@ -20,7 +20,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
 
 
-        Dengage.start(apiKey: "hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
+        Dengage.start(apiKey: "hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol", application: application, launchOptions: [:], dengageOptions: DengageOptions())
+        
         UNUserNotificationCenter.current().delegate = self
         window = UIWindow(frame: UIScreen.main.bounds)
         let rootViewController = RootViewController()
@@ -35,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
      //   Dengage.setDevelopmentStatus(isDebug: true)
         
-     //   Dengage.set(deviceId: "priya@1928142609")
+        Dengage.set(deviceId: "priya@1928142609")
         
         Dengage.promptForPushNotifications { isUserGranted in
             
@@ -45,13 +46,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
        // Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
 //        
 //        
-       // Dengage.set(contactKey: "sdcdsdd")
+        Dengage.set(contactKey: "sdcdsdd")
 //        
 //        Dengage.setContactKey(contactKey: "rrrrr")
 //               
 //        
         
-      // Dengage.setPartnerDeviceId(adid: "783278iydukjqe")
+       Dengage.setPartnerDeviceId(adid: "783278iydukjqe")
 //
 //        
 //        Dengage.sendDeviceIdToServer(route: "V1/dengage/sync/mobile/customerData", token: "cti234bdj1ev4u4c0pk2l1z370vmgtah")
