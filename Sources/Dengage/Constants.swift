@@ -1,6 +1,6 @@
 import Foundation
 
-let SDK_VERSION = "5.31.1"
+let SDK_VERSION = "5.47.3"
 let SUIT_NAME = "group.dengage"
 let DEFAULT_CARRIER_ID = "1"
 let MESSAGE_SOURCE = "DENGAGE"

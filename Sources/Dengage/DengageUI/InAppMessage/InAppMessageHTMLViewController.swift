@@ -42,7 +42,7 @@ final class InAppMessageHTMLViewController: UIViewController{
         setupJavascript()
         
         
-        viewSource.setupConstaints(for: message.data.content.props)
+        viewSource.setupConstaints(for: message.data.content.props , message : message)
             
         
         
@@ -61,6 +61,7 @@ final class InAppMessageHTMLViewController: UIViewController{
             self.viewSource.webView.alpha = 0.0
              
          },completion: { (finished: Bool) in
+             self.delegate?.sendDissmissEvent(message: self.message)
              self.delegate?.close()
          })
      }
@@ -91,7 +92,6 @@ final class InAppMessageHTMLViewController: UIViewController{
         viewSource.webView.contentMode = .scaleAspectFit
         viewSource.webView.sizeToFit()
         viewSource.webView.autoresizesSubviews = true
-        self.viewSource.webView.backgroundColor = .blue
 
     }
 }
@@ -116,18 +116,6 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
         viewSource.webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { (height, error) in
             guard let scrollHeight = height as? CGFloat else {return}
             
-            
-            //self.viewSource.frame.origin.x = 20
-            
-            //self.viewSource.frame.size.width = self.viewSource.frame.size.width - 40
-            
-            if self.message.data.content.props.position == .middle
-            {
-                self.viewSource.leftConstraint?.constant = 12
-                self.viewSource.rightConstraint?.constant = -12
-            }
-//            
-
             if scrollHeight > self.viewSource.frame.height
             {
                 self.viewSource.height?.constant = self.viewSource.frame.height
@@ -144,14 +132,12 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
                 if self.message.data.content.props.position == .top
                 {
                     self.viewSource.height?.constant = scrollHeight + 50
+
                 }
 
             }
-            else
-            {
-                self.viewSource.height?.constant = scrollHeight + 20
 
-            }
+            
         })
     }
 }
@@ -179,6 +165,10 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
                 {
                     delegate?.promptPushPermission()
 
+                }
+                else if message.body as? String == "DN.SHOWRATING()"
+                {
+                    Dengage.showRatingView()
                 }
                 else
                 {
@@ -222,9 +212,12 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
                     delegate?.promptPushPermission()
 
                 }
+                else if deeplink == "DN.SHOWRATING()"
+                {
+                    Dengage.showRatingView()
+                }
                 else
                 {
-                    
                     self.delegate?.open(url: deeplink)
                 }
 
@@ -238,7 +231,7 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
         case "dismiss":
             delegate?.sendDissmissEvent(message: self.message)
         case "close":
-            
+            delegate?.sendDissmissEvent(message: self.message)
             if !isIosURLNPresent
             {
                 delegate?.close()
@@ -246,7 +239,7 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             }
             
         case "closeN":
-            
+            delegate?.sendDissmissEvent(message: self.message)
             delegate?.close()
 
         default:
