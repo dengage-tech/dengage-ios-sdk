@@ -75,6 +75,7 @@ final class DengageLocalStorage: NSObject {
         case lastPushPayload = "lastPushPayload"
         case cancelInAppMessage = "cancelInAppMessage"
         case appEnvironment = "appEnvironment"
+        case hybridAppEnvironment = "hybridAppEnvironment"
 
 
     }

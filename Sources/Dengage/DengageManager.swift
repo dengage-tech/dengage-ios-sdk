@@ -20,7 +20,7 @@ public class DengageManager {
     var testPageWindow: UIWindow?
     
     init(with apiKey: String,
-         application: UIApplication,
+         application: UIApplication?,
          launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
          dengageOptions options: DengageOptions) {
         

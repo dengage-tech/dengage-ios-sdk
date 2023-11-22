@@ -136,6 +136,12 @@ final class DengageConfiguration:Encodable {
 
     }
     
+    func getHybridAppEnvironment()-> Bool
+    {
+        return DengageLocalStorage.shared.value(for: .hybridAppEnvironment) as? Bool ?? false
+
+    }
+    
     func getRetrieveLinkOnSameScreen()-> Bool
     {
         return DengageLocalStorage.shared.value(for: .retrieveLinkOnSameScreen) as? Bool ?? false
