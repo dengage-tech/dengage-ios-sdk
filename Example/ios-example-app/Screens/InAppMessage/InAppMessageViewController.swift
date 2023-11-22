@@ -59,7 +59,7 @@ import Dengage
          
          super.viewDidAppear(animated)
          
-         Dengage.setNavigation()
+         Dengage.setNavigation(screenName: screenNameTextField.text ?? "")
          
 
      }

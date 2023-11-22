@@ -21,21 +21,25 @@ final class DengageInAppMessageUtils{
                                      screenName: String? = nil,
                                      params: [String:String]? = nil,
                                      config: DengageConfiguration) -> InAppMessage? {
-        
-        let inAppMessageWithoutScreenName = inAppMessages.sorted.first { message -> Bool in
-            return (message.data.displayCondition.screenNameFilters ?? []).isEmpty && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message, params: params, config: config)
-        }
-        
-        if let screenName = screenName, !screenName.isEmpty{
+                
+        if let screenName = screenName, !screenName.isEmpty  {
+            
             let inAppMessageWithScreenName = inAppMessages.sorted.first { message -> Bool in
+                
                 return message.data.displayCondition.screenNameFilters?.first{ nameFilter -> Bool in
+                    
                     return operateScreenValues(value: nameFilter.value, for: screenName, operatorType: nameFilter.operatorType)
-                } != nil && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message,
-                                                                                          params: params,
-                                                                                          config: config)
+                    
+                } != nil && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message,params: params,config: config)
             }
+            
             return inAppMessageWithScreenName
-        }else{
+            
+        }else {
+            
+            let inAppMessageWithoutScreenName = inAppMessages.sorted.first { message -> Bool in
+                return (message.data.displayCondition.screenNameFilters ?? []).isEmpty && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message, params: params, config: config)
+            }
            return inAppMessageWithoutScreenName
         }
     }
@@ -75,17 +79,25 @@ final class DengageInAppMessageUtils{
     private class func operateRealTimeValues(message: InAppMessage,
                                              params: [String:String]? = nil,
                                              config: DengageConfiguration) -> Bool {
+        
         guard let ruleSet = message.data.displayCondition.ruleSet,
-              message.data.isRealTime else { return true }
+              message.data.isRealTime
+                
+        else {
+            
+            return true
+            
+            
+        }
         
         switch ruleSet.logicOperator {
         case .AND:
             return ruleSet.rules.allSatisfy{ rule in
-                operateDisplay(for: rule, with: params, config: config)
+                operateDisplay(for: rule, with: params, config: config, message: message)
             }
         case .OR:
             return ruleSet.rules.contains{ rule in
-                operateDisplay(for: rule, with: params, config: config)
+                operateDisplay(for: rule, with: params, config: config, message: message)
             }
         }
     }
@@ -93,22 +105,23 @@ final class DengageInAppMessageUtils{
     
     private class func operateDisplay(for rule: Rule,
                                       with params: [String:String]? = nil,
-                                      config: DengageConfiguration) -> Bool{
+                                      config: DengageConfiguration, message:InAppMessage) -> Bool{
+        
         switch rule.logicOperatorBetweenCriterions {
         case .AND:
             return rule.criterions.allSatisfy{ criterion in
-                operate(criterion, with: params, config: config)
+                operate(criterion, with: params, config: config, message: message)
             }
         case .OR:
             return rule.criterions.contains{ criterion in
-                operate(criterion, with: params, config: config)
+                operate(criterion, with: params, config: config, message: message)
             }
         }
     }
     
     private class func operate(_ criterion: Criterion,
                                with params: [String:String]? = nil,
-                               config: DengageConfiguration) -> Bool {
+                               config: DengageConfiguration, message:InAppMessage) -> Bool {
         guard let specialRule = SpecialRuleParameter(rawValue: criterion.parameter) else {
             
             if checkVisitorInfoAttr(parameter: criterion.parameter) != ""
@@ -216,7 +229,7 @@ final class DengageInAppMessageUtils{
                     return operate(with: criterion.comparison,
                                    for: criterion.dataType,
                                    ruleParam: criterion.values,
-                                   userParam: userParam)
+                                   userParam: userParam, message: message, valueSource: criterion.valueSource)
                 }
                 
                
@@ -226,7 +239,7 @@ final class DengageInAppMessageUtils{
                 return operate(with: criterion.comparison,
                                for: criterion.dataType,
                                ruleParam: criterion.values,
-                               userParam: params?[criterion.parameter])
+                               userParam: params?[criterion.parameter], message: message, valueSource: criterion.valueSource)
             }
             
            
@@ -238,92 +251,92 @@ final class DengageInAppMessageUtils{
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.realTimeCategoryPath ?? "")
+                           userParam: config.realTimeCategoryPath ?? "", message: message, valueSource: criterion.valueSource)
         case .CART_ITEM_COUNT:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.realTimeCartItemCount ?? "0")
+                           userParam: config.realTimeCartItemCount ?? "0", message: message, valueSource: criterion.valueSource)
         case .CART_AMOUNT:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.realTimeCartAmount ?? "0")
+                           userParam: config.realTimeCartAmount ?? "0", message: message, valueSource: criterion.valueSource)
         case .STATE:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.state ?? "")
+                           userParam: config.state ?? "", message: message, valueSource: criterion.valueSource)
         case .CITY:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.city ?? "")
+                           userParam: config.city ?? "", message: message, valueSource: criterion.valueSource)
         case .TIMEZONE:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.deviceTimeZone)
+                           userParam: config.deviceTimeZone, message: message, valueSource: criterion.valueSource)
         case .LANGUAGE:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.deviceLanguage)
+                           userParam: config.deviceLanguage, message: message, valueSource: criterion.valueSource)
         case .SCREEN_WIDTH:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: UIScreen.main.bounds.width.description)
+                           userParam: UIScreen.main.bounds.width.description, message: message, valueSource: criterion.valueSource)
         case .SCREEN_HEIGHT:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: UIScreen.main.bounds.height.description)
+                           userParam: UIScreen.main.bounds.height.description, message: message, valueSource: criterion.valueSource)
         case .OS_VERSION:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: UserAgentUtils.deviceVersion)
+                           userParam: UserAgentUtils.deviceVersion, message: message, valueSource: criterion.valueSource)
         case .OS:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: "ios")
+                           userParam: "ios", message: message, valueSource: criterion.valueSource)
         case .DEVICE_NAME:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: UserAgentUtils.deviceName)
+                           userParam: UserAgentUtils.deviceName, message: message, valueSource: criterion.valueSource)
         case .COUNTRY:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.deviceCountryCode)
+                           userParam: config.deviceCountryCode, message: message, valueSource: criterion.valueSource)
         case .MONTH:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: Date().month)
+                           userParam: Date().month, message: message, valueSource: criterion.valueSource)
         case .WEEK_DAY:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: Date().weekDay)
+                           userParam: Date().weekDay, message: message, valueSource: criterion.valueSource)
         case .HOUR:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: Date().hour)
+                           userParam: Date().hour, message: message, valueSource: criterion.valueSource)
         case .PAGE_VIEW_IN_VISIT:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: String(config.pageViewCount))
+                           userParam: String(config.pageViewCount), message: message, valueSource: criterion.valueSource)
         case .ANONYMOUS:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: (config.contactKey.type == "c").description)
+                           userParam: (config.contactKey.type == "c").description, message: message, valueSource: criterion.valueSource)
         case .VISIT_DURATION:
             guard
                 let lastSessionStartTime = DengageLocalStorage.shared.value(for: .lastSessionStartTime) as? Double else {return true}
@@ -331,36 +344,36 @@ final class DengageInAppMessageUtils{
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: String(lastSessionDuration))
+                           userParam: String(lastSessionDuration), message: message, valueSource: criterion.valueSource)
         case .FIRST_VISIT:
             guard
                 let firstVisitTime = DengageLocalStorage.shared.value(for: .firstLaunchTime) as? Double else {return true}
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: String(firstVisitTime))
+                           userParam: String(firstVisitTime), message: message, valueSource: criterion.valueSource)
         case .LAST_VISIT:
             guard
                 let lastVisitTime = DengageLocalStorage.shared.value(for: .lastVisitTime) as? Double else {return true}
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: String(lastVisitTime))
+                           userParam: String(lastVisitTime), message: message, valueSource: criterion.valueSource)
         case .BRAND_NAME:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: "apple")
+                           userParam: "apple", message: message, valueSource: criterion.valueSource)
         case .MODEL_NAME:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: "iphone")
+                           userParam: "iphone", message: message, valueSource: criterion.valueSource)
         case .PUSH_PERMISSION:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.permission.description)
+                           userParam: config.permission.description, message: message, valueSource: criterion.valueSource)
         case .VISIT_COUNT:
             guard (criterion.dataType == .VISITCOUNTPASTXDAYS && !criterion.values.isEmpty) else { return true }
             guard let visitCountData = criterion.values.first else { return true }
@@ -372,7 +385,7 @@ final class DengageInAppMessageUtils{
                 return operate(with: criterion.comparison,
                                for: CriterionDataType.INT,
                                ruleParam: [visitCount.count.description],
-                               userParam: DengageVisitCountManager.findVisitCount(pastDayCount: visitCount.timeAmount).description)
+                               userParam: DengageVisitCountManager.findVisitCount(pastDayCount: visitCount.timeAmount).description, message: message, valueSource: criterion.valueSource)
             } catch {
                  return true
             }
@@ -428,14 +441,27 @@ final class DengageInAppMessageUtils{
         with operatorType: ComparisonType,
         for dataType: CriterionDataType,
         ruleParam: [String]? = nil,
-        userParam: String? = nil
+        userParam: String? = nil, message: InAppMessage, valueSource : String
     ) -> Bool {
+        
+        
         guard
             let ruleParam = ruleParam,
             let userParam = userParam,
             ruleParam.isEmpty == false
         else {
-            return true
+            
+            if message.data.isRealTime && valueSource == "CUSTOM"
+            {
+                return false
+            }
+            else
+            {
+                return true
+            }
+            
+          //  return true
+            
         }
 
         switch operatorType {

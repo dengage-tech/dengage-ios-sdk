@@ -31,13 +31,13 @@ extension DengageInAppMessageManager{
         fetchRealTimeMessages()
        // getVisitorInfo()
         Logger.log(message: "fetchInAppMessages called")
-        guard shouldFetchInAppMessages else {return}
+      //  guard shouldFetchInAppMessages else {return}
         guard let remoteConfig = config.remoteConfiguration, let accountName = remoteConfig.accountName else { return }
         Logger.log(message: "fetchInAppMessages request started")
         let request = GetInAppMessagesRequest(accountName: accountName,
                                               contactKey: config.contactKey.key,
                                               type: config.contactKey.type,
-                                              deviceId: config.applicationIdentifier)
+                                              deviceId: config.applicationIdentifier, appid: config.remoteConfiguration?.appId ?? "")
         apiClient.send(request: request) { [weak self] result in
             switch result {
             case .success(let response):
@@ -136,7 +136,7 @@ extension DengageInAppMessageManager{
         }
     }
     
-    private func markAsInAppMessageAsDisplayed(inAppMessageId: String?) {
+    private func markAsInAppMessageAsDisplayed(inAppMessageId: String? ,contentId:String ) {
         guard isEnabledInAppMessage else {return}
         guard let accountName = config.remoteConfiguration?.accountName,
               let messageId = inAppMessageId else { return }
@@ -144,7 +144,7 @@ extension DengageInAppMessageManager{
                                                          deviceID: config.applicationIdentifier,
                                                          accountName: accountName,
                                                          contactKey: config.contactKey.key,
-                                                         id: messageId)
+                                                         id: messageId, contentId: contentId)
         
         apiClient.send(request: request) { result in
             switch result {
@@ -156,7 +156,7 @@ extension DengageInAppMessageManager{
         }
     }
     
-    private func setInAppMessageAsClicked(_ messageId: String?, _ buttonId: String?) {
+    private func setInAppMessageAsClicked(_ messageId: String?, _ buttonId: String? , _ contentId: String?) {
         guard isEnabledInAppMessage else {return}
         guard let remoteConfig = config.remoteConfiguration,
               let accountName = remoteConfig.accountName,
@@ -166,7 +166,7 @@ extension DengageInAppMessageManager{
                                                        accountName: accountName,
                                                        contactKey: config.contactKey.key,
                                                        id: messageId,
-                                                       buttonId: buttonId)
+                                                       buttonId: buttonId, contentId: contentId)
         
         apiClient.send(request: request) { [weak self] result in
             switch result {
@@ -178,7 +178,7 @@ extension DengageInAppMessageManager{
         }
     }
     
-    private func setInAppMessageAsDismissed(_ inAppMessageId: String?) {
+    private func setInAppMessageAsDismissed(_ inAppMessageId: String? , contentId: String?) {
         guard isEnabledInAppMessage else {return}
         guard let remoteConfig = config.remoteConfiguration,
               let accountName = remoteConfig.accountName,
@@ -187,7 +187,7 @@ extension DengageInAppMessageManager{
                                                            deviceID: config.applicationIdentifier,
                                                            accountName: accountName,
                                                            contactKey: config.contactKey.key,
-                                                           id: messageId)
+                                                           id: messageId, contentId: contentId ?? "")
         
         apiClient.send(request: request) { result in
             switch result {
@@ -285,16 +285,20 @@ extension DengageInAppMessageManager{
 extension DengageInAppMessageManager {
     
     func setNavigation(screenName: String? = nil, params: Dictionary<String,String>? = nil) {
+        
         guard !(config.inAppMessageShowTime != 0 && Date().timeMiliseconds < config.inAppMessageShowTime) else {return}
         
-        inAppShowTimer.invalidate()
+      //  inAppShowTimer.invalidate()
         
         DengageLocalStorage.shared.set(value: false, for: .cancelInAppMessage)
 
         let messages = DengageLocalStorage.shared.getInAppMessages()
         guard !messages.isEmpty else {return}
+        
         let inAppMessages = DengageInAppMessageUtils.findNotExpiredInAppMessages(untilDate: Date(), messages)
-        guard let priorInAppMessage = DengageInAppMessageUtils.findPriorInAppMessage(inAppMessages: inAppMessages, screenName: screenName, config: config) else {return}
+        
+        guard let priorInAppMessage = DengageInAppMessageUtils.findPriorInAppMessage(inAppMessages: inAppMessages, screenName: screenName, params:params, config: config) else {return}
+       
         
         let delay = priorInAppMessage.data.displayTiming.delay ?? 0
         
@@ -313,11 +317,12 @@ extension DengageInAppMessageManager {
     func showInAppMessage(inAppMessage: InAppMessage) {
         
         let inappShowTime = (Date().timeMiliseconds) + (config.remoteConfiguration?.minSecBetweenMessages ?? 0.0)
+        
         DengageLocalStorage.shared.set(value: inappShowTime, for: .inAppMessageShowTime)
 
         let delay = inAppMessage.data.displayTiming.delay ?? 0
         
-        inAppShowTimer = Timer.scheduledTimer(withTimeInterval: Double(delay), repeats: false, block: { _ in
+        DispatchQueue.main.asyncAfter(deadline: .now() + Double(delay)) {
             
             if let cancelInAppMessage = DengageLocalStorage.shared.value(for: .cancelInAppMessage) as? Bool
             {
@@ -326,7 +331,7 @@ extension DengageInAppMessageManager {
                     if inAppMessage.data.isRealTime {
                         self.markAsRealTimeInAppMessageAsDisplayed(message: inAppMessage)
                     } else {
-                        self.markAsInAppMessageAsDisplayed(inAppMessageId: inAppMessage.data.messageDetails)
+                        self.markAsInAppMessageAsDisplayed(inAppMessageId: inAppMessage.data.messageDetails, contentId: inAppMessage.data.content.contentId ?? "")
                     }
                     var updatedMessage = inAppMessage
                     if let showEveryXMinutes = inAppMessage.data.displayTiming.showEveryXMinutes,
@@ -346,10 +351,10 @@ extension DengageInAppMessageManager {
                     
                     self.showInAppMessageController(with: inAppMessage)
                 }
+                
             }
             
-        })
-    
+        }
             
       
     }
@@ -455,10 +460,30 @@ extension DengageInAppMessageManager {
                 
                 if previousMessages.count > 0
                 {
-                   
-                    for message in previousMessages where messages.contains(where: {$0.id != message.id}) {
+                    for msg in messages
+                    {
+                        let arrMessages = previousMessages.filter({$0.id == msg.id})
                         
-                        previousMessages.append(message)
+                        
+                        if arrMessages.count == 0
+                        {
+                            previousMessages.append(msg)
+
+                        }
+                        else if arrMessages.count == 1
+                        {
+                            previousMessages = previousMessages.filter({$0.id != msg.id})
+                            previousMessages.append(msg)
+                            DengageLocalStorage.shared.save(previousMessages)
+
+                        }
+                        else
+                        {
+                            previousMessages = previousMessages.filter({$0.id != msg.id})
+                            DengageLocalStorage.shared.save(previousMessages)
+                        }
+
+                        
                     }
                     
                 }
@@ -466,16 +491,9 @@ extension DengageInAppMessageManager {
                 {
                      previousMessages.append(contentsOf: messages)
 
+ 
                 }
-                
-                
-                
-//                previousMessages.removeAll{ message in
-//                    messages.contains{ $0.id == message.id } && message.data.isRealTime
-//                }
-                
-                
-              //  previousMessages.append(contentsOf: messages)
+
                 
                 var updatedMessages = [InAppMessage]()
                 
@@ -487,7 +505,7 @@ extension DengageInAppMessageManager {
                                                       showCount: message.showCount)
                     updatedMessages.append(updatedMessage)
                 }
-                DengageLocalStorage.shared.save(updatedMessages)
+                DengageLocalStorage.shared.save(updatedMessages) 
             }
             else {
                 var previousMessages = DengageLocalStorage.shared.getInAppMessages()
@@ -714,7 +732,7 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
         if message.data.isRealTime {
             setRealTimeInAppMessageAsDismissed(message)
         }else {
-            setInAppMessageAsDismissed(message.data.messageDetails)
+            setInAppMessageAsDismissed(message.data.messageDetails, contentId: message.data.content.contentId)
         }
     }
     
@@ -723,7 +741,7 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
         if message.data.isRealTime {
             setRealtimeInAppMessageAsClicked(message, buttonId)
         } else {
-            setInAppMessageAsClicked(message.data.messageDetails, buttonId)
+            setInAppMessageAsClicked(message.data.messageDetails, buttonId, message.data.content.contentId ?? "")
         }
     }
     
@@ -732,6 +750,7 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     }
     
     func close() {
+        
         inAppMessageWindow = nil
     }
     

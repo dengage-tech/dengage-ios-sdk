@@ -21,6 +21,10 @@ final class InboxMessagesViewController: UIViewController {
        
         
         tableView.fillSuperview()
+        self.tableView.delegate = self
+        self.tableView.dataSource = self
+        self.tableView.estimatedRowHeight = 100
+        self.tableView.rowHeight = 100
         fetchMessages()
     }
     
@@ -30,20 +34,19 @@ final class InboxMessagesViewController: UIViewController {
             switch result {
             case .success(let messages):
                 self?.messages = messages
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: {
+                    
+                   
+                   
+                    self?.tableView.reloadData()
+
+                })
             case .failure(let error):
                 print(error)
             }
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: {
-            
-            self.tableView.delegate = self
-            self.tableView.dataSource = self
-            self.tableView.estimatedRowHeight = 100
-            self.tableView.rowHeight = 100
-            self.tableView.reloadData()
-
-        })
+       
         
        
     }
@@ -69,18 +72,24 @@ extension InboxMessagesViewController: UITableViewDelegate{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let item = self.messages[indexPath.row]
 
-        Dengage.setInboxMessageAsClicked(with: item.id) { [weak self] _ in
-            
-           
+        
+        for msg in self.messages
+        {
+            Dengage.setInboxMessageAsClicked(with: msg.id) { [weak self] _ in
+                
+               
+            }
         }
         
+       
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: {
-            
-            
-            self.tableView.reloadData()
-
-        })
+        
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: {
+//
+//
+//            self.tableView.reloadData()
+//
+//        })
     }
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true

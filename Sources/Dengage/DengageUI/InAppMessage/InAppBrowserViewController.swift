@@ -30,7 +30,7 @@ final class InAppBrowserViewController: UIViewController,WKNavigationDelegate{
 
         self.view.addSubview(viewSource)
 
-        self.view.backgroundColor = .white
+        self.view.backgroundColor = .gray
         if let link = URL(string:self.url)
         {
             let request = URLRequest(url: link)

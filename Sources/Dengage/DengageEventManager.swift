@@ -297,7 +297,7 @@ enum DengageInternalTableName: String{
     case wishlistEvents = "wishlist_events"
     case orderEvents = "order_events"
     case wishlistEventsDetail = "wishlist_events_detail"
-    case orderEventsDetails = "order_events_details"
+    case orderEventsDetails = "order_events_detail"
     case shoppingCartEventsDetail = "shopping_cart_events_detail"
 }
 

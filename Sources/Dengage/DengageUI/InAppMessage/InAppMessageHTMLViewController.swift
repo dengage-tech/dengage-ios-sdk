@@ -42,7 +42,7 @@ final class InAppMessageHTMLViewController: UIViewController{
         setupJavascript()
         
         
-        viewSource.setupConstaints(for: message.data.content.props)
+        viewSource.setupConstaints(for: message.data.content.props , message : message)
             
         
         
@@ -61,6 +61,7 @@ final class InAppMessageHTMLViewController: UIViewController{
             self.viewSource.webView.alpha = 0.0
              
          },completion: { (finished: Bool) in
+             self.delegate?.sendDissmissEvent(message: self.message)
              self.delegate?.close()
          })
      }
@@ -230,7 +231,7 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
         case "dismiss":
             delegate?.sendDissmissEvent(message: self.message)
         case "close":
-            
+            delegate?.sendDissmissEvent(message: self.message)
             if !isIosURLNPresent
             {
                 delegate?.close()
@@ -238,7 +239,7 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             }
             
         case "closeN":
-            
+            delegate?.sendDissmissEvent(message: self.message)
             delegate?.close()
 
         default:

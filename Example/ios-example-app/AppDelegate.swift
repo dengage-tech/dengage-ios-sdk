@@ -15,7 +15,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // us
         //hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol
         
-        Dengage.start(apiKey: "YF2_p_l_NN4KRoXaSDN4BTp4Nr4K03bE00JoMQnbUh3HMadY_p_l_n30hGw_p_l_PhKypwxdE5kATWY_s_l_jKlrRHTSOAC5rC4ptsk0w0BwE94H8N940O79fIGjXwL23cnAb5RjA9432isGw3gv4J4e3J5_s_l_lRo3_s_l__p_l_IQaw_e_q__e_q_", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
+        //BSIF
+       //_s_l_gJiLHWiLdjpYMf4jlhRN2wemFgwft4oIy_s_l_QpEcwPBfQWNyC22E397SlnX2Rt51QPv4fWH9c_s_l_M7yFH74iPSsUBgzpc6iUsIFw3waNyMau1xttwfOwQ9oJ9PZyBseS30U34vo1bSElJSrhGrwIkCUCw_e_q__e_q_
+        
+
+
+        Dengage.start(apiKey: "hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol", application: application, launchOptions: [:], dengageOptions: DengageOptions())
+        
         UNUserNotificationCenter.current().delegate = self
         window = UIWindow(frame: UIScreen.main.bounds)
         let rootViewController = RootViewController()
@@ -28,24 +34,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       
         Dengage.setLog(isVisible: true)
         
-        Dengage.setDevelopmentStatus(isDebug: true)
+     //   Dengage.setDevelopmentStatus(isDebug: true)
+        
+        Dengage.set(deviceId: "priya@1928142609")
         
         Dengage.promptForPushNotifications { isUserGranted in
             
             
         }
         
-        Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
+       // Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
 //        
 //        
-//        Dengage.set(contactKey: "rtrtyr")
+        Dengage.set(contactKey: "sdcdsdd")
 //        
 //        Dengage.setContactKey(contactKey: "rrrrr")
 //               
 //        
-   //    Dengage.set(deviceId: "kkkhjghfg")
         
-      //  Dengage.setPartnerDeviceId(adid: <#T##String?#>)
+       Dengage.setPartnerDeviceId(adid: "783278iydukjqe")
 //
 //        
 //        Dengage.sendDeviceIdToServer(route: "V1/dengage/sync/mobile/customerData", token: "cti234bdj1ev4u4c0pk2l1z370vmgtah")

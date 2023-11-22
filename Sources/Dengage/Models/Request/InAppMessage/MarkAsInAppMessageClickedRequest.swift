@@ -15,10 +15,14 @@ struct MarkAsInAppMessageClickedRequest: APIRequest{
             URLQueryItem(name: "cdkey", value: contactKey),
             URLQueryItem(name: "message_details", value: id),
             URLQueryItem(name: "did", value: deviceID),
-            URLQueryItem(name: "type", value: type)
+            URLQueryItem(name: "type", value: type),
+
         ]
         if let buttonId = buttonId {
             parameters.append(URLQueryItem(name: "button_id", value: buttonId))
+        }
+        if let contentId = contentId {
+            parameters.append(URLQueryItem(name: "content_id", value: contentId))
         }
         return parameters
     }
@@ -29,18 +33,29 @@ struct MarkAsInAppMessageClickedRequest: APIRequest{
     let type: String
     let deviceID:String
     let buttonId:String?
-    
+    let contentId: String?
+
     init(type: String,
          deviceID:String,
          accountName:String,
          contactKey: String,
          id: String,
-         buttonId:String?) {
+         buttonId:String?,contentId: String?) {
         self.accountName = accountName
         self.contactKey = contactKey
         self.id = id
         self.type = type
         self.deviceID = deviceID
         self.buttonId = buttonId
+        if contentId != ""
+        {
+            self.contentId = contentId
+
+        }
+        else
+        {
+            self.contentId = nil
+        }
+
     }
 }
