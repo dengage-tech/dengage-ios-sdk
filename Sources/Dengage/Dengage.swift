@@ -25,7 +25,7 @@ public class Dengage  {
                                    dengageOptions options: DengageOptions = DengageOptions() , deviceId : String? = nil, contactKey : String? = nil , partnerDeviceId :String? = nil) {
         
         
-        dengage = .init(with: apiKey,launchOptions:launchOptions,
+        dengage = .init(with: apiKey, application: application,launchOptions:launchOptions,
                         dengageOptions: options)
         
         if deviceId != nil && deviceId != ""
@@ -324,6 +324,14 @@ public class Dengage  {
    static func syncSubscription() {
         dengage?.makeSubscriptionRequestAPICall()
     }
+    
+    @objc public static func setHybridAppEnvironment() {
+        
+        DengageLocalStorage.shared.set(value: true, for: .hybridAppEnvironment)
+        
+    }
+    
+    
 }
 
 extension Dengage {

@@ -119,6 +119,9 @@ final class DengageConfiguration:Encodable {
         DengageLocalStorage.shared.set(value: permission, for: .userPermission)
     }
     
+    
+    
+    
     func setPartnerDeviceId(adid: String?){
         
         if let partnerId = DengageLocalStorage.shared.value(for: .PartnerDeviceId) as? String
@@ -151,6 +154,13 @@ final class DengageConfiguration:Encodable {
     func getOpenInAppBrowser()-> Bool
     {
         return DengageLocalStorage.shared.value(for: .openInAppBrowser) as? Bool ?? false
+
+    }
+    
+    
+    func getHybridAppEnvironment()-> Bool
+    {
+        return DengageLocalStorage.shared.value(for: .hybridAppEnvironment) as? Bool ?? false
 
     }
     
