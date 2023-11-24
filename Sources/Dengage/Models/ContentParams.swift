@@ -67,13 +67,7 @@ enum ContentPosition: String, Codable {
     case full = "FULL"
 }
 
-enum ContentType:String, Codable{
-    case small = "SMALL"
-    case smallButton = "SMALL_BUTTON"
-    case popOutModal = "POP_OUT_MODAL"
-    case fullScreen = "FULL_SCREEN"
-    case html = "HTML"
-}
+
 
 struct ScreenDataFilter: Codable{
         let dataName: String

@@ -29,8 +29,10 @@ final class DengageNetworking {
             }
             
             if let data = data  {
-                Logger.log(message: "HTTP API RESPONSE:\n", argument: data.pretty)
+                
+                Logger.log(message: "HTTP API RESPONSE:\n for API \(apiRequest.url)", argument: data.pretty)
             }
+            
             Logger.log(message: "HTTP API STATUS CODE:\n", argument: httpResponse.statusCode.description)
             switch httpResponse.statusCode {
             case 200..<300:
@@ -68,6 +70,7 @@ final class DengageNetworking {
     }
     
     func createBaseURL(for endpointType:EndpointType) -> URL{
+        
         switch endpointType {
         case .event:
             return config.eventURL
@@ -79,6 +82,8 @@ final class DengageNetworking {
             return config.dengageDeviceIdApiUrl
         case .inapp:
             return config.inAppURL
+        case .inappRealTime:
+            return config.inAppRealTimeURL
             
         }
     }

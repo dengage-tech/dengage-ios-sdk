@@ -10,5 +10,7 @@
 	<string>https://dev-event.dengage.com</string>
 	<key>DengageGeofenceApiUrl</key>
 	<string>https://dev-push.dengage.com/geoapi/</string>
+	<key>fetchRealTimeINAPPURL</key>
+	<string>https://us-inapp.lib.dengage.com</string>
 </dict>
 </plist>

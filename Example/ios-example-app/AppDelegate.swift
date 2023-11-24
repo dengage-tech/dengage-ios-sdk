@@ -15,7 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol
                
 
-        Dengage.start(apiKey: "YF2_p_l_NN4KRoXaSDN4BTp4Nr4K03bE00JoMQnbUh3HMadY_p_l_n30hGw_p_l_PhKypwxdE5kATWY_s_l_jKlrRHTSOAC5rC4ptsk0w0BwE94H8N940O79fIGjXwL23cnAb5RjA9432isGw3gv4J4e3J5_s_l_lRo3_s_l__p_l_IQaw_e_q__e_q_", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
+        Dengage.start(apiKey: "hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol", application: application, launchOptions: [:], dengageOptions: DengageOptions(), deviceId : "priya@1928142609", contactKey : "yut@gmail.com" , partnerDeviceId :"priyatest@gmail")
     
         
         UNUserNotificationCenter.current().delegate = self
@@ -30,7 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         Dengage.setLog(isVisible: true)
         
-        Dengage.setDevelopmentStatus(isDebug: true)
+      //  Dengage.setDevelopmentStatus(isDebug: true)
                 
        // Dengage.set(deviceId: "123456")
         

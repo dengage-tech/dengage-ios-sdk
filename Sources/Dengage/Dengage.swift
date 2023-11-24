@@ -24,28 +24,44 @@ public class Dengage{
                                    dengageOptions options: DengageOptions = DengageOptions() , deviceId : String? = nil, contactKey : String? = nil , partnerDeviceId :String? = nil) {
         
         
+        if let id = deviceId
+        {
+            dengage?.config.set(deviceId: deviceId ?? "")
+            
+            if id != ""
+            {
+                DengageKeychain.set(id, forKey: "\(Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier")")
+                dengage?.config.applicationIdentifier = id
+            }
+            
+        }
+        if let id = partnerDeviceId
+        {
+            dengage?.config.setPartnerDeviceId(adid: partnerDeviceId)
+            if id != ""
+            {
+                DengageLocalStorage.shared.set(value: id, for: .PartnerDeviceId)
+                dengage?.config.partnerDeviceId = id
+                
+            }
+            
+        }
+        if let key = contactKey
+        {
+            dengage?.set(contactKey)
+            
+            if key != ""
+            {
+                DengageLocalStorage.shared.set(value: key, for: .contactKey)
+                
+            }
+            
+        }
+        
+        
         dengage = .init(with: apiKey, application: application,launchOptions:launchOptions,
                         dengageOptions: options)
         
-        if deviceId != nil && deviceId != ""
-        {
-            dengage?.config.set(deviceId: deviceId ?? "")
-
-        }
-        
-        if partnerDeviceId != nil && partnerDeviceId != ""
-        {
-            dengage?.config.setPartnerDeviceId(adid: partnerDeviceId)
-
-        }
-        
-        if contactKey != nil && contactKey != ""
-        {
-            dengage?.set(contactKey)
-
-        }
-        
-
         
     }
     
@@ -53,7 +69,7 @@ public class Dengage{
     @objc public static func initWithLaunchOptions(categories: Set<UNNotificationCategory>? = nil,application: UIApplication,withLaunchOptions: [UIApplication.LaunchOptionsKey: Any],badgeCountReset: Bool = false, deviceId : String? = nil , contactKey : String? = nil , partnerDeviceId :String? = nil)
     {
         let key =  DengageLocalStorage.shared.value(for: .integrationKey) as? String
-
+        
         self.start(apiKey: key ?? "", application: application, launchOptions: withLaunchOptions, dengageOptions: DengageOptions(),deviceId: deviceId,contactKey: contactKey,partnerDeviceId: partnerDeviceId)
         
         
@@ -61,7 +77,7 @@ public class Dengage{
     }
     
     @objc public static func setIntegrationKey(key: String) {
-       
+        
         DengageLocalStorage.shared.set(value: key, for: .integrationKey)
     }
     
@@ -87,7 +103,7 @@ public class Dengage{
     }
     
     @objc public static func syncSDK() {
-       
+        
         dengage?.sync()
         
     }
@@ -97,7 +113,7 @@ public class Dengage{
     }
     
     @objc public static func setUserPermission(permission: Bool) {
-
+        
         self.set(permission: permission)
     }
     
@@ -143,7 +159,7 @@ public class Dengage{
     @objc public static func setDevelopmentStatus(isDebug:Bool)
     {
         DengageLocalStorage.shared.set(value: isDebug, for: .appEnvironment)
-
+        
     }
     
     @objc public static func callVisitorInfoAPI(){
@@ -200,16 +216,16 @@ public class Dengage{
     }
     
     @objc public static func handleInAppDeeplink(completion: @escaping (String) -> Void) {
-
-          dengage?.inAppManager.returnAfterDeeplinkRecieved = { deeplink in
-
-              completion(deeplink)
-
-          }
-
-
-
-      }
+        
+        dengage?.inAppManager.returnAfterDeeplinkRecieved = { deeplink in
+            
+            completion(deeplink)
+            
+        }
+        
+        
+        
+    }
     
     @objc public static func showRealTimeInApp(
         screenName: String? = nil,
@@ -233,20 +249,20 @@ public class Dengage{
     @objc public static func setState(name: String?) {
         dengage?.config.setState(name: name)
     }
-
+    
     @objc public static func setCity(name: String?) {
         dengage?.config.setCity(name: name)
     }
     
     @objc public static func setPartnerDeviceId(adid: String?) {
-       
+        
         dengage?.config.setPartnerDeviceId(adid: adid)
     }
     
     @objc public static func inAppLinkConfiguration(deeplink : String)
     {
         dengage?.config.setinAppLinkConfiguration(deeplink: deeplink)
-
+        
     }
     
     @objc public static func handleNotificationActionBlock(callback: @escaping (_ notificationResponse: UNNotificationResponse) -> Void) {
@@ -407,7 +423,7 @@ extension Dengage {
 
 //MARK: - DengageDeviceIdApiUrl
 extension Dengage{
-
+    
     @objc public static func sendDeviceIdToServer(route:String , token : String) {
         DengageLocalStorage.shared.set(value: route, for: .deviceIdRoute)
         dengage?.dengageDeviceIdSendToServer(token: token)
@@ -418,7 +434,7 @@ extension Dengage{
 }
 //MARK: - Geofence
 extension Dengage{
-
+    
     @objc public static func requestLocationPermissions() {
         dengage?.requestLocationPermissions()
     }
