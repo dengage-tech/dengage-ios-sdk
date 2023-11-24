@@ -14,5 +14,7 @@
 	<array>
 		<string>remote-notification</string>
 	</array>
+	<key>fetchRealTimeINAPPURL</key>
+	<string>https://us-inapp.lib.dengage.com</string>
 </dict>
 </plist>

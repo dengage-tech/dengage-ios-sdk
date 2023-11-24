@@ -33,7 +33,7 @@ final class DengageNetworking {
 
             if let data = data  {
                 
-                Logger.log(message: "HTTP API RESPONSE:\n", argument: data.pretty)
+                Logger.log(message: "HTTP API RESPONSE:\n for API \(apiRequest.url)", argument: data.pretty)
             }
             
             Logger.log(message: "HTTP API STATUS CODE:\n", argument: httpResponse.statusCode.description)
@@ -82,6 +82,8 @@ final class DengageNetworking {
             return config.dengageDeviceIdApiUrl
         case .inapp:
             return config.inAppURL
+        case .inappRealTime:
+            return config.inAppRealTimeURL
         }
     }
 }

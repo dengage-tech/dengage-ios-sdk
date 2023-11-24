@@ -24,29 +24,43 @@ public class Dengage  {
                                    launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
                                    dengageOptions options: DengageOptions = DengageOptions() , deviceId : String? = nil, contactKey : String? = nil , partnerDeviceId :String? = nil) {
         
+    
+        if let id = deviceId
+        {
+            if id != ""
+            {
+                DengageKeychain.set(id, forKey: "\(Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier")")
+                dengage?.config.applicationIdentifier = id
+            }
+            
+        }
+        
+        if let id = partnerDeviceId
+        {
+            if id != ""
+            {
+                DengageLocalStorage.shared.set(value: id, for: .PartnerDeviceId)
+                dengage?.config.partnerDeviceId = id
+
+            }
+
+        }
+        
+        if let key = contactKey
+        {
+            
+            if key != ""
+            {
+                DengageLocalStorage.shared.set(value: key, for: .contactKey)
+
+            }
+
+        }
+        
         
         dengage = .init(with: apiKey, application: application,launchOptions:launchOptions,
                         dengageOptions: options)
         
-        if deviceId != nil && deviceId != ""
-        {
-            dengage?.config.set(deviceId: deviceId ?? "")
-
-        }
-        
-        if partnerDeviceId != nil && partnerDeviceId != ""
-        {
-            dengage?.config.setPartnerDeviceId(adid: partnerDeviceId)
-
-        }
-        
-        if contactKey != nil && contactKey != ""
-        {
-            dengage?.set(contactKey)
-
-        }
-        
-
         
     }
     

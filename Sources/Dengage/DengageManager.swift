@@ -45,6 +45,7 @@ public class DengageManager {
         self.dengageRFMManager = DengageRFMManager()
         
         sync()
+        
         getSDKParams()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 120, execute: {
@@ -302,6 +303,7 @@ extension DengageManager {
     func fetchSDK(){
         
         Logger.log(message: "fetchSDK Started")
+        
         let request = GetSDKParamsRequest(integrationKey: config.integrationKey,
                                           deviceId: config.applicationIdentifier)
         apiClient.send(request: request) { [weak self] result in

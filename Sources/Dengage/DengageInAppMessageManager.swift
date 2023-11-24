@@ -408,17 +408,12 @@ extension DengageInAppMessageManager {
     }
     
     private func showInAppMessageController(with message:InAppMessage){
-        switch message.data.content.type {
-        case .html:
-            guard message.data.content.props.html != nil else {return}
-            let controller = InAppMessageHTMLViewController(with: message)
-            controller.delegate = self
-            self.createInAppWindow(for: controller)
-                    
-            
-        default:
-            break
-        }
+       
+        guard message.data.content.props.html != nil else {return}
+        let controller = InAppMessageHTMLViewController(with: message)
+        controller.delegate = self
+        self.createInAppWindow(for: controller)
+        
     }
     
     private func showInAppBrowserController(with url:String)

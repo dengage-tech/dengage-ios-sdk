@@ -16,7 +16,7 @@ final class DengageConfiguration:Encodable {
     let advertisingIdentifier: String
     let getCarrierIdentifier: String
     let sdkVersion: String
-    let integrationKey: String
+    var integrationKey: String
     let options: DengageOptions
     var deviceToken: String?
     let userAgent: String
@@ -32,9 +32,11 @@ final class DengageConfiguration:Encodable {
     var state: String?
     var pageViewCount = 0
     let inAppURL: URL
+    let inAppRealTimeURL: URL
 
     
     init(integrationKey: String, options: DengageOptions) {
+        
         subscriptionURL = DengageConfiguration.getSubscriptionURL()
         eventURL = DengageConfiguration.getEventUrl()
         deviceCountryCode = DengageConfiguration.getDeviceCountry()
@@ -51,6 +53,7 @@ final class DengageConfiguration:Encodable {
         self.permission = DengageConfiguration.getPermission()
         self.deviceToken = DengageConfiguration.getToken()
         inAppURL = DengageConfiguration.getInAppURL()
+        inAppRealTimeURL = DengageConfiguration.getInAppRealTimeURL()
 
         dengageDeviceIdApiUrl = DengageConfiguration.dengageDeviceIdApiUrl()
 
@@ -257,6 +260,20 @@ final class DengageConfiguration:Encodable {
 
             return apiURL
         }
+    
+    private static func getInAppRealTimeURL() -> URL {
+            guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "fetchRealTimeINAPPURL") as? String else {
+                return URL(string: "https://tr-inapp.lib.dengage.com") ?? getSubscriptionURL()
+            }
+
+            guard let apiURL = URL(string: apiURLString) else {
+                return URL(string: "https://tr-inapp.lib.dengage.com") ?? getSubscriptionURL()
+            }
+
+            return apiURL
+        }
+    
+    
     
     private static func getDeviceCountry() -> String {
         guard let regionCode = Locale.current.regionCode else { return "Null" }

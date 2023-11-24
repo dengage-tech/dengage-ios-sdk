@@ -17,7 +17,7 @@ enum HTTPMethod: String {
 }
 
 enum EndpointType{
-    case event, push , deviceId, inapp
+    case event, push , deviceId, inapp , inappRealTime
 }
 
 protocol APIRequest {

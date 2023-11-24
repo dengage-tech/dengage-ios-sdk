@@ -65,7 +65,7 @@ struct InAppMessageData: Codable {
 }
 
 struct Content: Codable {
-    let type: ContentType
+    let type: String?
     let props: ContentParams
     let contentId: String?
 }

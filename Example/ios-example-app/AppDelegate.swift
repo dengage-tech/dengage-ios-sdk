@@ -20,10 +20,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
 
 
-        Dengage.start(apiKey: "hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol", application: application, launchOptions: [:], dengageOptions: DengageOptions(), deviceId : "6237635728", contactKey : "3286478gwadhhb823" , partnerDeviceId :"cvsa6521653bes")
+        Dengage.start(apiKey: "hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol", application: application, launchOptions: [:], dengageOptions: DengageOptions(), deviceId : "priya@1928142609", contactKey : "yut@gmail.com" , partnerDeviceId :"priyatest@gmail")
         
         
-        Dengage.start(apiKey: "", launchOptions: [:])
+       
             
         UNUserNotificationCenter.current().delegate = self
         window = UIWindow(frame: UIScreen.main.bounds)
