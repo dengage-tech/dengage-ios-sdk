@@ -14,6 +14,8 @@
 			<real>1</real>
 			<key>UNNotificationExtensionUserInteractionEnabled</key>
 			<true/>
+			<key>UNNotificationExtensionOverridesDefaultTitle</key>
+			<true/>
 		</dict>
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.usernotifications.content-extension</string>

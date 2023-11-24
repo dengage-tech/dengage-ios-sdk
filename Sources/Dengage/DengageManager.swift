@@ -4,6 +4,7 @@ import UIKit
 public class DengageManager {
 
     var config: DengageConfiguration
+    var application: UIApplication?
     var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     var options: DengageOptions?
     var threadContainer = ThreadSafeContainer(label: "DengageMainLock")
@@ -17,14 +18,14 @@ public class DengageManager {
     var testPageWindow: UIWindow?
     
     init(with apiKey: String,
-        // application: UIApplication,
+         application: UIApplication?,
          launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
          dengageOptions options: DengageOptions) {
         
         config = DengageConfiguration(integrationKey: apiKey, options: options)
         
         // keychain ve userdefaults da daha once kayit edilenler confige eklenmiyor
-      //  self.application = application
+        self.application = application
         self.launchOptions = launchOptions
         self.options = options
         self.apiClient = DengageNetworking(config: config)
@@ -44,6 +45,7 @@ public class DengageManager {
         self.dengageRFMManager = DengageRFMManager()
         
         sync()
+        
         getSDKParams()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 120, execute: {
@@ -301,6 +303,7 @@ extension DengageManager {
     func fetchSDK(){
         
         Logger.log(message: "fetchSDK Started")
+        
         let request = GetSDKParamsRequest(integrationKey: config.integrationKey,
                                           deviceId: config.applicationIdentifier)
         apiClient.send(request: request) { [weak self] result in
