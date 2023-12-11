@@ -107,8 +107,9 @@ struct ScreenNameFilter: Codable{
 
 struct DisplayCondition: Codable{
     let screenNameFilters: [ScreenNameFilter]?
+    let screenNameFilterLogicOperator : RulesOperatorType?
     let ruleSet: RuleSet?
-    
+
     var hasRules: Bool {
         return !(ruleSet?.rules ?? []).isEmpty
     }

@@ -26,11 +26,48 @@ final class DengageInAppMessageUtils{
             
             let inAppMessageWithScreenName = inAppMessages.sorted.first { message -> Bool in
                 
-                return message.data.displayCondition.screenNameFilters?.first{ nameFilter -> Bool in
-                    
-                    return operateScreenValues(value: nameFilter.value, for: screenName, operatorType: nameFilter.operatorType)
-                    
-                } != nil && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message,params: params,config: config)
+                if let arrScreenFilter = message.data.displayCondition.screenNameFilters
+                {
+                    if message.isDisplayTimeAvailable() && operateRealTimeValues(message: message,params: params,config: config)
+                    {
+                        let operatorFilter = message.data.displayCondition.screenNameFilterLogicOperator
+                        
+                        var arrDisplay = [Bool]()
+                        
+                        for nameFilter in arrScreenFilter
+                        {
+                            arrDisplay.append(operateScreenValues(value: nameFilter.value, for: screenName, operatorType: nameFilter.operatorType))
+                        }
+                        
+                        switch operatorFilter {
+                            
+                        case .AND:
+                            
+                            let isDisplay = arrDisplay.filter{($0 == false)}
+                            
+                            if isDisplay.count == 0
+                            {
+                                return true
+                            }
+                            
+                        case .OR:
+                            
+                            let isDisplay = arrDisplay.filter{($0 == true)}
+
+                            if isDisplay.count != 0
+                            {
+                                return true
+                            }
+                            
+                        case .none:
+                            return false
+                        }
+                    }
+                   
+                }
+                
+                return false
+                
             }
             
             return inAppMessageWithScreenName
@@ -460,7 +497,6 @@ final class DengageInAppMessageUtils{
                 return true
             }
             
-          //  return true
             
         }
 
@@ -528,6 +564,7 @@ final class DengageInAppMessageUtils{
         default:
             return true
         }
+        
     }
     
     private class func checkVisitorInfoAttr(parameter : String) -> String

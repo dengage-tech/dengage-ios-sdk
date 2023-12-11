@@ -196,7 +196,7 @@ extension TestInAppMessageViewController {
                                         expireDate: "2030-10-11T12:00:00.000Z",
                                         priority: .high,
                                         content: content,
-                                        displayCondition: .init(screenNameFilters: [], ruleSet: nil), displayTiming: .init(delay: 0,
+                                        displayCondition: .init(screenNameFilters: [], screenNameFilterLogicOperator: .AND, ruleSet: nil), displayTiming: .init(delay: 0,
                                                                                                                            showEveryXMinutes: 0,
                                                                                                                            maxShowCount: 1), publicId: nil)
             return InAppMessage(id:"", data: data, nextDisplayTime: 0)
