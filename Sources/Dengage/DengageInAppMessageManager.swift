@@ -75,7 +75,7 @@ extension DengageInAppMessageManager{
     }
     
     func fetchRealTimeMessages(){
-       // guard shouldFetchRealTimeInAppMessages else { return }
+        guard shouldFetchRealTimeInAppMessages else { return }
         guard let remoteConfig = config.remoteConfiguration,
               let accountName = remoteConfig.accountName,
               let appId = remoteConfig.appId
