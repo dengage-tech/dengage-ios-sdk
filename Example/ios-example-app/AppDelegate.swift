@@ -34,7 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       
         Dengage.setLog(isVisible: true)
         
-     //   Dengage.setDevelopmentStatus(isDebug: true)
+        Dengage.setDevelopmentStatus(isDebug: true)
         
         Dengage.set(deviceId: "priya@192814260997856587676.jkjkkj")
         
