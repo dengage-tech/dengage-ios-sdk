@@ -28,7 +28,7 @@ public class DengageInAppMessageManager:DengageInAppMessageManagerInterface {
 //MARK: - API
 extension DengageInAppMessageManager{
     func fetchInAppMessages(){
-        fetchRealTimeMessages()
+        //fetchRealTimeMessages()
        // getVisitorInfo()
         Logger.log(message: "fetchInAppMessages called")
       //  guard shouldFetchInAppMessages else {return}
