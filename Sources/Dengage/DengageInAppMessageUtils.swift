@@ -21,16 +21,58 @@ final class DengageInAppMessageUtils{
                                      screenName: String? = nil,
                                      params: [String:String]? = nil,
                                      config: DengageConfiguration) -> InAppMessage? {
-                
+        
         if let screenName = screenName, !screenName.isEmpty  {
             
             let inAppMessageWithScreenName = inAppMessages.sorted.first { message -> Bool in
                 
-                return message.data.displayCondition.screenNameFilters?.first{ nameFilter -> Bool in
+                if let arrScreenFilter = message.data.displayCondition.screenNameFilters
+                {
+                    if message.isDisplayTimeAvailable() && operateRealTimeValues(message: message,params: params,config: config)
+                    {
+                        let operatorFilter = message.data.displayCondition.screenNameFilterLogicOperator
+                        
+                        var arrDisplay = [Bool]()
+                        
+                        for nameFilter in arrScreenFilter
+                        {
+                            arrDisplay.append(operateScreenValues(value: nameFilter.value, for: screenName, operatorType: nameFilter.operatorType))
+                        }
+                        
+                        switch operatorFilter {
+                            
+                        case .AND:
+                            
+                            let isDisplay = arrDisplay.filter{($0 == false)}
+                            
+                            if isDisplay.count == 0
+                            {
+                                return true
+                            }
+                            
+                        case .OR:
+                            
+                            let isDisplay = arrDisplay.filter{($0 == true)}
+                            
+                            if isDisplay.count != 0
+                            {
+                                return true
+                            }
+                            
+                        case .none:
+                            
+                            return message.data.displayCondition.screenNameFilters?.first{ nameFilter -> Bool in
+                                
+                                return operateScreenValues(value: nameFilter.value, for: screenName, operatorType: nameFilter.operatorType)
+                                
+                            } != nil && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message,params: params,config: config)
+                        }
+                    }
                     
-                    return operateScreenValues(value: nameFilter.value, for: screenName, operatorType: nameFilter.operatorType)
-                    
-                } != nil && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message,params: params,config: config)
+                }
+                
+                return false
+                
             }
             
             return inAppMessageWithScreenName
@@ -40,10 +82,10 @@ final class DengageInAppMessageUtils{
             let inAppMessageWithoutScreenName = inAppMessages.sorted.first { message -> Bool in
                 return (message.data.displayCondition.screenNameFilters ?? []).isEmpty && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message, params: params, config: config)
             }
-           return inAppMessageWithoutScreenName
+            return inAppMessageWithoutScreenName
         }
     }
-
+    
     private class func operateScreenValues(value screenNameFilterValues: [String],
                                            for screenName: String,
                                            operatorType: ComparisonType) -> Bool {
@@ -66,9 +108,9 @@ final class DengageInAppMessageUtils{
         case .NOT_ENDS_WITH:
             return !screenName.hasSuffix(screenNameFilter)
         case .IN:
-           return screenNameFilterValues.contains(screenName)
+            return screenNameFilterValues.contains(screenName)
         case .NOT_IN:
-           return !screenNameFilterValues.contains(screenName)
+            return !screenNameFilterValues.contains(screenName)
         default:
             return true
         }
@@ -133,7 +175,7 @@ final class DengageInAppMessageUtils{
                     let dateFormatter = DateFormatter()
                     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
                     guard let formatedStartDate = dateFormatter.date(from: userParam) else { return false }
-
+                    
                     let diffInDays = self.daysUntil(birthday: formatedStartDate)
                     
                     let diffInDaysStr = "\(diffInDays)"
@@ -146,7 +188,7 @@ final class DengageInAppMessageUtils{
                     {
                         return false
                     }
-
+                    
                 }
                 else if criterion.dataType == .DATETIME
                 {
@@ -158,7 +200,7 @@ final class DengageInAppMessageUtils{
                     
                     let result = self.compareDate(visitorInfoDate: visitorInfoDate, serverDate: serverDate)
                     
-                
+                    
                     switch criterion.comparison {
                     case .EQUALS:
                         if result == .orderedSame
@@ -232,7 +274,7 @@ final class DengageInAppMessageUtils{
                                    userParam: userParam, message: message, valueSource: criterion.valueSource)
                 }
                 
-               
+                
             }
             else
             {
@@ -242,7 +284,7 @@ final class DengageInAppMessageUtils{
                                userParam: params?[criterion.parameter], message: message, valueSource: criterion.valueSource)
             }
             
-           
+            
         }
         
         
@@ -387,7 +429,7 @@ final class DengageInAppMessageUtils{
                                ruleParam: [visitCount.count.description],
                                userParam: DengageVisitCountManager.findVisitCount(pastDayCount: visitCount.timeAmount).description, message: message, valueSource: criterion.valueSource)
             } catch {
-                 return true
+                return true
             }
         case .SEGMENT:
             guard
@@ -410,7 +452,7 @@ final class DengageInAppMessageUtils{
                                       ruleParam: criterion.values,
                                       userParam: tags.map{String($0)})
             
-    
+            
         }
     }
     
@@ -426,7 +468,7 @@ final class DengageInAppMessageUtils{
             return true
         }
         let isRuleContainsUserParam = userParam.first(where: {ruleParam.contains($0)}) != nil
-           // visitor rules only work with IN and NOT_IN operator
+        // visitor rules only work with IN and NOT_IN operator
         switch operatorType {
         case .IN:
             return isRuleContainsUserParam
@@ -460,10 +502,9 @@ final class DengageInAppMessageUtils{
                 return true
             }
             
-          //  return true
             
         }
-
+        
         switch operatorType {
         case .EQUALS:
             return ruleParam.first{$0.lowercased() == userParam.lowercased()} != nil
@@ -528,6 +569,7 @@ final class DengageInAppMessageUtils{
         default:
             return true
         }
+        
     }
     
     private class func checkVisitorInfoAttr(parameter : String) -> String
@@ -545,7 +587,7 @@ final class DengageInAppMessageUtils{
         }
         
         return ""
-
+        
     }
     
     private class func daysUntil(birthday: Date) -> Int {
@@ -593,8 +635,8 @@ enum SpecialRuleParameter: String {
     case VISIT_COUNT = "dn.visit_count"
     case SEGMENT = "dn.segment"
     case TAG = "dn.tag"
-
-
+    
+    
 }
 
 struct VisitCountData: Codable {
