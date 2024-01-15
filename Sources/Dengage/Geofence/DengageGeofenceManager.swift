@@ -50,7 +50,7 @@ final class DengageGeofenceManager: NSObject, DengageGeofenceManagerInterface {
         lManager.allowsBackgroundLocationUpdates = tOptions.locationBackgroundMode && getAuthorizationStatus() == .authorizedAlways
         lPLManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
         lPLManager.distanceFilter = 3000
-        lPLManager.allowsBackgroundLocationUpdates = tOptions.locationBackgroundMode
+        lPLManager.allowsBackgroundLocationUpdates =     tOptions.locationBackgroundMode
         lManager.delegate = self
         lPLManager.delegate = self
         updateTracking(location: nil, fromInitialize: true)

@@ -15,7 +15,7 @@ public class DengageManager {
     var inAppManager: DengageInAppMessageManager
     var notificationManager: DengageNotificationManagerInterface
     var dengageRFMManager: DengageRFMManager
-    var geofenceManager: DengageGeofenceManagerInterface
+    var geofenceManager: DengageGeofenceManagerInterface?
 
     var testPageWindow: UIWindow?
     
@@ -45,8 +45,16 @@ public class DengageManager {
                                                               eventManager: eventManager,
                                                               launchOptions: launchOptions)
         
-        self.geofenceManager = DengageGeofenceManager(config: config,
-                                                      service: apiClient)
+        if config.options.enableGeofence
+        {
+            self.geofenceManager = DengageGeofenceManager(config: config,
+                                                          service: apiClient)
+        }
+        else
+        {
+            self.geofenceManager = nil
+        }
+        
         
         self.dengageRFMManager = DengageRFMManager()
         
@@ -383,6 +391,7 @@ extension DengageManager {
         self.badgeCountReset = badgeCountReset
         self.disableRegisterForRemoteNotifications = disableRegisterForRemoteNotifications
         self.enableGeofence = enableGeofence
+        
     }
     
     required public init(from decoder: Decoder) throws {
@@ -413,11 +422,11 @@ extension DengageManager {
 extension DengageManager {
     
     func requestLocationPermissions() {
-        geofenceManager.requestLocationPermissions()
+        geofenceManager?.requestLocationPermissions()
     }
     
     func stopGeofence() {
-        geofenceManager.stopGeofence()
+        geofenceManager?.stopGeofence()
     }
     
 }

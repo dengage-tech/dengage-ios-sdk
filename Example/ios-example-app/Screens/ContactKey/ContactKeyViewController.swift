@@ -34,8 +34,38 @@ class ContactKeyViewController: UIViewController {
         view.backgroundColor = .white
         view.addSubview(stackView)
         stackView.fillSafeArea(with: .init(top: 8, left: 16, bottom: 8, right: 16))
-       // Dengage.setNavigation(screenName: "p2")
+        
+       
+        
 
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        super.viewWillAppear(animated)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
+          
+            Dengage.setNavigation(screenName: "p1")
+
+            
+        })
+    }
+    
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        
+        super.viewWillDisappear(animated)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5, execute: {
+          
+            Dengage.removeInAppMessageDisplay()
+
+            
+        })
+        
+        
+        
     }
     
     @objc private func didTapSaveButton() {

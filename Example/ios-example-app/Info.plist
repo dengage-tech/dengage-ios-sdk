@@ -12,6 +12,10 @@
 	<string>https://dev-push.dengage.com/geoapi/</string>
 	<key>DengageInAppApiUrl</key>
 	<string>https://dev-push.dengage.com</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 	<key>fetchRealTimeINAPPURL</key>
 	<string>https://tr-inapp.lib.dengage.com</string>
 </dict>
