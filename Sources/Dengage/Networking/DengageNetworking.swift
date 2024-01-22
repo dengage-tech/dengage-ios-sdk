@@ -18,6 +18,8 @@ final class DengageNetworking {
         var apiRequest = request.asURLRequest(with: baseURL)
         apiRequest.setValue(config.userAgent, forHTTPHeaderField: "User-Agent")
         
+        Logger.log(message: "API REQUEST Headers", argument: "\(apiRequest.allHTTPHeaderFields)")
+
         Logger.log(message: "API REQUEST URL", argument: "\(apiRequest)")
 
         

@@ -20,11 +20,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
 
 
-        Dengage.start(apiKey: "hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol", application: application, launchOptions: [:], dengageOptions: DengageOptions(), deviceId : "priya@1928142609", contactKey : "yut@gmail.com" , partnerDeviceId :"priyatest@gmail")
+        Dengage.start(apiKey: "_s_l_gJiLHWiLdjpYMf4jlhRN2wemFgwft4oIy_s_l_QpEcwPBfQWNyC22E397SlnX2Rt51QPv4fWH9c_s_l_M7yFH74iPSsUBgzpc6iUsIFw3waNyMau1xttwfOwQ9oJ9PZyBseS30U34vo1bSElJSrhGrwIkCUCw_e_q__e_q_", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
         
-        
-       
-            
         UNUserNotificationCenter.current().delegate = self
         window = UIWindow(frame: UIScreen.main.bounds)
         let rootViewController = RootViewController()
@@ -37,9 +34,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       
         Dengage.setLog(isVisible: true)
         
-     //   Dengage.setDevelopmentStatus(isDebug: true)
+        Dengage.setDevelopmentStatus(isDebug: true)
         
-    //    Dengage.set(deviceId: "priya@1928142609")
+        Dengage.set(deviceId: "priya@192814260997856587676.jkjkkj")
         
         Dengage.promptForPushNotifications { isUserGranted in
             
