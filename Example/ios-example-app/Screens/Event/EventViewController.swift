@@ -41,7 +41,7 @@ final class EventViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         
-       // Dengage.setNavigation(screenName: "p3")
+        Dengage.setNavigation(screenName: "p3")
     }
     
     override func viewWillDisappear(_ animated: Bool) {
