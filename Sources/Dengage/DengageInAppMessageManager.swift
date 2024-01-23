@@ -508,12 +508,13 @@ extension DengageInAppMessageManager {
     }
     
     private func addInAppMessagesIfNeeded(_ messages:[InAppMessage], forRealTime: Bool = false){
+        
         DispatchQueue.main.async {
             
             if forRealTime {
                 
                 var localArrMessages = [InAppMessage]()
-                
+
                 var previousMessages = DengageLocalStorage.shared.getInAppMessages()
                 
                 if previousMessages.count > 0
@@ -531,10 +532,10 @@ extension DengageInAppMessageManager {
                     DengageLocalStorage.shared.save(localArrMessages)
                     previousMessages = DengageLocalStorage.shared.getInAppMessages()
                 }
-                
+               
                 
                 var updatedMessages = [InAppMessage]()
-                
+
                 if previousMessages.count > 0
                 {
                     for serverMsg in messages
@@ -543,14 +544,14 @@ extension DengageInAppMessageManager {
                         {
                             if prevMsg.id == serverMsg.id  && !(updatedMessages.contains(where: {$0.id == serverMsg.id}))
                             {
-                                let updatedMessage = InAppMessage(id: prevMsg.id,data: prevMsg.data,nextDisplayTime: prevMsg.nextDisplayTime,showCount: prevMsg.showCount)
-                                
+                                let updatedMessage = InAppMessage(id: serverMsg.id,data: serverMsg.data,nextDisplayTime: prevMsg.nextDisplayTime,showCount: prevMsg.showCount)
+                            
                                 updatedMessages.append(updatedMessage)
                             }
-                            else if  !(updatedMessages.contains(where: {$0.id == serverMsg.id})) && !(messages.contains(where: {$0.id == prevMsg.id}))
+                            else if !(previousMessages.contains(serverMsg))
                             {
                                 updatedMessages.append(serverMsg)
-                                
+
                             }
                         }
                     }
@@ -559,9 +560,8 @@ extension DengageInAppMessageManager {
                 {
                     updatedMessages.append(contentsOf: messages)
                 }
-                
+
                 DengageLocalStorage.shared.save(updatedMessages)
-                print(DengageLocalStorage.shared.getInAppMessages())
                 
             }
             else {
@@ -571,6 +571,7 @@ extension DengageInAppMessageManager {
                 }
                 previousMessages.append(contentsOf: messages)
                 DengageLocalStorage.shared.save(previousMessages)
+
             }
             
         }
