@@ -3,8 +3,8 @@ import UIKit
 import SafariServices
 
 public class DengageInAppMessageManager:DengageInAppMessageManagerInterface {
-   
-   
+    
+    
     
     var config: DengageConfiguration
     var apiClient: DengageNetworking
@@ -14,7 +14,7 @@ public class DengageInAppMessageManager:DengageInAppMessageManagerInterface {
     public var returnAfterDeeplinkRecieved : ((String) -> Void)?
     var inAppShowTimer = Timer()
     
-
+    
     init(config: DengageConfiguration,
          service: DengageNetworking,
          sessionManager: DengageSessionManagerInterface) {
@@ -29,9 +29,9 @@ public class DengageInAppMessageManager:DengageInAppMessageManagerInterface {
 extension DengageInAppMessageManager{
     func fetchInAppMessages(){
         fetchRealTimeMessages()
-       // getVisitorInfo()
+        // getVisitorInfo()
         Logger.log(message: "fetchInAppMessages called")
-      //  guard shouldFetchInAppMessages else {return}
+        guard shouldFetchInAppMessages else {return}
         guard let remoteConfig = config.remoteConfiguration, let accountName = remoteConfig.accountName else { return }
         Logger.log(message: "fetchInAppMessages request started")
         let request = GetInAppMessagesRequest(accountName: accountName,
@@ -88,7 +88,7 @@ extension DengageInAppMessageManager{
                 let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchIntervalInMin)
                 DengageLocalStorage.shared.set(value: nextFetchTime, for: .lastFetchedRealTimeInAppMessageTime)
                 let arrRealTimeInAppMessages = InAppMessage.mapRealTime(source: response)
-                self?.addInAppMessagesIfNeeded(arrRealTimeInAppMessages, forRealTime: true)               
+                self?.addInAppMessagesIfNeeded(arrRealTimeInAppMessages, forRealTime: true)
                 
             case .failure(let error):
                 Logger.log(message: "fetchRealTimeInAppMessages_ERROR", argument: error.localizedDescription)
@@ -97,7 +97,7 @@ extension DengageInAppMessageManager{
     }
     
     public func getVisitorInfo(){
-       
+        
         guard isEnabledRealTimeInAppMessage else {return}
         guard let remoteConfig = config.remoteConfiguration,
               let accountName = remoteConfig.accountName
@@ -112,12 +112,12 @@ extension DengageInAppMessageManager{
         else if config.contactKey.key == config.applicationIdentifier
         {
             cKey = nil
-
+            
         }
         else
         {
             cKey = config.contactKey.key
-
+            
         }
         
         let request = GetVisitorInfoRequest(accountName: accountName,
@@ -126,9 +126,9 @@ extension DengageInAppMessageManager{
         apiClient.send(request: request) { result in
             switch result {
             case .success(let response):
-                 
+                
                 DengageLocalStorage.shared.save(response)
-
+                
                 
             case .failure(let error):
                 Logger.log(message: "getVisitorInfo_ERROR", argument: error.localizedDescription)
@@ -246,18 +246,18 @@ extension DengageInAppMessageManager{
         apiClient.send(request: request) { [weak self] result in
             switch result {
             case .success( _ ):
-//                if let count = message.showCount , let maxShowCount = message.data.displayTiming.maxShowCount
-//                {
-//                    if count >= maxShowCount
-//                    {
-//                        self?.removeInAppMessageFromCache(messageId)
-//                    }
-//                }
-//                else
-//                {
-//                    self?.removeInAppMessageFromCache(messageId)
-//
-//                }
+                //                if let count = message.showCount , let maxShowCount = message.data.displayTiming.maxShowCount
+                //                {
+                //                    if count >= maxShowCount
+                //                    {
+                //                        self?.removeInAppMessageFromCache(messageId)
+                //                    }
+                //                }
+                //                else
+                //                {
+                //                    self?.removeInAppMessageFromCache(messageId)
+                //
+                //                }
                 break
             case .failure(let error):
                 Logger.log(message: "setInAppMessageAsClicked_ERROR", argument: error.localizedDescription)
@@ -303,22 +303,22 @@ extension DengageInAppMessageManager {
         inAppShowTimer.invalidate()
         
         DengageLocalStorage.shared.set(value: false, for: .cancelInAppMessage)
-
+        
         let messages = DengageLocalStorage.shared.getInAppMessages()
         guard !messages.isEmpty else {return}
         
         let inAppMessages = DengageInAppMessageUtils.findNotExpiredInAppMessages(untilDate: Date(), messages)
         
         guard let priorInAppMessage = DengageInAppMessageUtils.findPriorInAppMessage(inAppMessages: inAppMessages, screenName: screenName, params:params, config: config) else {return}
-       
+        
         
         let delay = priorInAppMessage.data.displayTiming.delay ?? 0
         
         DengageLocalStorage.shared.set(value: delay, for: .delayForInAppMessage)
-
+        
         showInAppMessage(inAppMessage: priorInAppMessage)
     }
-
+    
     func removeInAppMessageDisplay() {
         
         DengageLocalStorage.shared.set(value: true, for: .cancelInAppMessage)
@@ -335,7 +335,7 @@ extension DengageInAppMessageManager {
             let inappShowTime = (Date().timeMiliseconds) + (config.remoteConfiguration?.minSecBetweenMessages ?? 0.0)
             
             DengageLocalStorage.shared.set(value: inappShowTime, for: .inAppMessageShowTime)
-
+            
             let delay = inAppMessage.data.displayTiming.delay ?? 0
             
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(delay)) {
@@ -375,52 +375,52 @@ extension DengageInAppMessageManager {
         else
         {
             let inappShowTime = (Date().timeMiliseconds) + (config.remoteConfiguration?.minSecBetweenMessages ?? 0.0)
-                  DengageLocalStorage.shared.set(value: inappShowTime, for: .inAppMessageShowTime)
-
-                  let delay = inAppMessage.data.displayTiming.delay ?? 0
-                  
-                  inAppShowTimer = Timer.scheduledTimer(withTimeInterval: Double(delay), repeats: false, block: { _ in
-                      
-                      if let cancelInAppMessage = DengageLocalStorage.shared.value(for: .cancelInAppMessage) as? Bool
-                      {
-                          if !cancelInAppMessage
-                          {
-                              if inAppMessage.data.isRealTime {
-                                  self.markAsRealTimeInAppMessageAsDisplayed(message: inAppMessage)
-                              } else {
-                                  self.markAsInAppMessageAsDisplayed(inAppMessageId: inAppMessage.data.messageDetails, contentId: inAppMessage.data.content.contentId ?? "")
-                              }
-                              var updatedMessage = inAppMessage
-                              if let showEveryXMinutes = inAppMessage.data.displayTiming.showEveryXMinutes,
-                                 showEveryXMinutes != 0 {
-                                  updatedMessage.nextDisplayTime = Date().timeMiliseconds + Double(showEveryXMinutes) * 60000.0
-                                  updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
-                                  self.updateInAppMessageOnCache(updatedMessage)
-                              } else {
-                                  if updatedMessage.data.isRealTime {
-                                      updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
-                                      self.updateInAppMessageOnCache(updatedMessage)
-                                  } else {
-                                      self.removeInAppMessageFromCache(inAppMessage.data
-                                          .messageDetails ?? "")
-                                  }
-                              }
-                              
-                              self.showInAppMessageController(with: inAppMessage)
-                          }
-                      }
-                      
-                  })
-              
+            DengageLocalStorage.shared.set(value: inappShowTime, for: .inAppMessageShowTime)
+            
+            let delay = inAppMessage.data.displayTiming.delay ?? 0
+            
+            inAppShowTimer = Timer.scheduledTimer(withTimeInterval: Double(delay), repeats: false, block: { _ in
+                
+                if let cancelInAppMessage = DengageLocalStorage.shared.value(for: .cancelInAppMessage) as? Bool
+                {
+                    if !cancelInAppMessage
+                    {
+                        if inAppMessage.data.isRealTime {
+                            self.markAsRealTimeInAppMessageAsDisplayed(message: inAppMessage)
+                        } else {
+                            self.markAsInAppMessageAsDisplayed(inAppMessageId: inAppMessage.data.messageDetails, contentId: inAppMessage.data.content.contentId ?? "")
+                        }
+                        var updatedMessage = inAppMessage
+                        if let showEveryXMinutes = inAppMessage.data.displayTiming.showEveryXMinutes,
+                           showEveryXMinutes != 0 {
+                            updatedMessage.nextDisplayTime = Date().timeMiliseconds + Double(showEveryXMinutes) * 60000.0
+                            updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
+                            self.updateInAppMessageOnCache(updatedMessage)
+                        } else {
+                            if updatedMessage.data.isRealTime {
+                                updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
+                                self.updateInAppMessageOnCache(updatedMessage)
+                            } else {
+                                self.removeInAppMessageFromCache(inAppMessage.data
+                                    .messageDetails ?? "")
+                            }
+                        }
+                        
+                        self.showInAppMessageController(with: inAppMessage)
+                    }
+                }
+                
+            })
+            
         }
         
         
-            
-      
+        
+        
     }
     
     private func showInAppMessageController(with message:InAppMessage){
-       
+        
         guard message.data.content.props.html != nil else {return}
         let controller = InAppMessageHTMLViewController(with: message)
         controller.delegate = self
@@ -440,7 +440,7 @@ extension DengageInAppMessageManager {
     private func createInAppBrowserWindow(for controller: UIViewController)
     {
         if #available(iOS 11.0, *) {
-          
+            
             if let topNotch = UIApplication.shared.delegate?.window??.safeAreaInsets.top
             {
                 if topNotch > 20
@@ -472,7 +472,7 @@ extension DengageInAppMessageManager {
             
             
         } else {
-        //backward compatibility to previous versions?
+            //backward compatibility to previous versions?
             
             let frame = CGRect(x: 0, y: 20, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
             inAppBrowserWindow = UIWindow(frame: frame)
@@ -482,10 +482,10 @@ extension DengageInAppMessageManager {
             
             
         }
-
         
         
-       
+        
+        
         
     }
     
@@ -512,27 +512,29 @@ extension DengageInAppMessageManager {
             
             if forRealTime {
                 
+                var localArrMessages = [InAppMessage]()
+                
                 var previousMessages = DengageLocalStorage.shared.getInAppMessages()
                 
                 if previousMessages.count > 0
                 {
-                    for i in 0...DengageLocalStorage.shared.getInAppMessages().count - 1
+                    for i in 0...previousMessages.count - 1
                     {
                         let prevMsg = previousMessages[i]
-                        if !(messages.contains(prevMsg))
+                        if (messages.contains(prevMsg))
                         {
-                            previousMessages.remove(at: i)
+                            localArrMessages.append(prevMsg)
                         }
                         
                     }
                     
-                    DengageLocalStorage.shared.save(previousMessages)
+                    DengageLocalStorage.shared.save(localArrMessages)
                     previousMessages = DengageLocalStorage.shared.getInAppMessages()
                 }
-               
+                
                 
                 var updatedMessages = [InAppMessage]()
-
+                
                 if previousMessages.count > 0
                 {
                     for serverMsg in messages
@@ -542,13 +544,13 @@ extension DengageInAppMessageManager {
                             if prevMsg.id == serverMsg.id  && !(updatedMessages.contains(where: {$0.id == serverMsg.id}))
                             {
                                 let updatedMessage = InAppMessage(id: prevMsg.id,data: prevMsg.data,nextDisplayTime: prevMsg.nextDisplayTime,showCount: prevMsg.showCount)
-                            
+                                
                                 updatedMessages.append(updatedMessage)
                             }
                             else if  !(updatedMessages.contains(where: {$0.id == serverMsg.id})) && !(messages.contains(where: {$0.id == prevMsg.id}))
                             {
                                 updatedMessages.append(serverMsg)
-
+                                
                             }
                         }
                     }
@@ -557,7 +559,7 @@ extension DengageInAppMessageManager {
                 {
                     updatedMessages.append(contentsOf: messages)
                 }
-
+                
                 DengageLocalStorage.shared.save(updatedMessages)
                 print(DengageLocalStorage.shared.getInAppMessages())
                 
@@ -643,7 +645,7 @@ extension DengageInAppMessageManager {
             {
                 guard isEnabledRealTimeInAppMessage else {return false}
                 return true
-
+                
             }
             else
             {
@@ -660,7 +662,7 @@ extension DengageInAppMessageManager {
             guard Date().timeMiliseconds >= lastFetchedTime else { return false }
             return true
         }
-      
+        
     }
     
     private func registerLifeCycleTrackers() {
@@ -722,7 +724,7 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     func open(url: String?) {
         
         inAppMessageWindow = nil
-                
+        
         guard let urlDeeplink = url, let urlStr = URL(string: urlDeeplink) else { return }
         
         let deeplink = config.getDeeplink()
@@ -739,18 +741,18 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
                 }
                 else
                 {
-                   
+                    
                     self.returnAfterDeeplinkRecieved!(urlDeeplink)
                     UIApplication.shared.open(urlStr, options: [:], completionHandler: nil)
                 }
-              
+                
             }
             else
             {
                 if RetrieveLinkOnSameScreen && !OpenInAppBrowser
                 {
                     self.returnAfterDeeplinkRecieved!(urlDeeplink)
-
+                    
                 }
                 else if !RetrieveLinkOnSameScreen && OpenInAppBrowser
                 {
@@ -768,18 +770,18 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
             if RetrieveLinkOnSameScreen && !OpenInAppBrowser
             {
                 self.returnAfterDeeplinkRecieved!(urlDeeplink)
-
+                
             }
             else
             {
                 UIApplication.shared.open(urlStr , options: [:], completionHandler: nil)
-
+                
             }
-                        
+            
         }
-      
         
-   
+        
+        
     }
     
     func sendDissmissEvent(message: InAppMessage) {
@@ -812,7 +814,7 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     func closeInAppBrowser()
     {
         inAppBrowserWindow = nil
-
+        
     }
     
 }
@@ -825,7 +827,7 @@ protocol DengageInAppMessageManagerInterface: AnyObject{
     func showInAppMessage(inAppMessage: InAppMessage)
     func fetchInAppExpiredMessages()
     func removeInAppMessageDisplay()
-
+    
     
     
 }
