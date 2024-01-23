@@ -31,7 +31,7 @@ extension DengageInAppMessageManager{
         fetchRealTimeMessages()
        // getVisitorInfo()
         Logger.log(message: "fetchInAppMessages called")
-      //  guard shouldFetchInAppMessages else {return}
+        guard shouldFetchInAppMessages else {return}
         guard let remoteConfig = config.remoteConfiguration, let accountName = remoteConfig.accountName else { return }
         Logger.log(message: "fetchInAppMessages request started")
         let request = GetInAppMessagesRequest(accountName: accountName,
@@ -506,7 +506,6 @@ extension DengageInAppMessageManager {
                     for msg in messages
                     {
                         let arrMessages = previousMessages.filter({$0.id == msg.id})
-                        
                         
                         if arrMessages.count == 0
                         {
