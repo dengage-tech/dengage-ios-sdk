@@ -18,8 +18,13 @@ final class DengageNetworking {
         var apiRequest = request.asURLRequest(with: baseURL)
         apiRequest.setValue(config.userAgent, forHTTPHeaderField: "User-Agent")
         
+        
         if let body = apiRequest.httpBody {
-            Logger.log(message: "HTTP REQUEST BODY:\n", argument: body.pretty)
+            Logger.log(message: "HTTP REQUEST BODY:\n for API \(apiRequest.url)", argument: body.pretty)
+        }else
+        {
+            Logger.log(message: "HTTP REQUEST BODY:\n for API \(apiRequest.url)", argument: "")
+
         }
         
         let dataTask = session.dataTask(with: apiRequest) { data, response, _ in

@@ -20,8 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
               
         let option = DengageOptions(disableOpenURL: false, badgeCountReset: true, disableRegisterForRemoteNotifications: true, enableGeofence: true)
         
-        Dengage.start(apiKey: "", application: application, launchOptions: [:], dengageOptions: option, deviceId : "priya@1928142609", contactKey : "qas@gmail.com" , partnerDeviceId :"priyatest@gmail")
-        
+        Dengage.start(apiKey: "YF2_p_l_NN4KRoXaSDN4BTp4Nr4K03bE00JoMQnbUh3HMadY_p_l_n30hGw_p_l_PhKypwxdE5kATWY_s_l_jKlrRHTSOAC5rC4ptsk0w0BwE94H8N940O79fIGjXwL23cnAb5RjA9432isGw3gv4J4e3J5_s_l_lRo3_s_l__p_l_IQaw_e_q__e_q_", application: application, launchOptions: [:], dengageOptions: option, deviceId : "priya@1928142609", contactKey : "qas@gmail.com" , partnerDeviceId :"priyatest@gmail")
         
     
         
@@ -48,7 +47,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             
             
         }
-        
         
         
         return true

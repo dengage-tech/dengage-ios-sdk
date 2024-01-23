@@ -44,7 +44,7 @@ class ContactKeyViewController: UIViewController {
         
         super.viewWillAppear(animated)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
           
             Dengage.setNavigation(screenName: "p1")
 
