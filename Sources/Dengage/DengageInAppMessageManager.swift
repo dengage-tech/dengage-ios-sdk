@@ -504,29 +504,31 @@ extension DengageInAppMessageManager {
         var updatedMessages = previousMessages.filter{$0.data.messageDetails != message.data.messageDetails}
         updatedMessages.append(message)
         DengageLocalStorage.shared.save(updatedMessages)
-        
     }
     
     private func addInAppMessagesIfNeeded(_ messages:[InAppMessage], forRealTime: Bool = false){
+        
         DispatchQueue.main.async {
             
             if forRealTime {
                 
+                var localArrMessages = [InAppMessage]()
+
                 var previousMessages = DengageLocalStorage.shared.getInAppMessages()
                 
                 if previousMessages.count > 0
                 {
-                    for i in 0...DengageLocalStorage.shared.getInAppMessages().count - 1
+                    for i in 0...previousMessages.count - 1
                     {
                         let prevMsg = previousMessages[i]
-                        if !(messages.contains(prevMsg))
+                        if (messages.contains(prevMsg))
                         {
-                            previousMessages.remove(at: i)
+                            localArrMessages.append(prevMsg)
                         }
                         
                     }
                     
-                    DengageLocalStorage.shared.save(previousMessages)
+                    DengageLocalStorage.shared.save(localArrMessages)
                     previousMessages = DengageLocalStorage.shared.getInAppMessages()
                 }
                
