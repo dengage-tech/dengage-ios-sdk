@@ -173,7 +173,6 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
                 else
                 {
                     guard let url = message.body as? String else {return}
-                    print("WKScriptMessage In app message \(url)")
                     self.delegate?.open(url: url)
                 }
                 
@@ -182,7 +181,6 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             
         case "iosUrlN":
             
-            print("WKScriptMessage In app message \(message.body)")
             guard let dict = message.body as? [String:Any] else {return}
             
             if let openInAppBrowser = dict["openInAppBrowser"] as? Bool
