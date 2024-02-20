@@ -3,19 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>DengageApiUrl</key>
-	<string>https://push.dengage.com/</string>
+	<string>https://push.dengage.com</string>
 	<key>DengageDeviceIdApiUrl</key>
 	<string>https://magento.232.dengage.shobii.com/rest/</string>
 	<key>DengageEventApiUrl</key>
-	<string>https://event.dengage.com</string>
+	<string>https://push.dengage.com</string>
 	<key>DengageInAppApiUrl</key>
-	<string>https://push.dengage.com/</string>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>remote-notification</string>
-	</array>
-	<key>fetchRealTimeINAPPURL</key>
-	<string>https://push.dengage.com/api/realtime-inapp/</string>
+	<string>https://push.dengage.com</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -33,5 +27,11 @@
 			</array>
 		</dict>
 	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
+	<key>fetchRealTimeINAPPURL</key>
+	<string>https://op-pub.dengage.com</string>
 </dict>
 </plist>

@@ -19,7 +19,7 @@ final class DengageInAppMessageUtils{
      */
     class func findPriorInAppMessage(inAppMessages: [InAppMessage],
                                      screenName: String? = nil,
-                                     params: [String:String]? = nil,
+                                     params: [String:String]? = nil,propertyID : String? = nil,
                                      config: DengageConfiguration) -> InAppMessage? {
         
         if let screenName = screenName, !screenName.isEmpty  {
@@ -119,7 +119,7 @@ final class DengageInAppMessageUtils{
     // Real Time
     
     private class func operateRealTimeValues(message: InAppMessage,
-                                             params: [String:String]? = nil,
+                                             params: [String:String]? = nil,propertyID : String? = nil,
                                              config: DengageConfiguration) -> Bool {
         
         guard let ruleSet = message.data.displayCondition.ruleSet,
@@ -146,7 +146,7 @@ final class DengageInAppMessageUtils{
     
     
     private class func operateDisplay(for rule: Rule,
-                                      with params: [String:String]? = nil,
+                                      with params: [String:String]? = nil,propertyID : String? = nil,
                                       config: DengageConfiguration, message:InAppMessage) -> Bool{
         
         switch rule.logicOperatorBetweenCriterions {
@@ -162,7 +162,7 @@ final class DengageInAppMessageUtils{
     }
     
     private class func operate(_ criterion: Criterion,
-                               with params: [String:String]? = nil,
+                               with params: [String:String]? = nil,propertyID : String? = nil,
                                config: DengageConfiguration, message:InAppMessage) -> Bool {
         guard let specialRule = SpecialRuleParameter(rawValue: criterion.parameter) else {
             
@@ -416,6 +416,9 @@ final class DengageInAppMessageUtils{
                            for: criterion.dataType,
                            ruleParam: criterion.values,
                            userParam: config.permission.description, message: message, valueSource: criterion.valueSource)
+            
+    
+            
         case .VISIT_COUNT:
             guard (criterion.dataType == .VISITCOUNTPASTXDAYS && !criterion.values.isEmpty) else { return true }
             guard let visitCountData = criterion.values.first else { return true }
@@ -451,6 +454,13 @@ final class DengageInAppMessageUtils{
                                       for: criterion.dataType,
                                       ruleParam: criterion.values,
                                       userParam: tags.map{String($0)})
+            
+        case .PROPERTY_ID:
+            return operate(with: criterion.comparison,
+                           for: criterion.dataType,
+                           ruleParam: criterion.values,
+                           userParam: propertyID, message: message, valueSource: criterion.valueSource)
+            
             
             
         }
@@ -634,7 +644,9 @@ enum SpecialRuleParameter: String {
     case PUSH_PERMISSION = "dn.wp_perm"
     case VISIT_COUNT = "dn.visit_count"
     case SEGMENT = "dn.segment"
+    case PROPERTY_ID = "dn.proprty_id"
     case TAG = "dn.tag"
+
     
     
 }

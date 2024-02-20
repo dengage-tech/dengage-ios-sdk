@@ -1,4 +1,5 @@
 import Foundation
+import WebKit
 import UIKit
 import StoreKit
 
@@ -206,10 +207,9 @@ public class Dengage  {
         dengage?.notificationManager.promptForPushNotifications(callback: completion)
     }
     
-    @objc public static func setNavigation(screenName:String? = nil ){
-        dengage?.inAppManager.setNavigation(screenName:screenName)
+    @objc public static func setNavigation(screenName:String? = nil , propertyID : String? = nil , webView : InAppInlineElementView? = nil ){
+        dengage?.inAppManager.setNavigation(screenName:screenName, propertyID: propertyID ,webView:webView)
     }
-    
     
     @objc public static func removeInAppMessageDisplay(){
         dengage?.inAppManager.removeInAppMessageDisplay()
@@ -218,9 +218,9 @@ public class Dengage  {
     
     @objc public static func showRealTimeInApp(
         screenName: String? = nil,
-        params: Dictionary<String, String>? = nil
+        params: Dictionary<String, String>? = nil, propertyID : String? = nil , webView : InAppInlineElementView? = nil
     ) {
-        dengage?.inAppManager.setNavigation(screenName:screenName, params: params)
+        dengage?.inAppManager.setNavigation(screenName:screenName, params: params, propertyID: propertyID ,webView:webView)
     }
     
     @objc public static func setCategory(path: String?) {

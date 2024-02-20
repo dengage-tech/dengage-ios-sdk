@@ -54,15 +54,28 @@ final class InboxMessagesViewController: UIViewController {
 
 extension InboxMessagesViewController: UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return messages.count
+        return messages.count + 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "InboxMessageTableViewCell", for: indexPath) as! InboxMessageTableViewCell
-        let item = messages[indexPath.row]
-        cell.backgroundColor = .green
-        cell.populateUI(with: item)
-        return cell
+        
+        if indexPath.row == messages.count
+        {
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: "InboxMessageTableViewCell", for: indexPath) as! InboxMessageTableViewCell
+      
+            return cell
+        }
+        else
+        {
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: "InboxMessageTableViewCell", for: indexPath) as! InboxMessageTableViewCell
+            let item = messages[indexPath.row]
+            cell.backgroundColor = .green
+            cell.populateUI(with: item)
+            return cell
+        }
+       
     }
     
 }

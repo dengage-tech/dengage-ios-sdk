@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import UserNotifications
 
 final class DengageNotificationExtension {
@@ -38,9 +39,12 @@ final class DengageNotificationExtension {
         guard let urlImageString = message.urlImageString, let contentUrl = URL(string: urlImageString) else { return }
         
         guard let imageData = NSData(contentsOf: contentUrl) else {
+            
             Logger.log(message: "URL_STR_IS_NULL")
             return
         }
+        
+        let image = UIImage(data: imageData as Data)
         
         guard let attachment = UNNotificationAttachment.create(fileIdentifier: contentUrl.lastPathComponent,
                                                                data: imageData) else {

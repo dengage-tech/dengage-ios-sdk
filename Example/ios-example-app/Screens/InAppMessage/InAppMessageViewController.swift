@@ -53,6 +53,8 @@ import Dengage
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         deviceIdTextView.text = "Device Id:\n" + (Dengage.getDeviceId() ?? "") + "\nContact Key:\n" + (Dengage.getContactKey() ?? "")
+        
+        
     }
      
      override func viewDidAppear(_ animated: Bool) {
@@ -84,6 +86,8 @@ import Dengage
         guard let text = screenNameTextField.text else {return}
        
         Dengage.setNavigation(screenName: text)
+        
+        
        
         Dengage.handleInAppDeeplink { url in
             

@@ -72,7 +72,6 @@ final class InAppBrowserViewController: UIViewController,WKNavigationDelegate{
                     navbar.items = [navItem]
 
                     self.view.addSubview(navbar)
-                    
                     self.Activity = UIActivityIndicatorView()
                     self.Activity.center = self.view.center
                     self.Activity.startAnimating()

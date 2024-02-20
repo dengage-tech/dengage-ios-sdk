@@ -63,13 +63,15 @@ extension RootViewController: UITableViewDelegate{
             Dengage.showTestPage()
         case .rating:
             Dengage.showRatingView()
+        case .inAppInLine:
+            self.navigationController?.pushViewController(ShowInLineInAPP(), animated: true)
         }
     }
 }
 
 extension RootViewController{
     enum Actions: CaseIterable{
-        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage,rating
+        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage,rating , inAppInLine
         var title: String{
             switch self{
             case .allowNotification:
@@ -92,6 +94,8 @@ extension RootViewController{
                 return "DENGAGE TEST PAGE"
             case .rating:
                 return "APPSTORE REVIEW"
+            case .inAppInLine:
+                return "Show InLine InAPP"
             }
         }
     }
