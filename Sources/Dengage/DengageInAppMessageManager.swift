@@ -303,24 +303,14 @@ extension DengageInAppMessageManager {
     {
         if let htmlSTR = inAppMessage.data.content.props.html
         {
-            if propertyId == "1"
-            {
-                let htmlstr1 = "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n<meta charset=\"UTF-8\">\r\n<style>\r\nhtml {\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 0;\r\n}\r\n*, *:before, *:after {\r\n  box-sizing: inherit;\r\n}\r\nbody {\r\n  margin: 0;\r\n  padding: 0;\r\n  font-family: Helvetica, Arial, Tohama;\r\n  z-index: 1;\r\n}\r\n\r\n\r\nimg {\r\n  max-width: 100%;\r\n  height: auto;\r\n  display: block;\r\n}\r\n.img-c {\r\n    width: 100%;\r\n}\r\n.img-c img {\r\n    width: 100%;\r\n}\r\n\r\n.container {\r\n  width: 100%;\r\n  background-color: #FFFFFF;\r\n}\r\n.content {\r\n}\r\n\r\n.body-c {\r\n    flex: 1;\r\n    padding: 6vw;\r\n}\r\n.title {\r\n    color: #1C2C48;\r\n    font-weight: normal;\r\n    font-size: 4vw;\r\n    text-align: left;\r\n    word-break: break-word;\r\n    padding-bottom: calc(4vw * 0.5);\r\n}\r\n.message {\r\n    color: #405672;\r\n    font-weight: normal;\r\n    font-size: 3vw;\r\n    text-align: left;\r\n    white-space: pre-line;\r\n    word-break: break-word;\r\n}\r\n\r\n.buttons {\r\n    display: flex;\r\n    padding: 6vw;\r\n    padding-top: 0;\r\n    justify-content: center;\r\n}\r\n.buttons button {\r\n    display: inline-block;\r\n    min-width: 60px;\r\n    flex: 1;\r\n    font-weight: normal;\r\n    font-size: 3.75vw;\r\n    line-height: calc(3.75vw * 1.8);\r\n    text-align: center;    \r\n    font-family: Helvetica, Arial, Tohama;\r\n    border-radius: 2vw;\r\n    outline: none;\r\n    text-decoration:none;\r\n    padding: calc(3.75vw / 2) 3.75vw;\r\n}\r\n\r\n\r\n\r\n.closeBtn {\r\n    position: absolute;\r\n    right: 0px;\r\n    top: 0px;\r\n    font-size: 24px;\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\r\n    width: calc((20vw / 4) + 6vw);\r\n    height: calc((20vw / 4) + 6vw);\r\n    color: #1C2C48;\r\n}\r\n</style>\r\n<script type=\"text/javascript\">\r\n    var enableClicks = false;\r\n    setTimeout(function () {\r\n        enableClicks = true;\r\n    }, 2000 );\r\n</script>\r\n</head>\r\n<body>\r\n    <div class=\"container\"\r\n        onclick=\"if (enableClicks === true){Dn.sendClick(); Dn.androidUrl(''); Dn.iosUrl(''); Dn.close();}\"\r\n        >\r\n        <div class=\"content\">\r\n            <div class=\"img-c\">\r\n                <img src=\"https://cdna.dengage.com/5eb58b77-f506-7303-2225-27172c028c21/202210/maxresdefault.jpg\" alt=\"\">\r\n            </div>\r\n            <div class=\"body-c\">\r\n                <div class=\"title\">\r\n                    Test Inapp Content\r\n                </div>\r\n                <div class=\"message\">BU BİR INAPP CONTENT TESTİDİR.</div>\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"closeBtn\" onclick=\"Dn.dismiss(); event.stopPropagation();\">\r\n            &times;\r\n        </div>\r\n    </div>\r\n</body>\r\n</html>"
-                
-                
-                webView.loadHTMLString(htmlstr1, baseURL: nil)
+          
+            webView.message = inAppMessage
+            webView.delegate = self
+            webView.loadHTMLString(htmlSTR, baseURL: nil)
 
-            }
-            else
-            {
-                let htmlStr2 = "<!DOCTYPE html>\r\n<html>\r\n<head>\r\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n<meta charset=\"UTF-8\">\r\n<style>\r\nhtml {\r\n  box-sizing: border-box;\r\n  margin: 0;\r\n  padding: 0;\r\n}\r\n*, *:before, *:after {\r\n  box-sizing: inherit;\r\n}\r\nbody {\r\n  margin: 0;\r\n  padding: 0;\r\n  font-family: Helvetica, Arial, Tohama;\r\n}\r\n\r\nimg {\r\n  max-width: 100%;\r\n  height: auto;\r\n  display: block;\r\n}\r\n.img-c {\r\n    width: 22%;\r\n    max-width: 100px;\r\n}\r\n.img-c img {\r\n    width: 100%;\r\n}\r\n\r\n.container {\r\n  width: 100%;\r\n  padding: 6vw;\r\n  background-color: #FFFFFF;\r\n}\r\n.content {\r\n    display: flex;\r\n}\r\n\r\n.body-c {\r\n    flex: 1;\r\n    width: 100%;\r\n    padding-left: 6vw;\r\n}\r\n.title {\r\n    color: #1C2C48;\r\n    font-weight: normal;\r\n    font-size: 4vw;\r\n    text-align: left;\r\n    word-break: break-word;\r\n    width: 95%;\r\n    padding-bottom: calc(4vw * 0.4);\r\n}\r\n.message {\r\n    color: #405672;\r\n    font-weight: normal;\r\n    font-size: 3vw;\r\n    text-align: left;\r\n    white-space: pre-line;\r\n    word-break: break-word;\r\n}\r\n\r\n.buttons {\r\n    display: flex;\r\n    margin-top: 6vw;\r\n    justify-content: center;\r\n}\r\n.buttons button {\r\n    display: inline-block;\r\n    min-width: 60px;\r\n    flex: 1;\r\n    font-weight: normal;\r\n    font-size: 3.75vw;\r\n    line-height: calc(3.75vw * 1.8);\r\n    text-align: center;    \r\n    font-family: Helvetica, Arial, Tohama;\r\n    border-radius: 2vw;\r\n    outline: none;\r\n    text-decoration:none;\r\n    padding: calc(3.75vw / 2) 3.75vw;\r\n}\r\n\r\n\r\n\r\n.closeBtn {\r\n    position: absolute;\r\n    right: 0px;\r\n    top: 0px;\r\n    font-size: 24px;\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\r\n    width: calc((20vw / 4) + 6vw);\r\n    height: calc((20vw / 4) + 6vw);\r\n    color: #1C2C48;\r\n}\r\n</style>\r\n<script type=\"text/javascript\">\r\n    var enableClicks = false;\r\n    setTimeout(function () {\r\n        enableClicks = true;\r\n    }, 2000 );\r\n</script>\r\n</head>\r\n<body>\r\n    <div class=\"container\"\r\n        onclick=\"if (enableClicks === true){Dn.sendClick(); Dn.androidUrl('/meyve-ve-sebze-cat-20'); Dn.iosUrl('/meyve-ve-sebze-cat-20'); Dn.close();}\"\r\n        >\r\n        <div class=\"content\">\r\n            <div class=\"img-c\">\r\n                <img src=\"https://cdna.dengage.com/8cb18bfd-f808-8c55-fd36-93b2fc66deaf/asa/Gandalf.jpg\" alt=\"\">\r\n            </div>\r\n            <div class=\"body-c\">\r\n                <div class=\"title\">\r\n                    iOS InApp Deneme\r\n                </div>\r\n                <div class=\"message\">Bu bir deneme push gönderimidir.</div>\r\n            </div>\r\n        </div>\r\n\r\n        <div class=\"closeBtn\" onclick=\"Dn.dismiss(); event.stopPropagation();\">\r\n            &times;\r\n        </div>\r\n    </div>\r\n</body>\r\n</html>"
-               
-                
-                webView.loadHTMLString(htmlStr2, baseURL: nil)
-
-            }
 
         }
+        
 
     }
     
@@ -337,7 +327,7 @@ extension DengageInAppMessageManager {
         
         let inAppMessages = DengageInAppMessageUtils.findNotExpiredInAppMessages(untilDate: Date(), messages)
         
-        guard let priorInAppMessage = DengageInAppMessageUtils.findPriorInAppMessage(inAppMessages: inAppMessages, screenName: screenName, params:params,propertyID : propertyID, config: config ) else {return}
+        guard let priorInAppMessage = DengageInAppMessageUtils.findPriorInAppMessage(inAppMessages: inAppMessages, screenName: screenName, params:params, config: config, propertyId: propertyID ) else {return}
        
         
         let delay = priorInAppMessage.data.displayTiming.delay ?? 0
@@ -348,7 +338,11 @@ extension DengageInAppMessageManager {
         {
             if let ID = propertyID ,  let vw = webView
             {
-                showinlineInapp(propertyId: ID, webView: vw, inAppMessage: priorInAppMessage)
+                if priorInAppMessage.data.inlineTarget?.iosSelector == propertyID
+                {
+                    showinlineInapp(propertyId: ID, webView: vw, inAppMessage: priorInAppMessage)
+
+                }
 
             }
 
@@ -679,11 +673,16 @@ extension DengageInAppMessageManager {
                 DengageLocalStorage.shared.save(updatedMessages)
                 
             }
-            else {
+            else  {
                 var previousMessages = DengageLocalStorage.shared.getInAppMessages()
                 previousMessages.removeAll{ message in
                     messages.contains{ $0.id == message.id }
                 }
+                
+//                var msg = previousMessages.filter({$0.data.content.contentId == "a3300e2b-3d68-49bd-8571-4d2701247e3a"})
+//                previousMessages.removeAll()
+//                previousMessages.append(contentsOf: msg)
+                
                 previousMessages.append(contentsOf: messages)
                 DengageLocalStorage.shared.save(previousMessages)
 
@@ -939,7 +938,7 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
 protocol DengageInAppMessageManagerInterface: AnyObject{
     
     func fetchInAppMessages()
-    func setNavigation(screenName: String?, params: Dictionary<String,String>?)
+    func setNavigation(screenName: String?, params: Dictionary<String,String>? , propertyID : String? , webView : InAppInlineElementView? )
     func showInAppMessage(inAppMessage: InAppMessage)
     func fetchInAppExpiredMessages()
     func removeInAppMessageDisplay()
@@ -949,8 +948,8 @@ protocol DengageInAppMessageManagerInterface: AnyObject{
 }
 
 extension DengageInAppMessageManagerInterface {
-    func setNavigation(screenName: String? = nil, params: Dictionary<String,String>? = nil){
-        setNavigation(screenName: screenName, params: params)
+    func setNavigation(screenName: String? = nil, params: Dictionary<String,String>? = nil , propertyID : String? = nil , webView : InAppInlineElementView? = nil){
+        setNavigation(screenName: screenName, params: params,propertyID: propertyID, webView: webView)
     }
 }
 

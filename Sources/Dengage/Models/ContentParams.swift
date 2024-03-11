@@ -169,6 +169,13 @@ struct DisplayTiming: Codable{
     let maxShowCount: Int?
 }
 
+
+struct InlineTarget: Codable{
+    let iosSelector: String?
+  
+}
+
+
 enum ComparisonType: String, Codable {
     case EQUALS
     case NOT_EQUALS

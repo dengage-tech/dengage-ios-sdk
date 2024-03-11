@@ -2,14 +2,13 @@ import UIKit
 import WebKit
 final class InAppMessageHTMLViewController: UIViewController{
     
-    private lazy var viewSource:InAppMessageHTMLView = {
+    lazy var viewSource:InAppMessageHTMLView = {
         let view = InAppMessageHTMLView()
         view.webView.navigationDelegate = self
         return view
     }()
     
     var delegate: InAppMessagesActionsDelegate?
-    
     
     let message:InAppMessage
     
