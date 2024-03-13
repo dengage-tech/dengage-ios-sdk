@@ -17,13 +17,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //BSIF
        //_s_l_gJiLHWiLdjpYMf4jlhRN2wemFgwft4oIy_s_l_QpEcwPBfQWNyC22E397SlnX2Rt51QPv4fWH9c_s_l_M7yFH74iPSsUBgzpc6iUsIFw3waNyMau1xttwfOwQ9oJ9PZyBseS30U34vo1bSElJSrhGrwIkCUCw_e_q__e_q_
         
+        //new account
+//        ISF1SkvnJTgrVE1NWgfsF3TU_p_l_I3t_s_l_uVF7i_s_l_C1EGES0rB0HcToRYRCY_s_l_ioPhbsdIY22SfKjLKK8F5x2cZgtCvLILmbZH2fy6tNQD1BqKHyQZ2VZhExl7_s_l_jRes6Sqf_p_l_cI3
+
+
+        
               
-        let option = DengageOptions(disableOpenURL: false, badgeCountReset: true, disableRegisterForRemoteNotifications: true, enableGeofence: true)
+        let option = DengageOptions(disableOpenURL: false, badgeCountReset: true, disableRegisterForRemoteNotifications: false, enableGeofence: true)
         
-        Dengage.start(apiKey: "YF2_p_l_NN4KRoXaSDN4BTp4Nr4K03bE00JoMQnbUh3HMadY_p_l_n30hGw_p_l_PhKypwxdE5kATWY_s_l_jKlrRHTSOAC5rC4ptsk0w0BwE94H8N940O79fIGjXwL23cnAb5RjA9432isGw3gv4J4e3J5_s_l_lRo3_s_l__p_l_IQaw_e_q__e_q_", application: application, launchOptions: [:], dengageOptions: option, deviceId : "priya@1928142609", contactKey : "qas@gmail.com" , partnerDeviceId :"priyatest@gmail")
-        
-    
-        
+        Dengage.start(apiKey: "ISF1SkvnJTgrVE1NWgfsF3TU_p_l_I3t_s_l_uVF7i_s_l_C1EGES0rB0HcToRYRCY_s_l_ioPhbsdIY22SfKjLKK8F5x2cZgtCvLILmbZH2fy6tNQD1BqKHyQZ2VZhExl7_s_l_jRes6Sqf_p_l_cI3", application: application, launchOptions: [:], dengageOptions: option)
+                
         UNUserNotificationCenter.current().delegate = self
         window = UIWindow(frame: UIScreen.main.bounds)
         let rootViewController = RootViewController()
@@ -34,19 +37,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             window?.overrideUserInterfaceStyle = .light
         }
         
+        Dengage.promptForPushNotifications { isUserGranted in
+            
+            
+        }
         Dengage.setLog(isVisible: true)
         
-      //  Dengage.setDevelopmentStatus(isDebug: true)
+        Dengage.setDevelopmentStatus(isDebug: true)
                 
        // Dengage.set(deviceId: "123456")
         
        // Dengage.syncSDK()
         
        
-        Dengage.promptForPushNotifications { isUserGranted in
-            
-            
-        }
+       
         
         
         return true
