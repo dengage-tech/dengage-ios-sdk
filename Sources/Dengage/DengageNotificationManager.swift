@@ -94,6 +94,10 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
             {
                 
             }
+            
+            sendEventWithContent(messageId: message.messageId, messageDetails: message.messageDetails, transactionId: message.transactionId, actionIdentifier: nil)
+
+            
             if let targetUrl = message.targetUrl, !targetUrl.isEmpty, !config.options.disableOpenURL {
                 openDeeplink(link: targetUrl)
                 eventManager.sessionStart(referrer: message.targetUrl)
@@ -145,6 +149,47 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
         if let transactionId = content.message?.transactionId {
             Logger.log(message: "BUTTON_ID is", argument: String(transactionId))
 
+            let request = TransactionalOpenEventRequest(integrationKey: config.integrationKey,
+                                                        transactionId: transactionId,
+                                                        messageId: messageId,
+                                                        messageDetails: messageDetails,
+                                                        buttonId: actionIdentifier)
+            
+            eventManager.sendTransactionalOpenEvet(request: request)
+        } else {
+            let request = OpenEventRequest(integrationKey: config.integrationKey,
+                                           messageId: messageId,
+                                           messageDetails: messageDetails,
+                                           buttonId: actionIdentifier)
+            eventManager.sendOpenEvet(request: request)
+        }
+        
+        if config.options.badgeCountReset == true {
+            UIApplication.shared.applicationIconBadgeNumber = 0
+        }
+    }
+    
+    private func sendEventWithContent(messageId: Int? , messageDetails : String?, transactionId:String? , actionIdentifier: String?) {
+        
+        guard let messageId = messageId else {
+            Logger.log(message: "MSG_ID is not found")
+            return
+        }
+        Logger.log(message: "MSG_ID is", argument: String(messageId))
+        
+        guard let messageDetails = messageDetails else {
+            Logger.log(message: "MSG_DETAILS is not found")
+            return
+        }
+        Logger.log(message: "MSG_DETAILS is", argument: messageDetails)
+        
+        if let actionIdentifier = actionIdentifier, actionIdentifier.isEmpty == false {
+            Logger.log(message: "BUTTON_ID is", argument: String(actionIdentifier))
+        }
+        
+        if let transactionId = transactionId {
+            Logger.log(message: "BUTTON_ID is", argument: String(transactionId))
+            
             let request = TransactionalOpenEventRequest(integrationKey: config.integrationKey,
                                                         transactionId: transactionId,
                                                         messageId: messageId,

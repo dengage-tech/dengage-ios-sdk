@@ -41,7 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             
             
         }
-        Dengage.setLog(isVisible: true)
+        Dengage.setLog(isVisible: false)
         
         Dengage.setDevelopmentStatus(isDebug: true)
                 
