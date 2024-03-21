@@ -11,6 +11,25 @@ final class InAppBrowserViewController: UIViewController,WKNavigationDelegate{
     var delegate: InAppMessagesActionsDelegate?
     var Activity: UIActivityIndicatorView!
     let url:String
+    var hasTopNotch: Bool {
+        
+        if #available(iOS 13.0, *) {
+            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+            {
+                return true
+                
+            }
+            else {
+                // Fallback on earlier versions
+                return UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0 > 20
+
+            }
+        }
+        
+        
+        return false
+    }
+    
     
     init(with url: String) {
         
@@ -37,30 +56,127 @@ final class InAppBrowserViewController: UIViewController,WKNavigationDelegate{
             viewSource.webView.load(request)
         }
         
-        let height: CGFloat = 44
-        let navbar = UINavigationBar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: height))
-        navbar.backgroundColor = UIColor.white
+        if hasTopNotch
+        {
+            if #available(iOS 13.0, *) {
+                if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene
+                {
+                    let top = scene.windows.first?.safeAreaInsets.top ?? 0
+                    let navbar = UINavigationBar(frame: CGRect(x: 0, y: top, width: UIScreen.main.bounds.width, height: 44))
+                    navbar.backgroundColor = UIColor.white
 
-        let navItem = UINavigationItem()
-        navItem.title = self.url
-        navItem.leftBarButtonItem = UIBarButtonItem(title: "X", style: .plain, target: self, action: #selector(self.dismiss(sender:)))
+                    let navItem = UINavigationItem()
+                    navItem.title = self.url
+                    navItem.leftBarButtonItem = UIBarButtonItem(title: "X", style: .plain, target: self, action: #selector(self.dismiss(sender:)))
 
-        navbar.items = [navItem]
+                    navbar.items = [navItem]
 
-        self.view.addSubview(navbar)
+                    self.view.addSubview(navbar)
+                    
+                    self.Activity = UIActivityIndicatorView()
+                    self.Activity.center = self.view.center
+                    self.Activity.startAnimating()
+                    self.Activity.hidesWhenStopped = true
+                    self.Activity.style = .gray
+                    self.viewSource.webView.addSubview(self.Activity)
+
+                    self.viewSource.webView.navigationDelegate = self
+
+                    viewSource.webView.frame = .init(x: 0, y:44 + top, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 44 - top)
+                    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.didTapView(sender:)))
+                    self.view.addGestureRecognizer(tapGesture)
+
+                }
+                else
+                {
+                    // Fallback on earlier versions
+                    
+                    let top = UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0
+                    let navbar = UINavigationBar(frame: CGRect(x: 0, y: top, width: UIScreen.main.bounds.width, height: 44))
+                    navbar.backgroundColor = UIColor.white
+
+                    let navItem = UINavigationItem()
+                    navItem.title = self.url
+                    navItem.leftBarButtonItem = UIBarButtonItem(title: "X", style: .plain, target: self, action: #selector(self.dismiss(sender:)))
+
+                    navbar.items = [navItem]
+
+                    self.view.addSubview(navbar)
+                    
+                    self.Activity = UIActivityIndicatorView()
+                    self.Activity.center = self.view.center
+                    self.Activity.startAnimating()
+                    self.Activity.hidesWhenStopped = true
+                    self.Activity.style = .gray
+                    self.viewSource.webView.addSubview(self.Activity)
+
+                    self.viewSource.webView.navigationDelegate = self
+
+                    viewSource.webView.frame = .init(x: 0, y:44 + top, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 44 - top)
+                    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.didTapView(sender:)))
+                    self.view.addGestureRecognizer(tapGesture)
+                }
+               
+            } else {
+                // Fallback on earlier versions
+                
+                let top = UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0
+                let navbar = UINavigationBar(frame: CGRect(x: 0, y: top, width: UIScreen.main.bounds.width, height: 44))
+                navbar.backgroundColor = UIColor.white
+
+                let navItem = UINavigationItem()
+                navItem.title = self.url
+                navItem.leftBarButtonItem = UIBarButtonItem(title: "X", style: .plain, target: self, action: #selector(self.dismiss(sender:)))
+
+                navbar.items = [navItem]
+
+                self.view.addSubview(navbar)
+                
+                self.Activity = UIActivityIndicatorView()
+                self.Activity.center = self.view.center
+                self.Activity.startAnimating()
+                self.Activity.hidesWhenStopped = true
+                self.Activity.style = .gray
+                self.viewSource.webView.addSubview(self.Activity)
+
+                self.viewSource.webView.navigationDelegate = self
+
+                viewSource.webView.frame = .init(x: 0, y: 44 + top, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 44 - top)
+                let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.didTapView(sender:)))
+                self.view.addGestureRecognizer(tapGesture)
+            }
+           
+        }
+        else
+        {
+            let navbar = UINavigationBar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 44))
+            navbar.backgroundColor = UIColor.white
+
+            let navItem = UINavigationItem()
+            navItem.title = self.url
+            navItem.leftBarButtonItem = UIBarButtonItem(title: "X", style: .plain, target: self, action: #selector(self.dismiss(sender:)))
+
+            navbar.items = [navItem]
+
+            self.view.addSubview(navbar)
+            self.Activity = UIActivityIndicatorView()
+            self.Activity.center = self.view.center
+            self.Activity.startAnimating()
+            self.Activity.hidesWhenStopped = true
+            self.Activity.style = .gray
+            self.viewSource.webView.addSubview(self.Activity)
+
+            self.viewSource.webView.navigationDelegate = self
+
+            viewSource.webView.frame = .init(x: 0, y:44, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 44)
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.didTapView(sender:)))
+            self.view.addGestureRecognizer(tapGesture)
+        }
+     
         
-        self.Activity = UIActivityIndicatorView()
-        self.Activity.center = self.view.center
-        self.Activity.startAnimating()
-        self.Activity.hidesWhenStopped = true
-        self.Activity.style = .gray
-        self.viewSource.webView.addSubview(self.Activity)
-
-        self.viewSource.webView.navigationDelegate = self
-
-        viewSource.webView.frame = .init(x: 0, y: 44, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 44)
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.didTapView(sender:)))
-        self.view.addGestureRecognizer(tapGesture)
+    
+        
+     
     }
     
     @objc func didTapView(sender: UITapGestureRecognizer) {

@@ -18,32 +18,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //BSIF
        //_s_l_gJiLHWiLdjpYMf4jlhRN2wemFgwft4oIy_s_l_QpEcwPBfQWNyC22E397SlnX2Rt51QPv4fWH9c_s_l_M7yFH74iPSsUBgzpc6iUsIFw3waNyMau1xttwfOwQ9oJ9PZyBseS30U34vo1bSElJSrhGrwIkCUCw_e_q__e_q_
         
+        Dengage.setLog(isVisible: false)
 
 
         Dengage.start(apiKey: "_s_l_gJiLHWiLdjpYMf4jlhRN2wemFgwft4oIy_s_l_QpEcwPBfQWNyC22E397SlnX2Rt51QPv4fWH9c_s_l_M7yFH74iPSsUBgzpc6iUsIFw3waNyMau1xttwfOwQ9oJ9PZyBseS30U34vo1bSElJSrhGrwIkCUCw_e_q__e_q_", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
         
         UNUserNotificationCenter.current().delegate = self
-        window = UIWindow(frame: UIScreen.main.bounds)
-        let rootViewController = RootViewController()
-        let navigationController = UINavigationController(rootViewController: rootViewController)
-        window?.rootViewController = navigationController
-        window?.makeKeyAndVisible()
-        if #available(iOS 13.0, *) {
-            window?.overrideUserInterfaceStyle = .light
-        }
+       
       
-        Dengage.setLog(isVisible: true)
         
         Dengage.setDevelopmentStatus(isDebug: true)
         
-        Dengage.set(deviceId: "priya@192814260997856587676.jkjkkj")
+        Dengage.set(deviceId: "priya@19281426099785658767678464374667236473673246236237673246.jkjkkj")
         
         Dengage.promptForPushNotifications { isUserGranted in
             
             
         }
         
-       // Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
+//        Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
 //        
 //        
       //  Dengage.set(contactKey: "sdcdsdd")

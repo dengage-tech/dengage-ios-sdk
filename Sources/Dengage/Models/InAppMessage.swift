@@ -48,6 +48,7 @@ struct InAppMessageData: Codable {
     let displayCondition: DisplayCondition
     let displayTiming: DisplayTiming
     let publicId: String?
+    let inlineTarget: inlineTarget?
 
     var isRealTime: Bool {
         return publicId != nil
@@ -61,6 +62,8 @@ struct InAppMessageData: Codable {
         case displayCondition = "displayCondition"
         case displayTiming = "displayTiming"
         case publicId = "publicId"
+        case inlineTarget = "inlineTarget"
+
     }
 }
 
