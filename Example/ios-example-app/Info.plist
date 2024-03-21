@@ -10,12 +10,6 @@
 	<string>https://event.dengage.com</string>
 	<key>DengageInAppApiUrl</key>
 	<string>https://push.dengage.com/</string>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>remote-notification</string>
-	</array>
-	<key>fetchRealTimeINAPPURL</key>
-	<string>https://push.dengage.com/api/realtime-inapp/</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -33,5 +27,11 @@
 			</array>
 		</dict>
 	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
+	<key>fetchRealTimeINAPPURL</key>
+	<string>https://push.dengage.com/api/realtime-inapp/</string>
 </dict>
 </plist>

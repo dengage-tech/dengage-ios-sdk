@@ -311,7 +311,6 @@ extension DengageInAppMessageManager {
         
         guard let priorInAppMessage = DengageInAppMessageUtils.findPriorInAppMessage(inAppMessages: inAppMessages, screenName: screenName, params:params, config: config) else {return}
        
-        
         let delay = priorInAppMessage.data.displayTiming.delay ?? 0
         
         DengageLocalStorage.shared.set(value: delay, for: .delayForInAppMessage)
