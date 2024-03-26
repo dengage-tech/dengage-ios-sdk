@@ -20,7 +20,7 @@ final class DengageInAppMessageUtils{
     class func findPriorInAppMessage(inAppMessages: [InAppMessage],
                                      screenName: String? = nil,
                                      params: [String:String]? = nil,
-                                     config: DengageConfiguration) -> InAppMessage? {
+                                     config: DengageConfiguration , propertyId : String?) -> InAppMessage? {
         
         if let screenName = screenName, !screenName.isEmpty  {
             
@@ -28,7 +28,7 @@ final class DengageInAppMessageUtils{
                 
                 if let arrScreenFilter = message.data.displayCondition.screenNameFilters
                 {
-                    if message.isDisplayTimeAvailable() && operateRealTimeValues(message: message,params: params,config: config)
+                    if message.isDisplayTimeAvailable() && operateRealTimeValues(message: message, with: params,config: config) && isInLineInApp(inAppMessage: message, propertyID: propertyId)
                     {
                         let operatorFilter = message.data.displayCondition.screenNameFilterLogicOperator
                         
@@ -65,7 +65,7 @@ final class DengageInAppMessageUtils{
                                 
                                 return operateScreenValues(value: nameFilter.value, for: screenName, operatorType: nameFilter.operatorType)
                                 
-                            } != nil && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message,params: params,config: config)
+                            } != nil && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message,config: config) && isInLineInApp(inAppMessage: message, propertyID: propertyId)
                         }
                     }
                     
@@ -80,10 +80,34 @@ final class DengageInAppMessageUtils{
         }else {
             
             let inAppMessageWithoutScreenName = inAppMessages.sorted.first { message -> Bool in
-                return (message.data.displayCondition.screenNameFilters ?? []).isEmpty && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message, params: params, config: config)
+                return (message.data.displayCondition.screenNameFilters ?? []).isEmpty && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message, with: params, config: config) && isInLineInApp(inAppMessage: message, propertyID: propertyId)
+
             }
             return inAppMessageWithoutScreenName
         }
+    }
+    
+    private class func isInLineInApp(inAppMessage:InAppMessage , propertyID : String?) -> Bool
+    {
+    
+        if (propertyID == nil || propertyID == "" ) && (inAppMessage.data.inlineTarget?.iosSelector == "" || inAppMessage.data.inlineTarget?.iosSelector == nil)
+        {
+            return true
+        }
+        else if (propertyID != nil || propertyID != "" ) && (inAppMessage.data.inlineTarget?.iosSelector == "" || inAppMessage.data.inlineTarget?.iosSelector == nil )
+        {
+            return false
+        }
+        else if (propertyID != nil || propertyID != "" ) && (inAppMessage.data.inlineTarget?.iosSelector != "" || inAppMessage.data.inlineTarget?.iosSelector != nil )
+        {
+            return inAppMessage.data.inlineTarget?.iosSelector == propertyID
+        }
+        
+        else
+        {
+            return (propertyID == nil || propertyID == "" )
+        }
+        
     }
     
     private class func operateScreenValues(value screenNameFilterValues: [String],
@@ -118,8 +142,7 @@ final class DengageInAppMessageUtils{
     
     // Real Time
     
-    private class func operateRealTimeValues(message: InAppMessage,
-                                             params: [String:String]? = nil,
+    private class func operateRealTimeValues(message: InAppMessage,with params: [String:String]? = nil,
                                              config: DengageConfiguration) -> Bool {
         
         guard let ruleSet = message.data.displayCondition.ruleSet,
@@ -133,9 +156,10 @@ final class DengageInAppMessageUtils{
         }
         
         switch ruleSet.logicOperator {
+            
         case .AND:
             return ruleSet.rules.allSatisfy{ rule in
-                operateDisplay(for: rule, with: params, config: config, message: message)
+                operateDisplay(for: rule, with: params,config: config, message: message)
             }
         case .OR:
             return ruleSet.rules.contains{ rule in
@@ -268,10 +292,21 @@ final class DengageInAppMessageUtils{
                 }
                 else
                 {
-                    return operate(with: criterion.comparison,
-                                   for: criterion.dataType,
-                                   ruleParam: criterion.values,
-                                   userParam: userParam, message: message, valueSource: criterion.valueSource)
+                    if userParam == "null" && params != nil
+                    {
+                        return operate(with: criterion.comparison,
+                                       for: criterion.dataType,
+                                       ruleParam: criterion.values,
+                                       userParam: params?[criterion.parameter], message: message, valueSource: criterion.valueSource)
+                    }
+                    else
+                    {
+                        return operate(with: criterion.comparison,
+                                       for: criterion.dataType,
+                                       ruleParam: criterion.values,
+                                       userParam: userParam, message: message, valueSource: criterion.valueSource)
+                    }
+                   
                 }
                 
                 
@@ -416,6 +451,9 @@ final class DengageInAppMessageUtils{
                            for: criterion.dataType,
                            ruleParam: criterion.values,
                            userParam: config.permission.description, message: message, valueSource: criterion.valueSource)
+            
+    
+            
         case .VISIT_COUNT:
             guard (criterion.dataType == .VISITCOUNTPASTXDAYS && !criterion.values.isEmpty) else { return true }
             guard let visitCountData = criterion.values.first else { return true }
@@ -451,6 +489,8 @@ final class DengageInAppMessageUtils{
                                       for: criterion.dataType,
                                       ruleParam: criterion.values,
                                       userParam: tags.map{String($0)})
+     
+            
             
             
         }
@@ -635,6 +675,7 @@ enum SpecialRuleParameter: String {
     case VISIT_COUNT = "dn.visit_count"
     case SEGMENT = "dn.segment"
     case TAG = "dn.tag"
+
     
     
 }

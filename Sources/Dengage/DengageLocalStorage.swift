@@ -76,6 +76,7 @@ final class DengageLocalStorage: NSObject {
         case cancelInAppMessage = "cancelInAppMessage"
         case appEnvironment = "appEnvironment"
         case hybridAppEnvironment = "hybridAppEnvironment"
+        case delayForInAppMessage = "delayForInAppMessage"
 
 
     }

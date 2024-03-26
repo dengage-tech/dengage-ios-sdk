@@ -70,6 +70,8 @@ extension RootViewController: UITableViewDelegate{
             
         case .geoFence:
             self.navigationController?.pushViewController(GeofenceViewController(), animated: true)
+        case .inAppInLine:
+            self.navigationController?.pushViewController(ShowInLineInAPP(), animated: true)
 
             
         }
@@ -78,7 +80,7 @@ extension RootViewController: UITableViewDelegate{
 
 extension RootViewController{
     enum Actions: CaseIterable{
-        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage , geoFence
+        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage , geoFence,inAppInLine
         var title: String{
             switch self{
             case .allowNotification:
@@ -101,6 +103,8 @@ extension RootViewController{
                 return "DENGAGE TEST PAGE"
             case .geoFence:
                 return "GEO FENCE"
+            case .inAppInLine:
+                return "Show InLine InAPP"
 
             }
         }
