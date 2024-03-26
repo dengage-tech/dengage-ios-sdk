@@ -32,6 +32,7 @@
 		A0F46C6E275A85B1003A524C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0F46C6C275A85B1003A524C /* LaunchScreen.storyboard */; };
 		D65342EA2B6CB3D800640F8E /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65342E92B6CB3D800640F8E /* SceneDelegate.swift */; };
 		D65523DA2938F393004360B8 /* RealTimeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65523D92938F393004360B8 /* RealTimeViewController.swift */; };
+		D68140FE2BB3339200663AC8 /* ShowInLineInAPP.swift in Sources */ = {isa = PBXBuildFile; fileRef = D68140FD2BB3339200663AC8 /* ShowInLineInAPP.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,6 +96,7 @@
 		A0F46C6F275A85B1003A524C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D65342E92B6CB3D800640F8E /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		D65523D92938F393004360B8 /* RealTimeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealTimeViewController.swift; sourceTree = "<group>"; };
+		D68140FD2BB3339200663AC8 /* ShowInLineInAPP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShowInLineInAPP.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +159,7 @@
 		A099519B27ACAD260089D98D /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				D68140FC2BB3339200663AC8 /* ShowInLineInAPP */,
 				D65523DB2938F3A2004360B8 /* RealTime */,
 				A0B8857927B1F4CF004D4360 /* ContactKey */,
 				A0B8857627B1F17D004D4360 /* DeviceInfo */,
@@ -279,6 +282,14 @@
 				D65523D92938F393004360B8 /* RealTimeViewController.swift */,
 			);
 			path = RealTime;
+			sourceTree = "<group>";
+		};
+		D68140FC2BB3339200663AC8 /* ShowInLineInAPP */ = {
+			isa = PBXGroup;
+			children = (
+				D68140FD2BB3339200663AC8 /* ShowInLineInAPP.swift */,
+			);
+			path = ShowInLineInAPP;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -451,6 +462,7 @@
 				A09951A027ACAD630089D98D /* InboxMessageTableViewCell.swift in Sources */,
 				A09951A727ACB12E0089D98D /* InAppMessageViewController.swift in Sources */,
 				A099519A27ACACE50089D98D /* Extensions.swift in Sources */,
+				D68140FE2BB3339200663AC8 /* ShowInLineInAPP.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
