@@ -44,6 +44,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Dengage.setLog(isVisible: false)
         
         Dengage.setDevelopmentStatus(isDebug: true)
+        
+        Dengage.handleNotificationActionBlock { notificationResponse in
+            
+            print(notificationResponse)
+        }
                 
        // Dengage.set(deviceId: "123456")
         

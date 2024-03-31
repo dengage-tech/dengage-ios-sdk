@@ -21,12 +21,22 @@ struct InAppMessage: Codable {
     }
     
     func isDisplayTimeAvailable() -> Bool{
-        return (data.displayTiming.showEveryXMinutes == nil ||
-                data.displayTiming.showEveryXMinutes == 0 ||
-                (nextDisplayTime ?? Date().timeMiliseconds) <= Date().timeMiliseconds) &&
-        (data.displayTiming.maxShowCount == nil ||
-         data.displayTiming.maxShowCount == 0 ||
-         (showCount ?? 0) < (data.displayTiming.maxShowCount ?? 0))
+        
+        if data.displayTiming.showEveryXMinutes == -1 &&  data.displayTiming.maxShowCount == -1
+        {
+            return true
+        }
+        else
+        {
+            let val = (data.displayTiming.showEveryXMinutes == nil ||
+                       data.displayTiming.showEveryXMinutes == 0 ||
+                       (nextDisplayTime ?? Date().timeMiliseconds) <= Date().timeMiliseconds) &&
+               (data.displayTiming.maxShowCount == nil ||
+                data.displayTiming.maxShowCount == 0 ||
+                (showCount ?? 0) < (data.displayTiming.maxShowCount ?? 0))
+            return val
+        }
+        
     }
     
 //    private class func isDisplayTimeAvailable(for inAppMessage: InAppMessage)  -> Bool {
