@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //BSIF
        //_s_l_gJiLHWiLdjpYMf4jlhRN2wemFgwft4oIy_s_l_QpEcwPBfQWNyC22E397SlnX2Rt51QPv4fWH9c_s_l_M7yFH74iPSsUBgzpc6iUsIFw3waNyMau1xttwfOwQ9oJ9PZyBseS30U34vo1bSElJSrhGrwIkCUCw_e_q__e_q_
         
-        Dengage.setLog(isVisible: false)
+        Dengage.setLog(isVisible: true)
 
 
         Dengage.start(apiKey: "_s_l_gJiLHWiLdjpYMf4jlhRN2wemFgwft4oIy_s_l_QpEcwPBfQWNyC22E397SlnX2Rt51QPv4fWH9c_s_l_M7yFH74iPSsUBgzpc6iUsIFw3waNyMau1xttwfOwQ9oJ9PZyBseS30U34vo1bSElJSrhGrwIkCUCw_e_q__e_q_", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
@@ -34,6 +34,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Dengage.promptForPushNotifications { isUserGranted in
             
             
+        }
+        
+        Dengage.handleNotificationActionBlock { notificationResponse in
+            
+            
+            print("jsdbcsjbcnzmxbc")
         }
         
 //        Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")

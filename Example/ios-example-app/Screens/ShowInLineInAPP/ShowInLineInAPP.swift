@@ -117,7 +117,7 @@ class ShowInLineInAPP: UIViewController, WKUIDelegate, WKNavigationDelegate {
             .reduce(into: [:]) { $0[$1.0] = $1.1 }
         
 
-        Dengage.showInAppInLine(propertyID: propertyid, webView: webView1, screenName: screenName, params: parameters)
+        Dengage.showInAppInLine(propertyID: propertyid, inAppInlineElement: webView1, screenName: screenName, customParams: parameters, hideIfNotFound: true)
         
     }
    

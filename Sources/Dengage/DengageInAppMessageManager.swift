@@ -314,7 +314,7 @@ extension DengageInAppMessageManager {
 
     }
     
-    func setNavigation(screenName: String? = nil, params: Dictionary<String,String>? = nil , propertyID : String? = nil , webView : InAppInlineElementView? = nil) {
+    func setNavigation(screenName: String? = nil, params: Dictionary<String,String>? = nil , propertyID : String? = nil , inAppInlineElement : InAppInlineElementView? = nil , hideIfNotFound: Bool = false) {
         
         guard !(config.inAppMessageShowTime != 0 && Date().timeMiliseconds < config.inAppMessageShowTime) else {return}
         
@@ -336,13 +336,24 @@ extension DengageInAppMessageManager {
         
         if propertyID != nil
         {
-            if let ID = propertyID ,  let vw = webView
+            if let ID = propertyID ,  let vw = inAppInlineElement
             {
                 if priorInAppMessage.data.inlineTarget?.iosSelector == propertyID
                 {
                     showinlineInapp(propertyId: ID, webView: vw, inAppMessage: priorInAppMessage)
 
+                } 
+                else if propertyID != "" && hideIfNotFound
+                {
+                    inAppInlineElement?.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
+                    inAppInlineElement?.isHidden = true
+
                 }
+            }
+            else if propertyID != "" && hideIfNotFound
+            {
+                inAppInlineElement?.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
+                inAppInlineElement?.isHidden = true
 
             }
 
