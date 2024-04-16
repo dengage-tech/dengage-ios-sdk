@@ -19,7 +19,7 @@ final class DengageEventManager: DengageEventProtocolInterface {
     func eventSessionStart(){
         let deviceId = config.applicationIdentifier
         let session = sessionManager.createSession(force: false)
-        sendEvent(table: .sessionInfo, key: deviceId, params: ["session_id": session.sessionId])
+        //sendEvent(table: .sessionInfo, key: deviceId, params: ["session_id": session.sessionId])
     }
     
     func sessionStart(referrer: String?) {
@@ -106,7 +106,7 @@ extension DengageEventManager {
         
         sendEvent(table: .shoppingCartEvents, key: deviceId, params: cartEventParams)
         
-        sendCart(items: cartItems, orderId: params["order_id"] as? String)
+        sendCart(items: cartItems, orderId: params["order_id"] as? String, event_type: "order")
     }
     
     func cancelOrder(parameters: [String: Any]) {
@@ -123,7 +123,7 @@ extension DengageEventManager {
         
         sendEvent(table: .orderEvents, key: deviceId, params: params)
         
-        sendCart(items: cartItems, orderId: params["order_id"] as? String)
+        sendCart(items: cartItems, orderId: params["order_id"] as? String, event_type: "cancel")
     }
     
    func addToWithList(parameters: [String: Any]) {
@@ -196,21 +196,27 @@ extension DengageEventManager {
         
         sendEvent(table: table, key: deviceId, params: params)
 
-        sendCart(items: cartItems, eventId: eventId, detailTable: detailTable)
+        sendCart(items: cartItems, eventId: eventId, detailTable: detailTable, eventType: eventType)
     }
     
-    private func sendCart(items: [[String: Any]], eventId: String, detailTable: DengageInternalTableName) {
+    private func sendCart(items: [[String: Any]], eventId: String, detailTable: DengageInternalTableName , eventType: DengageInternalEventType) {
+        let sessionId = sessionManager.currentSessionId
+
         for cartItem in items {
             var itemParam = cartItem
             itemParam["event_id"] = eventId
+            itemParam["session_id"] = sessionId
+            itemParam["event_type"] = eventType.rawValue
             sendEvent(table: detailTable, key: config.applicationIdentifier, params: itemParam)
         }
     }
     
-    private func sendCart(items: [[String: Any]], orderId: String?) {
+    private func sendCart(items: [[String: Any]], orderId: String? , event_type : String) {
         for cartItem in items {
             var itemParam = cartItem
             itemParam["order_id"] = orderId
+            itemParam["session_id"] = sessionManager.currentSessionId
+            itemParam["event_type"] = event_type
             sendEvent(table: .orderEventsDetails, key: config.applicationIdentifier, params: itemParam)
         }
     }
