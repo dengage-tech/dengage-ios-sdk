@@ -474,7 +474,7 @@ final class DengageInAppMessageUtils{
                 let visitorInfo = DengageLocalStorage.shared.getVisitorInfo(),
                 let segments = visitorInfo.segments,
                 !segments.isEmpty
-            else {return true}
+            else {return false}
             return operateVisitorRule(with: criterion.comparison,
                                       for: criterion.dataType,
                                       ruleParam: criterion.values,
@@ -484,7 +484,7 @@ final class DengageInAppMessageUtils{
                 let visitorInfo = DengageLocalStorage.shared.getVisitorInfo(),
                 let tags = visitorInfo.tags,
                 !tags.isEmpty
-            else {return true}
+            else {return false}
             return operateVisitorRule(with: criterion.comparison,
                                       for: criterion.dataType,
                                       ruleParam: criterion.values,
