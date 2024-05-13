@@ -1,4 +1,5 @@
 import Foundation
+import WebKit
 import UIKit
 import SafariServices
 
@@ -296,7 +297,24 @@ extension DengageInAppMessageManager{
 //MARK: - Workers
 extension DengageInAppMessageManager {
     
-    func setNavigation(screenName: String? = nil, params: Dictionary<String,String>? = nil) {
+
+    
+    func showinlineInapp(propertyId : String , webView : InAppInlineElementView , inAppMessage: InAppMessage)
+    {
+        if let htmlSTR = inAppMessage.data.content.props.html
+        {
+          
+            webView.message = inAppMessage
+            webView.delegate = self
+            webView.loadHTMLString(htmlSTR, baseURL: nil)
+
+
+        }
+        
+
+    }
+    
+    func setNavigation(screenName: String? = nil, params: Dictionary<String,String>? = nil , propertyID : String? = nil , inAppInlineElement : InAppInlineElementView? = nil , hideIfNotFound: Bool = false) {
         
         guard !(config.inAppMessageShowTime != 0 && Date().timeMiliseconds < config.inAppMessageShowTime) else {return}
         
@@ -309,13 +327,43 @@ extension DengageInAppMessageManager {
         
         let inAppMessages = DengageInAppMessageUtils.findNotExpiredInAppMessages(untilDate: Date(), messages)
         
-        guard let priorInAppMessage = DengageInAppMessageUtils.findPriorInAppMessage(inAppMessages: inAppMessages, screenName: screenName, params:params, config: config) else {return}
+        guard let priorInAppMessage = DengageInAppMessageUtils.findPriorInAppMessage(inAppMessages: inAppMessages, screenName: screenName, params:params, config: config, propertyId: propertyID ) else {return}
        
+        
         let delay = priorInAppMessage.data.displayTiming.delay ?? 0
         
         DengageLocalStorage.shared.set(value: delay, for: .delayForInAppMessage)
+        
+        if propertyID != nil
+        {
+            if let ID = propertyID ,  let vw = inAppInlineElement
+            {
+                if priorInAppMessage.data.inlineTarget?.iosSelector == propertyID
+                {
+                    showinlineInapp(propertyId: ID, webView: vw, inAppMessage: priorInAppMessage)
 
-        showInAppMessage(inAppMessage: priorInAppMessage)
+                } 
+                else if propertyID != "" && hideIfNotFound
+                {
+                    inAppInlineElement?.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
+                    inAppInlineElement?.isHidden = true
+
+                }
+            }
+            else if propertyID != "" && hideIfNotFound
+            {
+                inAppInlineElement?.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
+                inAppInlineElement?.isHidden = true
+
+            }
+
+        }
+        else
+        {
+            showInAppMessage(inAppMessage: priorInAppMessage)
+
+        }
+
     }
 
     func removeInAppMessageDisplay() {
@@ -636,11 +684,16 @@ extension DengageInAppMessageManager {
                 DengageLocalStorage.shared.save(updatedMessages)
                 
             }
-            else {
+            else  {
                 var previousMessages = DengageLocalStorage.shared.getInAppMessages()
                 previousMessages.removeAll{ message in
                     messages.contains{ $0.id == message.id }
                 }
+                
+//                var msg = previousMessages.filter({$0.data.content.contentId == "a3300e2b-3d68-49bd-8571-4d2701247e3a"})
+//                previousMessages.removeAll()
+//                previousMessages.append(contentsOf: msg)
+                
                 previousMessages.append(contentsOf: messages)
                 DengageLocalStorage.shared.save(previousMessages)
 
@@ -896,7 +949,7 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
 protocol DengageInAppMessageManagerInterface: AnyObject{
     
     func fetchInAppMessages()
-    func setNavigation(screenName: String?, params: Dictionary<String,String>?)
+    func setNavigation(screenName: String?, params: Dictionary<String,String>? , propertyID : String? , webView : InAppInlineElementView? )
     func showInAppMessage(inAppMessage: InAppMessage)
     func fetchInAppExpiredMessages()
     func removeInAppMessageDisplay()
@@ -906,8 +959,8 @@ protocol DengageInAppMessageManagerInterface: AnyObject{
 }
 
 extension DengageInAppMessageManagerInterface {
-    func setNavigation(screenName: String? = nil, params: Dictionary<String,String>? = nil){
-        setNavigation(screenName: screenName, params: params)
+    func setNavigation(screenName: String? = nil, params: Dictionary<String,String>? = nil , propertyID : String? = nil , webView : InAppInlineElementView? = nil){
+        setNavigation(screenName: screenName, params: params,propertyID: propertyID, webView: webView)
     }
 }
 

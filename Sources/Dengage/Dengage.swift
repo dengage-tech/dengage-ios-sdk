@@ -210,6 +210,9 @@ public class Dengage  {
         dengage?.inAppManager.setNavigation(screenName:screenName)
     }
     
+    @objc public static func showInAppInLine(propertyID : String? = nil , inAppInlineElement : InAppInlineElementView? = nil,screenName:String? = nil , customParams: Dictionary<String, String>? = nil , hideIfNotFound: Bool = false ){
+        dengage?.inAppManager.setNavigation(screenName:screenName,params: customParams, propertyID: propertyID ,inAppInlineElement:inAppInlineElement , hideIfNotFound : hideIfNotFound)
+    }
     
     @objc public static func removeInAppMessageDisplay(){
         dengage?.inAppManager.removeInAppMessageDisplay()
