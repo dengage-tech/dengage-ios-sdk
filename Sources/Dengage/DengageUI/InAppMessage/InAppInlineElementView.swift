@@ -17,10 +17,9 @@ open class InAppInlineElementView: WKWebView, WKScriptMessageHandler{
 
     var message:InAppMessage?
 
-    override init(frame: CGRect, configuration: WKWebViewConfiguration) {
+    override public init(frame: CGRect, configuration: WKWebViewConfiguration) {
         
         super.init(frame: frame, configuration: configuration)
-
         
         scrollView.isScrollEnabled = true
         scrollView.showsVerticalScrollIndicator = false
