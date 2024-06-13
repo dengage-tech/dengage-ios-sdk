@@ -162,6 +162,32 @@ public class Dengage  {
 
     }
     
+    @objc public static func isPushSilent(response: UNNotificationResponse? = nil ,userInfo: [AnyHashable: Any]? = nil ) -> Bool
+    {
+        if let userInfoData = userInfo
+        {
+            if let jsonData = try? JSONSerialization.data(withJSONObject: userInfoData, options: .prettyPrinted),
+               let message = try? JSONDecoder().decode(PushContent.self, from: jsonData)  {
+                
+                if let messageSource = message.messageSource, MESSAGE_SOURCE == messageSource
+                {
+                    return false
+                }
+            }
+        }
+        else if let responseData = response
+        {
+            let content = responseData.notification.request.content
+            
+            if let messageSource = content.message?.messageSource, MESSAGE_SOURCE == messageSource
+            {
+                return false
+            }
+        }
+       
+        return true
+    }
+    
     //todo add objc
     public static func getInboxMessages(offset: Int,
                                         limit: Int = 20,
