@@ -71,6 +71,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
 
     func application(_ application: UIApplication,
                      didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
+        
+        print("TEST SILENT PUSH VARIABLE \(Dengage.isPushSilent(userInfo: userInfo))")
+
+        
         Dengage.didReceive(with: userInfo)
     }
     
@@ -81,6 +85,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler completionHandler: @escaping () -> Void){
+        
+        print("TEST SILENT PUSH VARIABLE \(Dengage.isPushSilent(response: response))")
+
+        
         Dengage.didReceivePush(center, response, withCompletionHandler: completionHandler)
     }
 
