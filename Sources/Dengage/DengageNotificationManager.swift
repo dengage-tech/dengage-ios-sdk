@@ -98,7 +98,8 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
             sendEventWithContent(messageId: message.messageId, messageDetails: message.messageDetails, transactionId: message.transactionId, actionIdentifier: nil)
 
             
-            if let targetUrl = message.targetUrl, !targetUrl.isEmpty, !config.options.disableOpenURL {
+            if let targetUrl = message.targetUrl, !targetUrl.isEmpty, !config.options.disableOpenURL && !Dengage.isPushSilent(userInfo: userInfo)
+            {
                 openDeeplink(link: targetUrl)
                 eventManager.sessionStart(referrer: message.targetUrl)
             }
