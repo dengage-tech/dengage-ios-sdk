@@ -66,7 +66,7 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
         
         openTriggerCompletionHandler?(response)
         
-        if !config.options.disableOpenURL
+        if !config.options.disableOpenURL && !Dengage.isPushSilent(response: response)
         {
             if let targetUrl = content.message?.targetUrl, !targetUrl.isEmpty {
                 openDeeplink(link: targetUrl)
