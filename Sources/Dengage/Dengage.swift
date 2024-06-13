@@ -175,7 +175,20 @@ public class Dengage{
             if let jsonData = try? JSONSerialization.data(withJSONObject: userInfoData, options: .prettyPrinted),
                let message = try? JSONDecoder().decode(PushContent.self, from: jsonData)  {
                 
-                if let messageSource = message.messageSource, MESSAGE_SOURCE == messageSource
+                if let messageSource = message.messageSource
+                {
+                    if MESSAGE_SOURCE == messageSource
+                    {
+                        return false
+
+                    }
+                    else
+                    {
+                        return true
+
+                    }
+                }
+                else
                 {
                     return false
                 }
@@ -185,16 +198,28 @@ public class Dengage{
         {
             let content = responseData.notification.request.content
             
-            if let messageSource = content.message?.messageSource, MESSAGE_SOURCE == messageSource
+            if let messageSource = content.message?.messageSource
+            {
+                if MESSAGE_SOURCE == messageSource
+                {
+                    return false
+
+                }
+                else
+                {
+                    return true
+
+                }
+            }
+            else
             {
                 return false
             }
         }
+    
+        return false
        
-        return true
     }
-    
-    
     
     //todo add objc
     public static func getInboxMessages(offset: Int,

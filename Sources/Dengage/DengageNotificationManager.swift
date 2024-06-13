@@ -66,7 +66,7 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
         
         openTriggerCompletionHandler?(response)
     
-        if !config.options.disableOpenURL
+        if !config.options.disableOpenURL && !Dengage.isPushSilent(response: response)
         {
             if let targetUrl = content.message?.targetUrl, !targetUrl.isEmpty {
                 openDeeplink(link: targetUrl)
@@ -98,7 +98,8 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
             sendEventWithContent(messageId: message.messageId, messageDetails: message.messageDetails, transactionId: message.transactionId, actionIdentifier: nil)
 
             
-            if let targetUrl = message.targetUrl, !targetUrl.isEmpty, !config.options.disableOpenURL {
+            if let targetUrl = message.targetUrl, !targetUrl.isEmpty, !config.options.disableOpenURL && !Dengage.isPushSilent(userInfo: userInfo)
+            {
                 openDeeplink(link: targetUrl)
                 eventManager.sessionStart(referrer: message.targetUrl)
             }
