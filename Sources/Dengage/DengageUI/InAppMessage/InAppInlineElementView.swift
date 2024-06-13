@@ -10,17 +10,16 @@ import Foundation
 import UIKit
 import WebKit
 
-public class InAppInlineElementView: WKWebView, WKScriptMessageHandler{
+open class InAppInlineElementView: WKWebView, WKScriptMessageHandler{
     
 
     var delegate: InAppMessagesActionsDelegate?
 
     var message:InAppMessage?
 
-    override init(frame: CGRect, configuration: WKWebViewConfiguration) {
+    override public init(frame: CGRect, configuration: WKWebViewConfiguration) {
         
         super.init(frame: frame, configuration: configuration)
-
         
         scrollView.isScrollEnabled = true
         scrollView.showsVerticalScrollIndicator = false
@@ -35,7 +34,7 @@ public class InAppInlineElementView: WKWebView, WKScriptMessageHandler{
 
     }
 
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
         
     }
