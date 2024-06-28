@@ -145,6 +145,8 @@ final class DengageGeofenceManager: NSObject, DengageGeofenceManagerInterface {
     
     func updateTracking(location: CLLocation?, fromInitialize: Bool) {
         
+        DispatchQueue.main.async {
+            
             if DengageGeofenceState.getGeofenceEnabled() {
                 self.lManager.allowsBackgroundLocationUpdates = self.tOptions.locationBackgroundMode && self.getAuthorizationStatus() == .authorizedAlways
                 self.lManager.pausesLocationUpdatesAutomatically = false
@@ -202,6 +204,9 @@ final class DengageGeofenceManager: NSObject, DengageGeofenceManagerInterface {
                     self.lManager.stopMonitoringSignificantLocationChanges()
                 }
             }
+            
+            
+        }
             
         
     }
