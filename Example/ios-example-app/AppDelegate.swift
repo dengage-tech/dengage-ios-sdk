@@ -39,8 +39,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Dengage.handleNotificationActionBlock { notificationResponse in
             
             
-            print("jsdbcsjbcnzmxbc")
+            print(notificationResponse.notification.request.content.userInfo)
         }
+        
+     //  Dengage.setLanguage(language: "eu")
         
 //        Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
 //        
