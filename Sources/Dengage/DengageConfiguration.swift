@@ -9,7 +9,7 @@ final class DengageConfiguration:Encodable {
     let subscriptionURL: URL
     let eventURL: URL
     let deviceCountryCode: String
-    let deviceLanguage: String
+    var deviceLanguage: String
     let deviceTimeZone: String
     let appVersion: String
     var applicationIdentifier: String
@@ -100,6 +100,34 @@ final class DengageConfiguration:Encodable {
     func set(token:String){
         DengageLocalStorage.shared.set(value: token, for: .token)
         deviceToken = token
+    }
+    
+    func getLanguage() -> String {
+        
+        if let lang = DengageLocalStorage.shared.value(for: .language) as? String
+        {
+            self.deviceLanguage = lang
+        }
+        else
+        {
+            deviceLanguage = Locale.current.languageCode ?? "Null"
+        }
+        
+        return self.deviceLanguage
+    }
+    
+    func setLanguage(language:String)
+    {
+        let languageSubscription = DengageLocalStorage.shared.value(for: .languageSubscription) as? String
+        self.deviceLanguage = language
+        DengageLocalStorage.shared.set(value: language, for: .language)
+
+        if (languageSubscription != nil) && (self.deviceLanguage != languageSubscription)
+        {
+            Dengage.syncSubscription()
+
+        }
+        
     }
     
     func setPartnerDeviceId(adid: String?){

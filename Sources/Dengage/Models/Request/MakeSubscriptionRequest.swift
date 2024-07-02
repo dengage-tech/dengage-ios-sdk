@@ -21,7 +21,7 @@ struct MakeSubscriptionRequest: APIRequest {
                           "sdkVersion": SDK_VERSION,
                           "tokenType": "I",
                           "country": config.deviceCountryCode,
-                          "language": config.deviceLanguage,
+                          "language": config.getLanguage(),
                           "timezone": config.deviceTimeZone,
                           "partner_device_id": config.getPartnerDeviceID() ?? "",
                           "advertisingId" : config.advertisingIdentifier as Any]

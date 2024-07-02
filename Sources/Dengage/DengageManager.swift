@@ -142,7 +142,7 @@ extension DengageManager {
         let appVersion = self.config.appVersion
         let sdkVersion = SDK_VERSION
         let country = self.config.deviceCountryCode
-        let language = self.config.deviceLanguage
+        let language = self.config.getLanguage()
         let timezone = self.config.deviceTimeZone
         var PartnerDeviceId = ""
         
@@ -260,7 +260,7 @@ extension DengageManager {
                 DengageLocalStorage.shared.set(value: self.config.appVersion, for: .appVersionSubscription)
                 DengageLocalStorage.shared.set(value: SDK_VERSION, for: .sdkVersionSubscription)
                 DengageLocalStorage.shared.set(value: self.config.deviceCountryCode, for: .countrySubscription)
-                DengageLocalStorage.shared.set(value: self.config.deviceLanguage, for: .languageSubscription)
+                DengageLocalStorage.shared.set(value: self.config.getLanguage(), for: .languageSubscription)
                 DengageLocalStorage.shared.set(value: self.config.deviceTimeZone, for: .timezoneSubscription)
                 DengageLocalStorage.shared.set(value: self.config.getPartnerDeviceID() ?? "", for: .partner_device_idSubscription)
                 DengageLocalStorage.shared.set(value: self.config.advertisingIdentifier, for: .advertisingIdSubscription)

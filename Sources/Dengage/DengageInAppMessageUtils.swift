@@ -358,7 +358,7 @@ final class DengageInAppMessageUtils{
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.deviceLanguage, message: message, valueSource: criterion.valueSource)
+                           userParam: config.getLanguage(), message: message, valueSource: criterion.valueSource)
         case .SCREEN_WIDTH:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
