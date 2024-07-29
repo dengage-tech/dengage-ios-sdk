@@ -11,6 +11,8 @@ struct ContentParams: Codable {
     let marginLeft: CGFloat?
     let marginRight: CGFloat?
     let dismissOnTouchOutside: Bool
+    let backgroundColor : String?
+    let storySet: StorySet?
     
     enum CodingKeys: String, CodingKey {
         case position
@@ -23,6 +25,8 @@ struct ContentParams: Codable {
         case marginLeft
         case marginRight
         case dismissOnTouchOutside
+        case backgroundColor
+        case storySet
     }
     
     init(from decoder: Decoder) throws {
@@ -37,9 +41,11 @@ struct ContentParams: Codable {
         marginLeft = try? container.decode(CGFloat.self, forKey: .marginLeft)
         marginRight = try? container.decode(CGFloat.self, forKey: .marginRight)
         dismissOnTouchOutside = (try? container.decode(Bool.self, forKey: .dismissOnTouchOutside)) ?? true
+        backgroundColor = try? container.decode(String.self, forKey: .backgroundColor)
+        storySet = try? container.decode(StorySet.self, forKey: .storySet)
     }
     
-    init(position: ContentPosition, shouldAnimate: Bool, html: String?, maxWidth: CGFloat?, radius: Int?, marginTop: CGFloat?, marginBottom: CGFloat?, marginLeft: CGFloat?, marginRight: CGFloat?, dismissOnTouchOutside: Bool) {
+    init(position: ContentPosition, shouldAnimate: Bool, html: String?, maxWidth: CGFloat?, radius: Int?, marginTop: CGFloat?, marginBottom: CGFloat?, marginLeft: CGFloat?, marginRight: CGFloat?, dismissOnTouchOutside: Bool , backgroundColor : String, storySet: StorySet? = nil) {
         self.position = position
         self.shouldAnimate = shouldAnimate
         self.html = html
@@ -50,6 +56,8 @@ struct ContentParams: Codable {
         self.marginLeft = marginLeft
         self.marginRight = marginRight
         self.dismissOnTouchOutside = dismissOnTouchOutside
+        self.backgroundColor = backgroundColor
+        self.storySet = storySet
     }
 }
 
@@ -67,6 +75,8 @@ enum ContentType:String, Codable{
     case fullScreen = "FULL_SCREEN"
     case html = "HTML"
     case inAppBrowser = "inAppBrowser"
+    case banner = "BANNER"
+
 }
 
 struct ScreenDataFilter: Codable{
@@ -101,8 +111,9 @@ struct ScreenNameFilter: Codable{
 
 struct DisplayCondition: Codable{
     let screenNameFilters: [ScreenNameFilter]?
+    let screenNameFilterLogicOperator : RulesOperatorType?
     let ruleSet: RuleSet?
-    
+
     var hasRules: Bool {
         return !(ruleSet?.rules ?? []).isEmpty
     }
@@ -122,6 +133,7 @@ struct Criterion: Codable {
     let parameter: String
     let dataType: CriterionDataType
     let comparison: ComparisonType
+    let valueSource : String
     let values: [String]
     
     init(from decoder: Decoder) throws {
@@ -131,6 +143,8 @@ struct Criterion: Codable {
         comparison = try container.decode(ComparisonType.self, forKey: .comparison)
         dataType = (try? container.decode(CriterionDataType.self, forKey: .dataType)) ?? .TEXT
         values = try container.decode([String].self, forKey: .values)
+        valueSource = try container.decode(String.self, forKey: .valueSource)
+
     }
     
     enum CodingKeys: String, CodingKey {
@@ -139,6 +153,7 @@ struct Criterion: Codable {
         case dataType
         case comparison
         case values
+        case valueSource
     }
 }
 
@@ -158,6 +173,10 @@ struct DisplayTiming: Codable{
     let maxShowCount: Int?
 }
 
+struct inlineTarget: Codable{
+    let iosSelector: String?
+}
+
 enum ComparisonType: String, Codable {
     case EQUALS
     case NOT_EQUALS
@@ -174,6 +193,9 @@ enum ComparisonType: String, Codable {
     case LESS_THAN
     case LESS_EQUAL
     case BETWEEN
+    case LATER_THAN
+    case LATER_EQUAL
+
 }
 
 enum RulesOperatorType: String, Codable {

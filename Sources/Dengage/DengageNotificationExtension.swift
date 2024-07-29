@@ -34,6 +34,7 @@ final class DengageNotificationExtension {
         bestAttemptContent.title = title
         bestAttemptContent.subtitle = subtitle
         
+        
         guard let urlImageString = message.urlImageString, let contentUrl = URL(string: urlImageString) else { return }
         
         guard let imageData = NSData(contentsOf: contentUrl) else {

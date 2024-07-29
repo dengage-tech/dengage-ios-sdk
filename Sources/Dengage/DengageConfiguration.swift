@@ -2,6 +2,7 @@ import Foundation
 import AdSupport
 import CoreTelephony
 import UIKit
+import AppTrackingTransparency
 
 final class DengageConfiguration:Encodable {
     
@@ -15,7 +16,7 @@ final class DengageConfiguration:Encodable {
     let advertisingIdentifier: String
     let getCarrierIdentifier: String
     let sdkVersion: String
-    let integrationKey: String
+    var integrationKey: String
     let options: DengageOptions
     var deviceToken: String?
     let userAgent: String
@@ -31,14 +32,16 @@ final class DengageConfiguration:Encodable {
     var state: String?
     var pageViewCount = 0
     let inAppURL: URL
+    let inAppRealTimeURL: URL
 
     
     init(integrationKey: String, options: DengageOptions) {
+        
         subscriptionURL = DengageConfiguration.getSubscriptionURL()
         eventURL = DengageConfiguration.getEventUrl()
         deviceCountryCode = DengageConfiguration.getDeviceCountry()
         deviceLanguage = Locale.current.languageCode ?? "Null"
-        deviceTimeZone = TimeZone.current.identifier 
+        deviceTimeZone = TimeZone.current.identifier
         appVersion = DengageConfiguration.getAppVersion()
         applicationIdentifier = DengageConfiguration.getApplicationId()
         advertisingIdentifier = DengageConfiguration.getAdvertisingId()
@@ -50,6 +53,7 @@ final class DengageConfiguration:Encodable {
         self.permission = DengageConfiguration.getPermission()
         self.deviceToken = DengageConfiguration.getToken()
         inAppURL = DengageConfiguration.getInAppURL()
+        inAppRealTimeURL = DengageConfiguration.getInAppRealTimeURL()
 
         dengageDeviceIdApiUrl = DengageConfiguration.dengageDeviceIdApiUrl()
 
@@ -98,9 +102,19 @@ final class DengageConfiguration:Encodable {
     }
     
     func set(deviceId: String){
-        DengageLocalStorage.shared.set(value: deviceId, for: .applicationIdentifier)
-        DengageKeychain.set(deviceId, forKey: .applicationIdentifier)
-        applicationIdentifier = deviceId
+        
+        DengageKeychain.set(deviceId, forKey: "\(Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier")")
+        let previous = self.applicationIdentifier
+        
+        if previous != deviceId {
+            
+           applicationIdentifier = deviceId
+            Dengage.callVisitorInfoAPI()
+           Dengage.syncSubscription()
+            
+        }
+        
+        
     }
     
     func set(permission: Bool){
@@ -108,15 +122,34 @@ final class DengageConfiguration:Encodable {
         DengageLocalStorage.shared.set(value: permission, for: .userPermission)
     }
     
+    
+    
+    
     func setPartnerDeviceId(adid: String?){
-        DengageLocalStorage.shared.set(value: adid, for: .PartnerDeviceId)
-        partnerDeviceId = adid
+        
+        if let partnerId = DengageLocalStorage.shared.value(for: .PartnerDeviceId) as? String
+        {
+            if partnerId != adid
+            {
+                DengageLocalStorage.shared.set(value: adid, for: .PartnerDeviceId)
+                partnerDeviceId = adid
+                Dengage.syncSubscription()
+
+            }
+        }
+        else
+        {
+            DengageLocalStorage.shared.set(value: adid, for: .PartnerDeviceId)
+            partnerDeviceId = adid
+            Dengage.syncSubscription()
+            
+        }
+
+        
     }
     
-    func setinAppLinkConfiguration(openInAppBrowser : Bool,  retrieveLinkOnSameScreen : Bool , deeplink : String){
+    func setinAppLinkConfiguration(deeplink : String){
 
-        DengageLocalStorage.shared.set(value: openInAppBrowser, for: .openInAppBrowser)
-        DengageLocalStorage.shared.set(value: retrieveLinkOnSameScreen, for: .retrieveLinkOnSameScreen)
         DengageLocalStorage.shared.set(value: deeplink, for: .deeplink)
 
     }
@@ -124,6 +157,13 @@ final class DengageConfiguration:Encodable {
     func getOpenInAppBrowser()-> Bool
     {
         return DengageLocalStorage.shared.value(for: .openInAppBrowser) as? Bool ?? false
+
+    }
+    
+    
+    func getHybridAppEnvironment()-> Bool
+    {
+        return DengageLocalStorage.shared.value(for: .hybridAppEnvironment) as? Bool ?? false
 
     }
     
@@ -221,6 +261,20 @@ final class DengageConfiguration:Encodable {
             return apiURL
         }
     
+    private static func getInAppRealTimeURL() -> URL {
+            guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "fetchRealTimeINAPPURL") as? String else {
+                return URL(string: "https://tr-inapp.lib.dengage.com") ?? getSubscriptionURL()
+            }
+
+            guard let apiURL = URL(string: apiURLString) else {
+                return URL(string: "https://tr-inapp.lib.dengage.com") ?? getSubscriptionURL()
+            }
+
+            return apiURL
+        }
+    
+    
+    
     private static func getDeviceCountry() -> String {
         guard let regionCode = Locale.current.regionCode else { return "Null" }
         let countryId = Locale.identifier(fromComponents: [NSLocale.Key.countryCode.rawValue: regionCode])
@@ -249,27 +303,76 @@ final class DengageConfiguration:Encodable {
     }
     
     static func getApplicationId() -> String {
-        if let uuidString = DengageLocalStorage.shared.value(for: .applicationIdentifier) as? String, !uuidString.isEmpty {
-            DengageKeychain.set(uuidString, forKey: .applicationIdentifier)
-            return uuidString
-        } else if let uuidString = DengageKeychain.string(forKey: .applicationIdentifier), !uuidString.isEmpty {
-            DengageLocalStorage.shared.set(value: uuidString, for: .applicationIdentifier)
+        
+        let appBundleID = Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier"
+        
+        if let uuidString = DengageKeychain.string(forKey: "DengageApplicationIdentifier"), !uuidString.isEmpty {
+            
+            DengageKeychain.remove("DengageApplicationIdentifier")
+            DengageKeychain.set(uuidString, forKey: appBundleID)
+            
+        }
+        
+        if let uuidString = DengageKeychain.string(forKey: appBundleID), !uuidString.isEmpty {
             return uuidString
         } else {
             let uuidString = NSUUID().uuidString.lowercased()
-            DengageLocalStorage.shared.set(value: uuidString, for: .applicationIdentifier)
-            DengageKeychain.set(uuidString, forKey: .applicationIdentifier)
+            DengageKeychain.set(uuidString, forKey: appBundleID)
             return uuidString
         }
     }
     
     static func getAdvertisingId() -> String{
-        guard ASIdentifierManager.shared().isAdvertisingTrackingEnabled,
+        
+    var advertisingId = ""
+        
+        if #available(iOS 14, *) {
+            ATTrackingManager.requestTrackingAuthorization { status in
+                switch status {
+                case .authorized:
+                    // Tracking authorization dialog was shown
+                    // and we are authorized
+                    print("Authorized")
+                    
+                    // Now that we are authorized we can get the IDFA
+                    advertisingId =  ASIdentifierManager.shared().advertisingIdentifier.uuidString.lowercased()
+                    
+                case .denied:
+                    // Tracking authorization dialog was
+                    // shown and permission is denied
+                    print("Denied")
+                case .notDetermined:
+                    // Tracking authorization dialog has not been shown
+                    print("Not Determined")
+                case .restricted:
+                    print("Restricted")
+                @unknown default:
+                    print("Unknown")
+                }
+            }
+        } else {
+            // Fallback on earlier versions
+            
+            guard ASIdentifierManager.shared().isAdvertisingTrackingEnabled,
+                  ASIdentifierManager.shared().advertisingIdentifier.isNotEmpty else {
+                return ""
+            }
+            
+            return ASIdentifierManager.shared().advertisingIdentifier.uuidString.lowercased()
+            
+        }
+        
+        
+        return advertisingId
+        
+      /*  guard ASIdentifierManager.shared().isAdvertisingTrackingEnabled,
               ASIdentifierManager.shared().advertisingIdentifier.isNotEmpty else {
             return ""
         }
         
-        return ASIdentifierManager.shared().advertisingIdentifier.uuidString.lowercased()
+        return ASIdentifierManager.shared().advertisingIdentifier.uuidString.lowercased()*/
+        
+        
     }
     
     static func getCarrierId() -> String { // *.*

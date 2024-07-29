@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Storyly",
+        "repositoryURL": "https://github.com/Netvent/storyly-ios",
+        "state": {
+          "branch": null,
+          "revision": "83da7ef3b73331665f4c61286ca613fc1c694fc2",
+          "version": "2.15.0"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

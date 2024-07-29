@@ -1,30 +1,88 @@
 import UIKit
 import Dengage
+
+// com.dengage.dengageGeofenceExample
+
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    var window: UIWindow?
+    //var window: UIWindow
+    
+    var timeInterval = TimeInterval(5)
+    
+    
+
+    
+    let window: UIWindow = {
+        let w = UIWindow()
+        w.backgroundColor = .white
+        w.makeKeyAndVisible()
+        return w
+    }()
+    /// set
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
 
-//        _p_l_AvDJy5os_s_l_CWOx_p_l_wSaoGA4BtNDjxnqO_p_l_Go_p_l_WSu6VdnlIUNi1Yb7C9FhsfeAbwUg9uH9vLXaG_s_l_0UqGh2yBjRYY6RK15NahUFP9J8JI1D6FcphiLPskqz8HqUKRAxvG_p_l_Ks7g0_p_l_LNkG97N_p_l_oc3PjTegYw_e_q__e_q_
+        // dev
+        //"YF2_p_l_NN4KRoXaSDN4BTp4Nr4K03bE00JoMQnbUh3HMadY_p_l_n30hGw_p_l_PhKypwxdE5kATWY_s_l_jKlrRHTSOAC5rC4ptsk0w0BwE94H8N940O79fIGjXwL23cnAb5RjA9432isGw3gv4J4e3J5_s_l_lRo3_s_l__p_l_IQaw_e_q__e_q_"
+        // us
+        //hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol
         
-        //"TvSgLCc7Q_p_l_evpAK_p_l_MNdkk1fRoucLOyMyV2z2FN4_p_l_XXfZeriWBjg8KcDnAbCaZ2AOZiV_p_l_x5OvwvH2c9Kd2Ox7_s_l_HVMwtxCgqmonYKTIRTFP_p_l_BECGbjSLr_s_l_keumauwEqB_p_l_eU_p_l_RQ1FEYI5qMzHqg1NyPPA_e_q__e_q_"
+        //BSIF
+       //_s_l_gJiLHWiLdjpYMf4jlhRN2wemFgwft4oIy_s_l_QpEcwPBfQWNyC22E397SlnX2Rt51QPv4fWH9c_s_l_M7yFH74iPSsUBgzpc6iUsIFw3waNyMau1xttwfOwQ9oJ9PZyBseS30U34vo1bSElJSrhGrwIkCUCw_e_q__e_q_
         
-        Dengage.start(apiKey: "hVt7KpAkwbJXRO_s_l_p6To_p_l_9lIaG3HyOp2pYtPwnpzML4D5AGhv88nXj4tdG1MJOsDk0rE072ewsGRGyxdt7V7UAEO_s_l_mN01MRl6iQDiCbx_s_l_ndwua1_s_l_5KL8MXzpLiGbjvFol", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
+        //new account
+//        ISF1SkvnJTgrVE1NWgfsF3TU_p_l_I3t_s_l_uVF7i_s_l_C1EGES0rB0HcToRYRCY_s_l_ioPhbsdIY22SfKjLKK8F5x2cZgtCvLILmbZH2fy6tNQD1BqKHyQZ2VZhExl7_s_l_jRes6Sqf_p_l_cI3
+
+        
+        //EpuJhCp_p_l_pbbW6PotMSlkGvLj3D7RC92vlqsjjFc356SbzZcAWktjxs3YxEd9_p_l_FHl0rjYn7P5Qt9f7o7gb5DQTfzON8g5AyFvH0_s_l_oRbo2OsF_s_l_siYlbb9hor0ksG6Q4b52lLS9ijP5mE7PZyisi_s_l_uH9w_e_q__e_q_
+        
+
+
+
+
+        //Dengage.start(apiKey: "YF2_p_l_NN4KRoXaSDN4BTp4Nr4K03bE00JoMQnbUh3HMadY_p_l_n30hGw_p_l_PhKypwxdE5kATWY_s_l_jKlrRHTSOAC5rC4ptsk0w0BwE94H8N940O79fIGjXwL23cnAb5RjA9432isGw3gv4J4e3J5_s_l_lRo3_s_l__p_l_IQaw_e_q__e_q_", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
+        
+        Dengage.start(apiKey: "o5r8xJa8eyBUGSmwXdskiIx0Um1oacEGoowX1_p_l_chY5_p_l_cVGTBC4m4jWgohN6vS3X3FG1cUbmToIAyVQfXAFDShKgqChrmLTMwnae_s_l_mqgXMNgkIG2gsAkOidM1znE1lIypsr_p_l_p9VrPR6OKSDdvF_s_l_3krw_e_q__e_q_", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
+        
+
+
+        
         UNUserNotificationCenter.current().delegate = self
-        window = UIWindow(frame: UIScreen.main.bounds)
-        let rootViewController = RootViewController()
-        let navigationController = UINavigationController(rootViewController: rootViewController)
-        window?.rootViewController = navigationController
-        window?.makeKeyAndVisible()
-        if #available(iOS 13.0, *) {
-            window?.overrideUserInterfaceStyle = .light
-        }
+       
       
-        Dengage.inAppLinkConfiguration(openInAppBrowser: false, retrieveLinkOnSameScreen: false, deeplink: "pazarama.app://")
+        Dengage.setLog(isVisible: true)
+        
+        Dengage.setDevelopmentStatus(isDebug: true)
+        
+        Dengage.set(deviceId: "priya@192814260997856587676.jkjkkj")
+        
+        Dengage.promptForPushNotifications { isUserGranted in
+            
+            
+        }
+        
+        Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
+//        
+//        
+      //  Dengage.set(contactKey: "sdcdsdd")
+//        
+//        Dengage.setContactKey(contactKey: "rrrrr")
+//               
+//        
+        
+      // Dengage.setPartnerDeviceId(adid: "783278iydukjqe")
+//
+//        
+//        Dengage.sendDeviceIdToServer(route: "V1/dengage/sync/mobile/customerData", token: "cti234bdj1ev4u4c0pk2l1z370vmgtah")
+        
+        
+        rootSceneSetup()
         return true
+        
+ 
     }
 }
 
@@ -32,16 +90,20 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
 
     func application(_ application: UIApplication,
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        
+        print("didRegisterForRemoteNotificationsWithDeviceToken")
         Dengage.register(deviceToken: deviceToken)
     }
 
-    func application(_ application: UIApplication,
-                     didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
-        Dengage.didReceive(with: userInfo)
-    }
+    
     
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("Failed to register for notifications: \(error.localizedDescription)")
+    }
+    
+    func application(_ application: UIApplication,
+                     didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
+        Dengage.didReceive(with: userInfo)
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter,
@@ -53,6 +115,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
     final func userNotificationCenter(_ center: UNUserNotificationCenter,
                                       willPresent notification: UNNotification,
                                       withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        Dengage.didReceive(with: notification.request.content.userInfo)
         completionHandler([.alert, .sound, .badge])
     }
     
@@ -70,5 +133,14 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
         print("UIApplication.OpenURLOptionsKey \(url.host ?? "")")
         
         return true
+    }
+}
+
+
+extension AppDelegate {
+     func rootSceneSetup() {
+        //let nc = UINavigationController(rootViewController: StoriesListViewController())
+        //nc.navigationBar.isTranslucent = false
+        //window.rootViewController = nc
     }
 }

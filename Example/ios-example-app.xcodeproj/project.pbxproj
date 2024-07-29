@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		880EE7802BD3B83400EAA176 /* AppStoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880EE77F2BD3B83400EAA176 /* AppStoryViewController.swift */; };
 		A02A40E127CF93CD00D75B02 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = A02A40E027CF93CD00D75B02 /* Dengage */; };
 		A02A40E327CF93D800D75B02 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = A02A40E227CF93D800D75B02 /* Dengage */; };
 		A0765B6B27CEAF2B0007215B /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = A0765B6A27CEAF2B0007215B /* Dengage */; };
@@ -30,6 +31,8 @@
 		A0F46C66275A85B0003A524C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F46C65275A85B0003A524C /* ViewController.swift */; };
 		A0F46C6B275A85B1003A524C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A0F46C6A275A85B1003A524C /* Assets.xcassets */; };
 		A0F46C6E275A85B1003A524C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0F46C6C275A85B1003A524C /* LaunchScreen.storyboard */; };
+		D65342EA2B6CB3D800640F8E /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65342E92B6CB3D800640F8E /* SceneDelegate.swift */; };
+		D65342EC2B7E882300640F8E /* ShowInLineInAPP.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65342EB2B7E882300640F8E /* ShowInLineInAPP.swift */; };
 		D65523DA2938F393004360B8 /* RealTimeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65523D92938F393004360B8 /* RealTimeViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -66,6 +69,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		880EE77F2BD3B83400EAA176 /* AppStoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoryViewController.swift; sourceTree = "<group>"; };
+		883E76D92BF199DB001F6150 /* NotificationContentExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotificationContentExtension.entitlements; sourceTree = "<group>"; };
 		A0765B6927CEAF040007215B /* dengage-ios-sdk */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "dengage-ios-sdk"; path = ..; sourceTree = "<group>"; };
 		A099517327AB600C0089D98D /* NoticationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NoticationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A099517527AB600C0089D98D /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -92,6 +97,8 @@
 		A0F46C6A275A85B1003A524C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A0F46C6D275A85B1003A524C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A0F46C6F275A85B1003A524C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D65342E92B6CB3D800640F8E /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		D65342EB2B7E882300640F8E /* ShowInLineInAPP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowInLineInAPP.swift; sourceTree = "<group>"; };
 		D65523D92938F393004360B8 /* RealTimeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealTimeViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -125,6 +132,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		880EE77E2BD3B81200EAA176 /* AppStory */ = {
+			isa = PBXGroup;
+			children = (
+				880EE77F2BD3B83400EAA176 /* AppStoryViewController.swift */,
+			);
+			path = AppStory;
+			sourceTree = "<group>";
+		};
 		A0765B6827CEAF040007215B /* Packages */ = {
 			isa = PBXGroup;
 			children = (
@@ -146,6 +161,7 @@
 		A099518A27AC9CE80089D98D /* NotificationContentExtension */ = {
 			isa = PBXGroup;
 			children = (
+				883E76D92BF199DB001F6150 /* NotificationContentExtension.entitlements */,
 				A099518B27AC9CE80089D98D /* NotificationViewController.swift */,
 				A099519027AC9CE80089D98D /* Info.plist */,
 			);
@@ -155,6 +171,8 @@
 		A099519B27ACAD260089D98D /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				880EE77E2BD3B81200EAA176 /* AppStory */,
+				D65342ED2B7E882700640F8E /* ShowInLineInAPP */,
 				D65523DB2938F3A2004360B8 /* RealTime */,
 				A0B8857927B1F4CF004D4360 /* ContactKey */,
 				A0B8857627B1F17D004D4360 /* DeviceInfo */,
@@ -250,6 +268,7 @@
 		A0F46C60275A85B0003A524C /* ios-example-app */ = {
 			isa = PBXGroup;
 			children = (
+				D65342E92B6CB3D800640F8E /* SceneDelegate.swift */,
 				A0F46C61275A85B0003A524C /* AppDelegate.swift */,
 				A0F46C65275A85B0003A524C /* ViewController.swift */,
 				A0F46C6A275A85B1003A524C /* Assets.xcassets */,
@@ -268,6 +287,14 @@
 				A099518827AC9CE80089D98D /* UserNotificationsUI.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D65342ED2B7E882700640F8E /* ShowInLineInAPP */ = {
+			isa = PBXGroup;
+			children = (
+				D65342EB2B7E882300640F8E /* ShowInLineInAPP.swift */,
+			);
+			path = ShowInLineInAPP;
 			sourceTree = "<group>";
 		};
 		D65523DB2938F3A2004360B8 /* RealTime */ = {
@@ -374,6 +401,8 @@
 				Base,
 			);
 			mainGroup = A0F46C55275A85B0003A524C;
+			packageReferences = (
+			);
 			productRefGroup = A0F46C5F275A85B0003A524C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -433,18 +462,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				D65523DA2938F393004360B8 /* RealTimeViewController.swift in Sources */,
+				D65342EA2B6CB3D800640F8E /* SceneDelegate.swift in Sources */,
 				A0B884FE27B1CF44004D4360 /* RootViewController.swift in Sources */,
 				A0B8857B27B1F4E4004D4360 /* ContactKeyViewController.swift in Sources */,
 				A0F46C66275A85B0003A524C /* ViewController.swift in Sources */,
 				A099519D27ACAD380089D98D /* InboxMessagesViewController.swift in Sources */,
 				A0B8857527B1E979004D4360 /* ActionTableViewCell.swift in Sources */,
 				A0B8857827B1F197004D4360 /* DeviceInfoViewController.swift in Sources */,
+				880EE7802BD3B83400EAA176 /* AppStoryViewController.swift in Sources */,
 				A0F46C62275A85B0003A524C /* AppDelegate.swift in Sources */,
 				A09951A427ACB0D30089D98D /* TagsViewController.swift in Sources */,
 				A09951AA27ACB2A30089D98D /* EventViewController.swift in Sources */,
 				A09951A027ACAD630089D98D /* InboxMessageTableViewCell.swift in Sources */,
 				A09951A727ACB12E0089D98D /* InAppMessageViewController.swift in Sources */,
 				A099519A27ACACE50089D98D /* Extensions.swift in Sources */,
+				D65342EC2B7E882300640F8E /* ShowInLineInAPP.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -482,12 +514,12 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ZWGDPBV9N5;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NoticationExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NoticationExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -511,12 +543,12 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ZWGDPBV9N5;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NoticationExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NoticationExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -536,15 +568,16 @@
 		A099519527AC9CE80089D98D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = NotificationContentExtension/NotificationContentExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ZWGDPBV9N5;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NotificationContentExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NotificationContentExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -564,15 +597,16 @@
 		A099519627AC9CE80089D98D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = NotificationContentExtension/NotificationContentExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ZWGDPBV9N5;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NotificationContentExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NotificationContentExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -715,15 +749,16 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ZWGDPBV9N5;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-example-app/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Dengage Example";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "App would like to access IDFA for tracking purpose";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -748,15 +783,15 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ZWGDPBV9N5;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-example-app/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Dengage Example";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "App would like to access IDFA for tracking purpose";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

@@ -19,8 +19,8 @@ final class InAppMessageHTMLView: UIView{
     private var leftConstraint: NSLayoutConstraint?
     private var rightConstraint: NSLayoutConstraint?
 
-    var height: NSLayoutConstraint?
-    
+    var iHeight: NSLayoutConstraint?
+
     init() {
         super.init(frame: .zero)
         setupUI()
@@ -32,8 +32,6 @@ final class InAppMessageHTMLView: UIView{
     
     private func setupUI(){
         addSubview(webView)
-        backgroundColor = UIColor.clear
-        
         leftConstraint = webView
             .leadingAnchor
             .constraint(lessThanOrEqualTo: leadingAnchor,
@@ -44,11 +42,11 @@ final class InAppMessageHTMLView: UIView{
             .constraint(greaterThanOrEqualTo: trailingAnchor,
                         constant: 0)
         
-        height = webView
+        iHeight = webView
             .heightAnchor
             .constraint(equalToConstant: 0)
         
-        height?.isActive = true
+        iHeight?.isActive = true
         
         bottomConstraint = webView
             .bottomAnchor
@@ -76,13 +74,25 @@ final class InAppMessageHTMLView: UIView{
         webView.widthAnchor.constraint(lessThanOrEqualToConstant: width).isActive = true
     }
     
-    func setupConstaints(for params: ContentParams){
-        set(maxWidth: params.maxWidth)
+    func setupConstaints(for params: ContentParams , message :InAppMessage){
+        //set(maxWidth: params.maxWidth)
+        
+        if let color = params.backgroundColor
+        {
+            backgroundColor = UIColor.init(hex: color)
+
+        }
+        else
+        {
+            backgroundColor = UIColor.clear
+
+        }
+        
         set(radius: params.radius)
         topConstraint?.constant = getVerticalByPercentage(for: params.marginTop)
         bottomConstraint?.constant = -getVerticalByPercentage(for:params.marginBottom)
-        leftConstraint?.constant = getHorizaltalByPercentage(for:params.marginLeft)
-        rightConstraint?.constant = -getHorizaltalByPercentage(for:params.marginRight)
+        leftConstraint?.constant = getHorizaltalByPercentage(for:params.marginLeft, message: message)
+        rightConstraint?.constant = -getHorizaltalByPercentage(for:params.marginRight, message: message)
         leftConstraint?.isActive = true
         rightConstraint?.isActive = true
         switch params.position{
@@ -102,11 +112,49 @@ final class InAppMessageHTMLView: UIView{
         return (UIScreen.main.bounds.height * ((margin ?? 1.0) / 100))
     }
     
-    func getHorizaltalByPercentage(for margin: CGFloat?) -> CGFloat {
-        return (UIScreen.main.bounds.width * ((margin ?? 1.0) / 100))
+    func getHorizaltalByPercentage(for margin: CGFloat? , message : InAppMessage) -> CGFloat {
+        
+        
+        if margin == 0
+        {
+            if message.data.content.props.position == .full
+            {
+                
+                return (UIScreen.main.bounds.width * ((margin ?? 1.0) / 100))
+
+
+            }
+            else if message.data.content.props.position == .top
+            {
+                
+                return (UIScreen.main.bounds.width * ((margin ?? 1.0) / 100))
+
+
+            }
+            else if message.data.content.props.position == .bottom
+            {
+                
+                return (UIScreen.main.bounds.width * ((margin ?? 1.0) / 100))
+
+
+            }
+
+            else
+            {
+                return (UIScreen.main.bounds.width * (4 / 100))
+
+            }
+        }
+        else
+        {
+            return (UIScreen.main.bounds.width * ((margin ?? 1.0) / 100))
+
+        }
+       
+        
+
     }
 }
-
 
 final class InAppBrowserView: UIView{
     
@@ -132,7 +180,6 @@ final class InAppBrowserView: UIView{
     
     private func setupUI(){
         addSubview(webView)
-        backgroundColor = UIColor.clear
         
         
     }
@@ -144,4 +191,47 @@ final class InAppBrowserView: UIView{
 
     }
    
+}
+
+extension UIColor {
+    public convenience init?(hex: String) {
+        let r, g, b, a: CGFloat
+
+        if hex.hasPrefix("#") {
+            let start = hex.index(hex.startIndex, offsetBy: 1)
+            var hexColor = String(hex[start...])
+            
+            
+            if hexColor.count == 3 {
+                hexColor = hexColor.map { "\($0)\($0)" }.joined()
+            }
+            
+            
+            if hexColor.count == 6 {
+                var hexNumber: UInt64 = 0
+                Scanner(string: hexColor).scanHexInt64(&hexNumber)
+                
+                self.init(red: CGFloat((hexNumber & 0xFF0000) >> 16) / 255.0,
+                          green: CGFloat((hexNumber & 0x00FF00) >> 8) / 255.0,
+                          blue: CGFloat(hexNumber & 0x0000FF) / 255.0,
+                          alpha: 1.0)
+                return
+            } else if hexColor.count == 8 {
+                let scanner = Scanner(string: hexColor)
+                var hexNumber: UInt64 = 0
+
+                if scanner.scanHexInt64(&hexNumber) {
+                    r = CGFloat((hexNumber & 0xff000000) >> 24) / 255
+                    g = CGFloat((hexNumber & 0x00ff0000) >> 16) / 255
+                    b = CGFloat((hexNumber & 0x0000ff00) >> 8) / 255
+                    a = CGFloat(hexNumber & 0x000000ff) / 255
+
+                    self.init(red: r, green: g, blue: b, alpha: a)
+                    return
+                }
+            }
+        }
+
+        return nil
+    }
 }

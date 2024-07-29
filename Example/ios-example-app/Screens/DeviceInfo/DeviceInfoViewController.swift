@@ -18,6 +18,22 @@ class DeviceInfoViewController: UIViewController {
         view.addSubview(textView)
         textView.fillSuperview(horizontalPadding: 16, verticalPadding: 8)
         getInfo()
+        
+        Dengage.setNavigation(screenName: "p1")
+        
+       // Dengage.showRealTimeInApp(screenName: "p1",
+                               //   params: nil)
+        
+       // Dengage.showRatingView()
+
+
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        
+        super.viewWillDisappear(animated)
+        
+        Dengage.removeInAppMessageDisplay()
     }
     
     func getInfo(){

@@ -61,13 +61,19 @@ extension RootViewController: UITableViewDelegate{
             self.navigationController?.pushViewController(TagsViewController(), animated: true)
         case .testPage:
             Dengage.showTestPage()
+        case .rating:
+            Dengage.showRatingView()
+        case .inAppInLine:
+            self.navigationController?.pushViewController(ShowInLineInAPP(), animated: true)
+        case .appStory:
+            self.navigationController?.pushViewController(AppStoryViewController(), animated: true)
         }
     }
 }
 
 extension RootViewController{
     enum Actions: CaseIterable{
-        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage
+        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage, rating, inAppInLine, appStory
         var title: String{
             switch self{
             case .allowNotification:
@@ -88,6 +94,12 @@ extension RootViewController{
                 return "SET TAGS"
             case .testPage:
                 return "DENGAGE TEST PAGE"
+            case .rating:
+                return "APPSTORE REVIEW"
+            case .inAppInLine:
+                return "Show InLine InAPP"
+            case .appStory:
+                return "App Story"
             }
         }
     }

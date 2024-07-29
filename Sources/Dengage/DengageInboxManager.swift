@@ -1,7 +1,7 @@
 import Foundation
 final class DengageInboxManager: DengageInboxManagerInterface {
     
-    private var inboxMessages = [DengageMessage]()
+    var inboxMessages = [DengageMessage]()
     private let config: DengageConfiguration
     private let apiClient: DengageNetworking
     
@@ -26,7 +26,8 @@ final class DengageInboxManager: DengageInboxManagerInterface {
                                          type: config.contactKey.type,
                                          offset: offset,
                                          limit: limit,
-                                         deviceId: config.applicationIdentifier)
+                                         deviceId: config.applicationIdentifier,
+                                         appid: remoteConfig.appId ?? "")
         
         if offset == 0 && !inboxMessages.isEmpty && !config.shouldFetchFromAPI{
             completion(.success(inboxMessages))
@@ -103,12 +104,29 @@ final class DengageInboxManager: DengageInboxManagerInterface {
     }
 
     private func markLocalMessageIfNeeded(with id: String?) {
+            
         guard let messageId = id else { return }
-        let message = inboxMessages.first(where: {$0.id == messageId})
-        message?.isClicked = true
-        inboxMessages = inboxMessages.filter {$0.id != messageId}
-        guard let readedMessage = message else { return }
-        inboxMessages.append(readedMessage)
+        
+        if inboxMessages.count > 0
+        {
+            for i in 0...inboxMessages.count - 1
+            {
+                var readedMessage = inboxMessages[i]
+
+                if readedMessage.id == messageId
+                {
+                    readedMessage.isClicked = true
+                    inboxMessages[i] = readedMessage
+                    break
+                }
+            }
+        }
+  
+//        let message = inboxMessages.first(where: {$0.id == messageId})
+//        message?.isClicked = true
+//        inboxMessages = inboxMessages.filter {$0.id != messageId}
+//        guard let readedMessage = message else { return }
+//        inboxMessages.append(readedMessage)
     }
 }
 

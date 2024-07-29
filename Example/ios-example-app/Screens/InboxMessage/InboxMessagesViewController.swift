@@ -6,9 +6,7 @@ final class InboxMessagesViewController: UIViewController {
 
     private lazy var tableView: UITableView = {
         let view = UITableView()
-        view.delegate = self
-        view.dataSource = self
-        view.rowHeight = 60
+        
         view.backgroundColor = .white
         view.register(InboxMessageTableViewCell.self, forCellReuseIdentifier: "InboxMessageTableViewCell")
         return view
@@ -19,7 +17,14 @@ final class InboxMessagesViewController: UIViewController {
         super.viewDidLoad()
 
         view.addSubview(tableView)
+        
+       
+        
         tableView.fillSuperview()
+        self.tableView.delegate = self
+        self.tableView.dataSource = self
+        self.tableView.estimatedRowHeight = 100
+        self.tableView.rowHeight = 100
         fetchMessages()
     }
     
@@ -29,11 +34,21 @@ final class InboxMessagesViewController: UIViewController {
             switch result {
             case .success(let messages):
                 self?.messages = messages
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: {
+                    
+                   
+                   
+                    self?.tableView.reloadData()
+
+                })
             case .failure(let error):
                 print(error)
             }
         }
-        tableView.reloadData()
+        
+       
+        
+       
     }
 }
 
@@ -45,6 +60,7 @@ extension InboxMessagesViewController: UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "InboxMessageTableViewCell", for: indexPath) as! InboxMessageTableViewCell
         let item = messages[indexPath.row]
+        cell.backgroundColor = .green
         cell.populateUI(with: item)
         return cell
     }
@@ -53,6 +69,28 @@ extension InboxMessagesViewController: UITableViewDataSource{
 
 extension InboxMessagesViewController: UITableViewDelegate{
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let item = self.messages[indexPath.row]
+
+        
+        for msg in self.messages
+        {
+            Dengage.setInboxMessageAsClicked(with: msg.id) { [weak self] _ in
+                
+               
+            }
+        }
+        
+       
+        
+        
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: {
+//
+//
+//            self.tableView.reloadData()
+//
+//        })
+    }
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
@@ -67,5 +105,10 @@ extension InboxMessagesViewController: UITableViewDelegate{
         }
 
         return [delete]
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        return 100
     }
 }
