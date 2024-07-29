@@ -41,7 +41,7 @@ final class DeviceInfoViewController: UIViewController {
         rows.append((name:"Integration Key:", value: manager.config.integrationKey))
         rows.append((name:"Device Id:", value: manager.config.getContactKey() ?? ""))
         rows.append((name:"Timezone:", value: manager.config.deviceTimeZone))
-        rows.append((name:"Language:", value: manager.config.deviceLanguage))
+        rows.append((name:"Language:", value: manager.config.getLanguage()))
         rows.append((name:"User Permission:", value: manager.config.permission.description))
         rows.append((name:"SDK Version:", value: manager.config.sdkVersion))
         rows.append((name:"APP Version:", value: manager.config.appVersion))

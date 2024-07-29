@@ -391,6 +391,11 @@ public class Dengage  {
         Logger.isEnabled = isVisible
     }
     
+    @objc static public func setLanguage(language:String)
+    {
+        dengage?.config.setLanguage(language: language)
+    }
+    
    static func syncSubscription() {
         dengage?.makeSubscriptionRequestAPICall()
     }
@@ -400,6 +405,7 @@ public class Dengage  {
         DengageLocalStorage.shared.set(value: true, for: .hybridAppEnvironment)
         
     }
+    
     
     
 }
