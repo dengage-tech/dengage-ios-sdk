@@ -267,6 +267,16 @@ public class Dengage  {
         dengage?.inAppManager.setNavigation(screenName:screenName,params: customParams, propertyID: propertyID ,inAppInlineElement:inAppInlineElement , hideIfNotFound : hideIfNotFound)
     }
     
+    @objc public static func showAppStory(
+        storyPropertyID: String? = nil, inAppInlineElement: InAppInlineElementView? = nil,
+        screenName: String? = nil, customParams: [String: String]? = nil, hideIfNotFound: Bool = false,
+        storyCompletion: @escaping (StoriesListView?) -> Void
+    ) {
+        dengage?.inAppManager.setNavigation(
+            screenName: screenName, params: customParams, storyPropertyID: storyPropertyID, storyCompletion: storyCompletion)
+    }
+
+    
     @objc public static func removeInAppMessageDisplay(){
         dengage?.inAppManager.removeInAppMessageDisplay()
     }

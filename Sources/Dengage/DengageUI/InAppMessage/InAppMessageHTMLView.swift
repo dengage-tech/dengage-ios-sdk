@@ -19,7 +19,7 @@ final class InAppMessageHTMLView: UIView{
     private var leftConstraint: NSLayoutConstraint?
     private var rightConstraint: NSLayoutConstraint?
 
-    var height: NSLayoutConstraint?
+    var heightCnst: NSLayoutConstraint?
 
     init() {
         super.init(frame: .zero)
@@ -42,11 +42,11 @@ final class InAppMessageHTMLView: UIView{
             .constraint(greaterThanOrEqualTo: trailingAnchor,
                         constant: 0)
         
-        height = webView
+        heightCnst = webView
             .heightAnchor
             .constraint(equalToConstant: 0)
         
-        height?.isActive = true
+        heightCnst?.isActive = true
         
         bottomConstraint = webView
             .bottomAnchor

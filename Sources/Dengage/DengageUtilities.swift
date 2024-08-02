@@ -67,6 +67,42 @@ final class Utilities{
     class func generateUUID() -> String {
         return NSUUID().uuidString.lowercased()
     }
+
+    
+    static func sharedUIApplication() -> UIApplication? {
+        let shared = UIApplication.perform(NSSelectorFromString("sharedApplication"))?.takeUnretainedValue()
+        guard let sharedApplication = shared as? UIApplication else {
+            return nil
+        }
+        return sharedApplication
+    }
+    
+    static func getRootViewController() -> UIViewController? {
+        guard let sharedUIApplication = sharedUIApplication() else {
+            return nil
+        }
+        if let rootViewController = sharedUIApplication.keyWindow?.rootViewController {
+            return getVisibleViewController(rootViewController)
+        }
+        return nil
+    }
+
+    private static func getVisibleViewController(_ vc: UIViewController?) -> UIViewController? {
+        if let navigationController = vc as? UINavigationController {
+            return getVisibleViewController(navigationController.visibleViewController)
+        } else if let tabBarController = vc as? UITabBarController {
+            return getVisibleViewController(tabBarController.selectedViewController)
+        } else {
+            if let presentedViewController = vc?.presentedViewController {
+                return getVisibleViewController(presentedViewController)
+            } else {
+                return vc
+            }
+        }
+    }
+    
+    
+    
 }
 
 extension Date {

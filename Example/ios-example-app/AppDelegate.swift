@@ -18,6 +18,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //BSIF
        //_s_l_gJiLHWiLdjpYMf4jlhRN2wemFgwft4oIy_s_l_QpEcwPBfQWNyC22E397SlnX2Rt51QPv4fWH9c_s_l_M7yFH74iPSsUBgzpc6iUsIFw3waNyMau1xttwfOwQ9oJ9PZyBseS30U34vo1bSElJSrhGrwIkCUCw_e_q__e_q_
         
+        //Demo dengage
+        //APw9RpIb8xEEVjxNfN8h_s_l_Xknsll3fFa88j6DjEYlo9ZncoMxrLXr2wZcafHPDlAllnV23eAG8sUr9Co4rfs5D67VMc9o_p_l_ovvhwCKF2zTjPh4at_p_l_OZWBxYqhAq2eop_s_l_VOnskTofJnsvTDJ7n5ZR0tzQ_e_q__e_q_
+        
+
+        
         Dengage.setLog(isVisible: true)
 
 
@@ -29,19 +34,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         Dengage.setDevelopmentStatus(isDebug: true)
         
-        Dengage.set(deviceId: "priya@19281426099785658767678464374667236473673246236237673246.jkjkkj")
+      
         
         Dengage.promptForPushNotifications { isUserGranted in
             
             
         }
-        
-        Dengage.handleNotificationActionBlock { notificationResponse in
-            
-            
-            print(notificationResponse.notification.request.content.userInfo)
-        }
-        
+//        
+//        Dengage.handleNotificationActionBlock { notificationResponse in
+//            
+//            
+//            print(notificationResponse.notification.request.content.userInfo)
+//        }
+//        
      //  Dengage.setLanguage(language: "eu")
         
 //        Dengage.inAppLinkConfiguration(deeplink: "pazarama.app://")
@@ -57,6 +62,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //
 //        
 //        Dengage.sendDeviceIdToServer(route: "V1/dengage/sync/mobile/customerData", token: "cti234bdj1ev4u4c0pk2l1z370vmgtah")
+        
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1){
+        
+            
+            let refreshAlert = UIAlertController(title: "Refresh", message: "dengage get last pushpayload \(Dengage.getLastPushPayload())", preferredStyle: UIAlertController.Style.alert)
+
+            refreshAlert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
+                  print("Handle Ok logic here")
+            }))
+
+            refreshAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction!) in
+                  print("Handle Cancel Logic here")
+            }))
+
+            if #available(iOS 13.0, *) {
+                (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.rootViewController?.present(refreshAlert, animated: true)
+            } else {
+                // Fallback on earlier versions
+            }
+
+        }
         
  
         return true
@@ -91,7 +117,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler completionHandler: @escaping () -> Void){
         
-        print("TEST SILENT PUSH VARIABLE \(Dengage.isPushSilent(response: response))")
 
         
         Dengage.didReceivePush(center, response, withCompletionHandler: completionHandler)
