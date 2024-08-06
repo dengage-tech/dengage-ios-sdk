@@ -24,13 +24,12 @@ public class Dengage  {
     @objc public static func start(apiKey: String,
                                    application: UIApplication? = nil,
                                    launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
-                                   dengageOptions options: DengageOptions = DengageOptions() , deviceId : String? = nil, contactKey : String? = nil , partnerDeviceId :String? = nil, setInternalNotificationDelegate : Bool = false) {
+                                   dengageOptions options: DengageOptions = DengageOptions() , deviceId : String? = nil, contactKey : String? = nil , partnerDeviceId :String? = nil, setInternalNotificationDelegate : Bool = true) {
         
-        DengageLocalStorage.shared.set(value: false, for: .setInternalNotificationDelegate)
+        DengageLocalStorage.shared.set(value: true, for: .setInternalNotificationDelegate)
         
         if setInternalNotificationDelegate
         {
-            DengageLocalStorage.shared.set(value: true, for: .setInternalNotificationDelegate)
             let currentNotificationCenter = center.delegate
             notificationDelegate.delegate = currentNotificationCenter
             center.delegate = notificationDelegate
@@ -78,16 +77,14 @@ public class Dengage  {
     }
     
     
-    @objc public static func initWithLaunchOptions(categories: Set<UNNotificationCategory>? = nil,application: UIApplication,withLaunchOptions: [UIApplication.LaunchOptionsKey: Any],badgeCountReset: Bool = false, deviceId : String? = nil , contactKey : String? = nil , partnerDeviceId :String? = nil, setInternalNotificationDelegate : Bool = false)
+    @objc public static func initWithLaunchOptions(categories: Set<UNNotificationCategory>? = nil,application: UIApplication,withLaunchOptions: [UIApplication.LaunchOptionsKey: Any],badgeCountReset: Bool = false, deviceId : String? = nil , contactKey : String? = nil , partnerDeviceId :String? = nil, setInternalNotificationDelegate : Bool = true)
     {
         
-        DengageLocalStorage.shared.set(value: false, for: .setInternalNotificationDelegate)
+        DengageLocalStorage.shared.set(value: true, for: .setInternalNotificationDelegate)
 
         
         if setInternalNotificationDelegate
         {
-            DengageLocalStorage.shared.set(value: true, for: .setInternalNotificationDelegate)
-
             let currentNotificationCenter = center.delegate
             notificationDelegate.delegate = currentNotificationCenter
             center.delegate = notificationDelegate
