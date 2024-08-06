@@ -68,6 +68,7 @@ final class DengageLocalStorage: NSObject {
         case appEnvironment = "appEnvironment"
         case hybridAppEnvironment = "hybridAppEnvironment"
         case language = "language"
+        case setInternalNotificationDelegate = "setInternalNotificationDelegate"
 
 
     }

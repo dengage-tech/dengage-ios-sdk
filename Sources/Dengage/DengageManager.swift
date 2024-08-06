@@ -13,10 +13,11 @@ public class DengageManager {
     var sessionManager: DengageSessionManagerInterface
     var inboxManager: DengageInboxManager
     var inAppManager: DengageInAppMessageManager
-    var notificationManager: DengageNotificationManagerInterface
+    var notificationManager: DengageNotificationManager?
     var dengageRFMManager: DengageRFMManager
     var testPageWindow: UIWindow?
-    
+    var notificationManagerInternal: DengageNotificationManagerInternal?
+
     init(with apiKey: String,
          application: UIApplication?,
          launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
@@ -38,10 +39,30 @@ public class DengageManager {
                                                             service: apiClient,
                                                             sessionManager: sessionManager)
 
-        self.notificationManager = DengageNotificationManager(config: config,
-                                                              service: apiClient,
-                                                              eventManager: eventManager,
-                                                              launchOptions: launchOptions)
+        if let setInternalNotificationDelegate = DengageLocalStorage.shared.value(for: .setInternalNotificationDelegate) as? Bool
+        {
+            if setInternalNotificationDelegate
+            {
+                self.notificationManagerInternal = DengageNotificationManagerInternal(config: config,
+                                                                      service: apiClient,
+                                                                      eventManager: eventManager,
+                                                                      launchOptions: launchOptions)
+            }
+            else
+            {
+                self.notificationManager = DengageNotificationManager(config: config,
+                                                                      service: apiClient,
+                                                                      eventManager: eventManager,
+                                                                      launchOptions: launchOptions)
+            }
+        }
+        else
+        {
+            self.notificationManager = DengageNotificationManager(config: config,
+                                                                  service: apiClient,
+                                                                  eventManager: eventManager,
+                                                                  launchOptions: launchOptions)
+        }
         self.dengageRFMManager = DengageRFMManager()
         
         sync()
