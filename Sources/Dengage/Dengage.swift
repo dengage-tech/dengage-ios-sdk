@@ -65,11 +65,11 @@ public class Dengage  {
     }
     
     
-    @objc public static func initWithLaunchOptions(categories: Set<UNNotificationCategory>? = nil,application: UIApplication,withLaunchOptions: [UIApplication.LaunchOptionsKey: Any],badgeCountReset: Bool = false, deviceId : String? = nil , contactKey : String? = nil , partnerDeviceId :String? = nil)
+    @objc public static func initWithLaunchOptions(categories: Set<UNNotificationCategory>? = nil,application: UIApplication,withLaunchOptions: [UIApplication.LaunchOptionsKey: Any],badgeCountReset: Bool = false, deviceId : String? = nil , contactKey : String? = nil , partnerDeviceId :String? = nil,dengageOptions : DengageOptions = DengageOptions())
     {
         let key =  DengageLocalStorage.shared.value(for: .integrationKey) as? String
 
-        self.start(apiKey: key ?? "", application: application, launchOptions: withLaunchOptions, dengageOptions: DengageOptions(),deviceId: deviceId,contactKey: contactKey,partnerDeviceId: partnerDeviceId)
+        self.start(apiKey: key ?? "", application: application, launchOptions: withLaunchOptions, dengageOptions: dengageOptions ,deviceId: deviceId,contactKey: contactKey,partnerDeviceId: partnerDeviceId)
         
         
         
