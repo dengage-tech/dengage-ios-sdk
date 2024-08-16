@@ -17,15 +17,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //BSIF
        //_s_l_gJiLHWiLdjpYMf4jlhRN2wemFgwft4oIy_s_l_QpEcwPBfQWNyC22E397SlnX2Rt51QPv4fWH9c_s_l_M7yFH74iPSsUBgzpc6iUsIFw3waNyMau1xttwfOwQ9oJ9PZyBseS30U34vo1bSElJSrhGrwIkCUCw_e_q__e_q_
         
-        //new account
+        //op
 //        ISF1SkvnJTgrVE1NWgfsF3TU_p_l_I3t_s_l_uVF7i_s_l_C1EGES0rB0HcToRYRCY_s_l_ioPhbsdIY22SfKjLKK8F5x2cZgtCvLILmbZH2fy6tNQD1BqKHyQZ2VZhExl7_s_l_jRes6Sqf_p_l_cI3
 
 
+        //op2
+//        2YtmAkaGNiiY4u3CN_s_l_d2oowwIa2YjMDnEnk7g7Dh5MFcUdkV_s_l_H0ECdHEeZvK_s_l_pNkNOJ2b3XMNkvBcZ43UvPW2ULSLkyNLGXFoCR_p_l_xVxYr4x_s_l_ypeE_p_l_XcbwtifyFyLBQVB
         
-              
+
+        
+        
         let option = DengageOptions(disableOpenURL: false, badgeCountReset: true, disableRegisterForRemoteNotifications: false, enableGeofence: true)
         
-        Dengage.start(apiKey: "ISF1SkvnJTgrVE1NWgfsF3TU_p_l_I3t_s_l_uVF7i_s_l_C1EGES0rB0HcToRYRCY_s_l_ioPhbsdIY22SfKjLKK8F5x2cZgtCvLILmbZH2fy6tNQD1BqKHyQZ2VZhExl7_s_l_jRes6Sqf_p_l_cI3", application: application, launchOptions: [:], dengageOptions: option)
+        Dengage.start(apiKey: "2YtmAkaGNiiY4u3CN_s_l_d2oowwIa2YjMDnEnk7g7Dh5MFcUdkV_s_l_H0ECdHEeZvK_s_l_pNkNOJ2b3XMNkvBcZ43UvPW2ULSLkyNLGXFoCR_p_l_xVxYr4x_s_l_ypeE_p_l_XcbwtifyFyLBQVB", application: application, launchOptions: [:], dengageOptions: option)
                 
         UNUserNotificationCenter.current().delegate = self
         window = UIWindow(frame: UIScreen.main.bounds)
@@ -41,7 +45,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             
             
         }
-        Dengage.setLog(isVisible: false)
+        Dengage.setLog(isVisible: true)
         
         Dengage.setDevelopmentStatus(isDebug: true)
         

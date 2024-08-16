@@ -3,15 +3,15 @@
 <plist version="1.0">
 <dict>
 	<key>DengageApiUrl</key>
-	<string>https://op-pub.dengage.com</string>
+	<string>https://op2-pub.dengage.com</string>
 	<key>DengageDeviceIdApiUrl</key>
 	<string>https://magento.232.dengage.shobii.com/rest/</string>
 	<key>DengageEventApiUrl</key>
-	<string>https://op-pub.dengage.com</string>
+	<string>https:/op2-pub.dengage.com</string>
 	<key>DengageGeofenceApiUrl</key>
-	<string>https://op-pub.dengage.com/geoapi/</string>
+	<string>https://op2-pub.dengage.com/geoapi/</string>
 	<key>DengageInAppApiUrl</key>
-	<string>https://op-pub.dengage.com</string>
+	<string>https://op2-pub.dengage.com</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
@@ -19,6 +19,6 @@
 		<string>remote-notification</string>
 	</array>
 	<key>fetchRealTimeINAPPURL</key>
-	<string>https://op-pub.dengage.com/api/realtime-inapp/</string>
+	<string>https://op2-pub.dengage.com/api/realtime-inapp/</string>
 </dict>
 </plist>
