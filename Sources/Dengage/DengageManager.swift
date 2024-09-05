@@ -377,7 +377,7 @@ extension DengageManager {
     let badgeCountReset: Bool
     let disableRegisterForRemoteNotifications: Bool
     public init(disableOpenURL: Bool = false,
-                badgeCountReset: Bool = false,
+                badgeCountReset: Bool = true,
                 disableRegisterForRemoteNotifications: Bool = false) {
         self.disableOpenURL = disableOpenURL
         self.badgeCountReset = badgeCountReset
