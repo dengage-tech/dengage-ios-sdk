@@ -27,6 +27,19 @@ final class DengageGeofenceManager: NSObject, DengageGeofenceManagerInterface {
     
     func getAuthorizationStatus() -> CLAuthorizationStatus {
         if #available(iOS 14.0, *) {
+            do {
+                let status = try getManagerAuthorizationStatus()
+                return status
+            } catch {
+                return CLLM.authorizationStatus()
+            }
+        } else {
+            return CLLM.authorizationStatus()
+        }
+    }
+    
+    private func getManagerAuthorizationStatus() throws -> CLAuthorizationStatus {
+        if #available(iOS 14.0, *) {
             return lManager.authorizationStatus
         } else {
             return CLLM.authorizationStatus()
@@ -207,7 +220,7 @@ final class DengageGeofenceManager: NSObject, DengageGeofenceManagerInterface {
             
             
         }
-            
+        
         
     }
     
@@ -451,7 +464,7 @@ extension DengageGeofenceManager {
                 sending = false
                 return
             }
-
+            
             checkNotificationPermit { [weak self] pushPermit in
                 let request = GeofenceEventSignalRequest(integrationKey: config.integrationKey,
                                                          clusterId: clusterId,
