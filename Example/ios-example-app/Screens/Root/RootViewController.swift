@@ -67,20 +67,19 @@ extension RootViewController: UITableViewDelegate{
             self.navigationController?.pushViewController(TagsViewController(), animated: true)
         case .testPage:
             Dengage.showTestPage()
-            
         case .geoFence:
             self.navigationController?.pushViewController(GeofenceViewController(), animated: true)
         case .inAppInLine:
             self.navigationController?.pushViewController(ShowInLineInAPP(), animated: true)
-
-            
+        case .appStory:
+            self.navigationController?.pushViewController(AppStoryViewController(), animated: true)
         }
     }
 }
 
 extension RootViewController{
     enum Actions: CaseIterable{
-        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage , geoFence,inAppInLine
+        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage , geoFence,inAppInLine, appStory
         var title: String{
             switch self{
             case .allowNotification:
@@ -105,7 +104,8 @@ extension RootViewController{
                 return "GEO FENCE"
             case .inAppInLine:
                 return "Show InLine InAPP"
-
+            case .appStory:
+                return "App Story"
             }
         }
     }

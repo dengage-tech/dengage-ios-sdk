@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let option = DengageOptions(disableOpenURL: false, badgeCountReset: true, disableRegisterForRemoteNotifications: false, enableGeofence: true)
         
-        Dengage.start(apiKey: "2YtmAkaGNiiY4u3CN_s_l_d2oowwIa2YjMDnEnk7g7Dh5MFcUdkV_s_l_H0ECdHEeZvK_s_l_pNkNOJ2b3XMNkvBcZ43UvPW2ULSLkyNLGXFoCR_p_l_xVxYr4x_s_l_ypeE_p_l_XcbwtifyFyLBQVB", application: application, launchOptions: [:], dengageOptions: option)
+        Dengage.start(apiKey: "o5r8xJa8eyBUGSmwXdskiIx0Um1oacEGoowX1_p_l_chY5_p_l_cVGTBC4m4jWgohN6vS3X3FG1cUbmToIAyVQfXAFDShKgqChrmLTMwnae_s_l_mqgXMNgkIG2gsAkOidM1znE1lIypsr_p_l_p9VrPR6OKSDdvF_s_l_3krw_e_q__e_q_", application: application, launchOptions: [:], dengageOptions: option)
                 
         UNUserNotificationCenter.current().delegate = self
         window = UIWindow(frame: UIScreen.main.bounds)

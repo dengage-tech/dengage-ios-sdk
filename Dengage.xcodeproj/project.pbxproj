@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8800688C2C931DDA00881F71 /* InAppInlineElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880068882C931DDA00881F71 /* InAppInlineElementView.swift */; };
+		8800688E2C931E1A00881F71 /* InAppBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8800688D2C931E1A00881F71 /* InAppBrowserViewController.swift */; };
+		880068922C931E9E00881F71 /* ExpiredInAppMessageRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880068912C931E9E00881F71 /* ExpiredInAppMessageRequest.swift */; };
+		880068942C931F3600881F71 /* AppForegroundEventRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880068932C931F3600881F71 /* AppForegroundEventRequest.swift */; };
+		880068962C932B8700881F71 /* DengageVisitCountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880068952C932B8700881F71 /* DengageVisitCountManager.swift */; };
+		8800689C2C933CC300881F71 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8800689A2C933CC300881F71 /* SwiftyJSON.swift */; };
+		8800689D2C933CC300881F71 /* SwiftyJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 8800689B2C933CC300881F71 /* SwiftyJSON.h */; };
 		881709222C91803E00FA8B63 /* DengageCLLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709152C91803E00FA8B63 /* DengageCLLocation.swift */; };
 		881709232C91803E00FA8B63 /* DengageGeofenceCluster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709162C91803E00FA8B63 /* DengageGeofenceCluster.swift */; };
 		881709242C91803E00FA8B63 /* DengageGeofenceEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709172C91803E00FA8B63 /* DengageGeofenceEvent.swift */; };
@@ -127,6 +134,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		880068882C931DDA00881F71 /* InAppInlineElementView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InAppInlineElementView.swift; sourceTree = "<group>"; };
+		8800688D2C931E1A00881F71 /* InAppBrowserViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InAppBrowserViewController.swift; sourceTree = "<group>"; };
+		880068912C931E9E00881F71 /* ExpiredInAppMessageRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpiredInAppMessageRequest.swift; sourceTree = "<group>"; };
+		880068932C931F3600881F71 /* AppForegroundEventRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppForegroundEventRequest.swift; sourceTree = "<group>"; };
+		880068952C932B8700881F71 /* DengageVisitCountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageVisitCountManager.swift; sourceTree = "<group>"; };
+		8800689A2C933CC300881F71 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
+		8800689B2C933CC300881F71 /* SwiftyJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwiftyJSON.h; sourceTree = "<group>"; };
 		881709152C91803E00FA8B63 /* DengageCLLocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageCLLocation.swift; sourceTree = "<group>"; };
 		881709162C91803E00FA8B63 /* DengageGeofenceCluster.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageGeofenceCluster.swift; sourceTree = "<group>"; };
 		881709172C91803E00FA8B63 /* DengageGeofenceEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageGeofenceEvent.swift; sourceTree = "<group>"; };
@@ -327,26 +341,27 @@
 			isa = PBXGroup;
 			children = (
 				A0765B8227CEB4700007215B /* Constants.swift */,
-				A0765B8327CEB4700007215B /* DengageNotificationExtension.swift */,
-				A0765B8427CEB4700007215B /* ThreadSafeContainer.swift */,
+				A0765BBA27CEB4700007215B /* Dengage.swift */,
+				A0765BB927CEB4700007215B /* DengageConfiguration.swift */,
+				A0765BBE27CEB4700007215B /* DengageEventManager.swift */,
 				A0765B8527CEB4700007215B /* DengageInAppMessageManager.swift */,
-				A0765B8627CEB4700007215B /* DengageUtilities.swift */,
-				A0765B8727CEB4700007215B /* DengageSessionManager.swift */,
-				A0765B8827CEB4700007215B /* Networking */,
-				A0765B8B27CEB4700007215B /* DengageUI */,
 				A0765B9B27CEB4700007215B /* DengageInAppMessageUtils.swift */,
 				A0765B9C27CEB4700007215B /* DengageInboxManager.swift */,
-				A0765B9D27CEB4700007215B /* DengageLocalStorage.swift */,
-				A0765B9E27CEB4700007215B /* DengageNotificationManager.swift */,
-				A0765B9F27CEB4700007215B /* Models */,
-				A0765BB927CEB4700007215B /* DengageConfiguration.swift */,
-				A0765BBA27CEB4700007215B /* Dengage.swift */,
-				8817091E2C91803E00FA8B63 /* Geofence */,
-				A0765BBB27CEB4700007215B /* DengageManager.swift */,
-				A0765BBC27CEB4700007215B /* DengageLog.swift */,
 				A0765BBD27CEB4700007215B /* DengageKeychain.swift */,
-				A0765BBE27CEB4700007215B /* DengageEventManager.swift */,
+				A0765B9D27CEB4700007215B /* DengageLocalStorage.swift */,
+				A0765BBC27CEB4700007215B /* DengageLog.swift */,
+				A0765BBB27CEB4700007215B /* DengageManager.swift */,
+				A0765B9E27CEB4700007215B /* DengageNotificationManager.swift */,
+				A0765B8327CEB4700007215B /* DengageNotificationExtension.swift */,
 				A00EFCC228077869004659DE /* DengageRFMManager.swift */,
+				A0765B8727CEB4700007215B /* DengageSessionManager.swift */,
+				A0765B8627CEB4700007215B /* DengageUtilities.swift */,
+				880068952C932B8700881F71 /* DengageVisitCountManager.swift */,
+				A0765B8427CEB4700007215B /* ThreadSafeContainer.swift */,
+				A0765B8B27CEB4700007215B /* DengageUI */,
+				8817091E2C91803E00FA8B63 /* Geofence */,
+				A0765B9F27CEB4700007215B /* Models */,
+				A0765B8827CEB4700007215B /* Networking */,
 			);
 			path = Dengage;
 			sourceTree = "<group>";
@@ -356,6 +371,8 @@
 			children = (
 				A0765B8927CEB4700007215B /* DengageAPIRequest.swift */,
 				A0765B8A27CEB4700007215B /* DengageNetworking.swift */,
+				8800689B2C933CC300881F71 /* SwiftyJSON.h */,
+				8800689A2C933CC300881F71 /* SwiftyJSON.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -363,10 +380,10 @@
 		A0765B8B27CEB4700007215B /* DengageUI */ = {
 			isa = PBXGroup;
 			children = (
-				88E93AD02C923AC600EE3F5E /* Story */,
 				A0765B8C27CEB4700007215B /* CarouselNotificationUI */,
-				A0765B9027CEB4700007215B /* TestPage */,
 				A0765B9727CEB4700007215B /* InAppMessage */,
+				88E93AD02C923AC600EE3F5E /* Story */,
+				A0765B9027CEB4700007215B /* TestPage */,
 			);
 			path = DengageUI;
 			sourceTree = "<group>";
@@ -397,9 +414,11 @@
 		A0765B9727CEB4700007215B /* InAppMessage */ = {
 			isa = PBXGroup;
 			children = (
-				A0765B9827CEB4700007215B /* InAppMessagesActionsDelegate.swift */,
-				A0765B9927CEB4700007215B /* InAppMessageHTMLViewController.swift */,
+				8800688D2C931E1A00881F71 /* InAppBrowserViewController.swift */,
+				880068882C931DDA00881F71 /* InAppInlineElementView.swift */,
 				A0765B9A27CEB4700007215B /* InAppMessageHTMLView.swift */,
+				A0765B9927CEB4700007215B /* InAppMessageHTMLViewController.swift */,
+				A0765B9827CEB4700007215B /* InAppMessagesActionsDelegate.swift */,
 			);
 			path = InAppMessage;
 			sourceTree = "<group>";
@@ -407,19 +426,19 @@
 		A0765B9F27CEB4700007215B /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				88E93AE92C923C2200EE3F5E /* StorySet.swift */,
-				A00EFCBD280777B8004659DE /* RFMScore.swift */,
-				A0765BA027CEB4700007215B /* Response */,
-				A0765BA227CEB4700007215B /* InAppMessage.swift */,
-				A0765BA327CEB4700007215B /* DengageMessage.swift */,
-				8817092D2C91807100FA8B63 /* Geofence */,
 				A0765BA427CEB4700007215B /* CarouselItem.swift */,
 				A0765BA527CEB4700007215B /* ContentParams.swift */,
+				A0765BA327CEB4700007215B /* DengageMessage.swift */,
+				A0765BA227CEB4700007215B /* InAppMessage.swift */,
 				A0765BA627CEB4700007215B /* PushContent.swift */,
-				A0765BA727CEB4700007215B /* Request */,
+				A00EFCBD280777B8004659DE /* RFMScore.swift */,
+				88E93AE92C923C2200EE3F5E /* StorySet.swift */,
 				A0765BB827CEB4700007215B /* TagItem.swift */,
 				881709402C91955E00FA8B63 /* VisitCountItem.swift */,
 				8817093F2C91955E00FA8B63 /* VisitorInfo.swift */,
+				8817092D2C91807100FA8B63 /* Geofence */,
+				A0765BA727CEB4700007215B /* Request */,
+				A0765BA027CEB4700007215B /* Response */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -435,14 +454,14 @@
 		A0765BA727CEB4700007215B /* Request */ = {
 			isa = PBXGroup;
 			children = (
-				88E93AEB2C923C8300EE3F5E /* StoryRequest.swift */,
 				A0765BA827CEB4700007215B /* GetSDKParamsRequest.swift */,
-				A0765BA927CEB4700007215B /* InboxMessage */,
-				A0765BAD27CEB4700007215B /* InAppMessage */,
-				A0765BB227CEB4700007215B /* Event */,
-				A0765BB627CEB4700007215B /* TagsRequest.swift */,
-				881709352C91808800FA8B63 /* RealTime */,
 				A0765BB727CEB4700007215B /* MakeSubscriptionRequest.swift */,
+				88E93AEB2C923C8300EE3F5E /* StoryRequest.swift */,
+				A0765BB627CEB4700007215B /* TagsRequest.swift */,
+				A0765BB227CEB4700007215B /* Event */,
+				A0765BAD27CEB4700007215B /* InAppMessage */,
+				A0765BA927CEB4700007215B /* InboxMessage */,
+				881709352C91808800FA8B63 /* RealTime */,
 			);
 			path = Request;
 			sourceTree = "<group>";
@@ -460,9 +479,10 @@
 		A0765BAD27CEB4700007215B /* InAppMessage */ = {
 			isa = PBXGroup;
 			children = (
-				A0765BAE27CEB4700007215B /* MarkAsInAppMessageClickedRequest.swift */,
-				A0765BAF27CEB4700007215B /* MarkAsInAppMessageAsDismissedRequest.swift */,
+				880068912C931E9E00881F71 /* ExpiredInAppMessageRequest.swift */,
 				A0765BB027CEB4700007215B /* GetInAppMessagesRequest.swift */,
+				A0765BAF27CEB4700007215B /* MarkAsInAppMessageAsDismissedRequest.swift */,
+				A0765BAE27CEB4700007215B /* MarkAsInAppMessageClickedRequest.swift */,
 				A0765BB127CEB4700007215B /* MarkAsInAppMessageDisplayedRequest.swift */,
 			);
 			path = InAppMessage;
@@ -471,6 +491,7 @@
 		A0765BB227CEB4700007215B /* Event */ = {
 			isa = PBXGroup;
 			children = (
+				880068932C931F3600881F71 /* AppForegroundEventRequest.swift */,
 				8817093D2C9180A000FA8B63 /* DeviceIdApiRequest.swift */,
 				A0765BB527CEB4700007215B /* EventRequest.swift */,
 				8817093B2C91809500FA8B63 /* FirstLaunchEventRequest.swift */,
@@ -497,6 +518,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8800689D2C933CC300881F71 /* SwiftyJSON.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -602,10 +624,13 @@
 				A0765BCD27CEB4700007215B /* DeviceCacheResetViewController.swift in Sources */,
 				88E93AE62C923AC600EE3F5E /* UIView+Extension.swift in Sources */,
 				88E93AEA2C923C2200EE3F5E /* StorySet.swift in Sources */,
+				8800688C2C931DDA00881F71 /* InAppInlineElementView.swift in Sources */,
+				880068922C931E9E00881F71 /* ExpiredInAppMessageRequest.swift in Sources */,
 				A0765BE527CEB4700007215B /* OpenEventRequest.swift in Sources */,
 				A0765BC927CEB4700007215B /* DengageCarouselCell.swift in Sources */,
 				881709372C91808800FA8B63 /* GetVisitorInfoRequest.swift in Sources */,
 				881709282C91803E00FA8B63 /* DengageGeofenceState.swift in Sources */,
+				880068962C932B8700881F71 /* DengageVisitCountManager.swift in Sources */,
 				A0765BC227CEB4700007215B /* DengageInAppMessageManager.swift in Sources */,
 				A0765BD327CEB4700007215B /* DengageInAppMessageUtils.swift in Sources */,
 				88E93AD62C923AC600EE3F5E /* StoriesListCell.swift in Sources */,
@@ -632,6 +657,7 @@
 				A0765BD927CEB4700007215B /* DengageMessage.swift in Sources */,
 				A0765BED27CEB4700007215B /* DengageManager.swift in Sources */,
 				88E93AE52C923AC600EE3F5E /* UIImageView+Extension.swift in Sources */,
+				8800688E2C931E1A00881F71 /* InAppBrowserViewController.swift in Sources */,
 				88E93ADA2C923AC600EE3F5E /* StoryActionsDelegate.swift in Sources */,
 				88E93AD82C923AC600EE3F5E /* StoriesListViewController.swift in Sources */,
 				8817093A2C91808800FA8B63 /* MarkAsRealTimeInAppMessageDisplayedRequest.swift in Sources */,
@@ -664,11 +690,13 @@
 				A0765BE727CEB4700007215B /* EventRequest.swift in Sources */,
 				A0765BC327CEB4700007215B /* DengageUtilities.swift in Sources */,
 				A0765BD627CEB4700007215B /* DengageNotificationManager.swift in Sources */,
+				8800689C2C933CC300881F71 /* SwiftyJSON.swift in Sources */,
 				8817093E2C9180A000FA8B63 /* DeviceIdApiRequest.swift in Sources */,
 				A0765BD227CEB4700007215B /* InAppMessageHTMLView.swift in Sources */,
 				A0765BCF27CEB4700007215B /* TestPageTableViewCell.swift in Sources */,
 				A0765BDD27CEB4700007215B /* GetSDKParamsRequest.swift in Sources */,
 				88E93AE12C923AC600EE3F5E /* StoryImageRequestable.swift in Sources */,
+				880068942C931F3600881F71 /* AppForegroundEventRequest.swift in Sources */,
 				88E93AD72C923AC600EE3F5E /* StoriesListView.swift in Sources */,
 				A0765BF027CEB4700007215B /* DengageEventManager.swift in Sources */,
 				88E93AD42C923AC600EE3F5E /* CircleImageView.swift in Sources */,

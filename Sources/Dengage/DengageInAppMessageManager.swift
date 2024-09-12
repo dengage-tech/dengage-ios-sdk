@@ -297,7 +297,26 @@ extension DengageInAppMessageManager{
 //MARK: - Workers
 extension DengageInAppMessageManager {
     
-
+    func showAppStory(inAppMessage: InAppMessage, storyCompletion: ((StoriesListView?) -> Void)?) {
+        let data = inAppMessage.data
+        
+        if let storySet = data.content.props.storySet {
+            let storiesListView = StoriesListView()
+            let storiesListViewController = StoriesListViewController()
+            storiesListView.controller = storiesListViewController
+            storiesListView.controller?.storyActionsDelegate = self
+            storiesListView.setProperties(title: storySet.title, styling: storySet.styling)
+            storiesListViewController.collectionView = storiesListView.collectionView
+            storiesListViewController.loadInAppMessage(inAppMessage, data.publicId, data.content.contentId!)
+            storiesListView.collectionView.reloadData()
+            storiesListView.setDelegates()
+            storiesListViewController.collectionView = storiesListView.collectionView
+            storyCompletion?(storiesListView)
+            
+            self.storyEvent(eventType: .display, message: inAppMessage)
+            
+        }
+    }
     
     func showinlineInapp(propertyId : String , webView : InAppInlineElementView , inAppMessage: InAppMessage)
     {
@@ -314,7 +333,9 @@ extension DengageInAppMessageManager {
 
     }
     
-    func setNavigation(screenName: String? = nil, params: Dictionary<String,String>? = nil , propertyID : String? = nil , inAppInlineElement : InAppInlineElementView? = nil , hideIfNotFound: Bool = false) {
+    func setNavigation(screenName: String? = nil, params: Dictionary<String,String>? = nil , propertyID : String? = nil
+                       , inAppInlineElement : InAppInlineElementView? = nil
+                       , hideIfNotFound: Bool = false, storyPropertyID: String? = nil, storyCompletion: ((StoriesListView?) -> Void)? = nil) {
         
         guard !(config.inAppMessageShowTime != 0 && Date().timeMiliseconds < config.inAppMessageShowTime) else {return}
         
@@ -323,11 +344,17 @@ extension DengageInAppMessageManager {
         DengageLocalStorage.shared.set(value: false, for: .cancelInAppMessage)
 
         let messages = DengageLocalStorage.shared.getInAppMessages()
-        guard !messages.isEmpty else {return}
+        guard !messages.isEmpty else {
+            storyCompletion?(nil)
+            return
+        }
         
         let inAppMessages = DengageInAppMessageUtils.findNotExpiredInAppMessages(untilDate: Date(), messages)
         
-        guard let priorInAppMessage = DengageInAppMessageUtils.findPriorInAppMessage(inAppMessages: inAppMessages, screenName: screenName, params:params, config: config, propertyId: propertyID ) else {return}
+        guard let priorInAppMessage = DengageInAppMessageUtils.findPriorInAppMessage(inAppMessages: inAppMessages, screenName: screenName, params:params, config: config, propertyId: propertyID, storyPropertyId: storyPropertyID ) else {
+            storyCompletion?(nil)
+            return
+        }
        
         
         let delay = priorInAppMessage.data.displayTiming.delay ?? 0
@@ -336,12 +363,11 @@ extension DengageInAppMessageManager {
         
         if propertyID != nil
         {
-            if let ID = propertyID ,  let vw = inAppInlineElement
+            if let ID = propertyID, let vw = inAppInlineElement
             {
                 if priorInAppMessage.data.inlineTarget?.iosSelector == propertyID
                 {
                     showinlineInapp(propertyId: ID, webView: vw, inAppMessage: priorInAppMessage)
-
                 }
                 else if propertyID != "" && hideIfNotFound
                 {
@@ -356,13 +382,16 @@ extension DengageInAppMessageManager {
                 inAppInlineElement?.isHidden = true
 
             }
-
-        }
-        else
-        {
+        } else if let id = storyPropertyID {
+            if let iosSelector = priorInAppMessage.data.inlineTarget?.iosSelector, iosSelector == id, ("story".caseInsensitiveCompare(priorInAppMessage.data.content.type ?? "")) == .orderedSame
+            {
+                showAppStory(inAppMessage: priorInAppMessage, storyCompletion: storyCompletion)
+                return
+            }
+        } else {
             showInAppMessage(inAppMessage: priorInAppMessage)
-
         }
+        storyCompletion?(nil)
 
     }
 
@@ -961,22 +990,108 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     
 }
 
+//MARK: - StoryViewController Delegate
+
+extension DengageInAppMessageManager: StoryActionsDelegate {
+    
+    func storyEvent(eventType: StoryEventType, message: InAppMessage, storyProfileId: String = "", storyProfileName: String = ""
+                    , storyId: String = "", storyName: String = "", buttonUrl: String = "")  {
+        
+        guard let accountName = config.remoteConfiguration?.accountName,
+              let appId = config.remoteConfiguration?.appId,
+              let messageId = message.data.messageDetails,
+              let publicId = message.data.publicId else { return }
+        let request = StoryRequest(id: messageId,
+                                   contactKey: config.contactKey.key,
+                                   accountName: accountName,
+                                   deviceID: config.applicationIdentifier,
+                                   sessionId: sessionManager.currentSessionId,
+                                   campaignId: publicId,
+                                   appid: appId,
+                                   contentId: message.data.content.contentId,
+                                   storyEventType: eventType,
+                                   storyProfileId: storyProfileId,
+                                   storyProfileName: storyProfileName,
+                                   storyId: storyId,
+                                   storyName: storyName)
+        
+        apiClient.send(request: request) { result in
+            switch result {
+            case .success( _ ):
+                break
+            case .failure(let error):
+                Logger.log(message: "storyEvent_\(eventType.rawValue)_ERROR", argument: error.localizedDescription)
+            }
+        }
+        
+        if eventType == .storyClick {
+            guard let urlStr = URL(string: buttonUrl) else { return }
+            let deeplink = config.getDeeplink()
+            
+            if !deeplink.isEmpty {
+                if buttonUrl.contains(deeplink) || deeplink.contains(buttonUrl) {
+                    self.returnAfterDeeplinkRecieved?(buttonUrl)
+                    UIApplication.shared.open(urlStr, options: [:], completionHandler: nil)
+                }
+                else {
+                    UIApplication.shared.open(urlStr, options: [:], completionHandler: nil)
+                }
+            }
+            else {
+                UIApplication.shared.open(urlStr , options: [:], completionHandler: nil)
+            }
+        }
+    }
+    
+    
+    func setStoryCoverShown(storyCoverId: String, storySetId: String) {
+        var shownStoryCovers = DengageLocalStorage.shared.value(for: .shownStoryCoverDic) as? [String: [String]] ?? [String: [String]]()
+        if shownStoryCovers["\(storySetId)"] == nil {
+            shownStoryCovers["\(storySetId)"] = [storyCoverId]
+        } else if let st = shownStoryCovers["\(storySetId)"], !st.contains(storyCoverId) {
+            shownStoryCovers["\(storySetId)"]?.append(storyCoverId)
+        }
+        DengageLocalStorage.shared.set(value: shownStoryCovers, for: .shownStoryCoverDic)
+    }
+    
+    func sortStoryCovers(storyCovers: [StoryCover], storySetId: String) -> [StoryCover] {
+        var shownStoryCovers: [StoryCover] = []
+        var notShownStoryCovers: [StoryCover] = []
+        for storyCover in storyCovers.sorted(by: { $0.shown && !$1.shown }) {
+            var shown = false
+            if let shownStoryCovers = DengageLocalStorage.shared.value(for: .shownStoryCoverDic) as? [String: [String]] {
+                if let shownStoryCoversWithSetId = shownStoryCovers["\(storySetId)"], shownStoryCoversWithSetId.contains(storyCover.id) {
+                    shown = true
+                }
+            }
+            if shown {
+                shownStoryCovers.append(storyCover)
+            } else {
+                notShownStoryCovers.append(storyCover)
+            }
+        }
+        return notShownStoryCovers + shownStoryCovers
+    }
+    
+}
+
 
 protocol DengageInAppMessageManagerInterface: AnyObject{
     
     func fetchInAppMessages()
-    func setNavigation(screenName: String?, params: Dictionary<String,String>? , propertyID : String? , webView : InAppInlineElementView? )
+    func setNavigation(screenName: String?, params: Dictionary<String,String>? , propertyID : String? , webView : InAppInlineElementView?
+                       ,storyPropertyID: String?, storyCompletion: ((StoriesListView?) -> Void)?)
     func showInAppMessage(inAppMessage: InAppMessage)
     func fetchInAppExpiredMessages()
     func removeInAppMessageDisplay()
-
     
     
 }
 
 extension DengageInAppMessageManagerInterface {
-    func setNavigation(screenName: String? = nil, params: Dictionary<String,String>? = nil , propertyID : String? = nil , webView : InAppInlineElementView? = nil){
-        setNavigation(screenName: screenName, params: params,propertyID: propertyID, webView: webView)
+    func setNavigation(screenName: String? = nil, params: Dictionary<String,String>? = nil , propertyID : String? = nil , webView : InAppInlineElementView? = nil
+                       , storyPropertyID: String?, storyCompletion: ((StoriesListView?) -> Void)?) {
+        setNavigation(screenName: screenName, params: params, propertyID: propertyID, webView: webView, storyPropertyID: storyPropertyID, storyCompletion: storyCompletion)
     }
 }
 

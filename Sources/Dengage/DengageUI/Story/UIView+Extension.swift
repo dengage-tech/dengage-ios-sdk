@@ -114,7 +114,7 @@ internal extension UIView {
         }
         return self.centerYAnchor
     }
-    var width: CGFloat {
+    var sWidth: CGFloat {
         if #available(iOS 11.0, *) {
             return safeAreaLayoutGuide.layoutFrame.width
         }

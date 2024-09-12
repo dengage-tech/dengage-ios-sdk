@@ -20,7 +20,8 @@ final class DengageInAppMessageUtils{
     class func findPriorInAppMessage(inAppMessages: [InAppMessage],
                                      screenName: String? = nil,
                                      params: [String:String]? = nil,
-                                     config: DengageConfiguration , propertyId : String?) -> InAppMessage? {
+                                     config: DengageConfiguration , propertyId : String?, storyPropertyId: String?) -> InAppMessage? {
+        
         
         if let screenName = screenName, !screenName.isEmpty  {
             
@@ -28,7 +29,8 @@ final class DengageInAppMessageUtils{
                 
                 if let arrScreenFilter = message.data.displayCondition.screenNameFilters
                 {
-                    if message.isDisplayTimeAvailable() && operateRealTimeValues(message: message, with: params,config: config) && isInLineInApp(inAppMessage: message, propertyID: propertyId)
+                    if message.isDisplayTimeAvailable() && operateRealTimeValues(message: message, with: params, config: config)
+                        && (isInLineInApp(inAppMessage: message, propertyID: propertyId, storyPropertyId: storyPropertyId))
                     {
                         let operatorFilter = message.data.displayCondition.screenNameFilterLogicOperator
                         
@@ -65,7 +67,8 @@ final class DengageInAppMessageUtils{
                                 
                                 return operateScreenValues(value: nameFilter.value, for: screenName, operatorType: nameFilter.operatorType)
                                 
-                            } != nil && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message,config: config) && isInLineInApp(inAppMessage: message, propertyID: propertyId)
+                            } != nil && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message,config: config)
+                            && (isInLineInApp(inAppMessage: message, propertyID: propertyId, storyPropertyId: storyPropertyId))
                         }
                     }
                     
@@ -80,34 +83,45 @@ final class DengageInAppMessageUtils{
         }else {
             
             let inAppMessageWithoutScreenName = inAppMessages.sorted.first { message -> Bool in
-                return (message.data.displayCondition.screenNameFilters ?? []).isEmpty && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message, with: params, config: config) && isInLineInApp(inAppMessage: message, propertyID: propertyId)
-
+                return (message.data.displayCondition.screenNameFilters ?? []).isEmpty && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message, with: params, config: config)
+                && (isInLineInApp(inAppMessage:message, propertyID: propertyId, storyPropertyId: storyPropertyId))
+                
             }
             return inAppMessageWithoutScreenName
         }
     }
     
-    private class func isInLineInApp(inAppMessage:InAppMessage , propertyID : String?) -> Bool
+    private class func isInLineInApp(inAppMessage:InAppMessage, propertyID : String?, storyPropertyId : String? = nil) -> Bool
     {
-    
-        if (propertyID == nil || propertyID == "" ) && (inAppMessage.data.inlineTarget?.iosSelector == "" || inAppMessage.data.inlineTarget?.iosSelector == nil)
-        {
-            return true
+        if("story".caseInsensitiveCompare(inAppMessage.data.content.type ?? "")) == .orderedSame {
+            let isPropertyEmpty = storyPropertyId == nil || storyPropertyId == ""
+            let isSelectorEmpty = inAppMessage.data.inlineTarget?.iosSelector == "" || inAppMessage.data.inlineTarget?.iosSelector == nil
+            if isPropertyEmpty || isSelectorEmpty {
+                return false
+            } else {
+                return inAppMessage.data.inlineTarget?.iosSelector == storyPropertyId
+            }
+        } else if (storyPropertyId == nil || storyPropertyId == "") {
+            //TODO: EGEMEN: what is the purpose of this if?
+            if (propertyID == nil || propertyID == "" ) && (inAppMessage.data.inlineTarget?.iosSelector == "" || inAppMessage.data.inlineTarget?.iosSelector == nil)
+            {
+                return true
+            }
+            if (propertyID != nil || propertyID != "" ) && (inAppMessage.data.inlineTarget?.iosSelector == "" || inAppMessage.data.inlineTarget?.iosSelector == nil )
+            {
+                return false
+            }
+            else if (propertyID != nil || propertyID != "" ) && (inAppMessage.data.inlineTarget?.iosSelector != "" || inAppMessage.data.inlineTarget?.iosSelector != nil )
+            {
+                return inAppMessage.data.inlineTarget?.iosSelector == propertyID
+            }
+            //TODO: EGEMEN: what is the purpose of this else? Shouldn't this else return false in the following case
+            else
+            {
+                return (propertyID == nil || propertyID == "" )
+            }
         }
-        else if (propertyID != nil || propertyID != "" ) && (inAppMessage.data.inlineTarget?.iosSelector == "" || inAppMessage.data.inlineTarget?.iosSelector == nil )
-        {
-            return false
-        }
-        else if (propertyID != nil || propertyID != "" ) && (inAppMessage.data.inlineTarget?.iosSelector != "" || inAppMessage.data.inlineTarget?.iosSelector != nil )
-        {
-            return inAppMessage.data.inlineTarget?.iosSelector == propertyID
-        }
-        
-        else
-        {
-            return (propertyID == nil || propertyID == "" )
-        }
-        
+        return false
     }
     
     private class func operateScreenValues(value screenNameFilterValues: [String],

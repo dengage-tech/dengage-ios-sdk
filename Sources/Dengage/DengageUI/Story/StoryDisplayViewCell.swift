@@ -212,7 +212,7 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
         ])
         if(snapIndex != 0) {
             NSLayoutConstraint.activate([
-                snapView.leadingAnchor.constraint(equalTo: scrollview.leadingAnchor, constant: CGFloat(snapIndex)*scrollview.width)
+                snapView.leadingAnchor.constraint(equalTo: scrollview.leadingAnchor, constant: CGFloat(snapIndex)*scrollview.sWidth)
             ])
         }
         return snapView
@@ -258,7 +258,7 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
         ])
         if(snapIndex != 0) {
             NSLayoutConstraint.activate([
-                videoView.leadingAnchor.constraint(equalTo: scrollview.leadingAnchor, constant: CGFloat(snapIndex)*scrollview.width),
+                videoView.leadingAnchor.constraint(equalTo: scrollview.leadingAnchor, constant: CGFloat(snapIndex)*scrollview.sWidth),
             ])
         }
         return videoView
