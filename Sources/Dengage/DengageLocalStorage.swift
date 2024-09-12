@@ -79,6 +79,7 @@ final class DengageLocalStorage: NSObject {
         case delayForInAppMessage = "delayForInAppMessage"
         case language = "language"
 
+        case shownStoryCoverDic = "shownStoryCoverDic"
 
     }
 }

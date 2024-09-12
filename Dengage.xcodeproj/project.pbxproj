@@ -27,6 +27,27 @@
 		8817093E2C9180A000FA8B63 /* DeviceIdApiRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817093D2C9180A000FA8B63 /* DeviceIdApiRequest.swift */; };
 		881709412C91955E00FA8B63 /* VisitorInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817093F2C91955E00FA8B63 /* VisitorInfo.swift */; };
 		881709422C91955E00FA8B63 /* VisitCountItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709402C91955E00FA8B63 /* VisitCountItem.swift */; };
+		88E93AD42C923AC600EE3F5E /* CircleImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ABD2C923AC600EE3F5E /* CircleImageView.swift */; };
+		88E93AD52C923AC600EE3F5E /* LayoutAttributesAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ABE2C923AC600EE3F5E /* LayoutAttributesAnimator.swift */; };
+		88E93AD62C923AC600EE3F5E /* StoriesListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ABF2C923AC600EE3F5E /* StoriesListCell.swift */; };
+		88E93AD72C923AC600EE3F5E /* StoriesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93AC02C923AC600EE3F5E /* StoriesListView.swift */; };
+		88E93AD82C923AC600EE3F5E /* StoriesListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93AC12C923AC600EE3F5E /* StoriesListViewController.swift */; };
+		88E93AD92C923AC600EE3F5E /* StoriesListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93AC22C923AC600EE3F5E /* StoriesListViewModel.swift */; };
+		88E93ADA2C923AC600EE3F5E /* StoryActionsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93AC32C923AC600EE3F5E /* StoryActionsDelegate.swift */; };
+		88E93ADB2C923AC600EE3F5E /* StoryDisplayHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93AC42C923AC600EE3F5E /* StoryDisplayHeaderView.swift */; };
+		88E93ADC2C923AC600EE3F5E /* StoryDisplayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93AC52C923AC600EE3F5E /* StoryDisplayView.swift */; };
+		88E93ADD2C923AC600EE3F5E /* StoryDisplayViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93AC62C923AC600EE3F5E /* StoryDisplayViewCell.swift */; };
+		88E93ADE2C923AC600EE3F5E /* StoryDisplayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93AC72C923AC600EE3F5E /* StoryDisplayViewController.swift */; };
+		88E93ADF2C923AC600EE3F5E /* StoryGradientLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93AC82C923AC600EE3F5E /* StoryGradientLayer.swift */; };
+		88E93AE02C923AC600EE3F5E /* StoryImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93AC92C923AC600EE3F5E /* StoryImageCache.swift */; };
+		88E93AE12C923AC600EE3F5E /* StoryImageRequestable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ACA2C923AC600EE3F5E /* StoryImageRequestable.swift */; };
+		88E93AE22C923AC600EE3F5E /* StoryPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ACB2C923AC600EE3F5E /* StoryPlayerView.swift */; };
+		88E93AE32C923AC600EE3F5E /* StoryProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ACC2C923AC600EE3F5E /* StoryProgressView.swift */; };
+		88E93AE42C923AC600EE3F5E /* StoryRetryLoaderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ACD2C923AC600EE3F5E /* StoryRetryLoaderButton.swift */; };
+		88E93AE52C923AC600EE3F5E /* UIImageView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ACE2C923AC600EE3F5E /* UIImageView+Extension.swift */; };
+		88E93AE62C923AC600EE3F5E /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ACF2C923AC600EE3F5E /* UIView+Extension.swift */; };
+		88E93AEA2C923C2200EE3F5E /* StorySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93AE92C923C2200EE3F5E /* StorySet.swift */; };
+		88E93AEC2C923C8300EE3F5E /* StoryRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93AEB2C923C8300EE3F5E /* StoryRequest.swift */; };
 		A00EFCBE280777B8004659DE /* RFMScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EFCBD280777B8004659DE /* RFMScore.swift */; };
 		A00EFCC328077869004659DE /* DengageRFMManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EFCC228077869004659DE /* DengageRFMManager.swift */; };
 		A0765BBF27CEB4700007215B /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765B8227CEB4700007215B /* Constants.swift */; };
@@ -126,6 +147,27 @@
 		8817093D2C9180A000FA8B63 /* DeviceIdApiRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceIdApiRequest.swift; sourceTree = "<group>"; };
 		8817093F2C91955E00FA8B63 /* VisitorInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisitorInfo.swift; sourceTree = "<group>"; };
 		881709402C91955E00FA8B63 /* VisitCountItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisitCountItem.swift; sourceTree = "<group>"; };
+		88E93ABD2C923AC600EE3F5E /* CircleImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleImageView.swift; sourceTree = "<group>"; };
+		88E93ABE2C923AC600EE3F5E /* LayoutAttributesAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutAttributesAnimator.swift; sourceTree = "<group>"; };
+		88E93ABF2C923AC600EE3F5E /* StoriesListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoriesListCell.swift; sourceTree = "<group>"; };
+		88E93AC02C923AC600EE3F5E /* StoriesListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoriesListView.swift; sourceTree = "<group>"; };
+		88E93AC12C923AC600EE3F5E /* StoriesListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoriesListViewController.swift; sourceTree = "<group>"; };
+		88E93AC22C923AC600EE3F5E /* StoriesListViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoriesListViewModel.swift; sourceTree = "<group>"; };
+		88E93AC32C923AC600EE3F5E /* StoryActionsDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryActionsDelegate.swift; sourceTree = "<group>"; };
+		88E93AC42C923AC600EE3F5E /* StoryDisplayHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryDisplayHeaderView.swift; sourceTree = "<group>"; };
+		88E93AC52C923AC600EE3F5E /* StoryDisplayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryDisplayView.swift; sourceTree = "<group>"; };
+		88E93AC62C923AC600EE3F5E /* StoryDisplayViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryDisplayViewCell.swift; sourceTree = "<group>"; };
+		88E93AC72C923AC600EE3F5E /* StoryDisplayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryDisplayViewController.swift; sourceTree = "<group>"; };
+		88E93AC82C923AC600EE3F5E /* StoryGradientLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryGradientLayer.swift; sourceTree = "<group>"; };
+		88E93AC92C923AC600EE3F5E /* StoryImageCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryImageCache.swift; sourceTree = "<group>"; };
+		88E93ACA2C923AC600EE3F5E /* StoryImageRequestable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryImageRequestable.swift; sourceTree = "<group>"; };
+		88E93ACB2C923AC600EE3F5E /* StoryPlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryPlayerView.swift; sourceTree = "<group>"; };
+		88E93ACC2C923AC600EE3F5E /* StoryProgressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryProgressView.swift; sourceTree = "<group>"; };
+		88E93ACD2C923AC600EE3F5E /* StoryRetryLoaderButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryRetryLoaderButton.swift; sourceTree = "<group>"; };
+		88E93ACE2C923AC600EE3F5E /* UIImageView+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImageView+Extension.swift"; sourceTree = "<group>"; };
+		88E93ACF2C923AC600EE3F5E /* UIView+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
+		88E93AE92C923C2200EE3F5E /* StorySet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorySet.swift; sourceTree = "<group>"; };
+		88E93AEB2C923C8300EE3F5E /* StoryRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryRequest.swift; sourceTree = "<group>"; };
 		A00EFCBD280777B8004659DE /* RFMScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RFMScore.swift; sourceTree = "<group>"; };
 		A00EFCC228077869004659DE /* DengageRFMManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageRFMManager.swift; sourceTree = "<group>"; };
 		A0765B7627CEB4300007215B /* Dengage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Dengage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -230,6 +272,32 @@
 			path = RealTime;
 			sourceTree = "<group>";
 		};
+		88E93AD02C923AC600EE3F5E /* Story */ = {
+			isa = PBXGroup;
+			children = (
+				88E93ABD2C923AC600EE3F5E /* CircleImageView.swift */,
+				88E93ABE2C923AC600EE3F5E /* LayoutAttributesAnimator.swift */,
+				88E93ABF2C923AC600EE3F5E /* StoriesListCell.swift */,
+				88E93AC02C923AC600EE3F5E /* StoriesListView.swift */,
+				88E93AC12C923AC600EE3F5E /* StoriesListViewController.swift */,
+				88E93AC22C923AC600EE3F5E /* StoriesListViewModel.swift */,
+				88E93AC32C923AC600EE3F5E /* StoryActionsDelegate.swift */,
+				88E93AC42C923AC600EE3F5E /* StoryDisplayHeaderView.swift */,
+				88E93AC52C923AC600EE3F5E /* StoryDisplayView.swift */,
+				88E93AC62C923AC600EE3F5E /* StoryDisplayViewCell.swift */,
+				88E93AC72C923AC600EE3F5E /* StoryDisplayViewController.swift */,
+				88E93AC82C923AC600EE3F5E /* StoryGradientLayer.swift */,
+				88E93AC92C923AC600EE3F5E /* StoryImageCache.swift */,
+				88E93ACA2C923AC600EE3F5E /* StoryImageRequestable.swift */,
+				88E93ACB2C923AC600EE3F5E /* StoryPlayerView.swift */,
+				88E93ACC2C923AC600EE3F5E /* StoryProgressView.swift */,
+				88E93ACD2C923AC600EE3F5E /* StoryRetryLoaderButton.swift */,
+				88E93ACE2C923AC600EE3F5E /* UIImageView+Extension.swift */,
+				88E93ACF2C923AC600EE3F5E /* UIView+Extension.swift */,
+			);
+			path = Story;
+			sourceTree = "<group>";
+		};
 		A0765B6C27CEB4300007215B = {
 			isa = PBXGroup;
 			children = (
@@ -295,6 +363,7 @@
 		A0765B8B27CEB4700007215B /* DengageUI */ = {
 			isa = PBXGroup;
 			children = (
+				88E93AD02C923AC600EE3F5E /* Story */,
 				A0765B8C27CEB4700007215B /* CarouselNotificationUI */,
 				A0765B9027CEB4700007215B /* TestPage */,
 				A0765B9727CEB4700007215B /* InAppMessage */,
@@ -338,6 +407,7 @@
 		A0765B9F27CEB4700007215B /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				88E93AE92C923C2200EE3F5E /* StorySet.swift */,
 				A00EFCBD280777B8004659DE /* RFMScore.swift */,
 				A0765BA027CEB4700007215B /* Response */,
 				A0765BA227CEB4700007215B /* InAppMessage.swift */,
@@ -365,6 +435,7 @@
 		A0765BA727CEB4700007215B /* Request */ = {
 			isa = PBXGroup;
 			children = (
+				88E93AEB2C923C8300EE3F5E /* StoryRequest.swift */,
 				A0765BA827CEB4700007215B /* GetSDKParamsRequest.swift */,
 				A0765BA927CEB4700007215B /* InboxMessage */,
 				A0765BAD27CEB4700007215B /* InAppMessage */,
@@ -529,32 +600,45 @@
 			buildActionMask = 2147483647;
 			files = (
 				A0765BCD27CEB4700007215B /* DeviceCacheResetViewController.swift in Sources */,
+				88E93AE62C923AC600EE3F5E /* UIView+Extension.swift in Sources */,
+				88E93AEA2C923C2200EE3F5E /* StorySet.swift in Sources */,
 				A0765BE527CEB4700007215B /* OpenEventRequest.swift in Sources */,
 				A0765BC927CEB4700007215B /* DengageCarouselCell.swift in Sources */,
 				881709372C91808800FA8B63 /* GetVisitorInfoRequest.swift in Sources */,
 				881709282C91803E00FA8B63 /* DengageGeofenceState.swift in Sources */,
 				A0765BC227CEB4700007215B /* DengageInAppMessageManager.swift in Sources */,
 				A0765BD327CEB4700007215B /* DengageInAppMessageUtils.swift in Sources */,
+				88E93AD62C923AC600EE3F5E /* StoriesListCell.swift in Sources */,
 				881709222C91803E00FA8B63 /* DengageCLLocation.swift in Sources */,
 				A0765BC027CEB4700007215B /* DengageNotificationExtension.swift in Sources */,
+				88E93AE22C923AC600EE3F5E /* StoryPlayerView.swift in Sources */,
 				A0765BE827CEB4700007215B /* TagsRequest.swift in Sources */,
+				88E93ADC2C923AC600EE3F5E /* StoryDisplayView.swift in Sources */,
+				88E93AE42C923AC600EE3F5E /* StoryRetryLoaderButton.swift in Sources */,
 				881709232C91803E00FA8B63 /* DengageGeofenceCluster.swift in Sources */,
 				A0765BEA27CEB4700007215B /* TagItem.swift in Sources */,
 				A0765BE627CEB4700007215B /* TransactionalOpenEventRequest.swift in Sources */,
 				A0765BE927CEB4700007215B /* MakeSubscriptionRequest.swift in Sources */,
 				A0765BCE27CEB4700007215B /* DeviceInfoViewController.swift in Sources */,
+				88E93ADD2C923AC600EE3F5E /* StoryDisplayViewCell.swift in Sources */,
 				A0765BEC27CEB4700007215B /* Dengage.swift in Sources */,
+				88E93ADE2C923AC600EE3F5E /* StoryDisplayViewController.swift in Sources */,
 				A0765BD027CEB4700007215B /* InAppMessagesActionsDelegate.swift in Sources */,
+				88E93ADB2C923AC600EE3F5E /* StoryDisplayHeaderView.swift in Sources */,
 				A0765BCA27CEB4700007215B /* TestPageViewController.swift in Sources */,
 				881709392C91808800FA8B63 /* MarkAsRealTimeInAppMessageClickedRequest.swift in Sources */,
 				881709412C91955E00FA8B63 /* VisitorInfo.swift in Sources */,
 				881709252C91803E00FA8B63 /* DengageGeofenceHistory.swift in Sources */,
 				A0765BD927CEB4700007215B /* DengageMessage.swift in Sources */,
 				A0765BED27CEB4700007215B /* DengageManager.swift in Sources */,
+				88E93AE52C923AC600EE3F5E /* UIImageView+Extension.swift in Sources */,
+				88E93ADA2C923AC600EE3F5E /* StoryActionsDelegate.swift in Sources */,
+				88E93AD82C923AC600EE3F5E /* StoriesListViewController.swift in Sources */,
 				8817093A2C91808800FA8B63 /* MarkAsRealTimeInAppMessageDisplayedRequest.swift in Sources */,
 				A0765BD827CEB4700007215B /* InAppMessage.swift in Sources */,
 				A00EFCC328077869004659DE /* DengageRFMManager.swift in Sources */,
 				A0765BD427CEB4700007215B /* DengageInboxManager.swift in Sources */,
+				88E93AE32C923AC600EE3F5E /* StoryProgressView.swift in Sources */,
 				A0765BC427CEB4700007215B /* DengageSessionManager.swift in Sources */,
 				8817092A2C91803E00FA8B63 /* DengageLocationSource.swift in Sources */,
 				A0765BCB27CEB4700007215B /* TestInAppMessageViewController.swift in Sources */,
@@ -575,6 +659,8 @@
 				A0765BE027CEB4700007215B /* MarkAsReadRequest.swift in Sources */,
 				8817092F2C91807100FA8B63 /* GetGeofencesRequest.swift in Sources */,
 				A0765BDE27CEB4700007215B /* GetMessagesRequest.swift in Sources */,
+				88E93AD52C923AC600EE3F5E /* LayoutAttributesAnimator.swift in Sources */,
+				88E93AD92C923AC600EE3F5E /* StoriesListViewModel.swift in Sources */,
 				A0765BE727CEB4700007215B /* EventRequest.swift in Sources */,
 				A0765BC327CEB4700007215B /* DengageUtilities.swift in Sources */,
 				A0765BD627CEB4700007215B /* DengageNotificationManager.swift in Sources */,
@@ -582,11 +668,16 @@
 				A0765BD227CEB4700007215B /* InAppMessageHTMLView.swift in Sources */,
 				A0765BCF27CEB4700007215B /* TestPageTableViewCell.swift in Sources */,
 				A0765BDD27CEB4700007215B /* GetSDKParamsRequest.swift in Sources */,
+				88E93AE12C923AC600EE3F5E /* StoryImageRequestable.swift in Sources */,
+				88E93AD72C923AC600EE3F5E /* StoriesListView.swift in Sources */,
 				A0765BF027CEB4700007215B /* DengageEventManager.swift in Sources */,
+				88E93AD42C923AC600EE3F5E /* CircleImageView.swift in Sources */,
 				A0765BE227CEB4700007215B /* MarkAsInAppMessageAsDismissedRequest.swift in Sources */,
+				88E93AE02C923AC600EE3F5E /* StoryImageCache.swift in Sources */,
 				881709382C91808800FA8B63 /* MarkAsRealTimeInAppMessageAsDismissedRequest.swift in Sources */,
 				A0765BE327CEB4700007215B /* GetInAppMessagesRequest.swift in Sources */,
 				881709242C91803E00FA8B63 /* DengageGeofenceEvent.swift in Sources */,
+				88E93AEC2C923C8300EE3F5E /* StoryRequest.swift in Sources */,
 				A00EFCBE280777B8004659DE /* RFMScore.swift in Sources */,
 				8817092E2C91807100FA8B63 /* GeofenceEventSignalRequest.swift in Sources */,
 				A0765BC627CEB4700007215B /* DengageNetworking.swift in Sources */,
@@ -596,6 +687,7 @@
 				A0765BBF27CEB4700007215B /* Constants.swift in Sources */,
 				A0765BDB27CEB4700007215B /* ContentParams.swift in Sources */,
 				8817093C2C91809500FA8B63 /* FirstLaunchEventRequest.swift in Sources */,
+				88E93ADF2C923AC600EE3F5E /* StoryGradientLayer.swift in Sources */,
 				A0765BDF27CEB4700007215B /* DeleteMessagesRequest.swift in Sources */,
 				A0765BC727CEB4700007215B /* DengageNotificationCarouselView.swift in Sources */,
 				881709422C91955E00FA8B63 /* VisitCountItem.swift in Sources */,

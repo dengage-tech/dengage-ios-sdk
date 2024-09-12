@@ -12,6 +12,7 @@ struct ContentParams: Codable {
     let marginRight: CGFloat?
     let dismissOnTouchOutside: Bool
     let backgroundColor : String?
+    let storySet: StorySet?
 
     enum CodingKeys: String, CodingKey {
         case position
@@ -25,7 +26,7 @@ struct ContentParams: Codable {
         case marginRight
         case dismissOnTouchOutside
         case backgroundColor
-
+        case storySet
     }
     
     init(from decoder: Decoder) throws {
@@ -41,10 +42,10 @@ struct ContentParams: Codable {
         marginRight = try? container.decode(CGFloat.self, forKey: .marginRight)
         dismissOnTouchOutside = (try? container.decode(Bool.self, forKey: .dismissOnTouchOutside)) ?? true
         backgroundColor = try? container.decode(String.self, forKey: .backgroundColor)
-
+        storySet = try? container.decode(StorySet.self, forKey: .storySet)
     }
     
-    init(position: ContentPosition, shouldAnimate: Bool, html: String?, maxWidth: CGFloat?, radius: Int?, marginTop: CGFloat?, marginBottom: CGFloat?, marginLeft: CGFloat?, marginRight: CGFloat?, dismissOnTouchOutside: Bool, backgroundColor : String) {
+    init(position: ContentPosition, shouldAnimate: Bool, html: String?, maxWidth: CGFloat?, radius: Int?, marginTop: CGFloat?, marginBottom: CGFloat?, marginLeft: CGFloat?, marginRight: CGFloat?, dismissOnTouchOutside: Bool, backgroundColor : String, storySet: StorySet? = nil) {
         self.position = position
         self.shouldAnimate = shouldAnimate
         self.html = html
@@ -56,7 +57,7 @@ struct ContentParams: Codable {
         self.marginRight = marginRight
         self.dismissOnTouchOutside = dismissOnTouchOutside
         self.backgroundColor = backgroundColor
-
+        self.storySet = storySet
     }
 }
 
