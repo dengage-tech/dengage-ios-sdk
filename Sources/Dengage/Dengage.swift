@@ -5,7 +5,7 @@ import StoreKit
 public class Dengage{
     static var manager: DengageManager?
     
-    static var dengage: DengageManager? {
+    public static var dengage: DengageManager? {
         get{
             if self.manager == nil {
                 Logger.log(message: "Dengage not started correctly", argument: "")
@@ -17,12 +17,14 @@ public class Dengage{
         }
     }
     
+    public static var startCalled = false
     
     @objc public static func start(apiKey: String,
                                    application: UIApplication? = nil,
                                    launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
                                    dengageOptions options: DengageOptions = DengageOptions() , deviceId : String? = nil, contactKey : String? = nil , partnerDeviceId :String? = nil) {
         
+        startCalled = true
         
         if let id = deviceId
         {
@@ -503,16 +505,4 @@ extension Dengage{
     
     
 }
-//MARK: - Geofence
-extension Dengage{
-    
-    @objc public static func requestLocationPermissions() {
-        dengage?.requestLocationPermissions()
-    }
-    
-    @objc public static func stopGeofence() {
-        dengage?.stopGeofence()
-    }
-    
-    
-}
+

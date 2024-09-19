@@ -1,8 +1,8 @@
 import Foundation
 
-final class DengageLocalStorage: NSObject {
+final public class DengageLocalStorage: NSObject {
     
-    static let shared = DengageLocalStorage(suitName: SUIT_NAME)
+    public static let shared = DengageLocalStorage(suitName: SUIT_NAME)
     
     var userDefaults: UserDefaults
     
@@ -10,15 +10,15 @@ final class DengageLocalStorage: NSObject {
         userDefaults = UserDefaults(suiteName: suitName)!
     }
     
-    func set(value: Any?, for key: Key) {
+    public func set(value: Any?, for key: Key) {
         userDefaults.set(value, forKey: key.rawValue)
     }
     
-    func value(for key: Key) -> Any? {
+    public func value(for key: Key) -> Any? {
         return userDefaults.object(forKey: key.rawValue)
     }
     
-    enum Key: String{
+    public enum Key: String{
         case contactKey = "ContactKey"
         case token = "Token"
         case PartnerDeviceId = "PartnerDeviceId"
@@ -235,7 +235,7 @@ extension DengageLocalStorage {
         }
     }
     
-    func getOptions() -> DengageOptions? {
+    public func getOptions() -> DengageOptions? {
         guard let optionsData = userDefaults.object(forKey: Key.options.rawValue) as? Data else { return nil }
         let decoder = JSONDecoder()
         do {

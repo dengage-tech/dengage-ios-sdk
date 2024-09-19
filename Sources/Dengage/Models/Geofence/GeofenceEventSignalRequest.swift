@@ -1,18 +1,18 @@
 import Foundation
 
-struct GeofenceEventSignalRequest: APIRequest {
+public struct GeofenceEventSignalRequest: APIRequest {
     
-    typealias Response = EmptyResponse
+    public typealias Response = EmptyResponse
     
-    let method: HTTPMethod = .post
-    let enpointType: EndpointType = .geofence
-    var path: String {
+    public let method: HTTPMethod = .post
+    public let enpointType: EndpointType = .geofence
+    public var path: String {
         "/event-signal/\(integrationKey)"
     }
     
-    let queryParameters: [URLQueryItem] = []
+    public let queryParameters: [URLQueryItem] = []
     
-    var httpBody: Data? {
+    public var httpBody: Data? {
         let parameters = ["cid": clusterId,
                           "geoid": geofenceId,
                           "did": deviceId,
@@ -39,7 +39,7 @@ struct GeofenceEventSignalRequest: APIRequest {
     let token: String
     let permit: Bool
     
-    init(integrationKey: String,
+    public init(integrationKey: String,
          clusterId: Int,
          geofenceId: Int,
          deviceId: String,

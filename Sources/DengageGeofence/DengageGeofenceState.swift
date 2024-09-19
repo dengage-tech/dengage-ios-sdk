@@ -1,5 +1,6 @@
 import Foundation
 import CoreLocation
+import Dengage
 
 extension CLLocationCoordinate2D {
     func distanceSquared(_ cor2: CLLocationCoordinate2D) -> Double {

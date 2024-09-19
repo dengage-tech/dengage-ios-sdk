@@ -14,15 +14,6 @@
 		880068962C932B8700881F71 /* DengageVisitCountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880068952C932B8700881F71 /* DengageVisitCountManager.swift */; };
 		8800689C2C933CC300881F71 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8800689A2C933CC300881F71 /* SwiftyJSON.swift */; };
 		8800689D2C933CC300881F71 /* SwiftyJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 8800689B2C933CC300881F71 /* SwiftyJSON.h */; };
-		881709222C91803E00FA8B63 /* DengageCLLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709152C91803E00FA8B63 /* DengageCLLocation.swift */; };
-		881709232C91803E00FA8B63 /* DengageGeofenceCluster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709162C91803E00FA8B63 /* DengageGeofenceCluster.swift */; };
-		881709242C91803E00FA8B63 /* DengageGeofenceEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709172C91803E00FA8B63 /* DengageGeofenceEvent.swift */; };
-		881709252C91803E00FA8B63 /* DengageGeofenceHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709182C91803E00FA8B63 /* DengageGeofenceHistory.swift */; };
-		881709262C91803E00FA8B63 /* DengageGeofenceItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709192C91803E00FA8B63 /* DengageGeofenceItem.swift */; };
-		881709272C91803E00FA8B63 /* DengageGeofenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817091A2C91803E00FA8B63 /* DengageGeofenceManager.swift */; };
-		881709282C91803E00FA8B63 /* DengageGeofenceState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817091B2C91803E00FA8B63 /* DengageGeofenceState.swift */; };
-		881709292C91803E00FA8B63 /* DengageGeofenceTrackingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817091C2C91803E00FA8B63 /* DengageGeofenceTrackingOptions.swift */; };
-		8817092A2C91803E00FA8B63 /* DengageLocationSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817091D2C91803E00FA8B63 /* DengageLocationSource.swift */; };
 		8817092E2C91807100FA8B63 /* GeofenceEventSignalRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817092B2C91807100FA8B63 /* GeofenceEventSignalRequest.swift */; };
 		8817092F2C91807100FA8B63 /* GetGeofencesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817092C2C91807100FA8B63 /* GetGeofencesRequest.swift */; };
 		881709362C91808800FA8B63 /* GetRealTimeMesagesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709302C91808800FA8B63 /* GetRealTimeMesagesRequest.swift */; };
@@ -34,6 +25,18 @@
 		8817093E2C9180A000FA8B63 /* DeviceIdApiRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817093D2C9180A000FA8B63 /* DeviceIdApiRequest.swift */; };
 		881709412C91955E00FA8B63 /* VisitorInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817093F2C91955E00FA8B63 /* VisitorInfo.swift */; };
 		881709422C91955E00FA8B63 /* VisitCountItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709402C91955E00FA8B63 /* VisitCountItem.swift */; };
+		881EE0102C996A1000838C23 /* DengageGeofence.h in Headers */ = {isa = PBXBuildFile; fileRef = 881EE00F2C996A1000838C23 /* DengageGeofence.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		881EE01A2C996B0D00838C23 /* Dengage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0765B7627CEB4300007215B /* Dengage.framework */; };
+		881EE01B2C996B7800838C23 /* DengageGeofenceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817091A2C91803E00FA8B63 /* DengageGeofenceManager.swift */; };
+		881EE0202C996B7800838C23 /* DengageGeofenceTrackingOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817091C2C91803E00FA8B63 /* DengageGeofenceTrackingOptions.swift */; };
+		881EE0212C996B7800838C23 /* DengageCLLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709152C91803E00FA8B63 /* DengageCLLocation.swift */; };
+		881EE0222C996B7800838C23 /* DengageLocationSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817091D2C91803E00FA8B63 /* DengageLocationSource.swift */; };
+		881EE0232C996B7800838C23 /* DengageGeofenceState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817091B2C91803E00FA8B63 /* DengageGeofenceState.swift */; };
+		881EE0242C996BD900838C23 /* DengageGeofenceCluster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709162C91803E00FA8B63 /* DengageGeofenceCluster.swift */; };
+		881EE0252C996BE600838C23 /* DengageGeofenceItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709192C91803E00FA8B63 /* DengageGeofenceItem.swift */; };
+		881EE0262C99789100838C23 /* DengageGeofenceHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709182C91803E00FA8B63 /* DengageGeofenceHistory.swift */; };
+		881EE0272C9978B300838C23 /* DengageGeofenceEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709172C91803E00FA8B63 /* DengageGeofenceEvent.swift */; };
+		881EE0292C9989AA00838C23 /* DengageGeofence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881EE0282C9989AA00838C23 /* DengageGeofence.swift */; };
 		88E93AD42C923AC600EE3F5E /* CircleImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ABD2C923AC600EE3F5E /* CircleImageView.swift */; };
 		88E93AD52C923AC600EE3F5E /* LayoutAttributesAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ABE2C923AC600EE3F5E /* LayoutAttributesAnimator.swift */; };
 		88E93AD62C923AC600EE3F5E /* StoriesListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ABF2C923AC600EE3F5E /* StoriesListCell.swift */; };
@@ -110,6 +113,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		881EE0172C996AF700838C23 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A0765B6D27CEB4300007215B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A0765B7527CEB4300007215B;
+			remoteInfo = Dengage;
+		};
 		A092216D27CED6D600BDA35E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A092216727CED6D600BDA35E /* ios-example-app.xcodeproj */;
@@ -161,6 +171,9 @@
 		8817093D2C9180A000FA8B63 /* DeviceIdApiRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceIdApiRequest.swift; sourceTree = "<group>"; };
 		8817093F2C91955E00FA8B63 /* VisitorInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisitorInfo.swift; sourceTree = "<group>"; };
 		881709402C91955E00FA8B63 /* VisitCountItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisitCountItem.swift; sourceTree = "<group>"; };
+		881EE00D2C996A1000838C23 /* DengageGeofence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DengageGeofence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		881EE00F2C996A1000838C23 /* DengageGeofence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DengageGeofence.h; sourceTree = "<group>"; };
+		881EE0282C9989AA00838C23 /* DengageGeofence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageGeofence.swift; sourceTree = "<group>"; };
 		88E93ABD2C923AC600EE3F5E /* CircleImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleImageView.swift; sourceTree = "<group>"; };
 		88E93ABE2C923AC600EE3F5E /* LayoutAttributesAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutAttributesAnimator.swift; sourceTree = "<group>"; };
 		88E93ABF2C923AC600EE3F5E /* StoriesListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoriesListCell.swift; sourceTree = "<group>"; };
@@ -239,6 +252,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		881EE00A2C996A1000838C23 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				881EE01A2C996B0D00838C23 /* Dengage.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A0765B7327CEB4300007215B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -249,25 +270,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		8817091E2C91803E00FA8B63 /* Geofence */ = {
+		8817092D2C91807100FA8B63 /* Geofence */ = {
 			isa = PBXGroup;
 			children = (
-				881709152C91803E00FA8B63 /* DengageCLLocation.swift */,
 				881709162C91803E00FA8B63 /* DengageGeofenceCluster.swift */,
 				881709172C91803E00FA8B63 /* DengageGeofenceEvent.swift */,
 				881709182C91803E00FA8B63 /* DengageGeofenceHistory.swift */,
 				881709192C91803E00FA8B63 /* DengageGeofenceItem.swift */,
-				8817091A2C91803E00FA8B63 /* DengageGeofenceManager.swift */,
-				8817091B2C91803E00FA8B63 /* DengageGeofenceState.swift */,
-				8817091C2C91803E00FA8B63 /* DengageGeofenceTrackingOptions.swift */,
-				8817091D2C91803E00FA8B63 /* DengageLocationSource.swift */,
-			);
-			path = Geofence;
-			sourceTree = "<group>";
-		};
-		8817092D2C91807100FA8B63 /* Geofence */ = {
-			isa = PBXGroup;
-			children = (
 				8817092B2C91807100FA8B63 /* GeofenceEventSignalRequest.swift */,
 				8817092C2C91807100FA8B63 /* GetGeofencesRequest.swift */,
 			);
@@ -284,6 +293,27 @@
 				881709342C91808800FA8B63 /* MarkAsRealTimeInAppMessageDisplayedRequest.swift */,
 			);
 			path = RealTime;
+			sourceTree = "<group>";
+		};
+		881EE00E2C996A1000838C23 /* DengageGeofence */ = {
+			isa = PBXGroup;
+			children = (
+				881709152C91803E00FA8B63 /* DengageCLLocation.swift */,
+				881EE0282C9989AA00838C23 /* DengageGeofence.swift */,
+				8817091A2C91803E00FA8B63 /* DengageGeofenceManager.swift */,
+				8817091B2C91803E00FA8B63 /* DengageGeofenceState.swift */,
+				8817091C2C91803E00FA8B63 /* DengageGeofenceTrackingOptions.swift */,
+				8817091D2C91803E00FA8B63 /* DengageLocationSource.swift */,
+				881EE00F2C996A1000838C23 /* DengageGeofence.h */,
+			);
+			path = DengageGeofence;
+			sourceTree = "<group>";
+		};
+		881EE0192C996B0D00838C23 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		88E93AD02C923AC600EE3F5E /* Story */ = {
@@ -317,6 +347,7 @@
 			children = (
 				A0765B8027CEB4700007215B /* Sources */,
 				A0765B7727CEB4300007215B /* Products */,
+				881EE0192C996B0D00838C23 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -324,6 +355,7 @@
 			isa = PBXGroup;
 			children = (
 				A0765B7627CEB4300007215B /* Dengage.framework */,
+				881EE00D2C996A1000838C23 /* DengageGeofence.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -331,8 +363,9 @@
 		A0765B8027CEB4700007215B /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				A092216727CED6D600BDA35E /* ios-example-app.xcodeproj */,
 				A0765B8127CEB4700007215B /* Dengage */,
+				881EE00E2C996A1000838C23 /* DengageGeofence */,
+				A092216727CED6D600BDA35E /* ios-example-app.xcodeproj */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -359,7 +392,6 @@
 				880068952C932B8700881F71 /* DengageVisitCountManager.swift */,
 				A0765B8427CEB4700007215B /* ThreadSafeContainer.swift */,
 				A0765B8B27CEB4700007215B /* DengageUI */,
-				8817091E2C91803E00FA8B63 /* Geofence */,
 				A0765B9F27CEB4700007215B /* Models */,
 				A0765B8827CEB4700007215B /* Networking */,
 			);
@@ -514,6 +546,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		881EE0082C996A1000838C23 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				881EE0102C996A1000838C23 /* DengageGeofence.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A0765B7127CEB4300007215B /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -525,6 +565,25 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		881EE00C2C996A1000838C23 /* DengageGeofence */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 881EE0162C996A1000838C23 /* Build configuration list for PBXNativeTarget "DengageGeofence" */;
+			buildPhases = (
+				881EE0082C996A1000838C23 /* Headers */,
+				881EE0092C996A1000838C23 /* Sources */,
+				881EE00A2C996A1000838C23 /* Frameworks */,
+				881EE00B2C996A1000838C23 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				881EE0182C996AF700838C23 /* PBXTargetDependency */,
+			);
+			name = DengageGeofence;
+			productName = DengageGeofence;
+			productReference = 881EE00D2C996A1000838C23 /* DengageGeofence.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		A0765B7527CEB4300007215B /* Dengage */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A0765B7D27CEB4300007215B /* Build configuration list for PBXNativeTarget "Dengage" */;
@@ -553,6 +612,9 @@
 				LastSwiftUpdateCheck = 1310;
 				LastUpgradeCheck = 1310;
 				TargetAttributes = {
+					881EE00C2C996A1000838C23 = {
+						CreatedOnToolsVersion = 15.4;
+					};
 					A0765B7527CEB4300007215B = {
 						CreatedOnToolsVersion = 13.1;
 					};
@@ -578,6 +640,7 @@
 			projectRoot = "";
 			targets = (
 				A0765B7527CEB4300007215B /* Dengage */,
+				881EE00C2C996A1000838C23 /* DengageGeofence */,
 			);
 		};
 /* End PBXProject section */
@@ -607,6 +670,13 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		881EE00B2C996A1000838C23 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A0765B7427CEB4300007215B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -617,30 +687,44 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		881EE0092C996A1000838C23 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				881EE0222C996B7800838C23 /* DengageLocationSource.swift in Sources */,
+				881EE0292C9989AA00838C23 /* DengageGeofence.swift in Sources */,
+				881EE0202C996B7800838C23 /* DengageGeofenceTrackingOptions.swift in Sources */,
+				881EE0232C996B7800838C23 /* DengageGeofenceState.swift in Sources */,
+				881EE01B2C996B7800838C23 /* DengageGeofenceManager.swift in Sources */,
+				881EE0212C996B7800838C23 /* DengageCLLocation.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A0765B7227CEB4300007215B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				881EE0262C99789100838C23 /* DengageGeofenceHistory.swift in Sources */,
 				A0765BCD27CEB4700007215B /* DeviceCacheResetViewController.swift in Sources */,
 				88E93AE62C923AC600EE3F5E /* UIView+Extension.swift in Sources */,
+				881EE0252C996BE600838C23 /* DengageGeofenceItem.swift in Sources */,
+				881EE0272C9978B300838C23 /* DengageGeofenceEvent.swift in Sources */,
 				88E93AEA2C923C2200EE3F5E /* StorySet.swift in Sources */,
 				8800688C2C931DDA00881F71 /* InAppInlineElementView.swift in Sources */,
 				880068922C931E9E00881F71 /* ExpiredInAppMessageRequest.swift in Sources */,
 				A0765BE527CEB4700007215B /* OpenEventRequest.swift in Sources */,
 				A0765BC927CEB4700007215B /* DengageCarouselCell.swift in Sources */,
 				881709372C91808800FA8B63 /* GetVisitorInfoRequest.swift in Sources */,
-				881709282C91803E00FA8B63 /* DengageGeofenceState.swift in Sources */,
 				880068962C932B8700881F71 /* DengageVisitCountManager.swift in Sources */,
 				A0765BC227CEB4700007215B /* DengageInAppMessageManager.swift in Sources */,
 				A0765BD327CEB4700007215B /* DengageInAppMessageUtils.swift in Sources */,
+				881EE0242C996BD900838C23 /* DengageGeofenceCluster.swift in Sources */,
 				88E93AD62C923AC600EE3F5E /* StoriesListCell.swift in Sources */,
-				881709222C91803E00FA8B63 /* DengageCLLocation.swift in Sources */,
 				A0765BC027CEB4700007215B /* DengageNotificationExtension.swift in Sources */,
 				88E93AE22C923AC600EE3F5E /* StoryPlayerView.swift in Sources */,
 				A0765BE827CEB4700007215B /* TagsRequest.swift in Sources */,
 				88E93ADC2C923AC600EE3F5E /* StoryDisplayView.swift in Sources */,
 				88E93AE42C923AC600EE3F5E /* StoryRetryLoaderButton.swift in Sources */,
-				881709232C91803E00FA8B63 /* DengageGeofenceCluster.swift in Sources */,
 				A0765BEA27CEB4700007215B /* TagItem.swift in Sources */,
 				A0765BE627CEB4700007215B /* TransactionalOpenEventRequest.swift in Sources */,
 				A0765BE927CEB4700007215B /* MakeSubscriptionRequest.swift in Sources */,
@@ -653,7 +737,6 @@
 				A0765BCA27CEB4700007215B /* TestPageViewController.swift in Sources */,
 				881709392C91808800FA8B63 /* MarkAsRealTimeInAppMessageClickedRequest.swift in Sources */,
 				881709412C91955E00FA8B63 /* VisitorInfo.swift in Sources */,
-				881709252C91803E00FA8B63 /* DengageGeofenceHistory.swift in Sources */,
 				A0765BD927CEB4700007215B /* DengageMessage.swift in Sources */,
 				A0765BED27CEB4700007215B /* DengageManager.swift in Sources */,
 				88E93AE52C923AC600EE3F5E /* UIImageView+Extension.swift in Sources */,
@@ -666,7 +749,6 @@
 				A0765BD427CEB4700007215B /* DengageInboxManager.swift in Sources */,
 				88E93AE32C923AC600EE3F5E /* StoryProgressView.swift in Sources */,
 				A0765BC427CEB4700007215B /* DengageSessionManager.swift in Sources */,
-				8817092A2C91803E00FA8B63 /* DengageLocationSource.swift in Sources */,
 				A0765BCB27CEB4700007215B /* TestInAppMessageViewController.swift in Sources */,
 				A0765BDC27CEB4700007215B /* PushContent.swift in Sources */,
 				881709362C91808800FA8B63 /* GetRealTimeMesagesRequest.swift in Sources */,
@@ -674,10 +756,7 @@
 				A0765BE427CEB4700007215B /* MarkAsInAppMessageDisplayedRequest.swift in Sources */,
 				A0765BC127CEB4700007215B /* ThreadSafeContainer.swift in Sources */,
 				A0765BD127CEB4700007215B /* InAppMessageHTMLViewController.swift in Sources */,
-				881709272C91803E00FA8B63 /* DengageGeofenceManager.swift in Sources */,
-				881709262C91803E00FA8B63 /* DengageGeofenceItem.swift in Sources */,
 				A0765BEF27CEB4700007215B /* DengageKeychain.swift in Sources */,
-				881709292C91803E00FA8B63 /* DengageGeofenceTrackingOptions.swift in Sources */,
 				A0765BEB27CEB4700007215B /* DengageConfiguration.swift in Sources */,
 				A0765BD727CEB4700007215B /* GetSDKParamsResponse.swift in Sources */,
 				A0765BCC27CEB4700007215B /* TestPageLogViewController.swift in Sources */,
@@ -704,7 +783,6 @@
 				88E93AE02C923AC600EE3F5E /* StoryImageCache.swift in Sources */,
 				881709382C91808800FA8B63 /* MarkAsRealTimeInAppMessageAsDismissedRequest.swift in Sources */,
 				A0765BE327CEB4700007215B /* GetInAppMessagesRequest.swift in Sources */,
-				881709242C91803E00FA8B63 /* DengageGeofenceEvent.swift in Sources */,
 				88E93AEC2C923C8300EE3F5E /* StoryRequest.swift in Sources */,
 				A00EFCBE280777B8004659DE /* RFMScore.swift in Sources */,
 				8817092E2C91807100FA8B63 /* GeofenceEventSignalRequest.swift in Sources */,
@@ -725,7 +803,90 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		881EE0182C996AF700838C23 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A0765B7527CEB4300007215B /* Dengage */;
+			targetProxy = 881EE0172C996AF700838C23 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		881EE0112C996A1000838C23 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.DengageGeofence;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		881EE0122C996A1000838C23 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.DengageGeofence;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		A0765B7B27CEB4300007215B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -855,7 +1016,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -885,7 +1046,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -911,6 +1072,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		881EE0162C996A1000838C23 /* Build configuration list for PBXNativeTarget "DengageGeofence" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				881EE0112C996A1000838C23 /* Debug */,
+				881EE0122C996A1000838C23 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A0765B7027CEB4300007215B /* Build configuration list for PBXProject "Dengage" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -4,7 +4,7 @@ import CoreTelephony
 import UIKit
 import AppTrackingTransparency
 
-final class DengageConfiguration:Encodable {
+final public class DengageConfiguration:Encodable {
     
     let subscriptionURL: URL
     let eventURL: URL
@@ -12,13 +12,13 @@ final class DengageConfiguration:Encodable {
     var deviceLanguage: String
     let deviceTimeZone: String
     let appVersion: String
-    var applicationIdentifier: String
+    public var applicationIdentifier: String
     let advertisingIdentifier: String
     let getCarrierIdentifier: String
     let sdkVersion: String
-    let integrationKey: String
+    public let integrationKey: String
     let options: DengageOptions
-    var deviceToken: String?
+    public var deviceToken: String?
     let userAgent: String
     var permission: Bool
     let dengageDeviceIdApiUrl: URL
@@ -60,7 +60,7 @@ final class DengageConfiguration:Encodable {
         
     }
     
-    var contactKey: (key: String, type:String) {
+    public var contactKey: (key: String, type:String) {
         let key = getContactKey() ?? applicationIdentifier
         let type = getContactKey() != nil ? "c" : "d"
         return (key, type)

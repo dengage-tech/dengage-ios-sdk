@@ -3,19 +3,18 @@ import UserNotifications
 import UIKit
 public class DengageManager {
 
-    var config: DengageConfiguration
+    public var config: DengageConfiguration
     var application: UIApplication?
     var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     var options: DengageOptions?
     var threadContainer = ThreadSafeContainer(label: "DengageMainLock")
-    var apiClient: DengageNetworking
+    public var apiClient: DengageNetworking
     var eventManager: DengageEventProtocolInterface
     var sessionManager: DengageSessionManagerInterface
     var inboxManager: DengageInboxManager
     var inAppManager: DengageInAppMessageManager
     var notificationManager: DengageNotificationManagerInterface
     var dengageRFMManager: DengageRFMManager
-    var geofenceManager: DengageGeofenceManagerInterface?
 
     var testPageWindow: UIWindow?
     
@@ -44,17 +43,6 @@ public class DengageManager {
                                                               service: apiClient,
                                                               eventManager: eventManager,
                                                               launchOptions: launchOptions)
-        
-        if config.options.enableGeofence
-        {
-            self.geofenceManager = DengageGeofenceManager(config: config,
-                                                          service: apiClient)
-        }
-        else
-        {
-            self.geofenceManager = nil
-        }
-        
         
         self.dengageRFMManager = DengageRFMManager()
         
@@ -382,15 +370,12 @@ extension DengageManager {
     public let disableOpenURL: Bool
     public let badgeCountReset: Bool
     public let disableRegisterForRemoteNotifications: Bool
-    public let enableGeofence: Bool
     public init(disableOpenURL: Bool = false,
                 badgeCountReset: Bool = false,
-                disableRegisterForRemoteNotifications: Bool = false,
-                enableGeofence: Bool = false) {
+                disableRegisterForRemoteNotifications: Bool = false) {
         self.disableOpenURL = disableOpenURL
         self.badgeCountReset = badgeCountReset
         self.disableRegisterForRemoteNotifications = disableRegisterForRemoteNotifications
-        self.enableGeofence = enableGeofence
         
     }
     
@@ -399,11 +384,10 @@ extension DengageManager {
         disableOpenURL = try container.decode(Bool.self, forKey: .disableOpenURL)
         badgeCountReset = try container.decode(Bool.self, forKey: .badgeCountReset)
         disableRegisterForRemoteNotifications = try container.decode(Bool.self, forKey: .disableRegisterForRemoteNotifications)
-        enableGeofence = try container.decode(Bool.self, forKey: .enableGeofence)
     }
     
     enum CodingKeys: String, CodingKey {
-        case disableOpenURL, badgeCountReset, disableRegisterForRemoteNotifications, enableGeofence
+        case disableOpenURL, badgeCountReset, disableRegisterForRemoteNotifications
     }
 }
 
@@ -416,17 +400,4 @@ extension DengageManager {
         testPageWindow?.windowLevel = UIWindow.Level(rawValue: 2)
         testPageWindow?.makeKeyAndVisible()
     }
-}
-
-//MARK: - Geofence
-extension DengageManager {
-    
-    func requestLocationPermissions() {
-        geofenceManager?.requestLocationPermissions()
-    }
-    
-    func stopGeofence() {
-        geofenceManager?.stopGeofence()
-    }
-    
 }

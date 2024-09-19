@@ -9,7 +9,7 @@
     <key>DengageEventApiUrl</key>
     <string>https://dev-push.dengage.com</string>
 	<key>DengageGeofenceApiUrl</key>
-	<string>https://push.dengage.com/geoapi/</string>
+	<string>https://dev-push.dengage.com/geoapi/</string>
 	<key>DengageInAppApiUrl</key>
 	<string>https://push.dengage.com</string>
 	<key>UIBackgroundModes</key>
@@ -20,5 +20,13 @@
 	</array>
 	<key>fetchRealTimeINAPPURL</key>
 	<string>https://dev-inapp.lib.dengage.com</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Dengage will use your location always and when in use!</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Dengage will use your location always!</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Dengage will use your location when in use!</string>
+    <key>NSUserTrackingUsageDescription</key>
+    <string>Dengage uses your advertising identifier!</string>
 </dict>
 </plist>

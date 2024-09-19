@@ -1,6 +1,7 @@
 
 import UIKit
 import Dengage
+import DengageGeofence
 
 class GeofenceViewController: UIViewController {
     
@@ -43,9 +44,9 @@ extension GeofenceViewController: UITableViewDelegate{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch rows[indexPath.row]{
         case .requestLocationAlwaysAuthorization:
-            Dengage.requestLocationPermissions()
+            DengageGeofence.requestLocationPermissions()
         case .stopGeofencing:
-            Dengage.stopGeofence()
+            DengageGeofence.stopGeofence()
         }
     }
 }

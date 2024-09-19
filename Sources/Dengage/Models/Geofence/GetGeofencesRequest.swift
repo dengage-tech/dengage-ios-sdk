@@ -1,18 +1,18 @@
 import Foundation
 
-struct GetGeofencesRequest: APIRequest {
+public struct GetGeofencesRequest: APIRequest {
 
-    typealias Response = [DengageGeofenceCluster]
+    public typealias Response = [DengageGeofenceCluster]
 
-    let method: HTTPMethod = .get
-    let enpointType: EndpointType = .geofence
-    var path: String {
+    public let method: HTTPMethod = .get
+    public let enpointType: EndpointType = .geofence
+    public var path: String {
         "/geofence/\(integrationKey)"
     }
 
-    let httpBody: Data? = nil
+    public let httpBody: Data? = nil
 
-    var queryParameters: [URLQueryItem] {
+    public var queryParameters: [URLQueryItem] {
         [
             URLQueryItem(name: "latitude", value: String(format: "%.06f", latitude)),
             URLQueryItem(name: "longitude", value: String(format: "%.06f", longitude))
@@ -23,7 +23,7 @@ struct GetGeofencesRequest: APIRequest {
     let latitude: Double
     let longitude: Double
 
-    init(integrationKey: String,
+    public init(integrationKey: String,
          latitude: Double,
          longitude: Double) {
         self.integrationKey = integrationKey

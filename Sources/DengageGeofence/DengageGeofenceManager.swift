@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 import CoreLocation
 import UserNotifications
+import Dengage
 
 let kIdentifierPrefix = "dengage_"
 let kBubbleGeofenceIdentifierPrefix = "dengage_bubble_"
@@ -47,9 +48,11 @@ final class DengageGeofenceManager: NSObject, DengageGeofenceManagerInterface {
     }
     
     override init() {
-        let apiKey =  DengageLocalStorage.shared.value(for: .apiKey) as? String ?? ""
-        let options = DengageLocalStorage.shared.getOptions() ?? DengageOptions()
-        Dengage.start(apiKey: apiKey, application: UIApplication.shared, launchOptions: nil, dengageOptions: options)
+        if !Dengage.startCalled {
+            let integrationKey =  DengageLocalStorage.shared.value(for: .integrationKeySubscription) as? String ?? ""
+            let options = DengageLocalStorage.shared.getOptions() ?? DengageOptions()
+            Dengage.start(apiKey: integrationKey, application: UIApplication.shared, launchOptions: nil, dengageOptions: options)
+        }
         if let apiClient = Dengage.dengage?.apiClient, let config = Dengage.dengage?.config {
             self.apiClient = apiClient
             self.config = config
@@ -67,7 +70,7 @@ final class DengageGeofenceManager: NSObject, DengageGeofenceManagerInterface {
         lManager.delegate = self
         lPLManager.delegate = self
         updateTracking(location: nil, fromInitialize: true)
-        if DengageGeofenceState.getGeofenceEnabled(){
+        if DengageGeofenceState.getGeofenceEnabled() {
             startTracking(options: tOptions, fromInitialize: true)
         }
     }

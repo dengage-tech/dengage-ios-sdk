@@ -1,6 +1,6 @@
 import Foundation
 
-final class DengageNetworking {
+final public class DengageNetworking {
     
     let config: DengageConfiguration
     let session: URLSession
@@ -12,7 +12,7 @@ final class DengageNetworking {
         self.session = session
     }
     
-    func send<T: APIRequest>(request: T, completion: @escaping (Result<T.Response, Error>) -> Void) {
+    public func send<T: APIRequest>(request: T, completion: @escaping (Result<T.Response, Error>) -> Void) {
         let decoder = JSONDecoder()
         let baseURL = createBaseURL(for: request.enpointType)
         var apiRequest = request.asURLRequest(with: baseURL)
