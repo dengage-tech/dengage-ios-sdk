@@ -50,8 +50,7 @@ final class DengageGeofenceManager: NSObject, DengageGeofenceManagerInterface {
     override init() {
         if !Dengage.startCalled {
             let integrationKey =  DengageLocalStorage.shared.value(for: .integrationKeySubscription) as? String ?? ""
-            let options = DengageLocalStorage.shared.getOptions() ?? DengageOptions()
-            Dengage.start(apiKey: integrationKey, application: UIApplication.shared, launchOptions: nil, dengageOptions: options)
+            Dengage.start(apiKey: integrationKey, launchOptions: nil)
         }
         if let apiClient = Dengage.dengage?.apiClient, let config = Dengage.dengage?.config {
             self.apiClient = apiClient
