@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name             = 'Dengage'
+  s.name             = 'DengageGeofence'
   s.version          = '5.70.2'
   s.summary          = 'Dengage Geofence SDK'
   s.description      = 'Customer Driven Marketing with built-in Customer Data Platform powered by full marketing automation capabilities'
