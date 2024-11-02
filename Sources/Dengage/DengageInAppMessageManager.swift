@@ -61,7 +61,7 @@ extension DengageInAppMessageManager{
             return
         }
         guard let remoteConfig = config.remoteConfiguration, let accountName = remoteConfig.accountName ,let appid = remoteConfig.appId else { return }
-        Logger.log(message: "fetchInAppMessages request started")
+        Logger.log(message: "fetchInAppExpiredMessages request started")
         let request = ExpiredInAppMessageRequest.init(accountName: accountName, contactKey: config.contactKey.key, appid: appid)
         apiClient.send(request: request) { [weak self] result in
             switch result {
@@ -70,7 +70,7 @@ extension DengageInAppMessageManager{
                 DengageLocalStorage.shared.set(value: nextFetchTime, for: .expiredMessagesFetchIntervalInMin)
                 self?.removeExpiredInAppMessageFromCache(response)
             case .failure(let error):
-                Logger.log(message: "fetchInAppMessages_ERROR", argument: error.localizedDescription)
+                Logger.log(message: "fetchInAppExpiredMessages_ERROR", argument: error.localizedDescription)
             }
         }
     }
