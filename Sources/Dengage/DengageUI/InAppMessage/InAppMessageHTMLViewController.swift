@@ -98,6 +98,7 @@ final class InAppMessageHTMLViewController: UIViewController{
         viewSource.webView.configuration.userContentController.add(self, name: "iosUrlN")
         viewSource.webView.configuration.userContentController.add(self, name: "sendClick")
         viewSource.webView.configuration.userContentController.add(self, name: "promptPushPermission")
+        viewSource.webView.configuration.userContentController.add(self, name: "openSettings")
         viewSource.webView.configuration.userContentController.add(self, name: "setTags")
         viewSource.webView.loadHTMLString(message.data.content.props.html!, baseURL: nil)
         
@@ -238,6 +239,8 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             self.delegate?.setTags(tags: tagItems)
         case "promptPushPermission":
             delegate?.promptPushPermission()
+        case "openSettings":
+            delegate?.openApplicationSettings()
         case "dismiss":
             delegate?.sendDissmissEvent(message: self.message)
         case "close":

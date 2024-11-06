@@ -27,13 +27,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         
         let bsif = "_s_l_gJiLHWiLdjpYMf4jlhRN2wemFgwft4oIy_s_l_QpEcwPBfQWNyC22E397SlnX2Rt51QPv4fWH9c_s_l_M7yFH74iPSsUBgzpc6iUsIFw3waNyMau1xttwfOwQ9oJ9PZyBseS30U34vo1bSElJSrhGrwIkCUCw_e_q__e_q_"
-        let test = "o5r8xJa8eyBUGSmwXdskiIx0Um1oacEGoowX1_p_l_chY5_p_l_cVGTBC4m4jWgohN6vS3X3FG1cUbmToIAyVQfXAFDShKgqChrmLTMwnae_s_l_mqgXMNgkIG2gsAkOidM1znE1lIypsr_p_l_p9VrPR6OKSDdvF_s_l_3krw_e_q__e_q_"
+        
+        // egemen-ios-dev-test
+        let test = "uCwvO25ucX34F1_p_l_DOZjW55uri_p_l_sMxg0rJpbsJ4d8We00Be_p_l_eJMb5R3auwdYD6rUuM7M5NftuA5NNu7mV2H_s_l_rGa9Z6y3EqaV_p_l_PTgPyyimmbtDw237bhBjPEpiz5TXzXLHlTD8OEzGXOJ6r65xtOdE0Q_e_q__e_q_"
         
         //let option = DengageOptions(disableOpenURL: false, badgeCountReset: true, disableRegisterForRemoteNotifications: false, enableGeofence: true)
         let option = DengageOptions(disableOpenURL: false, badgeCountReset: true, disableRegisterForRemoteNotifications: false)
 
         
-        Dengage.start(apiKey: bsif, application: application, launchOptions: [:], dengageOptions: option)
+        Dengage.start(apiKey: test, application: application, launchOptions: [:], dengageOptions: option)
         
         
         
@@ -52,6 +54,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             
             
         }
+        
         Dengage.setLog(isVisible: true)
         
         Dengage.setDevelopmentStatus(isDebug: true)

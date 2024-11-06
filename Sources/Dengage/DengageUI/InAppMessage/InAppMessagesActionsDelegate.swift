@@ -4,6 +4,7 @@ protocol InAppMessagesActionsDelegate:AnyObject{
     func sendDissmissEvent(message:InAppMessage)
     func sendClickEvent(message:InAppMessage, buttonId:String?)
     func promptPushPermission()
+    func openApplicationSettings()
     func close()
     func setTags(tags:[TagItem])
     func closeInAppBrowser()
