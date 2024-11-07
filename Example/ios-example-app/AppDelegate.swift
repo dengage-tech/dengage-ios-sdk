@@ -35,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let option = DengageOptions(disableOpenURL: false, badgeCountReset: true, disableRegisterForRemoteNotifications: false)
 
         
-        Dengage.start(apiKey: test, application: application, launchOptions: [:], dengageOptions: option)
+        Dengage.start(apiKey: bsif, application: application, launchOptions: [:], dengageOptions: option)
         
         
         

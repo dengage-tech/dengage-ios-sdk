@@ -892,12 +892,11 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
             {
                 if RetrieveLinkOnSameScreen
                 {
-                    self.returnAfterDeeplinkRecieved!(urlDeeplink)
+                    self.returnAfterDeeplinkRecieved?(urlDeeplink)
                 }
                 else
                 {
-                   
-                    self.returnAfterDeeplinkRecieved!(urlDeeplink)
+                    self.returnAfterDeeplinkRecieved?(urlDeeplink)
                     UIApplication.shared.open(urlStr, options: [:], completionHandler: nil)
                 }
               
@@ -906,8 +905,9 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
             {
                 if RetrieveLinkOnSameScreen && !OpenInAppBrowser
                 {
-                    self.returnAfterDeeplinkRecieved!(urlDeeplink)
-
+                    
+                    self.returnAfterDeeplinkRecieved?(urlDeeplink)
+                    
                 }
                 else if !RetrieveLinkOnSameScreen && OpenInAppBrowser
                 {
@@ -924,7 +924,7 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
         {
             if RetrieveLinkOnSameScreen && !OpenInAppBrowser
             {
-                self.returnAfterDeeplinkRecieved!(urlDeeplink)
+                self.returnAfterDeeplinkRecieved?(urlDeeplink)
 
             }
             else

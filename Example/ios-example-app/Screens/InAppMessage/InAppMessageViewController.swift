@@ -64,9 +64,9 @@ final class InAppMessageViewController: UIViewController {
         guard let text = screenNameTextField.text else {return}
        
         Dengage.setNavigation(screenName: text)
-        Dengage.handleInAppDeeplink { str in
-            
-        }
+//        Dengage.handleInAppDeeplink { str in
+//            
+//        }
 
         view.endEditing(true)
         navigationButton.setTitleColor(.black, for: .normal)
