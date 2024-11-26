@@ -46,6 +46,6 @@
 		<string>remote-notification</string>
 	</array>
 	<key>fetchRealTimeINAPPURL</key>
-	<string>https://push.dengage.com/api/realtime-inapp/</string>
+	<string>https://tr-inapp.lib.dengage.com/api/realtime-inapp/</string>
 </dict>
 </plist>

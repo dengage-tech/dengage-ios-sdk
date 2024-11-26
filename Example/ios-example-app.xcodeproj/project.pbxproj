@@ -574,7 +574,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.testiospriya.ContentExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Dengage.testiospriya.ContentExtensionProvNew1.5;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Dengage.testiospriya.ContentExtensionProvNew1.6;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -605,7 +605,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.testiospriya.ContentExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Dengage.testiospriya.ContentExtensionProvNew1.5;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Dengage.testiospriya.ContentExtensionProvNew1.6;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

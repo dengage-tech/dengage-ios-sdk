@@ -232,7 +232,7 @@ extension DengageManager {
     
     func makeSubscriptionRequestAPICall()
     {
-         eventManager.eventSessionStart()
+        eventManager.eventSessionStart()
         let request = MakeSubscriptionRequest(config: config)
         Logger.log(message: "sync Started")
         apiClient.send(request: request) { result in

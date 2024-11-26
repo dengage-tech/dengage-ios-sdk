@@ -19,7 +19,7 @@ final class DengageEventManager: DengageEventProtocolInterface {
     func eventSessionStart(){
         let deviceId = config.applicationIdentifier
         let session = sessionManager.createSession(force: false)
-        //sendEvent(table: .sessionInfo, key: deviceId, params: ["session_id": session.sessionId])
+       // sendEvent(table: .sessionInfo, key: deviceId, params: ["session_id": session.sessionId])
     }
     
     func sessionStart(referrer: String?) {
