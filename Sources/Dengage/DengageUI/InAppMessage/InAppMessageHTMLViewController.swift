@@ -12,7 +12,8 @@ final class InAppMessageHTMLViewController: UIViewController{
     
     
     let message:InAppMessage
-    
+    var isSendClickCalled = false
+
     var isIosURLNPresent = false
     
     var hasTopNotch: Bool {
@@ -165,10 +166,11 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             
         case "sendClick":
             let buttonId = message.body as? String
+            isSendClickCalled = true
             self.delegate?.sendClickEvent(message: self.message,
                                           buttonId: buttonId)
             
-            
+            break
         case "iosUrl":
             
             if !isIosURLNPresent
@@ -190,7 +192,7 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
                 
             }
             
-            
+            break
         case "iosUrlN":
             
             guard let dict = message.body as? [String:Any] else {return}
@@ -232,26 +234,42 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
                 }
                 
             }
+            break
         case "setTags":
             guard let tagItemData = message.body as? [Dictionary<String,String>] else {return}
             let tagItems = tagItemData.map{TagItem.init(with: $0)}
             self.delegate?.setTags(tags: tagItems)
+            break
         case "promptPushPermission":
             delegate?.promptPushPermission()
+            break
         case "dismiss":
-            delegate?.sendDissmissEvent(message: self.message)
+            if !isSendClickCalled
+            {
+                delegate?.sendDissmissEvent(message: self.message)
+
+            }
+            break
         case "close":
-            delegate?.sendDissmissEvent(message: self.message)
+            if !isSendClickCalled
+            {
+                delegate?.sendDissmissEvent(message: self.message)
+
+            }
             if !isIosURLNPresent
             {
                 delegate?.close()
                 
             }
-            
+            break
         case "closeN":
-            delegate?.sendDissmissEvent(message: self.message)
+            if !isSendClickCalled
+            {
+                delegate?.sendDissmissEvent(message: self.message)
+
+            }
             delegate?.close()
-            
+            break
         default:
             break
         }
