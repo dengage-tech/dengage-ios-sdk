@@ -12,7 +12,8 @@ final class InAppMessageHTMLViewController: UIViewController{
     
 
     let message:InAppMessage
-    
+    var isSendClickCalled = false
+
     var isIosURLNPresent = false
 
     var hasTopNotch: Bool {
@@ -153,18 +154,19 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             
         case "sendClick":
             let buttonId = message.body as? String
+            isSendClickCalled = true
             self.delegate?.sendClickEvent(message: self.message,
                                           buttonId: buttonId)
             
-
+            break
         case "iosUrl":
-             
+            
             if !isIosURLNPresent
             {
                 if message.body as? String == "Dn.promptPushPermission()"
                 {
                     delegate?.promptPushPermission()
-
+                    
                 }
                 else if message.body as? String == "DN.SHOWRATING()"
                 {
@@ -178,7 +180,7 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
                 
             }
             
-            
+            break
         case "iosUrlN":
             
             guard let dict = message.body as? [String:Any] else {return}
@@ -186,29 +188,29 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             if let openInAppBrowser = dict["openInAppBrowser"] as? Bool
             {
                 DengageLocalStorage.shared.set(value: openInAppBrowser, for: .openInAppBrowser)
-
+                
             }
             else
             {
                 DengageLocalStorage.shared.set(value: false, for: .openInAppBrowser)
-
+                
             }
             if let retrieveLinkOnSameScreen = dict["retrieveLinkOnSameScreen"] as? Bool
             {
                 DengageLocalStorage.shared.set(value: retrieveLinkOnSameScreen, for: .retrieveLinkOnSameScreen)
-
+                
             }
             else
             {
                 DengageLocalStorage.shared.set(value: false, for: .retrieveLinkOnSameScreen)
             }
-                        
+            
             if let deeplink = dict["deeplink"] as? String
             {
                 if deeplink == "Dn.promptPushPermission()"
                 {
                     delegate?.promptPushPermission()
-
+                    
                 }
                 else if deeplink == "DN.SHOWRATING()"
                 {
@@ -218,28 +220,44 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
                 {
                     self.delegate?.open(url: deeplink)
                 }
-
+                
             }
+            break
         case "setTags":
             guard let tagItemData = message.body as? [Dictionary<String,String>] else {return}
             let tagItems = tagItemData.map{TagItem.init(with: $0)}
             self.delegate?.setTags(tags: tagItems)
+            break
         case "promptPushPermission":
             delegate?.promptPushPermission()
+            break
         case "dismiss":
-            delegate?.sendDissmissEvent(message: self.message)
+            if !isSendClickCalled
+            {
+                delegate?.sendDissmissEvent(message: self.message)
+
+            }
+            break
         case "close":
-            delegate?.sendDissmissEvent(message: self.message)
+            if !isSendClickCalled
+            {
+                delegate?.sendDissmissEvent(message: self.message)
+
+            }
             if !isIosURLNPresent
             {
                 delegate?.close()
+                
+            }
+            break
+        case "closeN":
+            if !isSendClickCalled
+            {
+                delegate?.sendDissmissEvent(message: self.message)
 
             }
-            
-        case "closeN":
-            delegate?.sendDissmissEvent(message: self.message)
             delegate?.close()
-
+            break
         default:
             break
         }
