@@ -498,11 +498,9 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = NoticationExtension/NoticationExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = ZWGDPBV9N5;
+				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NoticationExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NoticationExtension;
@@ -517,7 +515,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.testiospriya.NotifServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Dengage.testiospriya.NotifServiceExtnsnProvNew1.2;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -530,11 +527,9 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = NoticationExtension/NoticationExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = ZWGDPBV9N5;
+				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NoticationExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NoticationExtension;
@@ -549,7 +544,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.testiospriya.NotifServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Dengage.testiospriya.NotifServiceExtnsnProvNew1.2;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -580,7 +574,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.testiospriya.ContentExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Dengage.testiospriya.ContentExtensionProvNew1.2;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Dengage.testiospriya.ContentExtensionProvNew1.6;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -611,7 +605,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.testiospriya.ContentExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Dengage.testiospriya.ContentExtensionProvNew1.2;
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = Dengage.testiospriya.ContentExtensionProvNew1.6;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -743,12 +737,10 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "ios-example-app/ios-example-app.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = ZWGDPBV9N5;
+				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-example-app/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Dengage Example";
@@ -765,7 +757,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.testiospriya;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = DengagetestiospriyaProvNew1.2;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -780,11 +771,9 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "ios-example-app/ios-example-app.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = ZWGDPBV9N5;
+				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-example-app/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Dengage Example";
@@ -801,7 +790,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.testiospriya;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = DengagetestiospriyaProvNew1.2;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

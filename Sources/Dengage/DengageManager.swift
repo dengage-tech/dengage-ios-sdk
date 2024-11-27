@@ -232,7 +232,7 @@ extension DengageManager {
     
     func makeSubscriptionRequestAPICall()
     {
-         eventManager.eventSessionStart()
+        eventManager.eventSessionStart()
         let request = MakeSubscriptionRequest(config: config)
         Logger.log(message: "sync Started")
         apiClient.send(request: request) { result in
@@ -377,7 +377,7 @@ extension DengageManager {
     let badgeCountReset: Bool
     let disableRegisterForRemoteNotifications: Bool
     public init(disableOpenURL: Bool = false,
-                badgeCountReset: Bool = false,
+                badgeCountReset: Bool = true,
                 disableRegisterForRemoteNotifications: Bool = false) {
         self.disableOpenURL = disableOpenURL
         self.badgeCountReset = badgeCountReset
