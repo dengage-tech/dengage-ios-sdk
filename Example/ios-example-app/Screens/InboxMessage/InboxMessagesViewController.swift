@@ -32,11 +32,13 @@ final class InboxMessagesViewController: UIViewController {
             switch result {
             case .success(let messages):
                 self?.messages = messages
+                DispatchQueue.main.async {
+                    self?.tableView.reloadData()
+                }
             case .failure(let error):
                 print(error)
             }
         }
-        tableView.reloadData()
     }
 }
 
@@ -61,14 +63,27 @@ extension InboxMessagesViewController: UITableViewDelegate{
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        
         let delete = UITableViewRowAction(style: .destructive, title: "Delete") { (action, indexPath) in
             let item = self.messages[indexPath.row]
             Dengage.deleteInboxMessage(with: item.id) { [weak self] _ in
                 self?.fetchMessages()
             }
         }
-
-        return [delete]
+        let markAsClicked = UITableViewRowAction(style: .normal, title: "Mark as Clicked") { (action, indexPath) in
+            let item = self.messages[indexPath.row]
+            Dengage.setInboxMessageAsClicked(with: item.id) { [weak self] result in
+                switch result {
+                case .success:
+                    print("Message marked as clicked successfully!")
+                    self?.fetchMessages()
+                case .failure(let error):
+                    print("Failed to mark message as clicked: \(error)")
+                }
+            }
+        }
+        markAsClicked.backgroundColor = .blue
+        
+        return [delete, markAsClicked]
     }
+    
 }

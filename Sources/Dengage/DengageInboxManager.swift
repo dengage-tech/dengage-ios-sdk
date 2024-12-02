@@ -36,8 +36,13 @@ final class DengageInboxManager: DengageInboxManagerInterface {
                 guard let self = self else { return }
                 switch result {
                 case .success(let response):
-                    self.saveInitalInboxMessagesIfNeeded(request: request, messages: response)
-                    completion(.success(response))
+                    config.inboxLastFetchedDate = Date()
+                    if request.offset == "0" {
+                        inboxMessages = response
+                        updateInboxMessages(remoteInboxMessages: response)
+                        
+                    }
+                    completion(.success(inboxMessages))
                 case .failure(let error):
                     completion(.failure(error))
                 }
@@ -55,11 +60,17 @@ final class DengageInboxManager: DengageInboxManagerInterface {
             return
         }
         
+        if let message = inboxMessages.first(where: {$0.id == id}) {
+            message.isDeleted = true
+            updateInboxMessagesPrefs(inboxMessage: message)
+        }
+        
         let request = DeleteMessagesRequest(type: config.contactKey.type,
                                             deviceID: config.applicationIdentifier,
                                             accountName: accountName,
                                             contactKey: config.contactKey.key,
                                             id: id)
+        
         let messages = inboxMessages.filter {$0.id != request.id}
         inboxMessages = messages
         apiClient.send(request: request) { result in
@@ -81,12 +92,16 @@ final class DengageInboxManager: DengageInboxManagerInterface {
             return
         }
         
+        if let message = inboxMessages.first(where: {$0.id == id}) {
+            message.isClicked = true
+            updateInboxMessagesPrefs(inboxMessage: message)
+        }
+        
         let request = MarkAsReadRequest(type: config.contactKey.type,
                                         deviceID: config.applicationIdentifier,
                                         accountName: accountName,
                                         contactKey: config.contactKey.key,
                                         id: id)
-        markLocalMessageIfNeeded(with: request.id)
         apiClient.send(request: request) { result in
             switch result {
             case .success:
@@ -97,39 +112,48 @@ final class DengageInboxManager: DengageInboxManagerInterface {
         }
     }
 
-    func saveInitalInboxMessagesIfNeeded(request:GetMessagesRequest, messages:[DengageMessage]) {
-        guard request.offset == "0" else {return}
-        inboxMessages = messages
-        config.inboxLastFetchedDate = Date()
-    }
-
-    private func markLocalMessageIfNeeded(with id: String?) {
+ 
+    
+    private func updateInboxMessages(remoteInboxMessages: [DengageMessage]) {
+        if remoteInboxMessages.isEmpty { return }
+        let prefsInboxMessages = DengageLocalStorage.shared.getInboxMessages()
+        if prefsInboxMessages.isEmpty { return }
         
-        guard let messageId = id else { return }
-        
-        if inboxMessages.count > 0
-        {
-            for i in 0...inboxMessages.count - 1
-            {
-                var readedMessage = inboxMessages[i]
-
-                if readedMessage.id == messageId
-                {
-                    readedMessage.isClicked = true
-                    inboxMessages[i] = readedMessage
-                    break
-                }
+        for i in 0..<remoteInboxMessages.count {
+            let remoteInboxMessage = remoteInboxMessages[i]
+            if let matchingPrefsMessage = prefsInboxMessages.first(where: { $0.id == remoteInboxMessage.id }) {
+                remoteInboxMessages[i].isClicked = matchingPrefsMessage.isClicked
+                remoteInboxMessages[i].isDeleted = matchingPrefsMessage.isDeleted
             }
         }
-        
+
+        inboxMessages = remoteInboxMessages.filter {
+            return !$0.isDeleted
+        }
+    }
     
-    
-//        let message = inboxMessages.first(where: {$0.id == messageId})
-//        message?.isClicked = true
-//        inboxMessages = inboxMessages.filter {$0.id != messageId}
-//        guard let readedMessage = message else { return }
-//        inboxMessages.append(readedMessage)
+    private func updateInboxMessagesPrefs(inboxMessage: DengageMessage) {
+        let prefsInboxMessages = DengageLocalStorage.shared.getInboxMessages()
         
+        let oneWeekAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date())
+
+        var filteredPrefsInboxMessages = prefsInboxMessages.filter { message in
+            guard let receiveDate = message.receiveDate else {
+                return true
+            }
+            return receiveDate >= (oneWeekAgo!)
+        }
+
+        if let existingMessageIndex = filteredPrefsInboxMessages.firstIndex(where: { $0.id == inboxMessage.id }) {
+            filteredPrefsInboxMessages[existingMessageIndex].isClicked = inboxMessage.isClicked
+            filteredPrefsInboxMessages[existingMessageIndex].isDeleted = inboxMessage.isDeleted
+        } else {
+            let prefsInboxMessage = InboxMessageCache(id: inboxMessage.id, isClicked: inboxMessage.isClicked, isDeleted: inboxMessage.isDeleted, receiveDate: inboxMessage.receiveDate)
+            
+            filteredPrefsInboxMessages.append(prefsInboxMessage)
+        }
+
+        DengageLocalStorage.shared.save(filteredPrefsInboxMessages)
     }
 }
 
@@ -142,5 +166,4 @@ protocol DengageInboxManagerInterface {
                             completion: @escaping (Result<Void, Error>) -> Void)
     func setInboxMessageAsClicked(with id: String,
                                   completion: @escaping (Result<Void, Error>) -> Void)
-    func saveInitalInboxMessagesIfNeeded(request:GetMessagesRequest, messages:[DengageMessage])
 }

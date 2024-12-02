@@ -11,6 +11,8 @@ import Foundation
     public var isClicked: Bool
     public let carouselItems: [CarouselItem]?
     
+    public var isDeleted = false
+    
     required public init(from decoder: Decoder) throws {
 
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -36,4 +38,11 @@ import Foundation
         case message = "message_json"
         case carouselItems = "iosCarouselContent"
     }
+}
+
+struct InboxMessageCache: Codable {
+    public var id: String
+    public var isClicked: Bool
+    public var isDeleted: Bool
+    public var receiveDate: Date?
 }

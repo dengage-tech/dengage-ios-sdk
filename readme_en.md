@@ -42,7 +42,7 @@
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.72'
+pod 'Dengage', '~> 5.73'
 ```
 
 Run `pod install` via terminal

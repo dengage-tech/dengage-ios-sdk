@@ -6,7 +6,7 @@
 	<string>development</string>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.dengage.testiospriya.dengage</string>
+		<string>group.com.dengage.Example.dengage</string>
 	</array>
 </dict>
 </plist>

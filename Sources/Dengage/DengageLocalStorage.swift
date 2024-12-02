@@ -258,6 +258,31 @@ extension DengageLocalStorage {
             Logger.log(message: "saving options fail")
         }
     }
+    
+    func getInboxMessages() -> [InboxMessageCache] {
+
+        guard let messagesData = userDefaults.object(forKey: Key.inboxMessages.rawValue) as? Data else { return [] }
+        let decoder = JSONDecoder()
+        do {
+            let inboxMessages = try decoder.decode([InboxMessageCache].self, from: messagesData)
+            return inboxMessages
+        } catch {
+            Logger.log(message: "getInboxMessages fail")
+            return []
+        }
+    }
+    
+    func save(_ inboxMessages:[InboxMessageCache]){
+        let encoder = JSONEncoder()
+        do {
+            let encoded = try encoder.encode(inboxMessages)
+            userDefaults.set(encoded, forKey: Key.inboxMessages.rawValue)
+            userDefaults.synchronize()
+        } catch {
+            Logger.log(message: "saving inbox messages fail")
+        }
+    }
+
 }
 
 
