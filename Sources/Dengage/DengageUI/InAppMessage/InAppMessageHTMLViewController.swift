@@ -14,7 +14,7 @@ final class InAppMessageHTMLViewController: UIViewController{
     let message:InAppMessage
     
     var isIosURLNPresent = false
-    var isSendClickCalled = false
+    var isClicked = false
 
     var hasTopNotch: Bool {
         
@@ -164,114 +164,124 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
         
         switch message.name {
             
-        case "sendClick":
-            let buttonId = message.body as? String
-            isSendClickCalled = true
-            self.delegate?.sendClickEvent(message: self.message,
-                                          buttonId: buttonId)
-            
-            break
-        case "iosUrl":
-            
-            if !isIosURLNPresent
-            {
-                if message.body as? String == "Dn.promptPushPermission()"
+            switch message.name {
+                
+            case "sendClick":
+                let buttonId = message.body as? String
+                isClicked = true
+                self.delegate?.sendClickEvent(message: self.message,
+                                              buttonId: buttonId)
+                
+                break
+            case "iosUrl":
+                
+                if !isIosURLNPresent
                 {
-                    delegate?.promptPushPermission()
+                    if message.body as? String == "Dn.promptPushPermission()"
+                    {
+                        delegate?.promptPushPermission()
+                        
+                    }
+                    else if message.body as? String == "DN.SHOWRATING()"
+                    {
+                        Dengage.showRatingView()
+                    }
+                    else
+                    {
+                        guard let url = message.body as? String else {return}
+                        self.delegate?.open(url: url)
+                    }
                     
                 }
-                else if message.body as? String == "DN.SHOWRATING()"
+                
+                break
+            case "iosUrlN":
+                
+                guard let dict = message.body as? [String:Any] else {return}
+                
+                if let openInAppBrowser = dict["openInAppBrowser"] as? Bool
                 {
-                    Dengage.showRatingView()
+                    DengageLocalStorage.shared.set(value: openInAppBrowser, for: .openInAppBrowser)
+                    
                 }
                 else
                 {
-                    guard let url = message.body as? String else {return}
-                    self.delegate?.open(url: url)
-                }
-                
-            }
-            
-            break
-        case "iosUrlN":
-            
-            guard let dict = message.body as? [String:Any] else {return}
-            
-            if let openInAppBrowser = dict["openInAppBrowser"] as? Bool
-            {
-                DengageLocalStorage.shared.set(value: openInAppBrowser, for: .openInAppBrowser)
-                
-            }
-            else
-            {
-                DengageLocalStorage.shared.set(value: false, for: .openInAppBrowser)
-                
-            }
-            if let retrieveLinkOnSameScreen = dict["retrieveLinkOnSameScreen"] as? Bool
-            {
-                DengageLocalStorage.shared.set(value: retrieveLinkOnSameScreen, for: .retrieveLinkOnSameScreen)
-                
-            }
-            else
-            {
-                DengageLocalStorage.shared.set(value: false, for: .retrieveLinkOnSameScreen)
-            }
-            
-            if let deeplink = dict["deeplink"] as? String
-            {
-                if deeplink == "Dn.promptPushPermission()"
-                {
-                    delegate?.promptPushPermission()
+                    DengageLocalStorage.shared.set(value: false, for: .openInAppBrowser)
                     
                 }
-                else if deeplink == "DN.SHOWRATING()"
+                if let retrieveLinkOnSameScreen = dict["retrieveLinkOnSameScreen"] as? Bool
                 {
-                    Dengage.showRatingView()
+                    DengageLocalStorage.shared.set(value: retrieveLinkOnSameScreen, for: .retrieveLinkOnSameScreen)
+                    
                 }
                 else
                 {
-                    self.delegate?.open(url: deeplink)
+                    DengageLocalStorage.shared.set(value: false, for: .retrieveLinkOnSameScreen)
                 }
                 
-            }
-            break
-        case "setTags":
-            guard let tagItemData = message.body as? [Dictionary<String,String>] else {return}
-            let tagItems = tagItemData.map{TagItem.init(with: $0)}
-            self.delegate?.setTags(tags: tagItems)
-            break
-        case "promptPushPermission":
-            delegate?.promptPushPermission()
-            break
-        case "dismiss":
-            if !isSendClickCalled
-            {
-                delegate?.sendDissmissEvent(message: self.message)
+                if let deeplink = dict["deeplink"] as? String
+                {
+                    if deeplink == "Dn.promptPushPermission()"
+                    {
+                        delegate?.promptPushPermission()
+                        
+                    }
+                    else if deeplink == "DN.SHOWRATING()"
+                    {
+                        Dengage.showRatingView()
+                    }
+                    else
+                    {
+                        self.delegate?.open(url: deeplink)
+                    }
+                    
+                }
+                break
+            case "setTags":
+                
+                guard let tagItemData = message.body as? [Dictionary<String,String>] else {return}
+                let tagItems = tagItemData.map{TagItem.init(with: $0)}
+                self.delegate?.setTags(tags: tagItems)
+                
+                break
+            case "promptPushPermission":
+                delegate?.promptPushPermission()
+                break
+            case "dismiss":
+                if !isClicked
+                {
+                    isClicked = true
+                    delegate?.sendDissmissEvent(message: self.message)
 
-            }
-            break
-        case "close":
-            if !isSendClickCalled
-            {
-                delegate?.sendDissmissEvent(message: self.message)
+                }
+                break
+            case "close":
+                if !isClicked
+                {
+                    isClicked = true
+                    delegate?.sendDissmissEvent(message: self.message)
 
-            }
-            if !isIosURLNPresent
-            {
+                }
+                if !isIosURLNPresent
+                {
+                    delegate?.close()
+                    
+                }
+                break
+            case "closeN":
+                if !isClicked
+                {
+                    isClicked = true
+                    delegate?.sendDissmissEvent(message: self.message)
+
+                }
                 delegate?.close()
-                
+                break
+            default:
+                break
             }
-            break
-        case "closeN":
-            if !isSendClickCalled
-            {
-                delegate?.sendDissmissEvent(message: self.message)
-
-            }
-            delegate?.close()
-            break
-        default:
-            break
+            
+            
         }
         
         
