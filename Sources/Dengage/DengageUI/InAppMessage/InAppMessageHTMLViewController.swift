@@ -12,7 +12,7 @@ final class InAppMessageHTMLViewController: UIViewController{
     
 
     let message:InAppMessage
-    var isSendClickCalled = false
+    var isClicked = false
 
     var isIosURLNPresent = false
 
@@ -137,8 +137,6 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
                 }
 
             }
-
-            
         })
     }
 }
@@ -154,7 +152,7 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             
         case "sendClick":
             let buttonId = message.body as? String
-            isSendClickCalled = true
+            isClicked = true
             self.delegate?.sendClickEvent(message: self.message,
                                           buttonId: buttonId)
             
@@ -224,23 +222,27 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             }
             break
         case "setTags":
+            
             guard let tagItemData = message.body as? [Dictionary<String,String>] else {return}
             let tagItems = tagItemData.map{TagItem.init(with: $0)}
             self.delegate?.setTags(tags: tagItems)
+            
             break
         case "promptPushPermission":
             delegate?.promptPushPermission()
             break
         case "dismiss":
-            if !isSendClickCalled
+            if !isClicked
             {
+                isClicked = true
                 delegate?.sendDissmissEvent(message: self.message)
 
             }
             break
         case "close":
-            if !isSendClickCalled
+            if !isClicked
             {
+                isClicked = true
                 delegate?.sendDissmissEvent(message: self.message)
 
             }
@@ -251,8 +253,9 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             }
             break
         case "closeN":
-            if !isSendClickCalled
+            if !isClicked
             {
+                isClicked = true
                 delegate?.sendDissmissEvent(message: self.message)
 
             }
