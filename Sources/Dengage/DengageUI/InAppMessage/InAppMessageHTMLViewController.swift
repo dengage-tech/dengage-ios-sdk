@@ -273,6 +273,8 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
         case "promptPushPermission":
             delegate?.promptPushPermission()
             break
+        case "openSettings":
+            delegate?.openApplicationSettings()
         case "dismiss":
             if !isClicked
             {
