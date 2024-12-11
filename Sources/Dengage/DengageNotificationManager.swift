@@ -89,7 +89,7 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
                 print(myJSONError)
             }
             
-            
+            // TODO: sendEventWithContent neden if'in dışında? priya
             if let messageSource = message.messageSource, MESSAGE_SOURCE == messageSource
             {
                 

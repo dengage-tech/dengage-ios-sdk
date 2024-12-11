@@ -1,5 +1,6 @@
 import UIKit
 import WebKit
+
 final class InAppMessageHTMLViewController: UIViewController{
     
     private lazy var viewSource:InAppMessageHTMLView = {
@@ -15,7 +16,7 @@ final class InAppMessageHTMLViewController: UIViewController{
     
     var isIosURLNPresent = false
     var isSendClickCalled = false
-
+    
     var hasTopNotch: Bool {
         
         if #available(iOS 13.0, *) {
@@ -27,7 +28,7 @@ final class InAppMessageHTMLViewController: UIViewController{
             else {
                 // Fallback on earlier versions
                 return UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0 > 20
-
+                
             }
         }
         
@@ -52,15 +53,15 @@ final class InAppMessageHTMLViewController: UIViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupJavascript()
         
+        let mustacheUserScript = WKUserScript(source: mustacheJS, injectionTime: .atDocumentStart, forMainFrameOnly: true)
+        viewSource.webView.configuration.userContentController.addUserScript(mustacheUserScript)
+        
+        setupJavascript()
         
         viewSource.setupConstaints(for: message.data.content.props , message : message)
         
-        
-        
         if let isPresent = message.data.content.props.html?.contains("Dn.iosUrlN") {
-            
             self.isIosURLNPresent = isPresent
         }
         
@@ -101,19 +102,49 @@ final class InAppMessageHTMLViewController: UIViewController{
         viewSource.webView.configuration.userContentController.add(self, name: "promptPushPermission")
         viewSource.webView.configuration.userContentController.add(self, name: "openSettings")
         viewSource.webView.configuration.userContentController.add(self, name: "setTags")
-        viewSource.webView.loadHTMLString(message.data.content.props.html!, baseURL: nil)
-        
+        if let htmlString = message.data.content.props.html {
+            viewSource.webView.loadHTMLString(htmlString, baseURL: nil)
+        }
         viewSource.webView.contentMode = .scaleAspectFit
         viewSource.webView.sizeToFit()
         viewSource.webView.autoresizesSubviews = true
-        
     }
 }
 
 extension InAppMessageHTMLViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         
-        setWebViewHeight()
+        let dataDict: [String: Any] = [
+            "dnInAppDeviceInfo": [
+                //"test1": "Başlık Burada",
+                //"test2": "https://dengage-cdn.azureedge.net",
+                //"test4": "Mesaj içeriği."
+            ]
+        ]
+        
+        guard let data = try? JSONSerialization.data(withJSONObject: dataDict, options: []),
+              let dataString = String(data: data, encoding: .utf8) else {
+            return
+        }
+        
+        let template = message.data.content.props.html ?? ""
+        
+        let js = """
+                (function() {
+                    var template = `\(template.replacingOccurrences(of: "`", with: "\\`"))`; 
+                    var data = \(dataString);
+                    var rendered = Mustache.render(template, data);
+                    document.documentElement.innerHTML = rendered;
+                })();
+                """
+        
+        webView.evaluateJavaScript(js, completionHandler: { _, error in
+            if let error = error {
+                print("Mustache render error: \(error)")
+            } else {
+                self.setWebViewHeight()
+            }
+        })
     }
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
@@ -130,27 +161,17 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
         viewSource.webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { (height, error) in
             guard let scrollHeight = height as? CGFloat else {return}
             
-            if scrollHeight > self.viewSource.frame.height
-            {
+            if scrollHeight > self.viewSource.frame.height{
                 self.viewSource.height?.constant = self.viewSource.frame.height
-                
-            }
-            else
-            {
+            } else {
                 self.viewSource.height?.constant = scrollHeight
-                
             }
             
-            if self.hasTopNotch
-            {
-                if self.message.data.content.props.position == .top
-                {
+            if self.hasTopNotch {
+                if self.message.data.content.props.position == .top {
                     self.viewSource.height?.constant = scrollHeight + 50
-                    
                 }
-                
             }
-            
             
         })
     }
@@ -248,14 +269,14 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             if !isSendClickCalled
             {
                 delegate?.sendDissmissEvent(message: self.message)
-
+                
             }
             break
         case "close":
             if !isSendClickCalled
             {
                 delegate?.sendDissmissEvent(message: self.message)
-
+                
             }
             if !isIosURLNPresent
             {
@@ -267,7 +288,7 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             if !isSendClickCalled
             {
                 delegate?.sendDissmissEvent(message: self.message)
-
+                
             }
             delegate?.close()
             break
