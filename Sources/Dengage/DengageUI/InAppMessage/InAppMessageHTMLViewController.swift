@@ -16,7 +16,7 @@ final class InAppMessageHTMLViewController: UIViewController{
     
     var isIosURLNPresent = false
     var isClicked = false
-
+    
     var hasTopNotch: Bool {
         
         if #available(iOS 13.0, *) {
@@ -28,7 +28,7 @@ final class InAppMessageHTMLViewController: UIViewController{
             else {
                 // Fallback on earlier versions
                 return UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0 > 20
-
+                
             }
         }
         
@@ -53,18 +53,13 @@ final class InAppMessageHTMLViewController: UIViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         let mustacheUserScript = WKUserScript(source: mustacheJS, injectionTime: .atDocumentStart, forMainFrameOnly: true)
         viewSource.webView.configuration.userContentController.addUserScript(mustacheUserScript)
-        
         setupJavascript()
-        
         viewSource.setupConstaints(for: message.data.content.props , message : message)
-        
         if let isPresent = message.data.content.props.html?.contains("Dn.iosUrlN") {
             self.isIosURLNPresent = isPresent
         }
-        
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.didTapView(sender:)))
         self.view.addGestureRecognizer(tapGesture)
     }
@@ -108,6 +103,7 @@ final class InAppMessageHTMLViewController: UIViewController{
         viewSource.webView.contentMode = .scaleAspectFit
         viewSource.webView.sizeToFit()
         viewSource.webView.autoresizesSubviews = true
+        
     }
 }
 
@@ -123,24 +119,24 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
         ]
         
         guard let data = try? JSONSerialization.data(withJSONObject: dataDict, options: []),
-              let dataString = String(data: data, encoding: .utf8) else {
+                let dataString = String(data: data, encoding: .utf8) else {
             return
         }
-        
         let template = message.data.content.props.html ?? ""
-        
         let js = """
-                (function() {
-                    var template = `\(template.replacingOccurrences(of: "`", with: "\\`"))`; 
-                    var data = \(dataString);
-                    var rendered = Mustache.render(template, data);
-                    document.documentElement.innerHTML = rendered;
-                })();
-                """
+                        
+        (function() {
+            var template = `\(template.replacingOccurrences(of: "`", with: "\\`"))`; 
+            var data = \(dataString);
+            var rendered = Mustache.render(template, data);
+            document.documentElement.innerHTML = rendered;
+        
+        })();
+        """
         
         webView.evaluateJavaScript(js, completionHandler: { _, error in
             if let error = error {
-                print("Mustache render error: \(error)")
+                print("Dengage Mustache render error: \(error)")
             } else {
                 self.setWebViewHeight()
             }
@@ -161,17 +157,27 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
         viewSource.webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { (height, error) in
             guard let scrollHeight = height as? CGFloat else {return}
             
-            if scrollHeight > self.viewSource.frame.height{
+            if scrollHeight > self.viewSource.frame.height
+            {
                 self.viewSource.height?.constant = self.viewSource.frame.height
-            } else {
+                
+            }
+            else
+            {
                 self.viewSource.height?.constant = scrollHeight
+                
             }
             
-            if self.hasTopNotch {
-                if self.message.data.content.props.position == .top {
+            if self.hasTopNotch
+            {
+                if self.message.data.content.props.position == .top
+                {
                     self.viewSource.height?.constant = scrollHeight + 50
+                    
                 }
+                
             }
+            
             
         })
     }
