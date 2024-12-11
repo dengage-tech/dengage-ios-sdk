@@ -66,7 +66,8 @@ extension RootViewController: UITableViewDelegate{
         case .tags:
             self.navigationController?.pushViewController(TagsViewController(), animated: true)
         case .testPage:
-            Dengage.showTestPage()
+            self.navigationController?.pushViewController(TestPageViewController(), animated: true)
+            //Dengage.showTestPage()
         case .geoFence:
             self.navigationController?.pushViewController(GeofenceViewController(), animated: true)
         case .inAppInLine:
@@ -101,7 +102,7 @@ extension RootViewController{
             case .testPage:
                 return "DENGAGE TEST PAGE"
             case .geoFence:
-                return "GEO FENCE"
+                return "GEOFENCE"
             case .inAppInLine:
                 return "Show InLine InAPP"
             case .appStory:

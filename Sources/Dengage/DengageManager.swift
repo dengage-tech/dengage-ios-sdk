@@ -390,14 +390,3 @@ extension DengageManager {
         case disableOpenURL, badgeCountReset, disableRegisterForRemoteNotifications
     }
 }
-
-
-extension DengageManager {
-    func showTestPage(){
-        let frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
-        testPageWindow = UIWindow(frame: frame)
-        testPageWindow?.rootViewController = UINavigationController(rootViewController: TestPageViewController())
-        testPageWindow?.windowLevel = UIWindow.Level(rawValue: 2)
-        testPageWindow?.makeKeyAndVisible()
-    }
-}

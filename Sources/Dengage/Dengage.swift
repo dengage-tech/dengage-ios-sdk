@@ -410,10 +410,6 @@ public class Dengage{
         dengage?.eventManager.sendCustomEvent(eventTable: eventTable, parameters: parameters)
     }
     
-    @objc static public func showTestPage(){
-        dengage?.showTestPage()
-    }
-    
     @objc static public func setLog(isVisible: Bool){
         Logger.isEnabled = isVisible
     }

@@ -61,7 +61,7 @@ struct ContentParams: Codable {
     }
 }
 
-enum ContentPosition: String, Codable {
+enum ContentPosition: String, Codable, CaseIterable {
     case top = "TOP"
     case middle = "MIDDLE"
     case bottom = "BOTTOM"

@@ -1,6 +1,6 @@
 import Foundation
 import UIKit
-final class TestPageViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+public final class TestPageViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     private lazy var tableView: UITableView = {
         let view = UITableView()
@@ -17,7 +17,7 @@ final class TestPageViewController: UIViewController, UITableViewDataSource, UIT
     
     private var rows = Actions.allCases
     
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(tableView)
         setupViews()
@@ -41,17 +41,17 @@ final class TestPageViewController: UIViewController, UITableViewDataSource, UIT
         Dengage.manager?.testPageWindow = nil
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return rows.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TestPageTableViewCell", for: indexPath) as! TestPageTableViewCell
         cell.populateUI(with: rows[indexPath.row].title)
         return cell
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch rows[indexPath.row]{
         case .push:
             break
@@ -67,11 +67,14 @@ final class TestPageViewController: UIViewController, UITableViewDataSource, UIT
         case .log:
             let controller = TestPageLogController()
             self.navigationController?.pushViewController(controller, animated: true)
+        case .inAppHtml:
+            let controller = TestInAppHtmlViewController()
+            self.navigationController?.pushViewController(controller, animated: true)
         }
     }
     
     enum Actions: CaseIterable{
-        case push, inApp, deviceInfo, deviceCache, log
+        case push, inApp, deviceInfo, deviceCache, log, inAppHtml
         var title: String{
             switch self{
             case .push:
@@ -84,6 +87,8 @@ final class TestPageViewController: UIViewController, UITableViewDataSource, UIT
                 return "DEVICE CACHE TEST"
             case .log:
                 return "LOGS"
+            case .inAppHtml:
+                return "IN APP HTML TEST"
             }
         }
     }
