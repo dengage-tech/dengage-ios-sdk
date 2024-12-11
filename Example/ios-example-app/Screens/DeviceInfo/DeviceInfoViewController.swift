@@ -28,7 +28,8 @@ class DeviceInfoViewController: UIViewController {
         text += "Device Id: " + (Dengage.getDeviceId() ?? "") + "\n"
         text += "Contact Key: " + (Dengage.getContactKey() ?? "") + "\n"
         text += "User Permission: " + Dengage.getPermission().description + "\n"
-        text += "Device Token: " + (Dengage.getDeviceToken() ?? "")
+        text += "Device Token: " + (Dengage.getDeviceToken() ?? "") + "\n"
+        text += "Bundle Identifier:" + (Bundle.main.bundleIdentifier ?? "")
         textView.text = text
     }
 

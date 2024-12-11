@@ -108,6 +108,10 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
         }
     }
     
+    func didClickCarouselItem(content: UNNotificationContent, carouselId: Int) {
+        sendEventWithContent(content: content, actionIdentifier: String(carouselId))
+    }
+    
     private func openDeeplink(link: String?) {
         Logger.log(message: "TARGET_URL is", argument: link ?? "nil")
         guard let urlString = link, !urlString.isEmpty, let url = URL(string: urlString) else {
@@ -260,6 +264,7 @@ protocol DengageNotificationManagerInterface: AnyObject{
                         _ response: UNNotificationResponse,
                         withCompletionHandler completionHandler: @escaping () -> Void)
     func didReceive(with userInfo: [AnyHashable: Any])
+    func didClickCarouselItem(content: UNNotificationContent, carouselId: Int)
     func promptForPushNotifications()
     func promptForPushNotifications(callback: @escaping (_ IsUserGranted: Bool) -> Void)
     func getNotificationSettings()

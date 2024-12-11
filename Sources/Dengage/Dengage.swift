@@ -362,6 +362,10 @@ public class Dengage{
         dengage?.notificationManager.didReceive(with: userInfo)
     }
     
+    @objc static public func didClickCarouselItem(content: UNNotificationContent, carouselId: Int) {
+        dengage?.notificationManager.didClickCarouselItem(content: content, carouselId: carouselId)
+    }
+    
     @objc static public func pageView(parameters: [String: Any]){
         dengage?.eventManager.pageView(parameters: parameters)
     }
