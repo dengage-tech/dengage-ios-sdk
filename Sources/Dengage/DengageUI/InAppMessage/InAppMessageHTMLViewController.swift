@@ -18,21 +18,13 @@ final class InAppMessageHTMLViewController: UIViewController{
     var isClicked = false
     
     var hasTopNotch: Bool {
-        
         if #available(iOS 13.0, *) {
-            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene
-            {
+            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
                 return true
-                
-            }
-            else {
-                // Fallback on earlier versions
+            } else {
                 return UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0 > 20
-                
             }
         }
-        
-        
         return false
     }
     
@@ -48,8 +40,6 @@ final class InAppMessageHTMLViewController: UIViewController{
     override func loadView() {
         view = viewSource
     }
-    
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -103,7 +93,6 @@ final class InAppMessageHTMLViewController: UIViewController{
         viewSource.webView.contentMode = .scaleAspectFit
         viewSource.webView.sizeToFit()
         viewSource.webView.autoresizesSubviews = true
-        
     }
 }
 
@@ -111,15 +100,11 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         
         let dataDict: [String: Any] = [
-            "dnInAppDeviceInfo": [
-                //"test1": "Başlık Burada",
-                //"test2": "https://dengage-cdn.azureedge.net",
-                //"test4": "Mesaj içeriği."
-            ]
+            "dnInAppDeviceInfo": Dengage.getInAppDeviceInfo()
         ]
         
         guard let data = try? JSONSerialization.data(withJSONObject: dataDict, options: []),
-                let dataString = String(data: data, encoding: .utf8) else {
+              let dataString = String(data: data, encoding: .utf8) else {
             return
         }
         let template = message.data.content.props.html ?? ""

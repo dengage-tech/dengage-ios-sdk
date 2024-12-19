@@ -80,6 +80,7 @@ final public class DengageLocalStorage: NSObject {
         case language = "language"
 
         case shownStoryCoverDic = "shownStoryCoverDic"
+        case inAppDeviceInfo = "inAppDeviceInfo"
 
     }
 }
@@ -282,6 +283,38 @@ extension DengageLocalStorage {
             Logger.log(message: "saving inbox messages fail")
         }
     }
+    
+    func getInAppDeviceInfo() -> [String: String] {
+        guard let inAppDeviceInfoData = userDefaults.object(forKey: Key.inAppDeviceInfo.rawValue) as? Data else { return [:] }
+        let decoder = JSONDecoder()
+        do {
+            let inAppDeviceInfo = try decoder.decode([String: String].self, from: inAppDeviceInfoData)
+            return inAppDeviceInfo
+        } catch {
+            Logger.log(message: "getInAppDeviceInfo fail")
+            return [:]
+        }
+    }
+    
+    func saveInAppDeviceInfo(key: String, value: String){
+        let inAppDeviceInfoData = userDefaults.object(forKey: Key.inAppDeviceInfo.rawValue) as? Data
+        let decoder = JSONDecoder()
+        do {
+            var inAppDeviceInfoDictionary = [String: String]()
+            if let inAppDeviceInfoData {
+                inAppDeviceInfoDictionary = try decoder.decode([String: String].self, from: inAppDeviceInfoData)
+            }
+            inAppDeviceInfoDictionary[key] = value
+            let encoder = JSONEncoder()
+            let encoded = try encoder.encode(inAppDeviceInfoDictionary)
+            userDefaults.set(encoded, forKey: Key.inAppDeviceInfo.rawValue)
+            userDefaults.synchronize()
+        } catch {
+            Logger.log(message: "saveInAppDeviceInfo fail")
+        }
+    }
+    
+
 
 }
 

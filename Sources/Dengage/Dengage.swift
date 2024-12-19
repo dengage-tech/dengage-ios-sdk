@@ -284,15 +284,9 @@ public class Dengage{
     }
     
     @objc public static func handleInAppDeeplink(completion: @escaping (String) -> Void) {
-        
         dengage?.inAppManager.returnAfterDeeplinkRecieved = { deeplink in
-            
             completion(deeplink)
-            
         }
-        
-        
-        
     }
     
     @objc public static func showRealTimeInApp(
@@ -422,17 +416,25 @@ public class Dengage{
     static func syncSubscription() {
         dengage?.makeSubscriptionRequestAPICall()
     }
-    @objc public static func setHybridAppEnvironment() {
-        
-        DengageLocalStorage.shared.set(value: true, for: .hybridAppEnvironment)
-        
-    }
     
+    @objc public static func setHybridAppEnvironment() {
+        DengageLocalStorage.shared.set(value: true, for: .hybridAppEnvironment)
+    }
     
     public static func showRatingView() {
         if #available( iOS 10.3,*){
             SKStoreReviewController.requestReview()
         }
+    }
+}
+
+extension Dengage {
+    public static func setInAppDeviceInfo(key: String, value: String) {
+        DengageLocalStorage.shared.saveInAppDeviceInfo(key: key, value: value)
+    }
+    
+    public static func getInAppDeviceInfo() -> [String: String] {
+        return DengageLocalStorage.shared.getInAppDeviceInfo()
     }
 }
 
