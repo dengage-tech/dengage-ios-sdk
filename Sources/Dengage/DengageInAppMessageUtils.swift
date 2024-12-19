@@ -27,61 +27,40 @@ final class DengageInAppMessageUtils{
             
             let inAppMessageWithScreenName = inAppMessages.sorted.first { message -> Bool in
                 
-                if let arrScreenFilter = message.data.displayCondition.screenNameFilters
-                {
+                if let arrScreenFilter = message.data.displayCondition.screenNameFilters {
                     if message.isDisplayTimeAvailable() && operateRealTimeValues(message: message, with: params, config: config)
-                        && (isInLineInApp(inAppMessage: message, propertyID: propertyId, storyPropertyId: storyPropertyId))
-                    {
+                        && (isInLineInApp(inAppMessage: message, propertyID: propertyId, storyPropertyId: storyPropertyId)) {
                         let operatorFilter = message.data.displayCondition.screenNameFilterLogicOperator
-                        
                         var arrDisplay = [Bool]()
-                        
-                        for nameFilter in arrScreenFilter
-                        {
+                        for nameFilter in arrScreenFilter {
                             arrDisplay.append(operateScreenValues(value: nameFilter.value, for: screenName, operatorType: nameFilter.operatorType))
                         }
-                        
                         switch operatorFilter {
-                            
                         case .AND:
-                            
                             let isDisplay = arrDisplay.filter{($0 == false)}
-                            
-                            if isDisplay.count == 0
-                            {
+                            if isDisplay.count == 0 {
                                 return true
                             }
-                            
                         case .OR:
-                            
                             let isDisplay = arrDisplay.filter{($0 == true)}
-                            
-                            if isDisplay.count != 0
-                            {
+                            if isDisplay.count != 0 {
                                 return true
                             }
-                            
                         case .none:
-                            
                             return message.data.displayCondition.screenNameFilters?.first{ nameFilter -> Bool in
-                                
                                 return operateScreenValues(value: nameFilter.value, for: screenName, operatorType: nameFilter.operatorType)
-                                
                             } != nil && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message,config: config)
                             && (isInLineInApp(inAppMessage: message, propertyID: propertyId, storyPropertyId: storyPropertyId))
                         }
                     }
-                    
                 }
-                
                 return false
                 
             }
             
             return inAppMessageWithScreenName
             
-        }else {
-            
+        } else {
             let inAppMessageWithoutScreenName = inAppMessages.sorted.first { message -> Bool in
                 return (message.data.displayCondition.screenNameFilters ?? []).isEmpty && message.isDisplayTimeAvailable() && operateRealTimeValues(message: message, with: params, config: config)
                 && (isInLineInApp(inAppMessage:message, propertyID: propertyId, storyPropertyId: storyPropertyId))

@@ -314,8 +314,10 @@ extension DengageLocalStorage {
         }
     }
     
-
-
+    func clearInAppDeviceInfo(){
+        userDefaults.removeObject(forKey: Key.inAppDeviceInfo.rawValue)
+        userDefaults.synchronize()
+    }
 }
 
 

@@ -428,14 +428,20 @@ public class Dengage{
     }
 }
 
+//MARK: - Device Info
 extension Dengage {
     public static func setInAppDeviceInfo(key: String, value: String) {
         DengageLocalStorage.shared.saveInAppDeviceInfo(key: key, value: value)
     }
     
+    public static func clearInAppDeviceInfo() {
+        DengageLocalStorage.shared.clearInAppDeviceInfo()
+    }
+    
     public static func getInAppDeviceInfo() -> [String: String] {
         return DengageLocalStorage.shared.getInAppDeviceInfo()
     }
+    
 }
 
 extension Dengage {
@@ -498,13 +504,9 @@ extension Dengage {
 
 //MARK: - DengageDeviceIdApiUrl
 extension Dengage{
-    
     @objc public static func sendDeviceIdToServer(route:String , token : String) {
         DengageLocalStorage.shared.set(value: route, for: .deviceIdRoute)
         dengage?.dengageDeviceIdSendToServer(token: token)
     }
-    
-    
-    
 }
 

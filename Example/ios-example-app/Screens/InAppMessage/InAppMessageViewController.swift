@@ -30,10 +30,19 @@ final class InAppMessageViewController: UIViewController {
         return view
     }()
     
+    private lazy var clearDeviceInfoButton: UIButton = {
+        let view = UIButton()
+        view.setTitle("Clear Device Info", for: .normal)
+        view.addTarget(self, action: #selector(didTapClearDeviceInfo), for: .touchUpInside)
+        view.setTitleColor(.blue, for: .normal)
+        return view
+    }()
+    
     private lazy var stackView:UIStackView = {
         let view = UIStackView(arrangedSubviews: [deviceIdTextView,
                                                   screenNameTextField,
                                                   navigationButton,
+                                                  clearDeviceInfoButton,
                                                   UIView()])
         view.axis = .vertical
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -111,12 +120,12 @@ final class InAppMessageViewController: UIViewController {
     @objc private func didTapNavigationButton(){
         guard let text = screenNameTextField.text else {return}
         
-        let parameters:Dictionary = deviceInfoStackView.arrangedSubviews
+        let deviceInfo:Dictionary = deviceInfoStackView.arrangedSubviews
                 .compactMap{$0 as? DeviceInfoItemView}
                 .compactMap{$0.values}
                 .reduce(into: [:]) { $0[$1.0] = $1.1 }
         
-        for (key, value) in parameters{
+        for (key, value) in deviceInfo {
             Dengage.setInAppDeviceInfo(key: key, value: value)
         }
         
@@ -127,6 +136,14 @@ final class InAppMessageViewController: UIViewController {
         
         view.endEditing(true)
         navigationButton.setTitleColor(.black, for: .normal)
+    }
+    
+    @objc private func didTapClearDeviceInfo(){
+        Dengage.clearInAppDeviceInfo()
+        for view in deviceInfoStackView.arrangedSubviews{
+            view.removeFromSuperview()
+        }
+        addNewDeviceInfoView(key: "", value: "")
     }
 }
 
