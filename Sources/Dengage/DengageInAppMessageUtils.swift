@@ -94,6 +94,14 @@ final class DengageInAppMessageUtils{
             } else {
                 return inAppMessage.data.inlineTarget?.iosSelector == storyPropertyId
             }
+        } else if("inline".caseInsensitiveCompare(inAppMessage.data.content.type ?? "")) == .orderedSame {
+            let isPropertyEmpty = propertyID == nil || propertyID == ""
+            let isSelectorEmpty = inAppMessage.data.inlineTarget?.iosSelector == "" || inAppMessage.data.inlineTarget?.iosSelector == nil
+            if isPropertyEmpty || isSelectorEmpty {
+                return false
+            } else {
+                return inAppMessage.data.inlineTarget?.iosSelector == propertyID
+            }
         } else if (storyPropertyId == nil || storyPropertyId == "") {
             //TODO: EGEMEN: what is the purpose of this if?
             if (propertyID == nil || propertyID == "" ) && (inAppMessage.data.inlineTarget?.iosSelector == "" || inAppMessage.data.inlineTarget?.iosSelector == nil)
