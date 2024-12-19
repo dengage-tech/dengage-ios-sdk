@@ -152,6 +152,7 @@
 		880068952C932B8700881F71 /* DengageVisitCountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageVisitCountManager.swift; sourceTree = "<group>"; };
 		8800689A2C933CC300881F71 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 		8800689B2C933CC300881F71 /* SwiftyJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwiftyJSON.h; sourceTree = "<group>"; };
+		880138262D14258D00F06B40 /* Location.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Location.gpx; path = "Example/ios-example-app/Location.gpx"; sourceTree = "<group>"; };
 		881709152C91803E00FA8B63 /* DengageCLLocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageCLLocation.swift; sourceTree = "<group>"; };
 		881709162C91803E00FA8B63 /* DengageGeofenceCluster.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageGeofenceCluster.swift; sourceTree = "<group>"; };
 		881709172C91803E00FA8B63 /* DengageGeofenceEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageGeofenceEvent.swift; sourceTree = "<group>"; };
@@ -347,6 +348,7 @@
 		A0765B6C27CEB4300007215B = {
 			isa = PBXGroup;
 			children = (
+				880138262D14258D00F06B40 /* Location.gpx */,
 				A0765B8027CEB4700007215B /* Sources */,
 				A0765B7727CEB4300007215B /* Products */,
 				881EE0192C996B0D00838C23 /* Frameworks */,

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		880068872C931B7400881F71 /* AppStoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880068852C931B7400881F71 /* AppStoryViewController.swift */; };
+		880138252D14256600F06B40 /* Location.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 880138242D14256600F06B40 /* Location.gpx */; };
 		881EE0352C9997C300838C23 /* DengageGeofence in Frameworks */ = {isa = PBXBuildFile; productRef = 881EE0342C9997C300838C23 /* DengageGeofence */; };
 		A02A40E127CF93CD00D75B02 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = A02A40E027CF93CD00D75B02 /* Dengage */; };
 		A02A40E327CF93D800D75B02 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = A02A40E227CF93D800D75B02 /* Dengage */; };
@@ -71,6 +72,7 @@
 
 /* Begin PBXFileReference section */
 		880068852C931B7400881F71 /* AppStoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppStoryViewController.swift; sourceTree = "<group>"; };
+		880138242D14256600F06B40 /* Location.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Location.gpx; sourceTree = "<group>"; };
 		881EE02A2C998E2200838C23 /* DengageGeofence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = DengageGeofence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		886E50332CE56F0000528A6E /* NotificationContentExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotificationContentExtension.entitlements; sourceTree = "<group>"; };
 		88968AFD2D09CF2700312C4C /* ios-example-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ios-example-app.entitlements"; sourceTree = "<group>"; };
@@ -274,6 +276,7 @@
 		A0F46C60275A85B0003A524C /* ios-example-app */ = {
 			isa = PBXGroup;
 			children = (
+				880138242D14256600F06B40 /* Location.gpx */,
 				88968AFD2D09CF2700312C4C /* ios-example-app.entitlements */,
 				A0F46C61275A85B0003A524C /* AppDelegate.swift */,
 				A0F46C65275A85B0003A524C /* ViewController.swift */,
@@ -447,6 +450,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A0F46C6E275A85B1003A524C /* LaunchScreen.storyboard in Resources */,
+				880138252D14256600F06B40 /* Location.gpx in Resources */,
 				A0F46C6B275A85B1003A524C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
