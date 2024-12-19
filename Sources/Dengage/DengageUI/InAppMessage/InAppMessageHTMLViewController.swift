@@ -264,24 +264,21 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             }
             break
         case "setTags":
-            
-            guard let tagItemData = message.body as? [Dictionary<String,String>] else {return}
-            let tagItems = tagItemData.map{TagItem.init(with: $0)}
-            self.delegate?.setTags(tags: tagItems)
-            
-            break
-        case "promptPushPermission":
-            delegate?.promptPushPermission()
-            break
-        case "openSettings":
-            delegate?.openApplicationSettings()
-        case "dismiss":
-            if !isClicked
-            {
-                isClicked = true
-                delegate?.sendDissmissEvent(message: self.message)
-                
+            guard let tagItemString = message.body as? String else { return }
+            let trimmed = tagItemString.trimmingCharacters(in: .whitespacesAndNewlines)
+            let withoutBraces = trimmed.trimmingCharacters(in: CharacterSet(charactersIn: "{} "))
+            let components = withoutBraces.components(separatedBy: ",")
+            var dict = [String:String]()
+            for component in components {
+                let pair = component.components(separatedBy: ":")
+                if pair.count == 2 {
+                    let key = pair[0].trimmingCharacters(in: .whitespacesAndNewlines)
+                    let value = pair[1].trimmingCharacters(in: .whitespacesAndNewlines)
+                    dict[key] = value
+                }
             }
+            let tagItem = TagItem(with: dict)
+            self.delegate?.setTags(tags: [tagItem])
             break
         case "close":
             if !isClicked
