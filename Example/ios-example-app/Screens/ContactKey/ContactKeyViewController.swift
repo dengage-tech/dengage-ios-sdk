@@ -8,6 +8,7 @@ class ContactKeyViewController: UIViewController {
         view.placeholder = "email@email.com"
         view.textAlignment = .center
         view.borderStyle = .roundedRect
+        view.autocapitalizationType = .none
         view.delegate = self
         return view
     }()

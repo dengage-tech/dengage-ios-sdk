@@ -265,12 +265,19 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             let tagItem = TagItem(with: dict)
             self.delegate?.setTags(tags: [tagItem])
             break
-        case "close":
-            if !isClicked
-            {
+        case "promptPushPermission":
+            delegate?.promptPushPermission()
+            break
+        case "dismiss":
+            if !isClicked {
                 isClicked = true
                 delegate?.sendDissmissEvent(message: self.message)
-                
+            }
+            break
+        case "close":
+            if !isClicked {
+                isClicked = true
+                delegate?.sendDissmissEvent(message: self.message)
             }
             if !isIosURLNPresent
             {
