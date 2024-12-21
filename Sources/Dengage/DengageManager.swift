@@ -15,6 +15,7 @@ public class DengageManager {
     var inAppManager: DengageInAppMessageManager
     var notificationManager: DengageNotificationManagerInterface
     var dengageRFMManager: DengageRFMManager
+    var subscriptionQueue: DengageSubscriptionQueue
 
     var testPageWindow: UIWindow?
     
@@ -46,7 +47,9 @@ public class DengageManager {
         
         self.dengageRFMManager = DengageRFMManager()
         
-        sync()
+        self.subscriptionQueue = DengageSubscriptionQueue(apiClient: apiClient, config: config)
+        
+        syncSubscription()
         getSDKParams()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 120, execute: {
@@ -105,8 +108,21 @@ extension DengageManager {
         }
     }
     
-    func sync(){
-        
+    private func shouldMakeSubscriptionRequestBasedOnTime() -> Bool {
+        if let lastSyncedSubscription = DengageLocalStorage.shared.value(for: .lastSyncdSubscription) as? Date {
+            let nextSyncedSubscription = lastSyncedSubscription.addingTimeInterval(1200) // 20 minutes
+            let now = Date()
+            if now > nextSyncedSubscription {
+                return true
+            } else {
+                return false
+            }
+        } else {
+            return true
+        }
+    }
+    
+    private func shouldMakeSubscriptionRequest() -> Bool {
         let integrationKeySubscription = DengageLocalStorage.shared.value(for: .integrationKeySubscription) as? String
         let tokenSubscription = DengageLocalStorage.shared.value(for: .tokenSubscription) as? String
         let contactKeySubscription = DengageLocalStorage.shared.value(for: .contactKeySubscription) as? String
@@ -118,7 +134,7 @@ extension DengageManager {
         let countrySubscription = DengageLocalStorage.shared.value(for: .countrySubscription) as? String
         let languageSubscription = DengageLocalStorage.shared.value(for: .languageSubscription) as? String
         let timezoneSubscription = DengageLocalStorage.shared.value(for: .timezoneSubscription) as? String
-        let partner_device_idSubscription = DengageLocalStorage.shared.value(for: .partner_device_idSubscription) as? String
+        let partnerDeviceIdSubscription = DengageLocalStorage.shared.value(for: .partner_device_idSubscription) as? String
         let advertisingIdSubscription = DengageLocalStorage.shared.value(for: .advertisingIdSubscription) as? String
         
         let integrationKey = self.config.integrationKey
@@ -132,130 +148,43 @@ extension DengageManager {
         let country = self.config.deviceCountryCode
         let language = self.config.getLanguage()
         let timezone = self.config.deviceTimeZone
-        var PartnerDeviceId = ""
-        
-        if let partnerId = DengageLocalStorage.shared.value(for: .PartnerDeviceId) as? String
-        {
-            PartnerDeviceId = partnerId
-        }
+        let partnerDeviceId = self.config.getPartnerDeviceID() ?? ""
         let advertisingId = self.config.advertisingIdentifier
         
-        if (integrationKeySubscription != nil) && (integrationKeySubscription != integrationKey)
-        {
-            makeSubscriptionRequestAPICall()
-
-        }
-        else if (tokenSubscription != nil) && (token != tokenSubscription)
-        {
-            makeSubscriptionRequestAPICall()
-
-        }
-        else if (contactKey != nil) &&  (contactKey != contactKeySubscription)
-        {
-            makeSubscriptionRequestAPICall()
-
-        }
-        else if (permissionSubscription != nil) &&  (userPermission != permissionSubscription)
-        {
-            makeSubscriptionRequestAPICall()
-
-        }
-        else if (udidSubscription != nil) &&  (udidSubscription != udid)
-        {
-            makeSubscriptionRequestAPICall()
-
-        }
-        else if (carrierIdSubscription != nil) && (carrierIdSubscription != carrierId)
-        {
-            makeSubscriptionRequestAPICall()
-
-        }
-        else if (appVersionSubscription != nil) && (appVersionSubscription != appVersion)
-        {
-            makeSubscriptionRequestAPICall()
-
-        }
-        else if (sdkVersionSubscription != nil) && (sdkVersionSubscription != sdkVersion)
-        {
-            makeSubscriptionRequestAPICall()
-
-        }
-        else if (countrySubscription != nil) && (countrySubscription != country)
-        {
-            makeSubscriptionRequestAPICall()
-
-        }
-        else if (languageSubscription != nil) && (language != languageSubscription)
-        {
-            makeSubscriptionRequestAPICall()
-
-        }
-        else if (timezoneSubscription != nil) && timezone != timezoneSubscription
-        {
-            makeSubscriptionRequestAPICall()
-
-        }
-        else if (partner_device_idSubscription != nil) &&  (PartnerDeviceId != partner_device_idSubscription)
-        {
-            makeSubscriptionRequestAPICall()
-
-        }
-        else if (advertisingIdSubscription != nil) &&  advertisingIdSubscription != advertisingId
-        {
-            makeSubscriptionRequestAPICall()
-
+        if integrationKeySubscription != integrationKey {
+            return true
+        } else if tokenSubscription != token {
+            return true
+        } else if contactKeySubscription != contactKey {
+            return true
+        } else if permissionSubscription != userPermission {
+            return true
+        } else if udidSubscription != udid {
+            return true
+        } else if carrierIdSubscription != carrierId {
+            return true
+        } else if appVersionSubscription != appVersion {
+            return true
+        } else if sdkVersionSubscription != sdkVersion {
+            return true
+        } else if countrySubscription != country {
+            return true
+        } else if languageSubscription != language {
+            return true
+        } else if timezoneSubscription != timezone {
+            return true
+        } else if partnerDeviceIdSubscription != partnerDeviceId {
+            return true
+        } else if advertisingIdSubscription != advertisingId {
+            return true
         }
         
-        if let lastSyncedSubscription = DengageLocalStorage.shared.value(for: .lastSyncdSubscription) as? Date
-        {
-            let nextSyncedSubscription = lastSyncedSubscription.addingTimeInterval(1200)
-            let currentSyncedSubscription = Date()
-            
-            if currentSyncedSubscription > nextSyncedSubscription
-            {
-                DengageLocalStorage.shared.set(value: Date(), for: .lastSyncdSubscription)
-
-                makeSubscriptionRequestAPICall()
-            }
-
-        }
-        else
-        {
-            DengageLocalStorage.shared.set(value: Date(), for: .lastSyncdSubscription)
-            makeSubscriptionRequestAPICall()
-        }
-    
-        
+        return false
     }
     
-    func makeSubscriptionRequestAPICall()
-    {
-        eventManager.eventSessionStart()
-        let request = MakeSubscriptionRequest(config: config)
-        Logger.log(message: "sync Started")
-        apiClient.send(request: request) { result in
-            switch result {
-            case .success(_):
-                Logger.log(message: "sync success")
-                
-                
-                DengageLocalStorage.shared.set(value: self.config.integrationKey, for: .integrationKeySubscription)
-                DengageLocalStorage.shared.set(value: self.config.deviceToken, for: .tokenSubscription)
-                DengageLocalStorage.shared.set(value: self.config.getContactKey() ?? "", for: .contactKeySubscription)
-                DengageLocalStorage.shared.set(value: self.config.permission, for: .permissionSubscription)
-                DengageLocalStorage.shared.set(value: self.config.applicationIdentifier, for: .udidSubscription)
-                DengageLocalStorage.shared.set(value: self.config.getCarrierIdentifier, for: .carrierIdSubscription)
-                DengageLocalStorage.shared.set(value: self.config.appVersion, for: .appVersionSubscription)
-                DengageLocalStorage.shared.set(value: SDK_VERSION, for: .sdkVersionSubscription)
-                DengageLocalStorage.shared.set(value: self.config.deviceCountryCode, for: .countrySubscription)
-                DengageLocalStorage.shared.set(value: self.config.getLanguage(), for: .languageSubscription)
-                DengageLocalStorage.shared.set(value: self.config.deviceTimeZone, for: .timezoneSubscription)
-                DengageLocalStorage.shared.set(value: self.config.getPartnerDeviceID() ?? "", for: .partner_device_idSubscription)
-                DengageLocalStorage.shared.set(value: self.config.advertisingIdentifier, for: .advertisingIdSubscription)
-
-            case .failure(_):
-                Logger.log(message: "sync error")
-            }
+    func syncSubscription() {
+        if shouldMakeSubscriptionRequest() || shouldMakeSubscriptionRequestBasedOnTime() {
+            subscriptionQueue.enqueueSubscription()
         }
     }
     

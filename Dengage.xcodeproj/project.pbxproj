@@ -38,6 +38,7 @@
 		881EE0272C9978B300838C23 /* DengageGeofenceEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709172C91803E00FA8B63 /* DengageGeofenceEvent.swift */; };
 		881EE0292C9989AA00838C23 /* DengageGeofence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881EE0282C9989AA00838C23 /* DengageGeofence.swift */; };
 		88BDCF6A2D09D3E100DAE52C /* TestInAppHtmlViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BDCF662D09D3DE00DAE52C /* TestInAppHtmlViewController.swift */; };
+		88E4D7292D16A8A00033A501 /* DengageSubscriptionQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E4D7252D16A89C0033A501 /* DengageSubscriptionQueue.swift */; };
 		88E93AD42C923AC600EE3F5E /* CircleImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ABD2C923AC600EE3F5E /* CircleImageView.swift */; };
 		88E93AD52C923AC600EE3F5E /* LayoutAttributesAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ABE2C923AC600EE3F5E /* LayoutAttributesAnimator.swift */; };
 		88E93AD62C923AC600EE3F5E /* StoriesListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ABF2C923AC600EE3F5E /* StoriesListCell.swift */; };
@@ -177,6 +178,7 @@
 		881EE00F2C996A1000838C23 /* DengageGeofence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DengageGeofence.h; sourceTree = "<group>"; };
 		881EE0282C9989AA00838C23 /* DengageGeofence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageGeofence.swift; sourceTree = "<group>"; };
 		88BDCF662D09D3DE00DAE52C /* TestInAppHtmlViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInAppHtmlViewController.swift; sourceTree = "<group>"; };
+		88E4D7252D16A89C0033A501 /* DengageSubscriptionQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageSubscriptionQueue.swift; sourceTree = "<group>"; };
 		88E93ABD2C923AC600EE3F5E /* CircleImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleImageView.swift; sourceTree = "<group>"; };
 		88E93ABE2C923AC600EE3F5E /* LayoutAttributesAnimator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LayoutAttributesAnimator.swift; sourceTree = "<group>"; };
 		88E93ABF2C923AC600EE3F5E /* StoriesListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoriesListCell.swift; sourceTree = "<group>"; };
@@ -407,6 +409,7 @@
 			children = (
 				A0765B8927CEB4700007215B /* DengageAPIRequest.swift */,
 				A0765B8A27CEB4700007215B /* DengageNetworking.swift */,
+				88E4D7252D16A89C0033A501 /* DengageSubscriptionQueue.swift */,
 				8800689B2C933CC300881F71 /* SwiftyJSON.h */,
 				8800689A2C933CC300881F71 /* SwiftyJSON.swift */,
 			);
@@ -787,6 +790,7 @@
 				88E93AD42C923AC600EE3F5E /* CircleImageView.swift in Sources */,
 				A0765BE227CEB4700007215B /* MarkAsInAppMessageAsDismissedRequest.swift in Sources */,
 				88E93AE02C923AC600EE3F5E /* StoryImageCache.swift in Sources */,
+				88E4D7292D16A8A00033A501 /* DengageSubscriptionQueue.swift in Sources */,
 				881709382C91808800FA8B63 /* MarkAsRealTimeInAppMessageAsDismissedRequest.swift in Sources */,
 				A0765BE327CEB4700007215B /* GetInAppMessagesRequest.swift in Sources */,
 				88E93AEC2C923C8300EE3F5E /* StoryRequest.swift in Sources */,

@@ -50,6 +50,18 @@
             ReferencedContainer = "container:ios-example-app.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "https_proxy"
+            value = "172.20.10.14:8281"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "http_proxy"
+            value = "172.20.10.14:8281"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
       <LocationScenarioReference
          identifier = "../../Example/ios-example-app/Location.gpx"
          referenceType = "0">

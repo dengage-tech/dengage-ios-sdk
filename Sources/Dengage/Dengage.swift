@@ -105,9 +105,7 @@ public class Dengage{
     }
     
     @objc public static func syncSDK() {
-        
-        dengage?.sync()
-        
+        dengage?.syncSubscription()
     }
     
     @objc public static func set(permission: Bool){
@@ -414,7 +412,7 @@ public class Dengage{
     }
     
     static func syncSubscription() {
-        dengage?.makeSubscriptionRequestAPICall()
+        dengage?.syncSubscription()
     }
     
     @objc public static func setHybridAppEnvironment() {
