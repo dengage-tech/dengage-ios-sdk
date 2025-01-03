@@ -13,8 +13,8 @@ public class DengageGeofence {
     private static let geofenceManager = DengageGeofenceManager()
 
 
-    static func startGeofence() {
-        //geofenceManager.startTracking()
+    public static func startGeofence() {
+        geofenceManager.startTracking(options: DengageGeofenceTrackingOptions(), fromInitialize: true)
     }
 
     public static func stopGeofence() {

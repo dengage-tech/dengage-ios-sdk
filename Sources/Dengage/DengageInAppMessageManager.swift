@@ -383,7 +383,7 @@ extension DengageInAppMessageManager {
 
             }
         } else if let id = storyPropertyID {
-            if let iosSelector = priorInAppMessage.data.inlineTarget?.iosSelector, iosSelector == id, ("story".caseInsensitiveCompare(priorInAppMessage.data.content.type ?? "")) == .orderedSame
+            if let iosSelector = priorInAppMessage.data.inlineTarget?.iosSelector, iosSelector == id, ("STORY".caseInsensitiveCompare(priorInAppMessage.data.content.type ?? "")) == .orderedSame
             {
                 showAppStory(inAppMessage: priorInAppMessage, storyCompletion: storyCompletion)
                 return

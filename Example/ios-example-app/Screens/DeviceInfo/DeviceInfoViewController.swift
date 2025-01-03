@@ -6,7 +6,6 @@ class DeviceInfoViewController: UIViewController {
     private lazy var textView: UITextView = {
         let view = UITextView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.heightAnchor.constraint(equalToConstant: 100).isActive = true
         view.isEditable = false
         return view
     }()
@@ -19,8 +18,6 @@ class DeviceInfoViewController: UIViewController {
         textView.fillSuperview(horizontalPadding: 16, verticalPadding: 8)
         getInfo()
         
-        //Dengage.setNavigation(screenName: "p1")
-
     }
     
     func getInfo(){
@@ -29,7 +26,8 @@ class DeviceInfoViewController: UIViewController {
         text += "Contact Key: " + (Dengage.getContactKey() ?? "") + "\n"
         text += "User Permission: " + Dengage.getPermission().description + "\n"
         text += "Device Token: " + (Dengage.getDeviceToken() ?? "") + "\n"
-        text += "Bundle Identifier:" + (Bundle.main.bundleIdentifier ?? "")
+        text += "Bundle Identifier:" + (Bundle.main.bundleIdentifier ?? "") + "\n"
+        text += "Sdk Version: " + (Dengage.getSdkVersion() ?? "")
         textView.text = text
     }
 

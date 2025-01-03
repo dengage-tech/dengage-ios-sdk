@@ -14,7 +14,7 @@ final class DengageSubscriptionQueue {
     
     private var subscriptionRequestWorkItem: DispatchWorkItem?
     
-    private let subscriptionRequestDelay: TimeInterval = 1.0
+    private let subscriptionRequestDelay: TimeInterval = 5.0
     
     init(apiClient: DengageNetworking,
          config: DengageConfiguration) {
@@ -37,7 +37,7 @@ final class DengageSubscriptionQueue {
     private func performSubscriptionRequest() {
         Dengage.dengage?.eventManager.eventSessionStart()
         let request = MakeSubscriptionRequest(config: config)
-        Logger.log(message: "DengageSubscriptionQueue -> sync Started")
+        Logger.log(message: "DengageSubscriptionQueue -> sync started")
         apiClient.send(request: request) { [weak self] result in
             switch result {
             case .success(_):

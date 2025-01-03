@@ -86,7 +86,7 @@ final class DengageInAppMessageUtils{
     
     private class func isInLineInApp(inAppMessage:InAppMessage, propertyID : String?, storyPropertyId : String? = nil) -> Bool
     {
-        if("story".caseInsensitiveCompare(inAppMessage.data.content.type ?? "")) == .orderedSame {
+        if("STORY".caseInsensitiveCompare(inAppMessage.data.content.type ?? "")) == .orderedSame {
             let isPropertyEmpty = storyPropertyId == nil || storyPropertyId == ""
             let isSelectorEmpty = inAppMessage.data.inlineTarget?.iosSelector == "" || inAppMessage.data.inlineTarget?.iosSelector == nil
             if isPropertyEmpty || isSelectorEmpty {
@@ -94,7 +94,7 @@ final class DengageInAppMessageUtils{
             } else {
                 return inAppMessage.data.inlineTarget?.iosSelector == storyPropertyId
             }
-        } else if("inline".caseInsensitiveCompare(inAppMessage.data.content.type ?? "")) == .orderedSame {
+        } else if("INLINE".caseInsensitiveCompare(inAppMessage.data.content.type ?? "")) == .orderedSame {
             let isPropertyEmpty = propertyID == nil || propertyID == ""
             let isSelectorEmpty = inAppMessage.data.inlineTarget?.iosSelector == "" || inAppMessage.data.inlineTarget?.iosSelector == nil
             if isPropertyEmpty || isSelectorEmpty {

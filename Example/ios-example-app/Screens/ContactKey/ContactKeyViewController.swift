@@ -1,18 +1,19 @@
-
 import UIKit
 import Dengage
+
 class ContactKeyViewController: UIViewController {
 
-    private lazy var textField:UITextField = {
+    private lazy var textField: UITextField = {
         let view = UITextField()
         view.placeholder = "email@email.com"
         view.textAlignment = .center
         view.borderStyle = .roundedRect
         view.autocapitalizationType = .none
         view.delegate = self
+        view.text = Dengage.getContactKey()
         return view
     }()
-    
+
     private lazy var saveButton: UIButton = {
         let view = UIButton()
         view.setTitle("Set Contact Key", for: .normal)
@@ -20,35 +21,28 @@ class ContactKeyViewController: UIViewController {
         view.setTitleColor(.blue, for: .normal)
         return view
     }()
-    
-    private lazy var requestCountField:UITextField = {
-        let view = UITextField()
-        view.placeholder = "Request Count"
-        view.textAlignment = .center
-        view.borderStyle = .roundedRect
-        view.autocapitalizationType = .none
-        view.keyboardType = .numberPad
-        view.text = "1"
-        view.delegate = self
+
+    private lazy var permissionSwitch: UISwitch = {
+        let view = UISwitch()
+        view.isOn = Dengage.getPermission()
+        view.addTarget(self, action: #selector(permissionSwitchChanged), for: .valueChanged)
         return view
     }()
-    
-    private lazy var subscribeButton: UIButton = {
-        let view = UIButton()
-        view.setTitle("Subscribe", for: .normal)
-        view.addTarget(self, action: #selector(didTapSubscribe), for: .touchUpInside)
-        view.setTitleColor(.blue, for: .normal)
-        return view
+
+    private lazy var permissionLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Permission"
+        return label
     }()
-    
-    private lazy var stackView:UIStackView = {
-        let view = UIStackView(arrangedSubviews: [textField, saveButton, requestCountField, subscribeButton, UIView()])
+
+    private lazy var stackView: UIStackView = {
+        let view = UIStackView(arrangedSubviews: [textField, saveButton, permissionLabel, permissionSwitch, UIView()])
         view.axis = .vertical
         view.translatesAutoresizingMaskIntoConstraints = false
         view.spacing = 10
         return view
     }()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Contact Key"
@@ -56,55 +50,30 @@ class ContactKeyViewController: UIViewController {
         view.addSubview(stackView)
         stackView.fillSafeArea(with: .init(top: 8, left: 16, bottom: 8, right: 16))
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
-        
         super.viewWillAppear(animated)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
-          
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             Dengage.setNavigation(screenName: "p1")
-
-            
-        })
-    }
-    
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        
-        super.viewWillDisappear(animated)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5, execute: {
-          
-            Dengage.removeInAppMessageDisplay()
-
-            
-        })
-        
-        
-        
-    }
-    
-    @objc private func didTapSubscribe() {
-        let requestCount = Int(requestCountField.text ?? "1") ?? 1
-        
-        let randomInt = Int.random(in: 1..<1000)
-        for i in 0..<requestCount {
-            //Dengage.set(deviceId: "\(randomInt)")
-            //Dengage.set(contactKey: "\(randomInt)")
         }
-        
-        Dengage.set(deviceId: "\(randomInt)")
-        Dengage.set(contactKey: "\(randomInt)")
-        
     }
-    
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+            Dengage.removeInAppMessageDisplay()
+        }
+    }
+
     @objc private func didTapSaveButton() {
-        guard let text = textField.text else {return}
+        guard let text = textField.text else { return }
         Dengage.set(contactKey: text)
         view.endEditing(true)
     }
 
+    @objc private func permissionSwitchChanged(_ sender: UISwitch) {
+        Dengage.set(permission: sender.isOn)
+    }
 }
 
 extension ContactKeyViewController: UITextFieldDelegate {

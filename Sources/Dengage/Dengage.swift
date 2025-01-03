@@ -141,6 +141,11 @@ public class Dengage{
         
     }
     
+    @objc public static func getSdkVersion() -> String? {
+        dengage?.config.sdkVersion
+    }
+    
+    
     @objc public static func setToken(token: String) {
         dengage?.config.set(token: token)
     }

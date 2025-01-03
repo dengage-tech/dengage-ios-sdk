@@ -118,7 +118,7 @@ final class InAppMessageViewController: UIViewController {
     }
     
     @objc private func didTapNavigationButton(){
-        guard let text = screenNameTextField.text else {return}
+        let text = screenNameTextField.text ?? ""
         
         let deviceInfo:Dictionary = deviceInfoStackView.arrangedSubviews
                 .compactMap{$0 as? DeviceInfoItemView}
