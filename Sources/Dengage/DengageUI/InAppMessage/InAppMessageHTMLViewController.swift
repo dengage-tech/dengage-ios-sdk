@@ -1,92 +1,94 @@
 import UIKit
-import WebKit
+@preconcurrency import WebKit
 
-final class InAppMessageHTMLViewController: UIViewController{
-    
-    private lazy var viewSource:InAppMessageHTMLView = {
+final class InAppMessageHTMLViewController: UIViewController {
+
+    private lazy var viewSource: InAppMessageHTMLView = {
         let view = InAppMessageHTMLView()
         view.webView.navigationDelegate = self
         return view
     }()
-    
+
     var delegate: InAppMessagesActionsDelegate?
-    
-    
-    let message:InAppMessage
-    
+    let message: InAppMessage
     var isIosURLNPresent = false
     var isClicked = false
-    
+
     var hasTopNotch: Bool {
-        if #available(iOS 13.0, *) {
-            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-                return true
-            } else {
-                return UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0 > 20
-            }
+        if #available(iOS 13.0, *), let _ = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            return true
         }
-        return false
+        return UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0 > 20
     }
-    
+
     init(with message: InAppMessage) {
         self.message = message
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func loadView() {
         view = viewSource
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        let mustacheUserScript = WKUserScript(source: mustacheJS, injectionTime: .atDocumentStart, forMainFrameOnly: true)
+        let mustacheUserScript = WKUserScript(
+            source: mustacheJS,
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: true
+        )
         viewSource.webView.configuration.userContentController.addUserScript(mustacheUserScript)
+
         setupJavascript()
-        viewSource.setupConstaints(for: message.data.content.props , message : message)
-        if let isPresent = message.data.content.props.html?.contains("Dn.iosUrlN") {
-            self.isIosURLNPresent = isPresent
-        }
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.didTapView(sender:)))
-        self.view.addGestureRecognizer(tapGesture)
+        viewSource.setupConstraints(for: message.data.content.props, message: message)
+        isIosURLNPresent = message.data.content.props.html?.contains("Dn.iosUrlN") ?? false
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapView(sender:)))
+        view.addGestureRecognizer(tapGesture)
     }
-    
-    @objc func didTapView(sender: UITapGestureRecognizer) {
+
+    @objc private func didTapView(sender: UITapGestureRecognizer) {
         guard message.data.content.props.dismissOnTouchOutside else { return }
         UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseOut, animations: {
             self.viewSource.webView.alpha = 0.0
-            
-        },completion: { (finished: Bool) in
-            self.delegate?.sendDissmissEvent(message: self.message)
+        }, completion: { _ in
+            self.delegate?.sendDismissEvent(message: self.message)
             self.delegate?.close()
         })
     }
-    
-    private func setupJavascript(){
-        
-        let userScript = WKUserScript(source: javascriptInterface,
-                                      injectionTime: WKUserScriptInjectionTime.atDocumentEnd,
-                                      forMainFrameOnly: true)
-        viewSource.webView.configuration.userContentController.addUserScript(userScript)
-        
+
+    private func setupJavascript() {
+        let userScript = WKUserScript(
+            source: javascriptInterface,
+            injectionTime: .atDocumentEnd,
+            forMainFrameOnly: true
+        )
+        let contentController = viewSource.webView.configuration.userContentController
+        contentController.addUserScript(userScript)
+
         if #available(iOS 14.0, *) {
             viewSource.webView.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
         } else {
             viewSource.webView.configuration.preferences.javaScriptEnabled = true
         }
-        
-        viewSource.webView.configuration.userContentController.add(self, name: "dismiss")
-        viewSource.webView.configuration.userContentController.add(self, name: "close")
-        viewSource.webView.configuration.userContentController.add(self, name: "closeN")
-        viewSource.webView.configuration.userContentController.add(self, name: "iosUrl")
-        viewSource.webView.configuration.userContentController.add(self, name: "iosUrlN")
-        viewSource.webView.configuration.userContentController.add(self, name: "sendClick")
-        viewSource.webView.configuration.userContentController.add(self, name: "promptPushPermission")
-        viewSource.webView.configuration.userContentController.add(self, name: "openSettings")
-        viewSource.webView.configuration.userContentController.add(self, name: "setTags")
+
+        ["dismiss",
+         "close",
+         "closeN",
+         "iosUrl",
+         "iosUrlN",
+         "sendClick",
+         "promptPushPermission",
+         "openSettings",
+         "setTags"
+        ].forEach {
+            contentController.add(self, name: $0)
+        }
+
         if let htmlString = message.data.content.props.html {
             viewSource.webView.loadHTMLString(htmlString, baseURL: nil)
         }
@@ -98,162 +100,111 @@ final class InAppMessageHTMLViewController: UIViewController{
 
 extension InAppMessageHTMLViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        
-        let dataDict: [String: Any] = [
-            "dnInAppDeviceInfo": Dengage.getInAppDeviceInfo()
-        ]
-        
-        guard let data = try? JSONSerialization.data(withJSONObject: dataDict, options: []),
-              let dataString = String(data: data, encoding: .utf8) else {
-            return
-        }
-        let template = message.data.content.props.html ?? ""
-        let js = """
-                        
-        (function() {
-            var template = `\(template.replacingOccurrences(of: "`", with: "\\`"))`; 
-            var data = \(dataString);
-            var rendered = Mustache.render(template, data);
-            document.documentElement.innerHTML = rendered;
-        
-        })();
-        """
-        
-        webView.evaluateJavaScript(js, completionHandler: { _, error in
-            if let error = error {
-                print("Dengage Mustache render error: \(error)")
-            } else {
-                self.setWebViewHeight()
+        if "VIDEO_MODAL".caseInsensitiveCompare(message.data.content.type ?? "") == .orderedSame {
+            setWebViewHeight()
+        } else {
+            let dataDict: [String: Any] = ["dnInAppDeviceInfo": Dengage.getInAppDeviceInfo()]
+            guard let data = try? JSONSerialization.data(withJSONObject: dataDict, options: []),
+                  let dataString = String(data: data, encoding: .utf8) else { return }
+
+            let template = message.data.content.props.html ?? ""
+            let js = """
+                (function() {
+                    var template = `\(template.replacingOccurrences(of: "`", with: "\\`"))`;
+                    var data = \(dataString);
+                    var rendered = Mustache.render(template, data);
+                    document.documentElement.innerHTML = rendered;
+                })();
+            """
+
+            webView.evaluateJavaScript(js) { _, error in
+                if let error = error {
+                    print("Dengage Mustache render error: \(error)")
+                } else {
+                    self.setWebViewHeight()
+                }
             }
-        })
+        }
     }
-    
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+
+    func webView(_ webView: WKWebView,
+                 decidePolicyFor navigationAction: WKNavigationAction,
+                 decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         guard let url = navigationAction.request.url,
-              let scheme = url.scheme, !scheme.contains("dengage") else {
+              let scheme = url.scheme,
+              !scheme.contains("dengage") else {
             decisionHandler(.cancel)
             return
         }
         decisionHandler(.allow)
     }
-    
-    private func setWebViewHeight(){
+
+    private func setWebViewHeight() {
         guard viewSource.webView.url?.absoluteString == "about:blank" else { return }
-        viewSource.webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { (height, error) in
-            guard let scrollHeight = height as? CGFloat else {return}
-            
-            if scrollHeight > self.viewSource.frame.height
-            {
-                self.viewSource.height?.constant = self.viewSource.frame.height
-                
+        viewSource.webView.evaluateJavaScript("document.documentElement.scrollHeight") { height, _ in
+            guard let scrollHeight = height as? CGFloat else { return }
+            self.viewSource.height?.constant = (scrollHeight > self.viewSource.frame.height)
+                ? self.viewSource.frame.height
+                : scrollHeight
+
+            if self.hasTopNotch, self.message.data.content.props.position == .top {
+                self.viewSource.height?.constant += 50
             }
-            else
-            {
-                self.viewSource.height?.constant = scrollHeight
-                
-            }
-            
-            if self.hasTopNotch
-            {
-                if self.message.data.content.props.position == .top
-                {
-                    self.viewSource.height?.constant = scrollHeight + 50
-                    
-                }
-                
-            }
-            
-            
-        })
+        }
     }
 }
 
 extension InAppMessageHTMLViewController: WKScriptMessageHandler {
-    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+    func userContentController(_ userContentController: WKUserContentController,
+                               didReceive message: WKScriptMessage) {
         run(message: message)
     }
-    
-    private func run(message: WKScriptMessage){
-        
+
+    private func run(message: WKScriptMessage) {
         switch message.name {
-            
         case "sendClick":
             let buttonId = message.body as? String
             isClicked = true
-            self.delegate?.sendClickEvent(message: self.message,
-                                          buttonId: buttonId)
-            
-            break
+            delegate?.sendClickEvent(message: self.message, buttonId: buttonId)
+
         case "iosUrl":
-            
-            if !isIosURLNPresent
-            {
-                if message.body as? String == "Dn.promptPushPermission()"
-                {
+            if !isIosURLNPresent {
+                guard let bodyString = message.body as? String else { return }
+                if bodyString == "Dn.promptPushPermission()" {
                     delegate?.promptPushPermission()
-                    
-                }
-                else if message.body as? String == "DN.SHOWRATING()"
-                {
+                } else if bodyString == "DN.SHOWRATING()" {
                     Dengage.showRatingView()
+                } else {
+                    delegate?.open(url: bodyString)
                 }
-                else
-                {
-                    guard let url = message.body as? String else {return}
-                    self.delegate?.open(url: url)
-                }
-                
             }
-            
-            break
+
         case "iosUrlN":
-            
-            guard let dict = message.body as? [String:Any] else {return}
-            
-            if let openInAppBrowser = dict["openInAppBrowser"] as? Bool
-            {
-                DengageLocalStorage.shared.set(value: openInAppBrowser, for: .openInAppBrowser)
-                
-            }
-            else
-            {
-                DengageLocalStorage.shared.set(value: false, for: .openInAppBrowser)
-                
-            }
-            if let retrieveLinkOnSameScreen = dict["retrieveLinkOnSameScreen"] as? Bool
-            {
-                DengageLocalStorage.shared.set(value: retrieveLinkOnSameScreen, for: .retrieveLinkOnSameScreen)
-                
-            }
-            else
-            {
-                DengageLocalStorage.shared.set(value: false, for: .retrieveLinkOnSameScreen)
-            }
-            
-            if let deeplink = dict["deeplink"] as? String
-            {
-                if deeplink == "Dn.promptPushPermission()"
-                {
+            guard let dict = message.body as? [String: Any] else { return }
+            DengageLocalStorage.shared.set(
+                value: dict["openInAppBrowser"] as? Bool ?? false,
+                for: .openInAppBrowser
+            )
+            DengageLocalStorage.shared.set(
+                value: dict["retrieveLinkOnSameScreen"] as? Bool ?? false,
+                for: .retrieveLinkOnSameScreen
+            )
+            if let deeplink = dict["deeplink"] as? String {
+                if deeplink == "Dn.promptPushPermission()" {
                     delegate?.promptPushPermission()
-                    
-                }
-                else if deeplink == "DN.SHOWRATING()"
-                {
+                } else if deeplink == "DN.SHOWRATING()" {
                     Dengage.showRatingView()
+                } else {
+                    delegate?.open(url: deeplink)
                 }
-                else
-                {
-                    self.delegate?.open(url: deeplink)
-                }
-                
             }
-            break
+
         case "setTags":
             guard let tagItemString = message.body as? String else { return }
             let trimmed = tagItemString.trimmingCharacters(in: .whitespacesAndNewlines)
             let withoutBraces = trimmed.trimmingCharacters(in: CharacterSet(charactersIn: "{} "))
             let components = withoutBraces.components(separatedBy: ",")
-            var dict = [String:String]()
+            var dict = [String: String]()
             for component in components {
                 let pair = component.components(separatedBy: ":")
                 if pair.count == 2 {
@@ -262,59 +213,53 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
                     dict[key] = value
                 }
             }
-            let tagItem = TagItem(with: dict)
-            self.delegate?.setTags(tags: [tagItem])
-            break
+            delegate?.setTags(tags: [TagItem(with: dict)])
+
         case "promptPushPermission":
             delegate?.promptPushPermission()
-            break
+
         case "dismiss":
             if !isClicked {
                 isClicked = true
-                delegate?.sendDissmissEvent(message: self.message)
+                delegate?.sendDismissEvent(message: self.message)
             }
-            break
+
         case "close":
             if !isClicked {
                 isClicked = true
-                delegate?.sendDissmissEvent(message: self.message)
+                delegate?.sendDismissEvent(message: self.message)
             }
-            if !isIosURLNPresent
-            {
-                delegate?.close()
-                
-            }
-            break
+            if !isIosURLNPresent { delegate?.close() }
+
         case "closeN":
-            if !isClicked
-            {
+            if !isClicked {
                 isClicked = true
-                delegate?.sendDissmissEvent(message: self.message)
-                
+                delegate?.sendDismissEvent(message: self.message)
             }
             delegate?.close()
-            break
+
         default:
             break
         }
-        
-        
     }
 }
 
-extension InAppMessageHTMLViewController{
-    fileprivate var javascriptInterface:String{
-        return """
-        var Dn =  {
+extension InAppMessageHTMLViewController {
+    fileprivate var javascriptInterface: String {
+        """
+        var Dn = {
             iosUrl: (url) => {
                 window.webkit.messageHandlers.iosUrl.postMessage(url);
             },
-            iosUrlN:(url,inbr,ret) => {
-        
-                window.webkit.messageHandlers.iosUrlN.postMessage({deeplink : url,openInAppBrowser : inbr,retrieveLinkOnSameScreen : ret});
+            iosUrlN: (url, inbr, ret) => {
+                window.webkit.messageHandlers.iosUrlN.postMessage({
+                    deeplink: url,
+                    openInAppBrowser: inbr,
+                    retrieveLinkOnSameScreen: ret
+                });
             },
             androidUrl: (url) => {},
-            androidUrlN: (url,inbr,ret) => {},
+            androidUrlN: (url, inbr, ret) => {},
             sendClick: (eventName) => {
                 window.webkit.messageHandlers.sendClick.postMessage(eventName);
             },
@@ -336,4 +281,5 @@ extension InAppMessageHTMLViewController{
         }
         """
     }
+
 }

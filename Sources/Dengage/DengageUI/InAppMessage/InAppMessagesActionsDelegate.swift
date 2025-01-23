@@ -1,12 +1,12 @@
 import Foundation
-protocol InAppMessagesActionsDelegate:AnyObject{
+
+protocol InAppMessagesActionsDelegate: AnyObject {
     func open(url: String?)
-    func sendDissmissEvent(message:InAppMessage)
-    func sendClickEvent(message:InAppMessage, buttonId:String?)
+    func sendDismissEvent(message: InAppMessage)
+    func sendClickEvent(message: InAppMessage, buttonId: String?)
     func promptPushPermission()
     func openApplicationSettings()
     func close()
-    func setTags(tags:[TagItem])
+    func setTags(tags: [TagItem])
     func closeInAppBrowser()
-
 }

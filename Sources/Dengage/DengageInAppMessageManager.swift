@@ -939,7 +939,7 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
    
     }
     
-    func sendDissmissEvent(message: InAppMessage) {
+    func sendDismissEvent(message: InAppMessage) {
         inAppMessageWindow = nil
         if message.data.isRealTime {
             setRealTimeInAppMessageAsDismissed(message)
