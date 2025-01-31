@@ -6,7 +6,7 @@ final class DengageNotificationExtension {
     static func didReceiveNotificationRequest(_ bestAttemptContent: UNMutableNotificationContent?,
                                               withContentHandler contentHandler:  @escaping (UNNotificationContent) -> Void) {
         
-
+        
         Logger.log(message: "NOTIFICATION_RECEIVED")
         
         guard let bestAttemptContent = bestAttemptContent, let message = bestAttemptContent.message else {
@@ -27,7 +27,7 @@ final class DengageNotificationExtension {
         } else {
             // Fallback on earlier versions
         }
-                
+        
         addActionButtonsIfNeeded(bestAttemptContent)
         
         bestAttemptContent.title = title
@@ -59,9 +59,10 @@ final class DengageNotificationExtension {
         
         Logger.log(message: "Parsing action buttons")
         
-        let actions: [UNNotificationAction] = actionButtons.compactMap{ item in
+        let actions: [UNNotificationAction] = actionButtons.compactMap { item in
             guard let id = item.id, let title = item.text else { return nil }
-            return UNNotificationAction(identifier: id, title: title, options: .foreground)
+            let options: UNNotificationActionOptions = ("NO".caseInsensitiveCompare(id) == .orderedSame)  ? [] : .foreground
+            return UNNotificationAction(identifier: id, title: title, options: options)
         }
         
         let category: UNNotificationCategory;
@@ -90,7 +91,7 @@ public extension UNNotificationAttachment {
         let fileManager = FileManager.default
         let folderName = ProcessInfo.processInfo.globallyUniqueString
         guard let folderURL = NSURL(fileURLWithPath: NSTemporaryDirectory())
-                .appendingPathComponent(folderName, isDirectory: true) else { return nil }
+            .appendingPathComponent(folderName, isDirectory: true) else { return nil }
         
         do {
             try fileManager.createDirectory(at: folderURL, withIntermediateDirectories: true, attributes: nil)
