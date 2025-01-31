@@ -99,6 +99,11 @@ final class Utilities{
             }
         }
     }
+    
+    static func isiOSAppExtension() -> Bool {
+        return Bundle.main.bundlePath.hasSuffix(".appex")
+    }
+    
 }
 
 extension Date {

@@ -183,8 +183,10 @@ extension DengageManager {
     }
     
     func syncSubscription() {
-        if shouldMakeSubscriptionRequest() || shouldMakeSubscriptionRequestBasedOnTime() {
-            subscriptionQueue.enqueueSubscription()
+        if !Utilities.isiOSAppExtension() {
+            if shouldMakeSubscriptionRequest() || shouldMakeSubscriptionRequestBasedOnTime() {
+                subscriptionQueue.enqueueSubscription()
+            }
         }
     }
     
