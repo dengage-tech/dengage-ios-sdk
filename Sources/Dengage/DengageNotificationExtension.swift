@@ -33,20 +33,18 @@ final class DengageNotificationExtension {
         bestAttemptContent.title = title
         bestAttemptContent.subtitle = subtitle
         
-        guard let urlImageString = message.urlImageString, let contentUrl = URL(string: urlImageString) else { return }
         
-        guard let imageData = NSData(contentsOf: contentUrl) else {
-            Logger.log(message: "URL_STR_IS_NULL")
-            return
+        if let urlImageString = message.urlImageString, let contentUrl = URL(string: urlImageString) {
+            if let imageData = NSData(contentsOf: contentUrl) {
+                guard let attachment = UNNotificationAttachment.create(fileIdentifier: contentUrl.lastPathComponent,
+                                                                       data: imageData) else {
+                    Logger.log(message: "UNNotificationAttachment.saveImageToDisk()")
+                    return
+                }
+                
+                bestAttemptContent.attachments = [ attachment ]
+            }
         }
-        
-        guard let attachment = UNNotificationAttachment.create(fileIdentifier: contentUrl.lastPathComponent,
-                                                               data: imageData) else {
-            Logger.log(message: "UNNotificationAttachment.saveImageToDisk()")
-            return
-        }
-        
-        bestAttemptContent.attachments = [ attachment ]
         contentHandler(bestAttemptContent)
     }
     
