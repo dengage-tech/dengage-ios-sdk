@@ -42,7 +42,7 @@ final class DengageInboxManager: DengageInboxManagerInterface {
                         updateInboxMessages(remoteInboxMessages: response)
                         
                     }
-                    completion(.success(inboxMessages))
+                    completion(.success(response))
                 case .failure(let error):
                     completion(.failure(error))
                 }
