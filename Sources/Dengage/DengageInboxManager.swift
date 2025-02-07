@@ -37,12 +37,12 @@ final class DengageInboxManager: DengageInboxManagerInterface {
                 switch result {
                 case .success(let response):
                     config.inboxLastFetchedDate = Date()
-                    if request.offset == "0" {
-                        inboxMessages = response
-                        updateInboxMessages(remoteInboxMessages: response)
+                    updateInboxMessages(remoteInboxMessages: response) { inboxMsg in
                         
+                        self.inboxMessages = inboxMsg
+                        completion(.success(inboxMsg))
+
                     }
-                    completion(.success(response))
                 case .failure(let error):
                     completion(.failure(error))
                 }
@@ -114,10 +114,10 @@ final class DengageInboxManager: DengageInboxManagerInterface {
 
  
     
-    private func updateInboxMessages(remoteInboxMessages: [DengageMessage]) {
-        if remoteInboxMessages.isEmpty { return }
+    private func updateInboxMessages(remoteInboxMessages: [DengageMessage],completion: @escaping (_ inboxMsg: [DengageMessage]) -> Void) {
+        if remoteInboxMessages.isEmpty { completion(remoteInboxMessages) }
         let prefsInboxMessages = DengageLocalStorage.shared.getInboxMessages()
-        if prefsInboxMessages.isEmpty { return }
+        if prefsInboxMessages.isEmpty { completion(remoteInboxMessages) }
         
         for i in 0..<remoteInboxMessages.count {
             let remoteInboxMessage = remoteInboxMessages[i]
@@ -130,6 +130,8 @@ final class DengageInboxManager: DengageInboxManagerInterface {
         inboxMessages = remoteInboxMessages.filter {
             return !$0.isDeleted
         }
+        
+        completion(inboxMessages)
     }
     
     private func updateInboxMessagesPrefs(inboxMessage: DengageMessage) {
