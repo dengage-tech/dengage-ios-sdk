@@ -36,13 +36,6 @@ final class InAppMessageHTMLViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let mustacheUserScript = WKUserScript(
-            source: mustacheJS,
-            injectionTime: .atDocumentStart,
-            forMainFrameOnly: true
-        )
-        viewSource.webView.configuration.userContentController.addUserScript(mustacheUserScript)
-
         setupJavascript()
         viewSource.setupConstraints(for: message.data.content.props, message: message)
         isIosURLNPresent = message.data.content.props.html?.contains("Dn.iosUrlN") ?? false
@@ -90,7 +83,9 @@ final class InAppMessageHTMLViewController: UIViewController {
         }
 
         if let htmlString = message.data.content.props.html {
-            viewSource.webView.loadHTMLString(htmlString, baseURL: nil)
+            let dataDict: [String: Any] = ["dnInAppDeviceInfo": Dengage.getInAppDeviceInfo()]
+            let renderedHtml = Mustache.render(htmlString, dataDict)
+            viewSource.webView.loadHTMLString(renderedHtml, baseURL: nil)
         }
         viewSource.webView.contentMode = .scaleAspectFit
         viewSource.webView.sizeToFit()
@@ -100,31 +95,7 @@ final class InAppMessageHTMLViewController: UIViewController {
 
 extension InAppMessageHTMLViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        if "VIDEO_MODAL".caseInsensitiveCompare(message.data.content.type ?? "") == .orderedSame {
-            setWebViewHeight()
-        } else {
-            let dataDict: [String: Any] = ["dnInAppDeviceInfo": Dengage.getInAppDeviceInfo()]
-            guard let data = try? JSONSerialization.data(withJSONObject: dataDict, options: []),
-                  let dataString = String(data: data, encoding: .utf8) else { return }
-
-            let template = message.data.content.props.html ?? ""
-            let js = """
-                (function() {
-                    var template = `\(template.replacingOccurrences(of: "`", with: "\\`"))`;
-                    var data = \(dataString);
-                    var rendered = Mustache.render(template, data);
-                    document.documentElement.innerHTML = rendered;
-                })();
-            """
-
-            webView.evaluateJavaScript(js) { _, error in
-                if let error = error {
-                    print("Dengage Mustache render error: \(error)")
-                } else {
-                    self.setWebViewHeight()
-                }
-            }
-        }
+        self.setWebViewHeight()
     }
 
     func webView(_ webView: WKWebView,
