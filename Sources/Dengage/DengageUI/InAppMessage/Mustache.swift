@@ -61,7 +61,7 @@ final class Mustache {
             let context = Context(view: data)
             return renderTokens(tokens: tokens, context: context)
         } catch {
-            print("Error rendering template: \(error)")
+            Logger.log(message: "Error rendering template: \(error)")
             return ""
         }
     }

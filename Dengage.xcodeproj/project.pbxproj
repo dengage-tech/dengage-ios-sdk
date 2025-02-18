@@ -37,6 +37,7 @@
 		881EE0262C99789100838C23 /* DengageGeofenceHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709182C91803E00FA8B63 /* DengageGeofenceHistory.swift */; };
 		881EE0272C9978B300838C23 /* DengageGeofenceEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709172C91803E00FA8B63 /* DengageGeofenceEvent.swift */; };
 		881EE0292C9989AA00838C23 /* DengageGeofence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881EE0282C9989AA00838C23 /* DengageGeofence.swift */; };
+		8845BBF02D5CF24A00715B38 /* Mustache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8845BBEF2D5CF24A00715B38 /* Mustache.swift */; };
 		88BDCF6A2D09D3E100DAE52C /* TestInAppHtmlViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BDCF662D09D3DE00DAE52C /* TestInAppHtmlViewController.swift */; };
 		88E4D7292D16A8A00033A501 /* DengageSubscriptionQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E4D7252D16A89C0033A501 /* DengageSubscriptionQueue.swift */; };
 		88E93AD42C923AC600EE3F5E /* CircleImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ABD2C923AC600EE3F5E /* CircleImageView.swift */; };
@@ -177,6 +178,7 @@
 		881EE00D2C996A1000838C23 /* DengageGeofence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DengageGeofence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		881EE00F2C996A1000838C23 /* DengageGeofence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DengageGeofence.h; sourceTree = "<group>"; };
 		881EE0282C9989AA00838C23 /* DengageGeofence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageGeofence.swift; sourceTree = "<group>"; };
+		8845BBEF2D5CF24A00715B38 /* Mustache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mustache.swift; sourceTree = "<group>"; };
 		88BDCF662D09D3DE00DAE52C /* TestInAppHtmlViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInAppHtmlViewController.swift; sourceTree = "<group>"; };
 		88E4D7252D16A89C0033A501 /* DengageSubscriptionQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageSubscriptionQueue.swift; sourceTree = "<group>"; };
 		88E93ABD2C923AC600EE3F5E /* CircleImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleImageView.swift; sourceTree = "<group>"; };
@@ -459,6 +461,7 @@
 				A0765B9A27CEB4700007215B /* InAppMessageHTMLView.swift */,
 				A0765B9927CEB4700007215B /* InAppMessageHTMLViewController.swift */,
 				A0765B9827CEB4700007215B /* InAppMessagesActionsDelegate.swift */,
+				8845BBEF2D5CF24A00715B38 /* Mustache.swift */,
 			);
 			path = InAppMessage;
 			sourceTree = "<group>";
@@ -789,6 +792,7 @@
 				A0765BF027CEB4700007215B /* DengageEventManager.swift in Sources */,
 				88E93AD42C923AC600EE3F5E /* CircleImageView.swift in Sources */,
 				A0765BE227CEB4700007215B /* MarkAsInAppMessageAsDismissedRequest.swift in Sources */,
+				8845BBF02D5CF24A00715B38 /* Mustache.swift in Sources */,
 				88E93AE02C923AC600EE3F5E /* StoryImageCache.swift in Sources */,
 				88E4D7292D16A8A00033A501 /* DengageSubscriptionQueue.swift in Sources */,
 				881709382C91808800FA8B63 /* MarkAsRealTimeInAppMessageAsDismissedRequest.swift in Sources */,
@@ -839,7 +843,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -877,7 +881,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
