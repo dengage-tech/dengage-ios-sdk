@@ -3,83 +3,96 @@ import UIKit
 import StoreKit
 
 public class Dengage{
+
     static var manager: DengageManager?
-    
+
     public static var dengage: DengageManager? {
-        get{
+        get {
             if self.manager == nil {
                 Logger.log(message: "Dengage not started correctly", argument: "")
             }
             return self.manager
         }
-        set{
+        set {
             manager = newValue
         }
     }
-    
+
     public static var startCalled = false
     
-    @objc public static func start(apiKey: String,
-                                   application: UIApplication? = nil,
-                                   launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
-                                   dengageOptions options: DengageOptions = DengageOptions() , deviceId : String? = nil, contactKey : String? = nil , partnerDeviceId :String? = nil) {
-        
+    @objc
+    public static func start(
+        apiKey: String,
+        application: UIApplication? = nil,
+        launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
+        dengageOptions options: DengageOptions = DengageOptions(),
+        deviceId: String? = nil,
+        contactKey: String? = nil,
+        partnerDeviceId: String? = nil,
+        apiUrlConfiguration: ApiUrlConfiguration? = nil
+    ) {
         startCalled = true
-        
-        if let id = deviceId
-        {
-            dengage?.config.set(deviceId: deviceId ?? "")
-            
-            if id != ""
-            {
+
+        if let id = deviceId {
+            dengage?.config.set(deviceId: id)
+
+            if !id.isEmpty {
                 DengageKeychain.set(id, forKey: "\(Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier")")
                 dengage?.config.applicationIdentifier = id
             }
-            
         }
-        if let id = partnerDeviceId
-        {
-            dengage?.config.setPartnerDeviceId(adid: partnerDeviceId)
-            if id != ""
-            {
+
+        if let id = partnerDeviceId {
+            dengage?.config.setPartnerDeviceId(adid: id)
+
+            if !id.isEmpty {
                 DengageLocalStorage.shared.set(value: id, for: .PartnerDeviceId)
                 dengage?.config.partnerDeviceId = id
-                
             }
-            
         }
-        if let key = contactKey
-        {
-            dengage?.set(contactKey)
-            
-            if key != ""
-            {
+
+        if let key = contactKey {
+            dengage?.set(contactKey: key)
+
+            if !key.isEmpty {
                 DengageLocalStorage.shared.set(value: key, for: .contactKey)
-                
             }
-            
         }
-        
-        
-        dengage = .init(with: apiKey, application: application,launchOptions:launchOptions,
-                        dengageOptions: options)
-        
-        
+
+        dengage = .init(
+            with: apiKey,
+            application: application,
+            launchOptions: launchOptions,
+            dengageOptions: options,
+            apiUrlConfiguration: apiUrlConfiguration
+        )
     }
     
-    
-    @objc public static func initWithLaunchOptions(categories: Set<UNNotificationCategory>? = nil,application: UIApplication,withLaunchOptions: [UIApplication.LaunchOptionsKey: Any],badgeCountReset: Bool = false, deviceId : String? = nil , contactKey : String? = nil , partnerDeviceId :String? = nil,dengageOptions : DengageOptions = DengageOptions())
-    {
-        let key =  DengageLocalStorage.shared.value(for: .integrationKey) as? String
-        
-        self.start(apiKey: key ?? "", application: application, launchOptions: withLaunchOptions, dengageOptions: dengageOptions,deviceId: deviceId,contactKey: contactKey,partnerDeviceId: partnerDeviceId)
-        
-        
-        
+    @objc
+    public static func initWithLaunchOptions(
+        categories: Set<UNNotificationCategory>? = nil,
+        application: UIApplication,
+        withLaunchOptions: [UIApplication.LaunchOptionsKey: Any],
+        badgeCountReset: Bool = false,
+        deviceId: String? = nil,
+        contactKey: String? = nil,
+        partnerDeviceId: String? = nil,
+        dengageOptions: DengageOptions = DengageOptions()
+    ) {
+        let key = DengageLocalStorage.shared.value(for: .integrationKey) as? String
+
+        self.start(
+            apiKey: key ?? "",
+            application: application,
+            launchOptions: withLaunchOptions,
+            dengageOptions: dengageOptions,
+            deviceId: deviceId,
+            contactKey: contactKey,
+            partnerDeviceId: partnerDeviceId
+        )
     }
     
     @objc public static func setIntegrationKey(key: String) {
-        
         DengageLocalStorage.shared.set(value: key, for: .integrationKey)
     }
     
@@ -96,11 +109,10 @@ public class Dengage{
     }
     
     @objc public static func set(contactKey: String?) {
-        dengage?.set(contactKey)
+        dengage?.set(contactKey: contactKey)
     }
     
     @objc public static func set(deviceId: String) {
-        
         dengage?.config.set(deviceId: deviceId)
     }
     
@@ -109,11 +121,10 @@ public class Dengage{
     }
     
     @objc public static func set(permission: Bool){
-        dengage?.set(permission)
+        dengage?.set(permission: permission)
     }
     
     @objc public static func setUserPermission(permission: Bool) {
-        
         self.set(permission: permission)
     }
     
@@ -134,43 +145,33 @@ public class Dengage{
     }
     
     @objc public static func getLastPushPayload() -> String? {
-        
         let pushPayload = DengageLocalStorage.shared.value(for: .lastPushPayload) as? String
         DengageLocalStorage.shared.set(value: "", for: .lastPushPayload)
         return pushPayload
-        
     }
     
     @objc public static func getSdkVersion() -> String? {
         dengage?.config.sdkVersion
     }
     
-    
     @objc public static func setToken(token: String) {
         dengage?.config.set(token: token)
     }
     
-    
     @objc public static func setLogStatus(isVisible: Bool) {
-        
         self.setLog(isVisible: isVisible)
     }
     
     @objc public static func setDeviceId(applicationIdentifier: String) {
-        
         self.set(deviceId: applicationIdentifier)
     }
     
-    @objc public static func setDevelopmentStatus(isDebug:Bool)
-    {
+    @objc public static func setDevelopmentStatus(isDebug:Bool) {
         DengageLocalStorage.shared.set(value: isDebug, for: .appEnvironment)
-        
     }
     
-    @objc public static func callVisitorInfoAPI(){
-        
+    @objc public static func callVisitorInfoAPI() {
         dengage?.inAppManager.getVisitorInfo()
-        
     }
     
     @objc public static func isPushSilent(response: UNNotificationResponse? = nil ,userInfo: [AnyHashable: Any]? = nil ) -> Bool

@@ -48,7 +48,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let option = DengageOptions(disableOpenURL: false, badgeCountReset: true, disableRegisterForRemoteNotifications: false)
 
         
-        Dengage.start(apiKey: test_sandbox, application: application, launchOptions: [:], dengageOptions: option)
+        let apiUrlConfiguration = ApiUrlConfiguration(denEventApiUrl: "https://dev-push.dengage.com",
+                                                      denPushApiUrl: "https://dev-push.dengage.com",
+                                                      denInAppApiUrl: "https://dev-push.dengage.com",
+                                                      denGeofenceApiUrl: "https://dev-push.dengage.com/geoapi/",
+                                                      fetchRealTimeInAppApiUrl: "https://dev-inapp.lib.dengage.com/")
+        
+        
+        
+        
+        
+        Dengage.start(apiKey: test_sandbox, application: application, launchOptions: [:],
+                      dengageOptions: option)
         
         
                 
@@ -82,7 +93,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         DengageGeofence.startGeofence()
                 
-       // Dengage.set(deviceId: "123456")
+        //Dengage.set(deviceId: "123456")
         
        // Dengage.syncSDK()
         

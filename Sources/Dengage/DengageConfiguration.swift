@@ -4,7 +4,7 @@ import CoreTelephony
 import UIKit
 import AppTrackingTransparency
 
-final public class DengageConfiguration:Encodable {
+final public class DengageConfiguration: Encodable {
     
     let subscriptionURL: URL
     let eventURL: URL
@@ -37,7 +37,7 @@ final public class DengageConfiguration:Encodable {
     
     
     init(integrationKey: String, options: DengageOptions) {
-        subscriptionURL = DengageConfiguration.getSubscriptionURL()
+        subscriptionURL = DengageConfiguration.getSubscriptionUrl()
         eventURL = DengageConfiguration.getEventUrl()
         deviceCountryCode = DengageConfiguration.getDeviceCountry()
         deviceLanguage = Locale.current.languageCode ?? "Null"
@@ -251,66 +251,107 @@ final public class DengageConfiguration:Encodable {
         return DengageLocalStorage.shared.value(for: .userPermission) as? Bool ?? true
     }
     
-    private static func getSubscriptionURL() -> URL {
-        guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageApiUrl") as? String else {
-            fatalError("[DENGAGE] 'DengageApiUrl' not found on plist file")
+    private static func getSubscriptionUrl() -> URL {
+        if let apiUrlString = DengageLocalStorage.shared.getApiUrlConfiguration()?.denPushApiUrl,
+           !apiUrlString.isEmpty {
+            guard let apiUrl = URL(string: apiUrlString) else {
+                fatalError("[DENGAGE] 'DengageApiUrl' not correct in ApiUrlConfiguration")
+            }
+            return apiUrl
         }
         
-        guard let apiURL = URL(string: apiURLString) else {
-            fatalError("[DENGAGE] 'DengageApiUrl' not correct on plist file")
+        guard let apiUrlString = Bundle.main.object(forInfoDictionaryKey: "DengageApiUrl") as? String else {
+            fatalError("[DENGAGE] 'DengageApiUrl' not found in plist file")
         }
         
-        return apiURL
+        guard let apiUrl = URL(string: apiUrlString) else {
+            fatalError("[DENGAGE] 'DengageApiUrl' not correct in plist file")
+        }
+        
+        return apiUrl
     }
     
     private static func getGeofenceUrl() -> URL {
-        guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageGeofenceApiUrl") as? String else {
-            fatalError("[DENGAGE] 'DengageGeofenceApiUrl' not found on plist file")
+        if let apiUrlString = DengageLocalStorage.shared.getApiUrlConfiguration()?.denGeofenceApiUrl,
+           !apiUrlString.isEmpty {
+            guard let apiUrl = URL(string: apiUrlString) else {
+                fatalError("[DENGAGE] 'DengageGeofenceApiUrl' not correct in ApiUrlConfiguration")
+            }
+            return apiUrl
         }
         
-        guard let apiURL = URL(string: apiURLString) else {
-            fatalError("[DENGAGE] 'DengageGeofenceApiUrl' not correct on plist file")
+        
+        guard let apiUrlString = Bundle.main.object(forInfoDictionaryKey: "DengageGeofenceApiUrl") as? String else {
+            fatalError("[DENGAGE] 'DengageGeofenceApiUrl' not found in plist file")
         }
         
-        return apiURL
+        guard let apiUrl = URL(string: apiUrlString) else {
+            fatalError("[DENGAGE] 'DengageGeofenceApiUrl' not correct in plist file")
+        }
+        
+        return apiUrl
     }
     
     
     private static func getEventUrl() -> URL {
-        guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageEventApiUrl") as? String else {
-            fatalError("[DENGAGE] 'DengageEventApiUrl' not found on plist file")
+        if let apiUrlString = DengageLocalStorage.shared.getApiUrlConfiguration()?.denEventApiUrl,
+           !apiUrlString.isEmpty {
+            guard let apiUrl = URL(string: apiUrlString) else {
+                fatalError("[DENGAGE] 'DengageEventApiUrl' not correct in ApiUrlConfiguration")
+            }
+            return apiUrl
         }
         
-        guard let apiURL = URL(string: apiURLString) else {
-            fatalError("[DENGAGE] 'DengageEventApiUrl' not correct on plist file")
+        guard let apiUrlString = Bundle.main.object(forInfoDictionaryKey: "DengageEventApiUrl") as? String else {
+            fatalError("[DENGAGE] 'DengageEventApiUrl' not found in plist file")
         }
         
-        return apiURL
+        guard let apiUrl = URL(string: apiUrlString) else {
+            fatalError("[DENGAGE] 'DengageEventApiUrl' not correct in plist file")
+        }
+        
+        return apiUrl
     }
     
     private static func getInAppURL() -> URL {
-        guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageInAppApiUrl") as? String else {
-            return getSubscriptionURL()
+        if let apiUrlString = DengageLocalStorage.shared.getApiUrlConfiguration()?.denInAppApiUrl,
+           !apiUrlString.isEmpty {
+            guard let apiUrl = URL(string: apiUrlString) else {
+                fatalError("[DENGAGE] 'DengageInAppApiUrl' not correct in ApiUrlConfiguration")
+            }
+            return apiUrl
         }
         
-        guard let apiURL = URL(string: apiURLString) else {
-            return getSubscriptionURL()
+        guard let apiUrlString = Bundle.main.object(forInfoDictionaryKey: "DengageInAppApiUrl") as? String else {
+            return getSubscriptionUrl()
         }
         
-        return apiURL
+        guard let apiUrl = URL(string: apiUrlString) else {
+            return getSubscriptionUrl()
+        }
+        
+        return apiUrl
     }
     
     
     private static func getInAppRealTimeURL() -> URL {
-        guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "fetchRealTimeINAPPURL") as? String else {
-            return URL(string: "https://tr-inapp.lib.dengage.com") ?? getSubscriptionURL()
+        if let apiUrlString = DengageLocalStorage.shared.getApiUrlConfiguration()?.fetchRealTimeInAppApiUrl,
+           !apiUrlString.isEmpty {
+            guard let apiUrl = URL(string: apiUrlString) else {
+                fatalError("[DENGAGE] 'fetchRealTimeInAppApiUrl' not correct in ApiUrlConfiguration")
+            }
+            return apiUrl
         }
         
-        guard let apiURL = URL(string: apiURLString) else {
-            return URL(string: "https://tr-inapp.lib.dengage.com") ?? getSubscriptionURL()
+        guard let apiUrlString = Bundle.main.object(forInfoDictionaryKey: "fetchRealTimeINAPPURL") as? String else {
+            return URL(string: "https://tr-inapp.lib.dengage.com") ?? getSubscriptionUrl()
         }
         
-        return apiURL
+        guard let apiUrl = URL(string: apiUrlString) else {
+            return URL(string: "https://tr-inapp.lib.dengage.com") ?? getSubscriptionUrl()
+        }
+        
+        return apiUrl
     }
     
     
@@ -326,11 +367,11 @@ final public class DengageConfiguration:Encodable {
     private static func dengageDeviceIdApiUrl() -> URL {
         
         guard let apiURLString = Bundle.main.object(forInfoDictionaryKey: "DengageDeviceIdApiUrl") as? String else {
-            return getSubscriptionURL()
+            return getSubscriptionUrl()
         }
         
         guard let apiURL = URL(string: apiURLString) else {
-            return getSubscriptionURL()
+            return getSubscriptionUrl()
         }
         
         return apiURL

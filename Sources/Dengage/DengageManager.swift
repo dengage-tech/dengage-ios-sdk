@@ -22,7 +22,10 @@ public class DengageManager {
     init(with apiKey: String,
          application: UIApplication?,
          launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
-         dengageOptions options: DengageOptions) {
+         dengageOptions options: DengageOptions,
+         apiUrlConfiguration: ApiUrlConfiguration? = nil) {
+        
+        DengageLocalStorage.shared.saveApiUrlConfiguration(apiUrlConfiguration)
         
         config = DengageConfiguration(integrationKey: apiKey, options: options)
         
@@ -79,7 +82,7 @@ extension DengageManager {
         
     }
     
-    func set(_ contactKey: String?){
+    func set(contactKey: String?){
         let previous = self.config.getContactKey()
         if previous != contactKey {
             let newKey = (contactKey?.isEmpty ?? true) ? nil : contactKey
@@ -92,7 +95,7 @@ extension DengageManager {
         }
     }
     
-    func set(_ deviceId: String){
+    func set(deviceId: String){
         let previous = self.config.applicationIdentifier
         if previous != deviceId {
             self.config.set(deviceId: deviceId)
@@ -100,7 +103,7 @@ extension DengageManager {
         }
     }
     
-    func set(_ permission: Bool){
+    func set(permission: Bool){
         let previous = self.config.permission
         if previous != permission {
             self.config.set(permission: permission)

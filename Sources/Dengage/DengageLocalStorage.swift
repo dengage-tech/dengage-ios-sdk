@@ -81,6 +81,8 @@ final public class DengageLocalStorage: NSObject {
 
         case shownStoryCoverDic = "shownStoryCoverDic"
         case inAppDeviceInfo = "inAppDeviceInfo"
+        case apiUrlConfiguration = "apiUrlConfiguration"
+        
 
     }
 }
@@ -343,6 +345,34 @@ extension DengageLocalStorage {
             userDefaults.synchronize()
         } catch {
             Logger.log(message: "saving geofenceClusters fail")
+        }
+    }
+}
+
+
+//MARK: ApiUrlConfiguration
+extension DengageLocalStorage {
+    
+    func getApiUrlConfiguration() -> ApiUrlConfiguration? {
+        guard let apiUrlConfigurationData = userDefaults.object(forKey: Key.apiUrlConfiguration.rawValue) as? Data else { return nil }
+        let decoder = JSONDecoder()
+        do {
+            let apiUrlConfiguration = try decoder.decode(ApiUrlConfiguration?.self, from: apiUrlConfigurationData)
+            return apiUrlConfiguration
+        } catch {
+            Logger.log(message: "getApiUrlConfiguration fail")
+            return nil
+        }
+    }
+    
+    func saveApiUrlConfiguration(_ apiUrlConfiguration: ApiUrlConfiguration?) {
+        let encoder = JSONEncoder()
+        do {
+            let encoded = try encoder.encode(apiUrlConfiguration)
+            userDefaults.setValue(encoded, forKey: Key.apiUrlConfiguration.rawValue)
+            userDefaults.synchronize()
+        } catch {
+            Logger.log(message: "saving apiUrlConfiguration fail")
         }
     }
 }
