@@ -96,6 +96,10 @@ public class Dengage {
         DengageLocalStorage.shared.set(value: key, for: .integrationKey)
     }
     
+    @objc public static func getIntegrationKey() -> String {
+        DengageLocalStorage.shared.value(for: .integrationKey) as? String ?? ""
+    }
+    
     @objc public static func register(deviceToken: Data) {
         dengage?.register(deviceToken)
     }

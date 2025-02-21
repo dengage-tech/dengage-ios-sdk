@@ -22,12 +22,15 @@ class DeviceInfoViewController: UIViewController {
     
     func getInfo(){
         var text = ""
+        text += "Integration Key: " + Dengage.getIntegrationKey() + "\n"
         text += "Device Id: " + (Dengage.getDeviceId() ?? "") + "\n"
         text += "Contact Key: " + (Dengage.getContactKey() ?? "") + "\n"
         text += "User Permission: " + Dengage.getPermission().description + "\n"
         text += "Device Token: " + (Dengage.getDeviceToken() ?? "") + "\n"
         text += "Bundle Identifier:" + (Bundle.main.bundleIdentifier ?? "") + "\n"
-        text += "Sdk Version: " + (Dengage.getSdkVersion() ?? "")
+        text += "Sdk Version: " + (Dengage.getSdkVersion() ?? "") + "\n"
+        text += "Screen Width: " + UIScreen.main.nativeBounds.width.description + "\n"
+        text += "Screen Height: " + UIScreen.main.nativeBounds.height.description + "\n"
         textView.text = text
     }
 

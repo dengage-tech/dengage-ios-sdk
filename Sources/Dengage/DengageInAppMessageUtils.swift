@@ -378,12 +378,12 @@ final class DengageInAppMessageUtils{
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: UIScreen.main.bounds.width.description, message: message, valueSource: criterion.valueSource)
+                           userParam: UIScreen.main.nativeBounds.width.description, message: message, valueSource: criterion.valueSource)
         case .SCREEN_HEIGHT:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: UIScreen.main.bounds.height.description, message: message, valueSource: criterion.valueSource)
+                           userParam: UIScreen.main.nativeBounds.height.description, message: message, valueSource: criterion.valueSource)
         case .OS_VERSION:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
