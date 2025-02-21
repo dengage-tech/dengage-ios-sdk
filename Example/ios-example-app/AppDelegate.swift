@@ -93,6 +93,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         DengageGeofence.startGeofence()
                 
+        
+        
         //Dengage.set(deviceId: "123456")
         
        // Dengage.syncSDK()
@@ -105,7 +107,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 
-extension AppDelegate: UNUserNotificationCenterDelegate{
+extension AppDelegate: UNUserNotificationCenterDelegate {
 
     func application(_ application: UIApplication,
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {

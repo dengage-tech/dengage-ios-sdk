@@ -82,6 +82,8 @@ final public class DengageLocalStorage: NSObject {
         case shownStoryCoverDic = "shownStoryCoverDic"
         case inAppDeviceInfo = "inAppDeviceInfo"
         case apiUrlConfiguration = "apiUrlConfiguration"
+        case locationPermission = "locationPermission"
+        case locationPermissionSubscription = "locationPermissionSubscription"
         
 
     }

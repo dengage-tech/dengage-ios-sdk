@@ -72,6 +72,7 @@ final class DengageGeofenceManager: NSObject, DengageGeofenceManagerInterface {
         if DengageGeofenceState.getGeofenceEnabled() {
             startTracking(options: tOptions, fromInitialize: true)
         }
+        setLocationPermission()
     }
     
     init(config: DengageConfiguration, service: DengageNetworking) {
@@ -644,12 +645,14 @@ extension DengageGeofenceManager: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         Logger.log(message: "didChangeAuthorization: \(status)")
+        setLocationPermission(status: status)
         startTracking(options: tOptions, fromInitialize: true)
     }
     
     @available(iOS 14.0, *)
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         Logger.log(message: "locationManagerDidChangeAuthorization: \(manager.authorizationStatus)")
+        setLocationPermission(status: manager.authorizationStatus)
         startTracking(options: tOptions, fromInitialize: true)
     }
     
@@ -671,6 +674,17 @@ extension DengageGeofenceManager {
                 completion(false)
             }
         })
+    }
+}
+
+
+// MARK: - Location Permission
+
+extension DengageGeofenceManager {
+    
+    func setLocationPermission(status: CLAuthorizationStatus? = nil)  {
+        let authorizationStatus = status ?? DengageGeofenceState.locationAuthorizationStatus()
+        Dengage.setLocationPermission(status: authorizationStatus.string)
     }
 }
 

@@ -95,7 +95,7 @@ extension DengageManager {
         }
     }
     
-    func set(deviceId: String){
+    func set(deviceId: String) {
         let previous = self.config.applicationIdentifier
         if previous != deviceId {
             self.config.set(deviceId: deviceId)
@@ -103,10 +103,18 @@ extension DengageManager {
         }
     }
     
-    func set(permission: Bool){
+    func set(permission: Bool) {
         let previous = self.config.permission
         if previous != permission {
             self.config.set(permission: permission)
+            Dengage.syncSubscription()
+        }
+    }
+    
+    func set(locationPermission: String) {
+        let previous = self.config.getLocationPermission()
+        if previous != locationPermission {
+            DengageLocalStorage.shared.set(value: locationPermission, for: .locationPermission)
             Dengage.syncSubscription()
         }
     }
@@ -139,6 +147,7 @@ extension DengageManager {
         let timezoneSubscription = DengageLocalStorage.shared.value(for: .timezoneSubscription) as? String
         let partnerDeviceIdSubscription = DengageLocalStorage.shared.value(for: .partner_device_idSubscription) as? String
         let advertisingIdSubscription = DengageLocalStorage.shared.value(for: .advertisingIdSubscription) as? String
+        let locationPermissionSubscription = DengageLocalStorage.shared.value(for: .locationPermissionSubscription) as? String
         
         let integrationKey = self.config.integrationKey
         let token = self.config.deviceToken
@@ -153,6 +162,7 @@ extension DengageManager {
         let timezone = self.config.deviceTimeZone
         let partnerDeviceId = self.config.getPartnerDeviceID() ?? ""
         let advertisingId = self.config.advertisingIdentifier
+        let locationPermission = self.config.locationPermission
         
         if integrationKeySubscription != integrationKey {
             return true
@@ -179,6 +189,8 @@ extension DengageManager {
         } else if partnerDeviceIdSubscription != partnerDeviceId {
             return true
         } else if advertisingIdSubscription != advertisingId {
+            return true
+        } else if locationPermissionSubscription != locationPermission {
             return true
         }
         

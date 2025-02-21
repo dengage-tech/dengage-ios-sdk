@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 import StoreKit
 
-public class Dengage{
+public class Dengage {
 
     static var manager: DengageManager?
 
@@ -503,6 +503,10 @@ extension Dengage {
                 error(errorValue)
             }
         }
+    }
+    
+    @objc public static func setLocationPermission(status: String) {
+        dengage?.set(locationPermission: status)
     }
 }
 

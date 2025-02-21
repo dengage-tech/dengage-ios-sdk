@@ -2,13 +2,13 @@
 import Foundation
 
 struct MakeSubscriptionRequest: APIRequest {
-
+    
     typealias Response = GetSDKParamsResponse
-
+    
     let method: HTTPMethod = .post
     let enpointType: EndpointType = .push
     let path: String = "/api/device/subscription"
-
+    
     
     var httpBody: Data?{
         let parameters = ["integrationKey": config.integrationKey,
@@ -24,12 +24,13 @@ struct MakeSubscriptionRequest: APIRequest {
                           "language": config.getLanguage(),
                           "timezone": config.deviceTimeZone,
                           "partner_device_id": config.getPartnerDeviceID() ?? "",
-                          "advertisingId" : config.advertisingIdentifier as Any]
+                          "advertisingId" : config.advertisingIdentifier as Any,
+                          "locationPermission" : config.getLocationPermission() ?? ""]
         return parameters.json
     }
-
+    
     let queryParameters: [URLQueryItem] = []
-
+    
     let config: DengageConfiguration
 }
 

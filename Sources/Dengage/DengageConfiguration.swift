@@ -34,6 +34,7 @@ final public class DengageConfiguration: Encodable {
     let inAppURL: URL
     let geofenceURL: URL
     let inAppRealTimeURL: URL
+    var locationPermission: String?
     
     
     init(integrationKey: String, options: DengageOptions) {
@@ -116,8 +117,7 @@ final public class DengageConfiguration: Encodable {
         return self.deviceLanguage
     }
     
-    func setLanguage(language:String)
-    {
+    func setLanguage(language:String) {
         let languageSubscription = DengageLocalStorage.shared.value(for: .languageSubscription) as? String
         self.deviceLanguage = language
         DengageLocalStorage.shared.set(value: language, for: .language)
@@ -129,6 +129,30 @@ final public class DengageConfiguration: Encodable {
         }
         
     }
+    
+    func getLocationPermission() -> String? {
+        locationPermission = DengageLocalStorage.shared.value(for: .locationPermission) as? String
+        return locationPermission
+    }
+    
+    func setLocationPermission(locationPermission: String) {
+        DengageLocalStorage.shared.set(value: locationPermission, for: .locationPermission)
+        self.locationPermission = locationPermission
+        /*
+        let previous = self.config.getContactKey()
+        if previous != contactKey {
+            let newKey = (contactKey?.isEmpty ?? true) ? nil : contactKey
+            DengageLocalStorage.shared.set(value: newKey, for: .contactKey)
+            inboxManager.inboxMessages.removeAll()
+            inboxManager.inboxMessages = []
+            _ = sessionManager.createSession(force: true)
+            resetUsageStats()
+            Dengage.syncSubscription()
+        }
+         */
+    }
+    
+    
     
     func setPartnerDeviceId(adid: String?){
         
@@ -199,7 +223,7 @@ final public class DengageConfiguration: Encodable {
         
     }
     
-    func set(permission: Bool){
+    func set(permission: Bool) {
         self.permission = permission
         DengageLocalStorage.shared.set(value: permission, for: .userPermission)
     }
@@ -233,12 +257,10 @@ final public class DengageConfiguration: Encodable {
     }
     
     func getContactKey() -> String? {
-        
         DengageLocalStorage.shared.value(for: .contactKey) as? String
     }
     
-    func getPartnerDeviceID()-> String?
-    {
+    func getPartnerDeviceID()-> String? {
         return DengageLocalStorage.shared.value(for: .PartnerDeviceId) as? String
         
     }

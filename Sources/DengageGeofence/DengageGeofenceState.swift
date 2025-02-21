@@ -155,3 +155,19 @@ class DengageGeofenceState {
     }
     
 }
+
+extension CLAuthorizationStatus {
+    
+    var string: String {
+        switch self {
+        case .notDetermined: return "none"
+        case .restricted: return "none"
+        case .denied: return "none"
+        case .authorizedAlways: return "always"
+        case .authorizedWhenInUse: return "appopen"
+        @unknown default: return "none"
+        }
+    }
+    
+}
+
