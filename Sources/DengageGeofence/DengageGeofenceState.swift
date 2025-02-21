@@ -164,7 +164,7 @@ extension CLAuthorizationStatus {
         case .restricted: return "none"
         case .denied: return "none"
         case .authorizedAlways: return "always"
-        case .authorizedWhenInUse: return "appopen"
+        case .authorizedWhenInUse: return "appinuse"
         @unknown default: return "none"
         }
     }
