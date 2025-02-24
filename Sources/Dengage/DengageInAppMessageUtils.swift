@@ -405,10 +405,11 @@ final class DengageInAppMessageUtils{
                            ruleParam: criterion.values,
                            userParam: config.deviceCountryCode, message: message, valueSource: criterion.valueSource)
         case .MONTH:
+            
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: Date().month, message: message, valueSource: criterion.valueSource)
+                           userParam: Date().threeLetterMonth, message: message, valueSource: criterion.valueSource)
         case .WEEK_DAY:
             return operate(with: criterion.comparison,
                            for: criterion.dataType,

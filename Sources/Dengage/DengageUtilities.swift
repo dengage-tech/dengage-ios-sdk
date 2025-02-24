@@ -146,6 +146,12 @@ extension Date {
         formatter.dateFormat = "MMMM"
         return formatter.string(from: self)
     }
+    
+    var threeLetterMonth: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM"
+        return formatter.string(from: self)
+    }
 }
 
 extension UIImageView {

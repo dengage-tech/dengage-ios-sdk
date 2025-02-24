@@ -39,7 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //let test = "uCwvO25ucX34F1_p_l_DOZjW55uri_p_l_sMxg0rJpbsJ4d8We00Be_p_l_eJMb5R3auwdYD6rUuM7M5NftuA5NNu7mV2H_s_l_rGa9Z6y3EqaV_p_l_PTgPyyimmbtDw237bhBjPEpiz5TXzXLHlTD8OEzGXOJ6r65xtOdE0Q_e_q__e_q_"
         
         //dev-app.dengage.com: egemen-ios-dev-test
-        //let test_testflight = "g9XU6x_p_l__p_l__s_l_AnsEBUgVC4F5uGQHpg7PFa1PIfxtOZG4bku0AxtvUMjBqF_s_l_Q0x37TkR1_p_l_vV_s_l_mYwcKHWB7YPNjAClyPViBqp1iRw3zqbtCBZlnapkD7pLGTGMKHGvPreNWf5kPPjZC0og67hsTfSkYBLfA_e_q__e_q_"
+        let test_testflight = "g9XU6x_p_l__p_l__s_l_AnsEBUgVC4F5uGQHpg7PFa1PIfxtOZG4bku0AxtvUMjBqF_s_l_Q0x37TkR1_p_l_vV_s_l_mYwcKHWB7YPNjAClyPViBqp1iRw3zqbtCBZlnapkD7pLGTGMKHGvPreNWf5kPPjZC0og67hsTfSkYBLfA_e_q__e_q_"
         
         //dev-app.dengage.com: egemen-ios-dev-sandbox-test
         let test_sandbox = "7xWJ4ZN3MBF8WueuygcslkO4tbCn_s_l_CzDrTJJxVChxVH2usO_s_l_w310K_s_l_KphZVJD97FUCiSjaaysA51_s_l_GO_s_l_S7YGzD_p_l_RUuYwqzNBI5_p_l_i7Qml_p_l_rOC_p_l_7W_s_l_Nm3pGbCqAgqecsthxiH16a13SJDJALI50mgCHQ_e_q__e_q_"
@@ -53,11 +53,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                                       denInAppApiUrl: "https://dev-push.dengage.com",
                                                       denGeofenceApiUrl: "https://dev-push.dengage.com/geoapi/",
                                                       fetchRealTimeInAppApiUrl: "https://dev-inapp.lib.dengage.com/")
-        
-        
-        
-        
-        
+
         Dengage.start(apiKey: test_sandbox, application: application, launchOptions: [:],
                       dengageOptions: option)
         
