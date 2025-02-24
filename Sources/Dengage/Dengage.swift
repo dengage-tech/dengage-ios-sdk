@@ -512,6 +512,10 @@ extension Dengage {
     @objc public static func setLocationPermission(status: String) {
         dengage?.set(locationPermission: status)
     }
+    
+    @objc public static func getAdvertisingIdentifier() -> String {
+        return DengageConfiguration.getAdvertisingId()
+    }
 }
 
 //MARK: - DengageDeviceIdApiUrl
