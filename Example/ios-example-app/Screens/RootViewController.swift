@@ -74,13 +74,15 @@ extension RootViewController: UITableViewDelegate{
             self.navigationController?.pushViewController(ShowInLineInAPP(), animated: true)
         case .appStory:
             self.navigationController?.pushViewController(AppStoryViewController(), animated: true)
+        case .liveActivity:
+            self.navigationController?.pushViewController(LiveActivityViewController(), animated: true)
         }
     }
 }
 
 extension RootViewController{
     enum Actions: CaseIterable{
-        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage , geoFence,inAppInLine, appStory
+        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage , geoFence,inAppInLine, appStory, liveActivity
         var title: String{
             switch self{
             case .allowNotification:
@@ -107,6 +109,8 @@ extension RootViewController{
                 return "Show InLine InAPP"
             case .appStory:
                 return "App Story"
+            case .liveActivity:
+                return "Live Activity"
             }
         }
     }
