@@ -1,19 +1,10 @@
-//
-//  LiveActivityViewController.swift
-//  ios-example-app
-//
-//  Created by Egemen Gülkılık on 24.02.2025.
-//
 
-
-import UIKit
 import Dengage
-import ActivityKit
+import UIKit
 
+let STORY_VIEW_TAG = 1453
 
-
-
-final class LiveActivityViewController: UIViewController {
+final class AppStoryViewController: UIViewController {
     
     private lazy var propertyIdTextField: UITextField = {
         let view = UITextField()
@@ -51,35 +42,18 @@ final class LiveActivityViewController: UIViewController {
         return view
     }()
     
-    private lazy var startLiveActivityButton: UIButton = {
+    private lazy var storyBackgroundColorButton: UIButton = {
         let view = UIButton()
-        view.setTitle("Start Live Activity", for: .normal)
-        view.addTarget(self, action: #selector(startLiveActivity), for: .touchUpInside)
+        view.setTitle("Change Story Background Color", for: .normal)
+        view.addTarget(self, action: #selector(didTapChangeStoryBackgroundColorButton), for: .touchUpInside)
         view.setTitleColor(.blue, for: .normal)
         return view
     }()
     
-    private lazy var updateLiveActivityButton: UIButton = {
+    private lazy var refreshStoryButton: UIButton = {
         let view = UIButton()
-        view.setTitle("Update Live Activity", for: .normal)
-        if #available(iOS 16.1, *) {
-            view.addTarget(self, action: #selector(updateLiveActivity), for: .touchUpInside)
-        } else {
-            // Fallback on earlier versions
-        }
-        view.setTitleColor(.blue, for: .normal)
-        return view
-    }()
-    
-    
-    private lazy var endLiveActivityButton: UIButton = {
-        let view = UIButton()
-        view.setTitle("End Live Activity", for: .normal)
-        if #available(iOS 16.1, *) {
-            view.addTarget(self, action: #selector(endLiveActivity), for: .touchUpInside)
-        } else {
-            // Fallback on earlier versions
-        }
+        view.setTitle("Refresh Story", for: .normal)
+        view.addTarget(self, action: #selector(didTapRefreshStoryButton), for: .touchUpInside)
         view.setTitleColor(.blue, for: .normal)
         return view
     }()
@@ -87,7 +61,7 @@ final class LiveActivityViewController: UIViewController {
     private lazy var stackView: UIStackView = {
         let view = UIStackView(arrangedSubviews: [
             propertyIdTextField, screenNameTextField, storyBackgroundColorTextField
-            , startLiveActivityButton, updateLiveActivityButton, endLiveActivityButton
+            , storyBackgroundColorButton, refreshStoryButton
         ])
         view.axis = .vertical
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -126,73 +100,35 @@ final class LiveActivityViewController: UIViewController {
     }
     
     @objc private func didTapRefreshStoryButton() {
-        startLiveActivity()
         
-   
-    }
-    
-    @objc func startLiveActivity() {
-        if #available(iOS 16.1, *) {
-            let attributes = DengageWidgetAttributes(name: "Dengage Live Activity")
-            let contentState = DengageWidgetAttributes.ContentState(emoji: "🚀")
-            do {
-                let activity = try Activity<DengageWidgetAttributes>.request(
-                    attributes: attributes,
-                    contentState: contentState,
-                    pushType: nil // Opsiyonel: Push Notifications ile tetikleme
-                )
-                print("Live Activity başlatıldı: \(activity.id)")
-            } catch {
-                print("Live Activity başlatılamadı: \(error.localizedDescription)")
-            }
-        } else {
-            // Fallback on earlier versions
+        
+        if let viewWithTag = stackView.viewWithTag(STORY_VIEW_TAG) {
+            viewWithTag.removeFromSuperview()
         }
         
-
-
-    }
-    
-    
-    
-    @available(iOS 16.1, *)
-    @objc func updateLiveActivity() {
-        Task {
-            let updatedState = DengageWidgetAttributes.ContentState(emoji: "superstar")
-            for activity in Activity<DengageWidgetAttributes>.activities {
-                await activity.update(using: updatedState)
+        let storyPropertyID = propertyIdTextField.text
+        let screenName = screenNameTextField.text
+        let customParams = [String: String]()
+        
+        Dengage.showAppStory(storyPropertyID: storyPropertyID, screenName: screenName, customParams: customParams) { storyView in
+            
+            if let storyView = storyView {
+                self.storiesListView = storyView
+                self.storiesListView?.translatesAutoresizingMaskIntoConstraints = false
+                if let storiesListView = self.storiesListView {
+                    self .storiesListView?.tag = STORY_VIEW_TAG
+                    self.stackView.insertArrangedSubview(storiesListView, at: self.stackView.subviews.count)
+                }
             }
+            
         }
     }
-
-    @available(iOS 16.1, *)
-    @objc func endLiveActivity() {
-        Task {
-            for activity in Activity<DengageWidgetAttributes>.activities {
-                await activity.end(dismissalPolicy: .immediate)
-            }
-        }
-    }
-
-    
     
 }
 
-
-
-@available(iOS 16.1, *) // Live Activities sadece iOS 16.1+ destekler
-struct DengageWidgetAttributes: ActivityAttributes {
-    public struct ContentState: Codable, Hashable {
-        var emoji: String
-    }
-
-    var name: String
-}
-
-extension LiveActivityViewController: UITextFieldDelegate {
+extension AppStoryViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)
         return false
     }
 }
-

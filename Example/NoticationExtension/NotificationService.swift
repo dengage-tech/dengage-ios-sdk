@@ -1,6 +1,7 @@
 import UserNotifications
 import Dengage
 
+
 class NotificationService: UNNotificationServiceExtension {
 
     var contentHandler: ((UNNotificationContent) -> Void)?
@@ -25,4 +26,6 @@ class NotificationService: UNNotificationServiceExtension {
             contentHandler(bestAttemptContent)
         }
     }
+    
+
 }
