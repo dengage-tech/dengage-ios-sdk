@@ -117,10 +117,6 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
             self.viewSource.height?.constant = (scrollHeight > self.viewSource.frame.height)
                 ? self.viewSource.frame.height
                 : scrollHeight
-
-            if self.hasTopNotch, self.message.data.content.props.position == .top {
-                self.viewSource.height?.constant += 50
-            }
         }
     }
 }

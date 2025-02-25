@@ -32,17 +32,19 @@ final class InAppMessageHTMLView: UIView {
     
     private func setupUI() {
         addSubview(webView)
-        
-        leftConstraint = webView.leadingAnchor.constraint(lessThanOrEqualTo: leadingAnchor)
-        rightConstraint = webView.trailingAnchor.constraint(greaterThanOrEqualTo: trailingAnchor)
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        let safeArea = self.safeAreaLayoutGuide
+
+        leftConstraint = webView.leadingAnchor.constraint(lessThanOrEqualTo: safeArea.leadingAnchor)
+        rightConstraint = webView.trailingAnchor.constraint(greaterThanOrEqualTo: safeArea.trailingAnchor)
+        topConstraint = webView.topAnchor.constraint(equalTo: safeArea.topAnchor)
+        bottomConstraint = webView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor)
+        centerConstraint = webView.centerYAnchor.constraint(equalTo: safeArea.centerYAnchor)
         
         height = webView.heightAnchor.constraint(equalToConstant: 0)
         height?.isActive = true
-        
-        bottomConstraint = webView.bottomAnchor.constraint(equalTo: bottomAnchor)
-        centerConstraint = webView.centerYAnchor.constraint(equalTo: centerYAnchor)
-        topConstraint = webView.topAnchor.constraint(equalTo: topAnchor)
     }
+
     
     
     func setupConstraints(for params: ContentParams, message: InAppMessage) {
