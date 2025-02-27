@@ -75,7 +75,11 @@ extension RootViewController: UITableViewDelegate{
         case .appStory:
             self.navigationController?.pushViewController(AppStoryViewController(), animated: true)
         case .liveActivity:
-            self.navigationController?.pushViewController(LiveActivityViewController(), animated: true)
+            if #available(iOS 16.1, *) {
+                self.navigationController?.pushViewController(LiveActivityViewController(), animated: true)
+            } else {
+                // Fallback on earlier versions
+            }
         }
     }
 }

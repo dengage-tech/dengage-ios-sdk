@@ -11,31 +11,34 @@ import Dengage
 import ActivityKit
 
 
+var activityId: String?
 
 
+@available(iOS 16.1, *)
 final class LiveActivityViewController: UIViewController {
     
-    private lazy var propertyIdTextField: UITextField = {
+    var activity: Activity<DengageWidgetAttributes>?
+    
+    
+    private lazy var activityIdTextField: UITextField = {
         let view = UITextField()
-        view.placeholder = "Property Id"
+        view.placeholder = "Activity Id"
         view.textAlignment = .center
         view.borderStyle = .roundedRect
         view.textColor = .black
         view.delegate = self
         view.autocapitalizationType = .none
-        view.text = "3"
         return view
     }()
     
-    private lazy var screenNameTextField: UITextField = {
+    private lazy var pushTokenTextField: UITextField = {
         let view = UITextField()
-        view.placeholder = "Screen Name"
+        view.placeholder = "Push Token"
         view.textAlignment = .center
         view.borderStyle = .roundedRect
         view.textColor = .black
         view.delegate = self
         view.autocapitalizationType = .none
-        view.text = "ego"
         return view
     }()
     
@@ -63,7 +66,7 @@ final class LiveActivityViewController: UIViewController {
         let view = UIButton()
         view.setTitle("Update Live Activity", for: .normal)
         if #available(iOS 16.1, *) {
-            view.addTarget(self, action: #selector(updateLiveActivity), for: .touchUpInside)
+            view.addTarget(self, action: #selector(updateLiveActivityAsync), for: .touchUpInside)
         } else {
             // Fallback on earlier versions
         }
@@ -86,7 +89,7 @@ final class LiveActivityViewController: UIViewController {
     
     private lazy var stackView: UIStackView = {
         let view = UIStackView(arrangedSubviews: [
-            propertyIdTextField, screenNameTextField, storyBackgroundColorTextField
+            activityIdTextField, pushTokenTextField, storyBackgroundColorTextField
             , startLiveActivityButton, updateLiveActivityButton, endLiveActivityButton
         ])
         view.axis = .vertical
@@ -133,37 +136,60 @@ final class LiveActivityViewController: UIViewController {
     
     @objc func startLiveActivity() {
         if #available(iOS 16.1, *) {
-            let attributes = DengageWidgetAttributes(name: "Dengage Live Activity")
-            let contentState = DengageWidgetAttributes.ContentState(emoji: "🚀")
+            let attributes = DengageWidgetAttributes(name: "Live Activity")
+            
+            let contentState = DengageWidgetAttributes.ContentState(emoji: "🎉")
             do {
                 let activity = try Activity<DengageWidgetAttributes>.request(
                     attributes: attributes,
                     contentState: contentState,
-                    pushType: nil // Opsiyonel: Push Notifications ile tetikleme
+                    pushType: .token // Opsiyonel: Push Notifications ile tetikleme
                 )
+                self.activity = activity
+                activityIdTextField.text = activity.id
+                pushTokenTextField.text = activity.pushToken?.description
                 print("Live Activity başlatıldı: \(activity.id)")
+                
             } catch {
                 print("Live Activity başlatılamadı: \(error.localizedDescription)")
             }
         } else {
             // Fallback on earlier versions
         }
-        
-
-
     }
     
     
-    
-    @available(iOS 16.1, *)
-    @objc func updateLiveActivity() {
-        Task {
-            let updatedState = DengageWidgetAttributes.ContentState(emoji: "superstar")
-            for activity in Activity<DengageWidgetAttributes>.activities {
-                await activity.update(using: updatedState)
+    func updateLiveActivity(activityId: String) async {
+        if #available(iOS 16.1, *) {
+            
+            for await pushToken in activity!.pushTokenUpdates {
+                let token = pushToken.map {String(format: "%02x", $0)}.joined()
+            }
+            
+            
+            let updatedState = DengageWidgetAttributes.ContentState(emoji: "122")
+            Task {
+                if let targetActivity = Activity<DengageWidgetAttributes>.activities.first(where: { $0.id == activityId }) {
+                    await targetActivity.update(using: updatedState)
+                } else {
+                    print("Activity bulunamadı: \(activityId)")
+                }
             }
         }
     }
+    
+    @objc func updateLiveActivityAsync() {
+        
+        Task {
+            if let activity = activity {
+                for await pushToken in activity.pushTokenUpdates {
+                    let token = pushToken.map {String(format: "%02x", $0)}.joined()
+                    print("token \(token)")
+                }
+            }
+        }
+    }
+
 
     @available(iOS 16.1, *)
     @objc func endLiveActivity() {
@@ -173,22 +199,9 @@ final class LiveActivityViewController: UIViewController {
             }
         }
     }
-
-    
-    
 }
 
-
-
-@available(iOS 16.1, *) // Live Activities sadece iOS 16.1+ destekler
-struct DengageWidgetAttributes: ActivityAttributes {
-    public struct ContentState: Codable, Hashable {
-        var emoji: String
-    }
-
-    var name: String
-}
-
+@available(iOS 16.1, *)
 extension LiveActivityViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)

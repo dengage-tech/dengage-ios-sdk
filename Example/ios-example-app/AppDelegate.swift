@@ -1,6 +1,8 @@
 import UIKit
 import Dengage
 import DengageGeofence
+import WidgetKit
+import ActivityKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -96,6 +98,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
        // Dengage.syncSDK()
         
        
+        AppDelegate.listenForTokenToStartActivityViaPush()
+        AppDelegate.listenForTokenToUpdateActivityViaPush()
        
         
         
@@ -156,6 +160,42 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         print("UIApplication.OpenURLOptionsKey \(url.host ?? "")")
         
         return true
+    }
+    
+    static func listenForTokenToStartActivityViaPush() {
+        if #available(iOS 17.2, *) {
+            Task {
+                for await pushToken in Activity<DengageWidgetAttributes>.pushToStartTokenUpdates {
+                    let pushTokenString = pushToken.reduce("") { $0 + String(format: "%02x", $1) }
+                    print("=== [START] DengageWidgetAttributes: \(pushTokenString)")
+                }
+            }
+        } else {
+            // Fallback on earlier versions
+        }
+    }
+
+    static func listenForTokenToUpdateActivityViaPush() {
+        if #available(iOS 17.2, *) {
+            Task {
+                for await activityData in Activity<DengageWidgetAttributes>.activityUpdates {
+                    for await tokenData in activityData.pushTokenUpdates {
+                        let token = tokenData.map { String(format: "%02x", $0) }.joined()
+                        print("=== [UPDATE] DengageWidgetAttributes [\(activityData.id)] : \(token)")
+                    }
+
+                    for await stateUpdate in activityData.activityStateUpdates {
+                        print("=== [STATE] DengageWidgetAttributes [\(activityData.id)] : \(stateUpdate)")
+                    }
+
+                    for await newContent in activityData.contentUpdates {
+                        print("=== [CONTENT] DengageWidgetAttributes [\(activityData.id)] : \(newContent)")
+                    }
+                }
+            }
+        } else {
+            // Fallback on earlier versions
+        }
     }
     
     
