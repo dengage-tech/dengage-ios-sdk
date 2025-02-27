@@ -135,11 +135,13 @@ extension Date {
         return formatter.string(from: self)
     }
     
+    /*
     var weekDay: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "EEEE"
         return formatter.string(from: self)
     }
+     */
     
     var month: String {
         let formatter = DateFormatter()
@@ -150,6 +152,12 @@ extension Date {
     var threeLetterMonth: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM"
+        return formatter.string(from: self)
+    }
+    
+    var threeLetterWeekDay: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEE"
         return formatter.string(from: self)
     }
 }

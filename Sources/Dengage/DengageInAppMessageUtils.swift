@@ -411,11 +411,13 @@ final class DengageInAppMessageUtils{
                            ruleParam: criterion.values,
                            userParam: Date().threeLetterMonth, message: message, valueSource: criterion.valueSource)
         case .WEEK_DAY:
+            
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: Date().weekDay, message: message, valueSource: criterion.valueSource)
+                           userParam: Date().threeLetterWeekDay , message: message, valueSource: criterion.valueSource)
         case .HOUR:
+
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
@@ -441,10 +443,16 @@ final class DengageInAppMessageUtils{
         case .FIRST_VISIT:
             guard
                 let firstVisitTime = DengageLocalStorage.shared.value(for: .firstLaunchTime) as? Double else {return true}
+            
+            var firstVisit = "false"
+            if (Date().timeIntervalSince1970 - firstVisitTime) < 3600 {
+                firstVisit = "true"
+            }
+            
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: String(firstVisitTime), message: message, valueSource: criterion.valueSource)
+                           userParam: firstVisit, message: message, valueSource: criterion.valueSource)
         case .LAST_VISIT:
             guard
                 let lastVisitTime = DengageLocalStorage.shared.value(for: .lastVisitTime) as? Double else {return true}
