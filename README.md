@@ -92,7 +92,7 @@ Select the package and click finish.
 
 The Dengage SDK is organized into 2 modules, allowing you to import only what you need:
 
-1. **Dengage**: If you don’t plan to use the geofence feature or Huawei messaging service, simply include the `Dengage` module.
+1. **Dengage**: If you don’t plan to use the geofence feature, simply include the `Dengage` module.
 2. **DengageGeofence**: To enable geofence functionality, add the `DengageGeofence` module in addition to the `Dengage` module.
 
 | **Module**      | **Description**                                                                              |
