@@ -22,6 +22,7 @@ public class DengageInAppMessageManager:DengageInAppMessageManagerInterface {
         self.config = config
         self.apiClient = service
         self.sessionManager = sessionManager
+        DengageLocalStorage.shared.set(value: Date().timeIntervalSince1970, for: .lastSessionStartTime)
         registerLifeCycleTrackers()
     }
 }
