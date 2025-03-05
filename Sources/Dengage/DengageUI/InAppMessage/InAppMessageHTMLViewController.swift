@@ -164,7 +164,6 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
         
         switch message.name {
             
-            switch message.name {
                 
             case "sendClick":
                 let buttonId = message.body as? String
@@ -283,9 +282,7 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             
             
         }
-        
-        
-    }
+      
 }
 
 extension InAppMessageHTMLViewController{
