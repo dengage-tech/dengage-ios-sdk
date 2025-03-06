@@ -19,6 +19,16 @@ final class LiveActivityViewController: UIViewController {
     
     var activity: Activity<DengageWidgetAttributes>?
     
+    private lazy var channelIdTextField: UITextField = {
+        let view = UITextField()
+        view.placeholder = "Channel Id"
+        view.textAlignment = .center
+        view.borderStyle = .roundedRect
+        view.textColor = .black
+        view.delegate = self
+        view.autocapitalizationType = .none
+        return view
+    }()
     
     private lazy var activityIdTextField: UITextField = {
         let view = UITextField()
@@ -57,7 +67,11 @@ final class LiveActivityViewController: UIViewController {
     private lazy var startLiveActivityButton: UIButton = {
         let view = UIButton()
         view.setTitle("Start Live Activity", for: .normal)
-        view.addTarget(self, action: #selector(startLiveActivity), for: .touchUpInside)
+        if #available(iOS 18.0, *) {
+            view.addTarget(self, action: #selector(startLiveActivityWithChannel), for: .touchUpInside)
+        } else {
+            // Fallback on earlier versions
+        }
         view.setTitleColor(.blue, for: .normal)
         return view
     }()
@@ -89,7 +103,7 @@ final class LiveActivityViewController: UIViewController {
     
     private lazy var stackView: UIStackView = {
         let view = UIStackView(arrangedSubviews: [
-            activityIdTextField, pushTokenTextField, storyBackgroundColorTextField
+            channelIdTextField, activityIdTextField, pushTokenTextField, storyBackgroundColorTextField
             , startLiveActivityButton, updateLiveActivityButton, endLiveActivityButton
         ])
         view.axis = .vertical
@@ -128,12 +142,8 @@ final class LiveActivityViewController: UIViewController {
         }
     }
     
-    @objc private func didTapRefreshStoryButton() {
-        startLiveActivity()
-        
-   
-    }
     
+    @available(iOS 18.0, *)
     @objc func startLiveActivity() {
         if #available(iOS 16.1, *) {
             let attributes = DengageWidgetAttributes(name: "Live Activity")
@@ -143,7 +153,7 @@ final class LiveActivityViewController: UIViewController {
                 let activity = try Activity<DengageWidgetAttributes>.request(
                     attributes: attributes,
                     contentState: contentState,
-                    pushType: .token // Opsiyonel: Push Notifications ile tetikleme
+                    pushType: .channel("iV8cV/ohEe8AABYdcJ3Xgw==") // Opsiyonel: Push Notifications ile tetikleme
                 )
                 self.activity = activity
                 activityIdTextField.text = activity.id
@@ -156,6 +166,24 @@ final class LiveActivityViewController: UIViewController {
         } else {
             // Fallback on earlier versions
         }
+    }
+    
+    @available(iOS 18.0, *)
+    @objc func startLiveActivityWithChannel() {
+        let attributes = DengageWidgetAttributes(name: "Live Activity")
+        //var channelId = "iV8cV/ohEe8AABYdcJ3Xgw=="
+        let channelId = channelIdTextField.text ?? ""
+        
+        let initialState = DengageWidgetAttributes.ContentState(emoji: "channel")
+        
+        let activity = try? Activity.request(attributes: attributes, content: .init(state: initialState, staleDate: nil), pushType: .channel(channelId))
+        
+        /*let activity = try? Activity<DengageWidgetAttributes>.request(
+         attributes: attributes,
+         contentState: contentState,
+         pushType: .channel(channelId)
+         )
+         */
     }
     
     
@@ -186,11 +214,12 @@ final class LiveActivityViewController: UIViewController {
                     let token = pushToken.map {String(format: "%02x", $0)}.joined()
                     print("token \(token)")
                 }
+                await updateLiveActivity(activityId: activity.id)
             }
         }
     }
-
-
+    
+    
     @available(iOS 16.1, *)
     @objc func endLiveActivity() {
         Task {

@@ -56,7 +56,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                                       denGeofenceApiUrl: "https://dev-push.dengage.com/geoapi/",
                                                       fetchRealTimeInAppApiUrl: "https://dev-inapp.lib.dengage.com/")
 
-        Dengage.start(apiKey: test_testflight, application: application, launchOptions: [:],
+        Dengage.start(apiKey: test_sandbox, application: application, launchOptions: [:],
                       dengageOptions: option)
         
         
