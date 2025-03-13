@@ -4,6 +4,9 @@ import DengageGeofence
 import WidgetKit
 import ActivityKit
 
+
+var liveActivityPushTokenString = ""
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -47,7 +50,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let test_sandbox = "7xWJ4ZN3MBF8WueuygcslkO4tbCn_s_l_CzDrTJJxVChxVH2usO_s_l_w310K_s_l_KphZVJD97FUCiSjaaysA51_s_l_GO_s_l_S7YGzD_p_l_RUuYwqzNBI5_p_l_i7Qml_p_l_rOC_p_l_7W_s_l_Nm3pGbCqAgqecsthxiH16a13SJDJALI50mgCHQ_e_q__e_q_"
         
         //let option = DengageOptions(disableOpenURL: false, badgeCountReset: true, disableRegisterForRemoteNotifications: false, enableGeofence: true)
-        let option = DengageOptions(disableOpenURL: false, badgeCountReset: true, disableRegisterForRemoteNotifications: false)
+        let option = DengageOptions(disableOpenURL: false,
+                                    badgeCountReset: true,
+                                    disableRegisterForRemoteNotifications: false,
+                                    appGroupsKey: "group.com.dengage.Example.dengage")
 
         
         let apiUrlConfiguration = ApiUrlConfiguration(denEventApiUrl: "https://dev-push.dengage.com",
@@ -56,7 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                                       denGeofenceApiUrl: "https://dev-push.dengage.com/geoapi/",
                                                       fetchRealTimeInAppApiUrl: "https://dev-inapp.lib.dengage.com/")
 
-        Dengage.start(apiKey: test_sandbox, application: application, launchOptions: [:],
+        Dengage.start(apiKey: test_testflight, application: application, launchOptions: [:],
                       dengageOptions: option)
         
         
@@ -97,11 +103,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
        // Dengage.syncSDK()
         
+        DengageLocalStorage.shared.save([])
+        let localInboxMessages = DengageLocalStorage.shared.getLocalInboxMessages()
+        
+        //let lastPushPayload = DengageLocalStorage.shared.value(for: .lastPushPayload) as? String
+        Logger.log(message: "localInboxMessages: \(String(describing: localInboxMessages))")
        
         AppDelegate.listenForTokenToStartActivityViaPush()
-        AppDelegate.listenForTokenToUpdateActivityViaPush()
+        //AppDelegate.listenForTokenToUpdateActivityViaPush()
        
-        
+        // 80bb556e7ad458cba09ddcd7c3bff5a523086ad3de359afad3f7125b8b65dcb577edf8e740d2657e7b8756922dd24f775a0f4622f0ae2c2935ad552b1e43dd4e83267a61b238fe8367d895b2731f50121fa2852d59477f3f33139d36d629e333efa064bfe6c71415da2742b0526d5f83c386284e0e0c526bce7f3c6e0c9460c3
         
         return true
     }
@@ -167,6 +178,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             Task {
                 for await pushToken in Activity<DengageWidgetAttributes>.pushToStartTokenUpdates {
                     let pushTokenString = pushToken.reduce("") { $0 + String(format: "%02x", $1) }
+                    liveActivityPushTokenString = pushTokenString
                     print("=== [START] DengageWidgetAttributes: \(pushTokenString)")
                 }
             }

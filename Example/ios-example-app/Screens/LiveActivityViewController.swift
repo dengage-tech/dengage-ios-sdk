@@ -49,6 +49,7 @@ final class LiveActivityViewController: UIViewController {
         view.textColor = .black
         view.delegate = self
         view.autocapitalizationType = .none
+        view.text = liveActivityPushTokenString
         return view
     }()
     

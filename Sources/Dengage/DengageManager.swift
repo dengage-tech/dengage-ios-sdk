@@ -316,12 +316,18 @@ extension DengageManager {
     public let disableOpenURL: Bool
     public let badgeCountReset: Bool
     public let disableRegisterForRemoteNotifications: Bool
+    public let appGroupsKey: String?
+    public let localInboxManager: Bool
     public init(disableOpenURL: Bool = false,
                 badgeCountReset: Bool = false,
-                disableRegisterForRemoteNotifications: Bool = false) {
+                disableRegisterForRemoteNotifications: Bool = false,
+                appGroupsKey: String? = nil,
+                localInboxManager: Bool = false) {
         self.disableOpenURL = disableOpenURL
         self.badgeCountReset = badgeCountReset
         self.disableRegisterForRemoteNotifications = disableRegisterForRemoteNotifications
+        self.appGroupsKey = appGroupsKey
+        self.localInboxManager = localInboxManager
         
     }
     
@@ -330,9 +336,11 @@ extension DengageManager {
         disableOpenURL = try container.decode(Bool.self, forKey: .disableOpenURL)
         badgeCountReset = try container.decode(Bool.self, forKey: .badgeCountReset)
         disableRegisterForRemoteNotifications = try container.decode(Bool.self, forKey: .disableRegisterForRemoteNotifications)
+        appGroupsKey = try? container.decode(String.self, forKey: .appGroupsKey)
+        localInboxManager = try container.decode(Bool.self, forKey: .localInboxManager)
     }
     
     enum CodingKeys: String, CodingKey {
-        case disableOpenURL, badgeCountReset, disableRegisterForRemoteNotifications
+        case disableOpenURL, badgeCountReset, disableRegisterForRemoteNotifications, appGroupsKey, localInboxManager
     }
 }

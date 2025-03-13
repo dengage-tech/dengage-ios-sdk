@@ -32,6 +32,10 @@ public class Dengage {
         apiUrlConfiguration: ApiUrlConfiguration? = nil
     ) {
         startCalled = true
+        
+        if let appGroupsKey = options.appGroupsKey, !appGroupsKey.isEmpty {
+            DengageLocalStorage.shared.setAppGroupsUserDefaults(appGroupName: appGroupsKey)
+        }
 
         if let id = deviceId {
             dengage?.config.set(deviceId: id)

@@ -5,10 +5,17 @@ final public class DengageLocalStorage: NSObject {
     public static let shared = DengageLocalStorage(suitName: SUIT_NAME)
     
     var userDefaults: UserDefaults
+    var appGroupUserDefaults: UserDefaults?
+    
     
     init(suitName: String) {
         userDefaults = UserDefaults(suiteName: suitName)!
     }
+    
+    public func setAppGroupsUserDefaults(appGroupName: String) {
+        appGroupUserDefaults = UserDefaults(suiteName: appGroupName)
+    }
+    
     
     public func set(value: Any?, for key: Key) {
         userDefaults.set(value, forKey: key.rawValue)
@@ -84,6 +91,7 @@ final public class DengageLocalStorage: NSObject {
         case apiUrlConfiguration = "apiUrlConfiguration"
         case locationPermission = "locationPermission"
         case locationPermissionSubscription = "locationPermissionSubscription"
+        case localInboxMessages = "localInboxMessages"
         
 
     }
@@ -377,5 +385,59 @@ extension DengageLocalStorage {
             Logger.log(message: "saving apiUrlConfiguration fail")
         }
     }
+}
+
+
+//MARK: Local Inbox Manager
+public extension DengageLocalStorage {
+    
+    func getLocalInboxMessages() -> [DengageLocalInboxMessage] {
+
+        guard let messagesData = appGroupUserDefaults?.object(forKey: Key.localInboxMessages.rawValue) as? Data else { return [] }
+        let decoder = JSONDecoder()
+        do {
+            let localInboxMessages = try decoder.decode([DengageLocalInboxMessage].self, from: messagesData)
+            return localInboxMessages
+        } catch {
+            Logger.log(message: "getLocalInboxMessages fail \(error)")
+            return []
+        }
+    }
+    
+    func save(_ localInboxMessages: [DengageLocalInboxMessage]){
+        let encoder = JSONEncoder()
+        do {
+            let encoded = try encoder.encode(localInboxMessages)
+            appGroupUserDefaults?.set(encoded, forKey: Key.localInboxMessages.rawValue)
+            appGroupUserDefaults?.synchronize()
+        } catch {
+            Logger.log(message: "saving local inbox messages fail")
+        }
+    }
+    
+    /*
+    func getInAppMessage2s() -> [InAppMessage] {
+        guard let messagesData = userDefaults.object(forKey: Key.inAppMessages.rawValue) as? Data else { return [] }
+        let decoder = JSONDecoder()
+        do {
+            let messages = try decoder.decode([InAppMessage].self, from: messagesData)
+            return messages
+        } catch {
+            Logger.log(message: "getInAppMessages fail")
+            return []
+        }
+    }
+    
+    func sav2e(_ inappMessages:[InAppMessage]){
+        let encoder = JSONEncoder()
+        do {
+            let encoded = try encoder.encode(inappMessages)
+            userDefaults.set(encoded, forKey: Key.inAppMessages.rawValue)
+            userDefaults.synchronize()
+        } catch {
+            Logger.log(message: "saving inapp message fail")
+        }
+    }
+     */
 }
 

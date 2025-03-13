@@ -16,6 +16,10 @@ class NotificationService: UNNotificationServiceExtension {
             // Fallback on earlier versions
         }
         
+        //let contactKey = DengageLocalStorage.shared.value(for: .contactKey) as? String
+        
+        DengageLocalStorage.shared.setAppGroupsUserDefaults(appGroupName: "group.com.dengage.Example.dengage")
+        
         Dengage.didReceiveNotificationRequest(bestAttemptContent, withContentHandler: contentHandler)
     }
     

@@ -28,6 +28,32 @@ final class DengageNotificationExtension {
             // Fallback on earlier versions
         }
         
+        /*
+        do {
+            let data =  try JSONSerialization.data(withJSONObject: bestAttemptContent.userInfo, options: JSONSerialization.WritingOptions.prettyPrinted)
+            let convertedString = String(data: data, encoding: String.Encoding.utf8)
+            Logger.log(message: convertedString ?? "")
+            //DengageLocalStorage.shared.set(value: convertedString, for: .lastPushPayload)
+            let localMessage = DengageLocalInboxMessage(id: "",
+                                                        title: message.title,
+                                                        message: message.messageSource,
+                                                        mediaURL: message.urlImageString,
+                                                        targetUrl: message.targetUrl,
+                                                        receiveDate: Date(),
+                                                        isClicked: false,
+                                                        carouselItems: nil,
+                                                        isDeleted: false)
+                                                        
+            //let localMessage = DengageLocalInboxMessage(title: message.title ?? "NULL")
+            var localMessages: [DengageLocalInboxMessage] = []
+            localMessages.append(localMessage)
+            DengageLocalStorage.shared.save(localMessages)
+        } catch let myJSONError {
+            print(myJSONError)
+        }
+         */
+
+
         addActionButtonsIfNeeded(bestAttemptContent)
         
         bestAttemptContent.title = title
