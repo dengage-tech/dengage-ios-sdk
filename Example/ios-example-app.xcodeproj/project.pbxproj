@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		88704BD92D92B1B6000359E1 /* Location.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 88704BD82D92B1B6000359E1 /* Location.gpx */; };
 		A02A40E127CF93CD00D75B02 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = A02A40E027CF93CD00D75B02 /* Dengage */; };
 		A02A40E327CF93D800D75B02 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = A02A40E227CF93D800D75B02 /* Dengage */; };
 		A0765B6B27CEAF2B0007215B /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = A0765B6A27CEAF2B0007215B /* Dengage */; };
@@ -68,6 +69,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		88704BD82D92B1B6000359E1 /* Location.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Location.gpx; sourceTree = "<group>"; };
 		A0765B6927CEAF040007215B /* dengage-ios-sdk */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "dengage-ios-sdk"; path = ..; sourceTree = "<group>"; };
 		A099517327AB600C0089D98D /* NoticationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NoticationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A099517527AB600C0089D98D /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -257,6 +259,7 @@
 			isa = PBXGroup;
 			children = (
 				A0F46C61275A85B0003A524C /* AppDelegate.swift */,
+				88704BD82D92B1B6000359E1 /* Location.gpx */,
 				A0F46C65275A85B0003A524C /* ViewController.swift */,
 				A0F46C6A275A85B1003A524C /* Assets.xcassets */,
 				A0F46C6C275A85B1003A524C /* LaunchScreen.storyboard */,
@@ -427,6 +430,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A0F46C6E275A85B1003A524C /* LaunchScreen.storyboard in Resources */,
+				88704BD92D92B1B6000359E1 /* Location.gpx in Resources */,
 				A0F46C6B275A85B1003A524C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

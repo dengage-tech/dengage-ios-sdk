@@ -628,10 +628,12 @@ extension DengageGeofenceManager: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
+        /*
         guard let location = manager.location, region.identifier.hasPrefix(kIdentifierPrefix) else {
             return
         }
         handleLocation(location, source: .geofenceExit, region: region)
+         */
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
