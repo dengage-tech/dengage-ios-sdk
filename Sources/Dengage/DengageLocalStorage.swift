@@ -91,6 +91,8 @@ final public class DengageLocalStorage: NSObject {
         case apiUrlConfiguration = "apiUrlConfiguration"
         case locationPermission = "locationPermission"
         case locationPermissionSubscription = "locationPermissionSubscription"
+        
+        case localInboxManagerEnabled = "localInboxManagerEnabled"
         case localInboxMessages = "localInboxMessages"
         
 
@@ -404,7 +406,7 @@ public extension DengageLocalStorage {
         }
     }
     
-    func save(_ localInboxMessages: [DengageLocalInboxMessage]){
+    func save(localInboxMessages: [DengageLocalInboxMessage]){
         let encoder = JSONEncoder()
         do {
             let encoded = try encoder.encode(localInboxMessages)
@@ -415,29 +417,14 @@ public extension DengageLocalStorage {
         }
     }
     
-    /*
-    func getInAppMessage2s() -> [InAppMessage] {
-        guard let messagesData = userDefaults.object(forKey: Key.inAppMessages.rawValue) as? Data else { return [] }
-        let decoder = JSONDecoder()
-        do {
-            let messages = try decoder.decode([InAppMessage].self, from: messagesData)
-            return messages
-        } catch {
-            Logger.log(message: "getInAppMessages fail")
-            return []
-        }
+    func getLocalInboxManagerEnabled() -> Bool {
+        return appGroupUserDefaults?.object(forKey: Key.localInboxManagerEnabled.rawValue) as? Bool ?? false
     }
     
-    func sav2e(_ inappMessages:[InAppMessage]){
-        let encoder = JSONEncoder()
-        do {
-            let encoded = try encoder.encode(inappMessages)
-            userDefaults.set(encoded, forKey: Key.inAppMessages.rawValue)
-            userDefaults.synchronize()
-        } catch {
-            Logger.log(message: "saving inapp message fail")
-        }
+    func saveLocalInboxManagerEnabled(_ localInboxManagerEnabled: Bool) {
+        appGroupUserDefaults?.set(localInboxManagerEnabled, forKey: Key.localInboxManagerEnabled.rawValue)
+        appGroupUserDefaults?.synchronize()
     }
-     */
+
 }
 

@@ -28,6 +28,10 @@ final class DengageNotificationExtension {
             // Fallback on earlier versions
         }
         
+        if let addToInbox = message.addToInbox, addToInbox {
+            
+        }
+        
         /*
         do {
             let data =  try JSONSerialization.data(withJSONObject: bestAttemptContent.userInfo, options: JSONSerialization.WritingOptions.prettyPrinted)

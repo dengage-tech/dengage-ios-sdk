@@ -205,6 +205,10 @@ final class DengageInAppMessageUtils{
                                config: DengageConfiguration, message:InAppMessage) -> Bool {
         guard let specialRule = SpecialRuleParameter(rawValue: criterion.parameter) else {
             
+            if(criterion.parameter == "dn.master_contact.birth_date") {
+                print(criterion.parameter)
+            }
+            
             if checkVisitorInfoAttr(parameter: criterion.parameter) != ""
             {
                 let userParam = checkVisitorInfoAttr(parameter: criterion.parameter)
@@ -218,6 +222,8 @@ final class DengageInAppMessageUtils{
                     let diffInDays = self.daysUntil(birthday: formatedStartDate)
                     
                     let diffInDaysStr = "\(diffInDays)"
+                    
+                    let criterionDays = Int(criterion.values.first ?? "0")
                     
                     if diffInDaysStr == criterion.values.first
                     {

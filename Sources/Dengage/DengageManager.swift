@@ -26,6 +26,7 @@ public class DengageManager {
          apiUrlConfiguration: ApiUrlConfiguration? = nil) {
         
         DengageLocalStorage.shared.saveApiUrlConfiguration(apiUrlConfiguration)
+        DengageLocalStorage.shared.saveLocalInboxManagerEnabled(options.localInboxManager)
         
         config = DengageConfiguration(integrationKey: apiKey, options: options)
         

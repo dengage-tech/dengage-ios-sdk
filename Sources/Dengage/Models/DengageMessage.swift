@@ -1,7 +1,7 @@
 
 import Foundation
 @objc public class DengageMessage: NSObject, Codable {
-
+    
     public let id: String
     public let title: String?
     public let message: String?
@@ -14,7 +14,7 @@ import Foundation
     public var isDeleted = false
     
     required public init(from decoder: Decoder) throws {
-
+        
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
         isClicked = try container.decode(Bool.self, forKey: .isClicked)
@@ -52,7 +52,9 @@ import Foundation
     public let carouselItems: [CarouselItem]?
     public var isDeleted = false
     
-    public init(id: String, title: String?, message: String?, mediaURL: String?, targetUrl: String?, receiveDate: Date?, isClicked: Bool = false, carouselItems: [CarouselItem]?, isDeleted: Bool = false) {
+    public init(id: String, title: String?, message: String?, mediaURL: String?,
+                targetUrl: String?, receiveDate: Date?, isClicked: Bool = false,
+                carouselItems: [CarouselItem]?, isDeleted: Bool = false) {
         self.id = id
         self.title = title
         self.message = message
