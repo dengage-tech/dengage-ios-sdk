@@ -184,6 +184,9 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
 
         case "promptPushPermission":
             delegate?.promptPushPermission()
+        
+        case "openSettings":
+            delegate?.openApplicationSettings()
 
         case "dismiss":
             if !isClicked {
@@ -244,6 +247,9 @@ extension InAppMessageHTMLViewController {
             },
             promptPushPermission: () => {
                 window.webkit.messageHandlers.promptPushPermission.postMessage(null);
+            },
+            openSettings: () => {
+                window.webkit.messageHandlers.openSettings.postMessage(null);
             }
         }
         """

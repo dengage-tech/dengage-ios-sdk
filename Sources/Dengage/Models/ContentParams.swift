@@ -164,6 +164,7 @@ struct DisplayTiming: Codable{
     let delay: Int?
     let showEveryXMinutes: Int?
     let maxShowCount: Int?
+    let maxDismissCount: Int? //flow parameter
 }
 
 struct InlineTarget: Codable{

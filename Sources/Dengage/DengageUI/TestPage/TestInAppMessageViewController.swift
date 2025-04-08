@@ -198,7 +198,7 @@ extension TestInAppMessageViewController {
                                         content: content,
                                         displayCondition: .init(screenNameFilters: [], ruleSet: nil, screenNameFilterLogicOperator: .AND), displayTiming: .init(delay: 0,
                                                                                                                            showEveryXMinutes: 0,
-                                                                                                                                                                maxShowCount: 1), publicId: nil, inlineTarget: .init(iosSelector: "hgh"))
+                                                                                                                                                                maxShowCount: 1, maxDismissCount: 0), publicId: nil, inlineTarget: .init(iosSelector: "hgh"))
             return InAppMessage(id:"", data: data, nextDisplayTime: 0)
         }
         

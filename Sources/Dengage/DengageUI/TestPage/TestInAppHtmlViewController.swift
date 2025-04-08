@@ -291,7 +291,8 @@ final class TestInAppHtmlViewController: UIViewController {
         let displayTiming = DisplayTiming(
             delay: 0,
             showEveryXMinutes: 0,
-            maxShowCount: 0
+            maxShowCount: 0,
+            maxDismissCount: 0
         )
         
         let inAppMessageData = InAppMessageData(
