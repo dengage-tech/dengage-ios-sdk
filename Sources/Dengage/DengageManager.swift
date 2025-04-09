@@ -255,7 +255,7 @@ extension DengageManager {
                 DengageLocalStorage.shared.set(value: Date(), for: .lastFetchedConfigTime)
                 self.inAppManager.fetchInAppMessages()
                 self.sendFirstLaunchTimeIfNeeded()
-                self.inAppManager.fetchInAppExpiredMessages()
+                self.inAppManager.fetchInAppExpiredMessageIds()
 
             case .failure:
                 Logger.log(message: "SDK PARAMS Config fetchin failed")

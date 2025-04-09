@@ -1,7 +1,7 @@
 import Foundation
 struct ExpiredInAppMessageRequest: APIRequest{
     
-    typealias Response = [InAppMessage]
+    typealias Response = [InAppRemovalId]
 
     let method: HTTPMethod = .get
     let enpointType: EndpointType = .push
