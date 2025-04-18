@@ -16,15 +16,15 @@
 		</dict>
 	</array>
 	<key>DengageApiUrl</key>
-	<string>https://push.dengage.com</string>
+	<string>https://dev-push.dengage.com</string>
 	<key>DengageDeviceIdApiUrl</key>
 	<string>https://magento.232.dengage.shobii.com/rest/</string>
 	<key>DengageEventApiUrl</key>
-	<string>https://push.dengage.com</string>
+	<string>https://dev-push.dengage.com</string>
 	<key>DengageGeofenceApiUrl</key>
-	<string>https://push.dengage.com/geoapi/</string>
+	<string>https://dev-push.dengage.com/geoapi/</string>
 	<key>DengageInAppApiUrl</key>
-	<string>https://push.dengage.com</string>
+	<string>https://dev-push.dengage.com</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
@@ -32,6 +32,6 @@
 		<string>remote-notification</string>
 	</array>
 	<key>fetchRealTimeINAPPURL</key>
-	<string>https://tr-inapp.lib.dengage.com</string>
+	<string>https://dev-inapp.lib.dengage.com</string>
 </dict>
 </plist>
