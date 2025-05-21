@@ -4,13 +4,7 @@ import Dengage
 
 final class InAppMessageViewController: UIViewController {
     
-    private lazy var deviceIdTextView:UITextView = {
-        let view = UITextView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.heightAnchor.constraint(equalToConstant: 100).isActive = true
-        view.isUserInteractionEnabled = false
-        return view
-    }()
+
     
     private lazy var screenNameTextField:UITextField = {
         let view = UITextField()
@@ -39,7 +33,7 @@ final class InAppMessageViewController: UIViewController {
     }()
     
     private lazy var stackView:UIStackView = {
-        let view = UIStackView(arrangedSubviews: [deviceIdTextView,
+        let view = UIStackView(arrangedSubviews: [
                                                   screenNameTextField,
                                                   navigationButton,
                                                   clearDeviceInfoButton,
@@ -98,7 +92,7 @@ final class InAppMessageViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        deviceIdTextView.text = "Device Id:\n" + (Dengage.getDeviceId() ?? "") + "\nContact Key:\n" + (Dengage.getContactKey() ?? "")
+
     }
     
     private func setupUI(){

@@ -23,7 +23,8 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
         //dev-app.dengage.com: egemen-ios-dev-sandbox-test
         let test_sandbox = "7xWJ4ZN3MBF8WueuygcslkO4tbCn_s_l_CzDrTJJxVChxVH2usO_s_l_w310K_s_l_KphZVJD97FUCiSjaaysA51_s_l_GO_s_l_S7YGzD_p_l_RUuYwqzNBI5_p_l_i7Qml_p_l_rOC_p_l_7W_s_l_Nm3pGbCqAgqecsthxiH16a13SJDJALI50mgCHQ_e_q__e_q_"
         
-        Dengage.setIntegrationKey(key: bfsi_testflight)
+        DengageLocalStorage.shared.setAppGroupsUserDefaults(appGroupName: "group.com.dengage.Example.dengage")
+        Dengage.setIntegrationKey(key: test_sandbox)
         Dengage.setLog(isVisible: true)
         Dengage.setDevelopmentStatus(isDebug: true)
         carouselView.didReceive(notification)

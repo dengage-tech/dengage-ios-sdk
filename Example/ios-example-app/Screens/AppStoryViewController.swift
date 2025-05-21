@@ -116,7 +116,7 @@ final class AppStoryViewController: UIViewController {
                 self.storiesListView = storyView
                 self.storiesListView?.translatesAutoresizingMaskIntoConstraints = false
                 if let storiesListView = self.storiesListView {
-                    self .storiesListView?.tag = STORY_VIEW_TAG
+                    self.storiesListView?.tag = STORY_VIEW_TAG
                     self.stackView.insertArrangedSubview(storiesListView, at: self.stackView.subviews.count)
                 }
             }
