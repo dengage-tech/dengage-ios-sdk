@@ -90,6 +90,8 @@ extension DengageManager {
             DengageLocalStorage.shared.set(value: newKey, for: .contactKey)
             inboxManager.inboxMessages.removeAll()
             inboxManager.inboxMessages = []
+            let messages = [InboxMessageCache]()
+            DengageLocalStorage.shared.save(messages)
             _ = sessionManager.createSession(force: true)
             resetUsageStats()
             Dengage.syncSubscription()

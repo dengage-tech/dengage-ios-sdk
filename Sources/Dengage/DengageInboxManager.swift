@@ -1,4 +1,5 @@
 import Foundation
+
 final class DengageInboxManager {
     
     var inboxMessages = [DengageMessage]()
@@ -10,13 +11,20 @@ final class DengageInboxManager {
         self.apiClient = service
     }
     
+    private func validatedRemoteConfig() -> (remoteConfig: GetSDKParamsResponse, accountName: String)? {
+        guard let remoteConfig = config.remoteConfiguration,
+              let accountName = remoteConfig.accountName,
+              remoteConfig.inboxEnabled else {
+            return nil
+        }
+        return (remoteConfig, accountName)
+    }
+    
     func getInboxMessages(offset: Int,
                           limit: Int = 20,
                           completion: @escaping (Result<[DengageMessage], Error>) -> Void) {
         
-        guard let remoteConfig = config.remoteConfiguration,
-              let accountName = remoteConfig.accountName,
-              remoteConfig.inboxEnabled else {
+        guard let (remoteConfig, accountName) = validatedRemoteConfig() else {
             completion(.success([]))
             return
         }
@@ -41,7 +49,7 @@ final class DengageInboxManager {
                         
                         self.inboxMessages = inboxMsg
                         completion(.success(inboxMsg))
-
+                        
                     }
                 case .failure(let error):
                     completion(.failure(error))
@@ -49,13 +57,11 @@ final class DengageInboxManager {
             }
         }
     }
-
+    
     func deleteInboxMessage(with id: String,
                             completion: @escaping (Result<Void, Error>) -> Void) {
         
-        guard let remoteConfig = config.remoteConfiguration,
-              let accountName = remoteConfig.accountName,
-              remoteConfig.inboxEnabled else {
+        guard let (_, accountName) = validatedRemoteConfig() else {
             completion(.success(()))
             return
         }
@@ -82,12 +88,11 @@ final class DengageInboxManager {
             }
         }
     }
-
+    
     func setInboxMessageAsClicked(with id: String,
                                   completion: @escaping (Result<Void, Error>) -> Void) {
-        guard let remoteConfig = config.remoteConfiguration,
-              let accountName = remoteConfig.accountName,
-              remoteConfig.inboxEnabled else {
+        
+        guard let (_, accountName) = validatedRemoteConfig() else {
             completion(.success(()))
             return
         }
@@ -111,8 +116,82 @@ final class DengageInboxManager {
             }
         }
     }
-
- 
+    
+    
+    public func deleteAllInboxMessages(completion: @escaping (Result<Void, Error>) -> Void) {
+        
+        guard let (remoteConfig, accountName) = validatedRemoteConfig() else {
+            completion(.success(()))
+            return
+        }
+        
+        let request = DeleteAllMessagesRequest(
+            appid: remoteConfig.appId ?? "",
+            type: config.contactKey.type,
+            deviceID: config.applicationIdentifier,
+            accountName: accountName,
+            contactKey: config.contactKey.key
+        )
+        
+        apiClient.send(request: request) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success:
+                let updatedPrefs = self.inboxMessages.map { msg in
+                    InboxMessageCache(
+                        id: msg.id,
+                        isClicked: msg.isClicked,
+                        isDeleted: true,
+                        receiveDate: msg.receiveDate
+                    )
+                }
+                DengageLocalStorage.shared.save(updatedPrefs)
+                self.inboxMessages.removeAll()
+                completion(.success(()))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+        
+    }
+    
+    
+    public func setAllInboxMessageAsClicked(completion: @escaping (Result<Void, Error>) -> Void) {
+        
+        guard let (remoteConfig, accountName) = validatedRemoteConfig() else {
+            completion(.success(()))
+            return
+        }
+        
+        let request = MarkAsAllReadRequest(
+            appid: remoteConfig.appId ?? "",
+            type: config.contactKey.type,
+            deviceID: config.applicationIdentifier,
+            accountName: accountName,
+            contactKey: config.contactKey.key
+        )
+        
+        apiClient.send(request: request) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success:
+                self.inboxMessages.forEach { $0.isClicked = true }
+                let updatedPrefs = self.inboxMessages.map { msg in
+                    InboxMessageCache(
+                        id: msg.id,
+                        isClicked: true,
+                        isDeleted: msg.isDeleted,
+                        receiveDate: msg.receiveDate
+                    )
+                }
+                DengageLocalStorage.shared.save(updatedPrefs)
+                completion(.success(()))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+        
+    }
     
     private func updateInboxMessages(remoteInboxMessages: [DengageMessage],completion: @escaping (_ inboxMsg: [DengageMessage]) -> Void) {
         if remoteInboxMessages.isEmpty { completion(remoteInboxMessages) }
@@ -126,7 +205,7 @@ final class DengageInboxManager {
                 remoteInboxMessages[i].isDeleted = matchingPrefsMessage.isDeleted
             }
         }
-
+        
         inboxMessages = remoteInboxMessages.filter {
             return !$0.isDeleted
         }
@@ -138,14 +217,14 @@ final class DengageInboxManager {
         let prefsInboxMessages = DengageLocalStorage.shared.getInboxMessages()
         
         let oneWeekAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date())
-
+        
         var filteredPrefsInboxMessages = prefsInboxMessages.filter { message in
             guard let receiveDate = message.receiveDate else {
                 return true
             }
             return receiveDate >= (oneWeekAgo!)
         }
-
+        
         if let existingMessageIndex = filteredPrefsInboxMessages.firstIndex(where: { $0.id == inboxMessage.id }) {
             filteredPrefsInboxMessages[existingMessageIndex].isClicked = inboxMessage.isClicked
             filteredPrefsInboxMessages[existingMessageIndex].isDeleted = inboxMessage.isDeleted
@@ -154,7 +233,7 @@ final class DengageInboxManager {
             
             filteredPrefsInboxMessages.append(prefsInboxMessage)
         }
-
+        
         DengageLocalStorage.shared.save(filteredPrefsInboxMessages)
     }
 }

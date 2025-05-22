@@ -39,6 +39,8 @@
 		881EE0272C9978B300838C23 /* DengageGeofenceEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709172C91803E00FA8B63 /* DengageGeofenceEvent.swift */; };
 		881EE0292C9989AA00838C23 /* DengageGeofence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881EE0282C9989AA00838C23 /* DengageGeofence.swift */; };
 		88209F472D9286090041FCD3 /* DengageLocalInboxManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88209F422D9286040041FCD3 /* DengageLocalInboxManager.swift */; };
+		882FE6E22DDEC61300B591F0 /* MarkAsAllReadRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882FE6E12DDEC60D00B591F0 /* MarkAsAllReadRequest.swift */; };
+		882FE6E42DDEC8D200B591F0 /* DeleteAllMessagesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882FE6E32DDEC8CB00B591F0 /* DeleteAllMessagesRequest.swift */; };
 		8845BBF02D5CF24A00715B38 /* Mustache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8845BBEF2D5CF24A00715B38 /* Mustache.swift */; };
 		88BDCF6A2D09D3E100DAE52C /* TestInAppHtmlViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BDCF662D09D3DE00DAE52C /* TestInAppHtmlViewController.swift */; };
 		88D812E62D64DF90009816E4 /* ApiUrlConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D812E22D64DF8E009816E4 /* ApiUrlConfiguration.swift */; };
@@ -192,6 +194,8 @@
 		88209F422D9286040041FCD3 /* DengageLocalInboxManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageLocalInboxManager.swift; sourceTree = "<group>"; };
 		882A91CF2D6CAA6D00179FC1 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		882A91D12D6CAA6D00179FC1 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		882FE6E12DDEC60D00B591F0 /* MarkAsAllReadRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkAsAllReadRequest.swift; sourceTree = "<group>"; };
+		882FE6E32DDEC8CB00B591F0 /* DeleteAllMessagesRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAllMessagesRequest.swift; sourceTree = "<group>"; };
 		8845BBEF2D5CF24A00715B38 /* Mustache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mustache.swift; sourceTree = "<group>"; };
 		88BDCF662D09D3DE00DAE52C /* TestInAppHtmlViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInAppHtmlViewController.swift; sourceTree = "<group>"; };
 		88D812E22D64DF8E009816E4 /* ApiUrlConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiUrlConfiguration.swift; sourceTree = "<group>"; };
@@ -532,8 +536,10 @@
 		A0765BA927CEB4700007215B /* InboxMessage */ = {
 			isa = PBXGroup;
 			children = (
-				A0765BAA27CEB4700007215B /* GetMessagesRequest.swift */,
+				882FE6E32DDEC8CB00B591F0 /* DeleteAllMessagesRequest.swift */,
 				A0765BAB27CEB4700007215B /* DeleteMessagesRequest.swift */,
+				A0765BAA27CEB4700007215B /* GetMessagesRequest.swift */,
+				882FE6E12DDEC60D00B591F0 /* MarkAsAllReadRequest.swift */,
 				A0765BAC27CEB4700007215B /* MarkAsReadRequest.swift */,
 			);
 			path = InboxMessage;
@@ -749,6 +755,7 @@
 				881EE0252C996BE600838C23 /* DengageGeofenceItem.swift in Sources */,
 				881EE0272C9978B300838C23 /* DengageGeofenceEvent.swift in Sources */,
 				88E93AEA2C923C2200EE3F5E /* StorySet.swift in Sources */,
+				882FE6E42DDEC8D200B591F0 /* DeleteAllMessagesRequest.swift in Sources */,
 				8800688C2C931DDA00881F71 /* InAppInlineElementView.swift in Sources */,
 				880068922C931E9E00881F71 /* ExpiredInAppMessageRequest.swift in Sources */,
 				A0765BE527CEB4700007215B /* OpenEventRequest.swift in Sources */,
@@ -833,6 +840,7 @@
 				8817092E2C91807100FA8B63 /* GeofenceEventSignalRequest.swift in Sources */,
 				A0765BC627CEB4700007215B /* DengageNetworking.swift in Sources */,
 				A0765BEE27CEB4700007215B /* DengageLog.swift in Sources */,
+				882FE6E22DDEC61300B591F0 /* MarkAsAllReadRequest.swift in Sources */,
 				A0765BD527CEB4700007215B /* DengageLocalStorage.swift in Sources */,
 				A0765BE127CEB4700007215B /* MarkAsInAppMessageClickedRequest.swift in Sources */,
 				A0765BBF27CEB4700007215B /* Constants.swift in Sources */,

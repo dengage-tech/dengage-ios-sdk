@@ -261,6 +261,21 @@ public class Dengage {
         }
     }
     
+    
+    public static func deleteAllInboxMessages(completion: @escaping (Result<Void, Error>) -> Void){
+        
+        dengage?.inboxManager.deleteAllInboxMessages() { result in
+            completion(result)
+        }
+    }
+    
+    public static func setAllInboxMessageAsClicked(completion: @escaping (Result<Void, Error>) -> Void){
+        
+        dengage?.inboxManager.setAllInboxMessageAsClicked() { result in
+            completion(result)
+        }
+    }
+    
     @objc public static func setTags(_ tags: [TagItem]){
         dengage?.set(tags)
     }
