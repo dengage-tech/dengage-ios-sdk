@@ -4,7 +4,7 @@ struct GetVisitorInfoRequest: APIRequest {
     typealias Response = VisitorInfo
 
     let method: HTTPMethod = .get
-    let enpointType: EndpointType = .push
+    let endpointType: EndpointType = .push
     var path: String {
         return "/api/audience/visitor-info"
     }

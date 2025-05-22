@@ -5,7 +5,7 @@ struct GetRealTimeMesagesRequest: APIRequest {
     typealias Response = [InAppMessageData]
 
     let method: HTTPMethod = .get
-    let enpointType: EndpointType = .inappRealTime
+    let endpointType: EndpointType = .inappRealTime
     var path: String {
         return "/\(accountName)/\(appId)/campaign.json"
     }

@@ -4,7 +4,7 @@ struct ExpiredInAppMessageRequest: APIRequest{
     typealias Response = [InAppRemovalId]
 
     let method: HTTPMethod = .get
-    let enpointType: EndpointType = .push
+    let endpointType: EndpointType = .push
     let path: String = "/api/inapp/getExpiredMessages"
 
     let httpBody: Data? = nil

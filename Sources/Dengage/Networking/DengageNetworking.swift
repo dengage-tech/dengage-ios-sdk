@@ -14,7 +14,7 @@ final public class DengageNetworking {
     
     public func send<T: APIRequest>(request: T, completion: @escaping (Result<T.Response, Error>) -> Void) {
         let decoder = JSONDecoder()
-        let baseURL = createBaseURL(for: request.enpointType)
+        let baseURL = createBaseURL(for: request.endpointType)
         var apiRequest = request.asURLRequest(with: baseURL)
         apiRequest.setValue(config.userAgent, forHTTPHeaderField: "User-Agent")
         

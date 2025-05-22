@@ -5,7 +5,7 @@ struct DeviceIdApiRequest: APIRequest {
     typealias Response = EmptyResponse
 
     let method: HTTPMethod = .post
-    let enpointType: EndpointType = .deviceId
+    let endpointType: EndpointType = .deviceId
     var path: String = DengageLocalStorage.shared.value(for: .deviceIdRoute) as! String
     let queryParameters: [URLQueryItem] = []
     

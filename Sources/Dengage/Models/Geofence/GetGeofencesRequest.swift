@@ -5,7 +5,7 @@ public struct GetGeofencesRequest: APIRequest {
     public typealias Response = [DengageGeofenceCluster]
 
     public let method: HTTPMethod = .get
-    public let enpointType: EndpointType = .geofence
+    public let endpointType: EndpointType = .geofence
     public var path: String {
         "/geofence/\(integrationKey)"
     }

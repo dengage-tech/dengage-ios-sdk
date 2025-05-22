@@ -6,7 +6,7 @@ struct DeleteMessagesRequest: APIRequest{
 
     let method: HTTPMethod = .get
     let path: String = "/api/pi/setAsDeleted"
-    let enpointType: EndpointType = .push
+    let endpointType: EndpointType = .push
     let httpBody: Data? = nil
     
     var queryParameters: [URLQueryItem] {

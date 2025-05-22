@@ -4,7 +4,7 @@ struct EventRequest: APIRequest {
     typealias Response = EmptyResponse
 
     let method: HTTPMethod = .post
-    let enpointType: EndpointType = .event
+    let endpointType: EndpointType = .event
     let path: String = "/api/event"
 
     var httpBody: Data?{

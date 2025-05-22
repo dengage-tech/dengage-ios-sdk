@@ -5,7 +5,7 @@ struct FirstLaunchEventRequest: APIRequest {
     typealias Response = EmptyResponse
 
     let method: HTTPMethod = .get
-    let enpointType: EndpointType = .inapp
+    let endpointType: EndpointType = .inapp
     let path: String = "/realtime-inapp/event"
 
     var queryParameters: [URLQueryItem] {

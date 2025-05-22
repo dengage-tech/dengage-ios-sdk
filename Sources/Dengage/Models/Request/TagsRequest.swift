@@ -3,7 +3,7 @@ struct TagsRequest: APIRequest {
     typealias Response = EmptyResponse
 
     let method: HTTPMethod = .post
-    let enpointType: EndpointType = .push
+    let endpointType: EndpointType = .push
     let path: String = "/api/setTags"
     let queryParameters: [URLQueryItem] = []
     

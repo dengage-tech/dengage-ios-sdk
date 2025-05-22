@@ -54,7 +54,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                     badgeCountReset: true,
                                     disableRegisterForRemoteNotifications: false,
                                     appGroupsKey: "group.com.dengage.Example.dengage",
-                                    localInboxManager: true)
+                                    localInboxManager: false)
 
         
         let apiUrlConfiguration = ApiUrlConfiguration(denEventApiUrl: "https://dev-push.dengage.com",

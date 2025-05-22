@@ -5,7 +5,7 @@ struct GetInAppMessagesRequest: APIRequest {
     typealias Response = [InAppMessage]
 
     let method: HTTPMethod = .get
-    let enpointType: EndpointType = .push
+    let endpointType: EndpointType = .push
     let path: String = "/api/inapp/getMessages"
 
     let httpBody: Data? = nil

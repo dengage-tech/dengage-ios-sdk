@@ -4,7 +4,7 @@ struct GetSDKParamsRequest: APIRequest {
     typealias Response = GetSDKParamsResponse
 
     let method: HTTPMethod = .get
-    let enpointType: EndpointType = .push
+    let endpointType: EndpointType = .push
     let path: String = "/api/getSdkParams"
 
     let httpBody: Data? = nil

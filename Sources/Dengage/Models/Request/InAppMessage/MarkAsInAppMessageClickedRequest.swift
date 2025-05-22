@@ -4,7 +4,7 @@ struct MarkAsInAppMessageClickedRequest: APIRequest{
     typealias Response = EmptyResponse
 
     let method: HTTPMethod = .get
-    let enpointType: EndpointType = .push
+    let endpointType: EndpointType = .push
     let path: String = "/api/inapp/setAsClicked"
 
     let httpBody: Data? = nil

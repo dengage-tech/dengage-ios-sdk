@@ -21,7 +21,7 @@ public enum EndpointType{
 }
 
 public protocol APIRequest {
-    var enpointType: EndpointType{ get }
+    var endpointType: EndpointType{ get }
     var path: String { get }
     var httpBody: Data? { get }
     var queryParameters: [URLQueryItem] { get }

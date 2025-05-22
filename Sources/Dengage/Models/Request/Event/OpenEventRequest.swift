@@ -5,7 +5,7 @@ struct OpenEventRequest: APIRequest {
     typealias Response = EmptyResponse
 
     let method: HTTPMethod = .post
-    let enpointType: EndpointType = .event
+    let endpointType: EndpointType = .event
     let path: String = "/api/mobile/open"
     let queryParameters: [URLQueryItem] = []
 

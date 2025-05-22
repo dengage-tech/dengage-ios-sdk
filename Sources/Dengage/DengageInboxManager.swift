@@ -1,5 +1,5 @@
 import Foundation
-final class DengageInboxManager: DengageInboxManagerInterface {
+final class DengageInboxManager {
     
     var inboxMessages = [DengageMessage]()
     private let config: DengageConfiguration
@@ -157,15 +157,4 @@ final class DengageInboxManager: DengageInboxManagerInterface {
 
         DengageLocalStorage.shared.save(filteredPrefsInboxMessages)
     }
-}
-
-
-protocol DengageInboxManagerInterface {
-    func getInboxMessages(offset: Int,
-                          limit: Int,
-                          completion: @escaping (Result<[DengageMessage], Error>) -> Void)
-    func deleteInboxMessage(with id: String,
-                            completion: @escaping (Result<Void, Error>) -> Void)
-    func setInboxMessageAsClicked(with id: String,
-                                  completion: @escaping (Result<Void, Error>) -> Void)
 }

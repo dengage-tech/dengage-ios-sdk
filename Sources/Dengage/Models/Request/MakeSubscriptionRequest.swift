@@ -6,7 +6,7 @@ struct MakeSubscriptionRequest: APIRequest {
     typealias Response = GetSDKParamsResponse
     
     let method: HTTPMethod = .post
-    let enpointType: EndpointType = .push
+    let endpointType: EndpointType = .push
     let path: String = "/api/device/subscription"
     
     

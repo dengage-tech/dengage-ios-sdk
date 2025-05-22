@@ -5,7 +5,7 @@ public struct GeofenceEventSignalRequest: APIRequest {
     public typealias Response = EmptyResponse
     
     public let method: HTTPMethod = .post
-    public let enpointType: EndpointType = .geofence
+    public let endpointType: EndpointType = .geofence
     public var path: String {
         "/event-signal/\(integrationKey)"
     }
