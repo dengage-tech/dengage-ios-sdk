@@ -108,10 +108,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
        // Dengage.syncSDK()
         
         //DengageLocalStorage.shared.save(localInboxMessages: [])
-        let localInboxMessages = DengageLocalStorage.shared.getLocalInboxMessages()
+        //let localInboxMessages = DengageLocalStorage.shared.getLocalInboxMessages()
         
         //let lastPushPayload = DengageLocalStorage.shared.value(for: .lastPushPayload) as? String
-        Logger.log(message: "localInboxMessages: \(String(describing: localInboxMessages))")
+        //Logger.log(message: "localInboxMessages: \(String(describing: localInboxMessages))")
        
         //AppDelegate.listenForTokenToStartActivityViaPush()
         //AppDelegate.listenForTokenToUpdateActivityViaPush()
