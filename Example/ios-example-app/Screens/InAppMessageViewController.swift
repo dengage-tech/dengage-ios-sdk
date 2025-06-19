@@ -99,7 +99,7 @@ final class InAppMessageViewController: UIViewController {
         title = "In-App"
         view.backgroundColor = .white
         view.addSubview(stackView)
-        stackView.topAnchor.constraint(equalTo: view.topAnchor, constant: 80).isActive = true
+        stackView.topAnchor.constraint(equalTo: view.topAnchor, constant: 100).isActive = true
         stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15).isActive = true
         stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15).isActive = true
         
