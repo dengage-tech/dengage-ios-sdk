@@ -85,7 +85,8 @@ open class InAppInlineElementView: WKWebView, WKScriptMessageHandler{
             if let msg = self.message
             {
                 self.delegate?.sendClickEvent(message: msg,
-                                              buttonId: buttonId)
+                                              buttonId: buttonId,
+                                              buttonType: "")
             }
   
             

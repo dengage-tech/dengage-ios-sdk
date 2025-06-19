@@ -158,11 +158,23 @@ extension DengageInAppMessageManager{
         }
     }
     
-    private func setInAppMessageAsClicked(_ message: InAppMessage, _ buttonId: String? , _ contentId: String?) {
+    private func setInAppMessageAsClicked(_ message: InAppMessage, _ buttonId: String?, _ buttonType: String? , _ contentId: String?) {
         guard isEnabledInAppMessage else {return}
         guard let remoteConfig = config.remoteConfiguration,
               let accountName = remoteConfig.accountName,
               let messageId = message.data.messageDetails else { return }
+        
+        
+        var updatedMessage = message
+        if buttonType?.caseInsensitiveCompare("DISMISS") == .orderedSame {
+            updatedMessage.dismissCount = (updatedMessage.dismissCount ?? 0) + 1
+            self.updateInAppMessageOnCache(updatedMessage)
+        } else {
+            if !updatedMessage.data.isRealTime {
+                self.removeInAppMessageFromCache(updatedMessage.data.messageDetails ?? "")
+            }
+        }
+        
         let request = MarkAsInAppMessageClickedRequest(type: config.contactKey.type,
                                                        deviceID: config.applicationIdentifier,
                                                        accountName: accountName,
@@ -173,11 +185,11 @@ extension DengageInAppMessageManager{
         apiClient.send(request: request) { [weak self] result in
             switch result {
             case .success( _ ):
-                if let maxDismissCount = message.data.displayTiming.maxDismissCount,
-                    let showCount = message.showCount, maxDismissCount > 0, showCount < maxDismissCount {
+                if let maxDismissCount = updatedMessage.data.displayTiming.maxDismissCount,
+                    let dismissCount = updatedMessage.dismissCount, maxDismissCount > 0, dismissCount < maxDismissCount {
                     break
                 } else {
-                    self?.removeInAppMessageFromCache(messageId)
+                    self?.removeInAppMessageFromCache(updatedMessage.data.messageDetails ?? "")
                     break
                 }
             case .failure(let error):
@@ -196,16 +208,13 @@ extension DengageInAppMessageManager{
                                                            accountName: accountName,
                                                            contactKey: config.contactKey.key,
                                                            id: messageId, contentId: contentId ?? "")
-        apiClient.send(request: request) { [weak self] result in
+        
+        self.removeInAppMessageFromCache(message.data.messageDetails ?? "")
+        
+        apiClient.send(request: request) { result in
             switch result {
             case .success( _ ):
-                if let maxDismissCount = message.data.displayTiming.maxDismissCount,
-                    let showCount = message.showCount, maxDismissCount > 0, showCount < maxDismissCount {
-                    break
-                } else {
-                    self?.removeInAppMessageFromCache(messageId)
-                    break
-                }
+                break
             case .failure(let error):
                 Logger.log(message: "setInAppMessageAsDismissed_ERROR", argument: error.localizedDescription)
             }
@@ -238,7 +247,7 @@ extension DengageInAppMessageManager{
         }
     }
     
-    private func setRealtimeInAppMessageAsClicked(_ message: InAppMessage, _ buttonId: String?) {
+    private func setRealtimeInAppMessageAsClicked(_ message: InAppMessage, _ buttonId: String?, _ buttonType: String?) {
         guard isEnabledInAppMessage else {return}
         guard
             let remoteConfig = config.remoteConfiguration,
@@ -259,18 +268,6 @@ extension DengageInAppMessageManager{
         apiClient.send(request: request) { [weak self] result in
             switch result {
             case .success( _ ):
-//                if let count = message.showCount , let maxShowCount = message.data.displayTiming.maxShowCount
-//                {
-//                    if count >= maxShowCount
-//                    {
-//                        self?.removeInAppMessageFromCache(messageId)
-//                    }
-//                }
-//                else
-//                {
-//                    self?.removeInAppMessageFromCache(messageId)
-//
-//                }
                 break
             case .failure(let error):
                 Logger.log(message: "setInAppMessageAsClicked_ERROR", argument: error.localizedDescription)
@@ -300,7 +297,7 @@ extension DengageInAppMessageManager{
             case .success( _ ):
                 break
             case .failure(let error):
-                Logger.log(message: "setInAppMessageAsDismissed_ERROR", argument: error.localizedDescription)
+                Logger.log(message: "setRealTimeInAppMessageAsDismissed_ERROR", argument: error.localizedDescription)
             }
         }
     }
@@ -689,7 +686,8 @@ extension DengageInAppMessageManager {
                             id: serverMsg.id,
                             data: serverMsg.data,
                             nextDisplayTime: prevMsg.nextDisplayTime,
-                            showCount: prevMsg.showCount
+                            showCount: prevMsg.showCount,
+                            dismissCount: prevMsg.dismissCount
                         )
                     }
                     return serverMsg
@@ -704,7 +702,8 @@ extension DengageInAppMessageManager {
                             id: newMsg.id,
                             data: newMsg.data,
                             nextDisplayTime: oldMsg.nextDisplayTime,
-                            showCount: oldMsg.showCount
+                            showCount: oldMsg.showCount,
+                            dismissCount: oldMsg.dismissCount
                         )
                     }
                     return newMsg
@@ -841,12 +840,13 @@ extension DengageInAppMessageManager {
             case .success( _ ):
                 DengageLocalStorage.shared.set(value: nil, for: .lastSessionDuration)
             case .failure(let error):
-                Logger.log(message: "setInAppMessageAsDismissed_ERROR", argument: error.localizedDescription)
+                Logger.log(message: "willEnterForeground_ERROR", argument: error.localizedDescription)
             }
         }
         
         
     }
+    
     @objc private func didEnterBackground(){
         DengageLocalStorage.shared.set(value: Date().timeIntervalSince1970, for: .lastVisitTime)
         guard let lastSessionStartTime = DengageLocalStorage.shared.value(for: .lastSessionStartTime) as? Double else { return }
@@ -906,12 +906,12 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
         }
     }
     
-    func sendClickEvent(message: InAppMessage, buttonId:String?) {
+    func sendClickEvent(message: InAppMessage, buttonId:String?, buttonType: String?) {
         inAppMessageWindow = nil
         if message.data.isRealTime {
-            setRealtimeInAppMessageAsClicked(message, buttonId)
+            setRealtimeInAppMessageAsClicked(message, buttonId, buttonType)
         } else {
-            setInAppMessageAsClicked(message, buttonId, message.data.content.contentId ?? "")
+            setInAppMessageAsClicked(message, buttonId, buttonType, message.data.content.contentId ?? "")
         }
     }
     

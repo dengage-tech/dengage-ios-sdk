@@ -5,12 +5,14 @@ struct InAppMessage: Codable {
     let data: InAppMessageData
     var nextDisplayTime: Double?
     var showCount: Int?
+    var dismissCount: Int?
     
     enum CodingKeys: String, CodingKey {
         case id = "smsg_id"
         case data = "message_json"
         case nextDisplayTime = "nextDisplayTime"
         case showCount = "showCount"
+        case dismissCount = "dismissCount"
     }
     
     static func mapRealTime(source: [InAppMessageData]) -> [InAppMessage] {

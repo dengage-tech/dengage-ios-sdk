@@ -130,10 +130,11 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
     private func run(message: WKScriptMessage) {
         switch message.name {
         case "sendClick":
-            let buttonId = message.body as? String
             isClicked = true
-            delegate?.sendClickEvent(message: self.message, buttonId: buttonId)
-
+            guard let dict = message.body as? [String: Any] else { return }
+            let buttonId = dict["buttonId"] as? String ?? ""
+            let buttonType = dict["buttonType"] as? String ?? ""
+            delegate?.sendClickEvent(message: self.message, buttonId: buttonId, buttonType: buttonType)
         case "iosUrl":
             if !isIosURLNPresent {
                 guard let bodyString = message.body as? String else { return }
@@ -230,8 +231,8 @@ extension InAppMessageHTMLViewController {
             },
             androidUrl: (url) => {},
             androidUrlN: (url, inbr, ret) => {},
-            sendClick: (eventName) => {
-                window.webkit.messageHandlers.sendClick.postMessage(eventName);
+            sendClick: (buttonId, buttonType) => {
+                window.webkit.messageHandlers.sendClick.postMessage({buttonId: buttonId, buttonType: buttonType});
             },
             dismiss: () => {
                 window.webkit.messageHandlers.dismiss.postMessage(null);
