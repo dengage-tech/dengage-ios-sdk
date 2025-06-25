@@ -877,7 +877,13 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
                     self.returnAfterDeeplinkRecieved?(urlDeeplink)
                 } else {
                     self.returnAfterDeeplinkRecieved?(urlDeeplink)
-                    UIApplication.shared.open(urlStr, options: [:], completionHandler: nil)
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                       
+                        UIApplication.shared.open(urlStr, options: [:], completionHandler: nil)
+
+                    }
+                    
                 }
             } else {
                 if retrieveLinkOnSameScreen && !openInAppBrowser {
@@ -885,14 +891,22 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
                 } else if !retrieveLinkOnSameScreen && openInAppBrowser {
                     self.showInAppBrowserController(with: urlDeeplink)
                 } else {
-                    UIApplication.shared.open(urlStr, options: [:], completionHandler: nil)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                       
+                        UIApplication.shared.open(urlStr, options: [:], completionHandler: nil)
+
+                    }
                 }
             }
         } else {
             if retrieveLinkOnSameScreen && !openInAppBrowser {
                 self.returnAfterDeeplinkRecieved?(urlDeeplink)
             } else {
-                UIApplication.shared.open(urlStr, options: [:], completionHandler: nil)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                   
+                    UIApplication.shared.open(urlStr, options: [:], completionHandler: nil)
+
+                }
             }
         }
     }

@@ -57,16 +57,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                     localInboxManager: false)
 
         
-        let apiUrlConfiguration = ApiUrlConfiguration(denEventApiUrl: "https://dev-push.dengage.com",
-                                                      denPushApiUrl: "https://dev-push.dengage.com",
-                                                      denInAppApiUrl: "https://dev-push.dengage.com",
-                                                      denGeofenceApiUrl: "https://dev-push.dengage.com/geoapi/",
-                                                      fetchRealTimeInAppApiUrl: "https://dev-inapp.lib.dengage.com/")
+        let apiUrlConfiguration = ApiUrlConfiguration(denEventApiUrl: "https://push.dengage.com",
+                                                      denPushApiUrl: "https://push.dengage.com",
+                                                      denInAppApiUrl: "https://push.dengage.com",
+                                                      denGeofenceApiUrl: "https://push.dengage.com/geoapi/",
+                                                      fetchRealTimeInAppApiUrl: "https://inapp.lib.dengage.com/")
         
         
         let val = DengageLocalStorage.shared.getLocalInboxManagerEnabled()
 
-        Dengage.start(apiKey: test_sandbox, application: application, launchOptions: [:],
+        Dengage.start(apiKey: bfsi_testflight, application: application, launchOptions: [:],
                       dengageOptions: option)
         
         

@@ -883,6 +883,7 @@
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Dengage will use your location always!";
 				INFOPLIST_KEY_NSLocationUsageDescription = "Application wants to get location for sending notification";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Dengage will use your location when in use!";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_NSUserTrackingUsageDescription = "Dengage uses your advertising identifier!";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -921,6 +922,7 @@
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Dengage will use your location always!";
 				INFOPLIST_KEY_NSLocationUsageDescription = "Application wants to get location for sending notification";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Dengage will use your location when in use!";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_NSUserTrackingUsageDescription = "Dengage uses your advertising identifier!";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
