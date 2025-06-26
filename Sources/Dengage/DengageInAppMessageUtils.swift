@@ -205,38 +205,46 @@ final class DengageInAppMessageUtils{
                                config: DengageConfiguration, message:InAppMessage) -> Bool {
         guard let specialRule = SpecialRuleParameter(rawValue: criterion.parameter) else {
             
-            if(criterion.parameter == "dn.master_contact.birth_date") {
-                print(criterion.parameter)
-            }
-            
             if checkVisitorInfoAttr(parameter: criterion.parameter) != ""
             {
                 let userParam = checkVisitorInfoAttr(parameter: criterion.parameter)
                 
-                if criterion.parameter == "dn.master_contact.birth_date"
-                {
+                if criterion.parameter == "dn.master_contact.birth_date" {
+                    let daysValue = Int(criterion.values.first ?? "") ?? 0
+                    
                     let dateFormatter = DateFormatter()
                     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-                    guard let formatedStartDate = dateFormatter.date(from: userParam) else { return false }
+                    guard let birthDate = dateFormatter.date(from: userParam) else { return false }
                     
-                    let diffInDays = self.daysUntil(birthday: formatedStartDate)
+                    let today = Date()
+                    let calendar = Calendar.current
                     
-                    let diffInDaysStr = "\(diffInDays)"
+                    let birthComponents = calendar.dateComponents([.month, .day], from: birthDate)
+                    guard let thisYearBirthday = calendar.date(from: DateComponents(
+                        year: calendar.component(.year, from: today),
+                        month: birthComponents.month,
+                        day: birthComponents.day
+                    )) else { return false }
                     
-                    let criterionDays = Int(criterion.values.first ?? "0")
-                    
-                    if diffInDaysStr == criterion.values.first
-                    {
-                        return true
+                    switch daysValue {
+                    case let x where x < 0:
+                        let window = -x
+                        let lastBirthday = thisYearBirthday > today
+                        ? calendar.date(byAdding: .year, value: -1, to: thisYearBirthday)!
+                        : thisYearBirthday
+                        let daysSince = calendar.dateComponents([.day], from: lastBirthday, to: today).day ?? Int.max
+                        return (0...window).contains(daysSince)
+                    case 0:
+                        return calendar.isDate(today, inSameDayAs: thisYearBirthday)
+                    default:
+                        let window = daysValue
+                        let nextBirthday = thisYearBirthday < today
+                        ? calendar.date(byAdding: .year, value: 1, to: thisYearBirthday)!
+                        : thisYearBirthday
+                        let daysUntil = calendar.dateComponents([.day], from: today, to: nextBirthday).day ?? Int.max
+                        return (0...window).contains(daysUntil)
                     }
-                    else
-                    {
-                        return false
-                    }
-                    
-                }
-                else if criterion.dataType == .DATETIME
-                {
+                } else if criterion.dataType == .DATETIME {
                     let dateFormatter = DateFormatter()
                     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
                     guard let visitorInfoDate = dateFormatter.date(from: userParam) else { return false }
