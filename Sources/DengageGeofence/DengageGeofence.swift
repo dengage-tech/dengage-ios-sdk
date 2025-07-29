@@ -8,20 +8,21 @@
 import CoreLocation
 import UIKit
 
-public class DengageGeofence {
+@objc(DengageGeofence)
+public class DengageGeofence: NSObject {
 
     private static let geofenceManager = DengageGeofenceManager()
 
 
-    public static func startGeofence() {
+    @objc public static func startGeofence() {
         geofenceManager.startTracking(options: DengageGeofenceTrackingOptions(), fromInitialize: true)
     }
 
-    public static func stopGeofence() {
+    @objc public static func stopGeofence() {
         geofenceManager.stopGeofence()
     }
 
-    public static func requestLocationPermissions() {
+    @objc public static func requestLocationPermissions() {
         geofenceManager.requestLocationPermissions()
     }
 }
