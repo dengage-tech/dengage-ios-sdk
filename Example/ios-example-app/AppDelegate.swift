@@ -60,7 +60,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let apiUrlConfiguration = ApiUrlConfiguration(denEventApiUrl: "https://push.dengage.com",
                                                       denPushApiUrl: "https://push.dengage.com",
                                                       denInAppApiUrl: "https://push.dengage.com",
-                                                      denGeofenceApiUrl: "https://push.dengage.com/geoapi/",
                                                       fetchRealTimeInAppApiUrl: "https://inapp.lib.dengage.com/")
         
         
