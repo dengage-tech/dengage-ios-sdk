@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'DengageGeofence'
-  s.version          = '5.78'
+  s.version          = '5.80'
   s.summary          = 'Dengage Geofence SDK'
   s.description      = 'Customer Driven Marketing with built-in Customer Data Platform powered by full marketing automation capabilities'
   s.homepage         = 'https://github.com/dengage-tech/dengage-ios-sdk'
@@ -12,5 +12,5 @@ Pod::Spec.new do |s|
   s.source_files = 'Sources/DengageGeofence/**/*'
   s.pod_target_xcconfig = { 'PRODUCT_BUNDLE_IDENTIFIER': 'com.dengage.dengageGeofenceFramework' }
   s.requires_arc     = true
-  s.dependency       'Dengage', '5.76'
+  s.dependency       'Dengage', '5.80'
 end
