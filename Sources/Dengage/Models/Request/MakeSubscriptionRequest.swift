@@ -25,7 +25,8 @@ struct MakeSubscriptionRequest: APIRequest {
                           "timezone": config.deviceTimeZone,
                           "partner_device_id": config.getPartnerDeviceID() ?? "",
                           "advertisingId" : config.advertisingIdentifier as Any,
-                          "locationPermission" : config.getLocationPermission() ?? ""]
+                          "locationPermission" : config.getLocationPermission() ?? "",
+                          "trackingPermission" : ""]
         return parameters.json
     }
     
