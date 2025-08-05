@@ -66,7 +66,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let val = DengageLocalStorage.shared.getLocalInboxManagerEnabled()
 
-        Dengage.start(apiKey: bfsi_testflight, application: application, launchOptions: [:],
+        Dengage.start(apiKey: test_sandbox, application: application, launchOptions: [:],
                       dengageOptions: option)
         
         

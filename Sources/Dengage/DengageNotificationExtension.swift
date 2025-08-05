@@ -28,6 +28,10 @@ final class DengageNotificationExtension {
             // Fallback on earlier versions
         }
         
+        if let muted = message.muted, muted {
+            bestAttemptContent.sound = nil
+        }
+        
         if let addToInbox = message.addToInbox, addToInbox {
             
         }
