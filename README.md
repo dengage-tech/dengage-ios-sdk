@@ -740,6 +740,21 @@ Dengage.deleteInboxMessage(with: "message-id", // ID of the message to delete
 })
 ```
 
+#### Removing All Inbox Messages
+
+Delete all inbox messages:
+
+```swift
+Dengage.deleteAllInboxMessages(completion: { result in
+    switch result {
+    case .success:
+        print("All messages deleted successfully!")
+    case .failure(let error):
+        print("Failed to delete all messages: \(error)")
+    }
+})
+```
+
 #### Marking an Inbox Message as Clicked:
 
 Mark a message as clicked to update its status:
@@ -752,6 +767,21 @@ Dengage.setInboxMessageAsClicked(with: "message-id", // ID of the message to mar
         print("Message marked as clicked successfully!")
     case .failure(let error):
         print("Failed to mark message as clicked: \(error)")
+    }
+})
+```
+
+#### Marking All Inbox Messages as Clicked:
+
+Mark all inbox messages as clicked to update their status:
+
+```swift
+Dengage.setAllInboxMessageAsClicked(completion: { result in
+    switch result {
+    case .success:
+        print("All messages marked as clicked successfully!")
+    case .failure(let error):
+        print("Failed to mark all messages as clicked: \(error)")
     }
 })
 ```
