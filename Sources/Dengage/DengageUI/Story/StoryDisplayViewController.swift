@@ -103,10 +103,10 @@ public final class StoryDisplayViewController: UIViewController, UIGestureRecogn
         _view.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            _view.leftAnchor.constraint(equalTo: view.sLeftAnchor,constant: .zero),
-            _view.topAnchor.constraint(equalTo: view.sTopAnchor,constant: .zero),
-            _view.rightAnchor.constraint(equalTo: view.sRightAnchor,constant: .zero),
-            _view.bottomAnchor.constraint(equalTo: view.sBottomAnchor,constant: .zero)
+            _view.leftAnchor.constraint(equalTo: view.leftAnchor,constant: .zero),
+            _view.topAnchor.constraint(equalTo: view.topAnchor,constant: .zero),
+            _view.rightAnchor.constraint(equalTo: view.rightAnchor,constant: .zero),
+            _view.bottomAnchor.constraint(equalTo: view.bottomAnchor,constant: .zero)
         ])
     }
 }
@@ -218,8 +218,8 @@ extension StoryDisplayViewController: UICollectionViewDelegateFlowLayout {
                 strongSelf.isTransitioning = false
             }
         }
-        if #available(iOS 11.0, *) {
-            return CGSize(width: _view.snapsCollectionView.safeAreaLayoutGuide.layoutFrame.width, height: _view.snapsCollectionView.safeAreaLayoutGuide.layoutFrame.height)
+        if #available(iOS 13.0, *) {
+            return CGSize(width: _view.snapsCollectionView.window?.windowScene?.windows.first?.frame.width ?? 0, height: _view.snapsCollectionView.window?.windowScene?.windows.first?.frame.height ?? 0)
         } else {
             return CGSize(width: _view.snapsCollectionView.frame.width, height: _view.snapsCollectionView.frame.height)
         }
