@@ -42,7 +42,9 @@
     - [Methods](#methods)
         - [Getting Inbox Messages](#getting-inbox-messages)
         - [Removing an Inbox Message](#removing-an-inbox-message)
-        - [Marking an Inbox Message as Clicked:](#marking-an-inbox-message-as-clicked)
+        - [Removing all Inbox Messages](#removing-all-inbox-messages)
+        - [Marking an Inbox Message as Clicked](#marking-an-inbox-message-as-clicked)
+        - [Marking all Inbox Messages as Clicked](#marking-all-inbox-messages-as-clicked)
 - [In-App Messaging](#in-app-messaging)
     - [Methods](#methods-1)
     - [Real Time In-App Messaging](#real-time-in-app-messaging)
@@ -69,7 +71,7 @@
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.76'
+pod 'Dengage', '~> 5.81'
 ```
 
 Run `pod install` via terminal
@@ -509,7 +511,7 @@ Add the Dengage SDK to your Notification Service Extension target in your `Podfi
 
 ```ruby
 target 'DengageNotificationServiceExtension' do
-    pod 'Dengage', '~> 5.76'
+    pod 'Dengage', '~> 5.81'
 end
 ```
 
@@ -740,7 +742,7 @@ Dengage.deleteInboxMessage(with: "message-id", // ID of the message to delete
 })
 ```
 
-#### Removing All Inbox Messages
+#### Removing all Inbox Messages
 
 Delete all inbox messages:
 
@@ -755,7 +757,7 @@ Dengage.deleteAllInboxMessages(completion: { result in
 })
 ```
 
-#### Marking an Inbox Message as Clicked:
+#### Marking an Inbox Message as Clicked
 
 Mark a message as clicked to update its status:
 
@@ -771,7 +773,7 @@ Dengage.setInboxMessageAsClicked(with: "message-id", // ID of the message to mar
 })
 ```
 
-#### Marking All Inbox Messages as Clicked:
+#### Marking all Inbox Messages as Clicked
 
 Mark all inbox messages as clicked to update their status:
 
@@ -913,8 +915,8 @@ Parameters:
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.76'
-pod 'DengageGeofence', '~> 5.76'
+pod 'Dengage', '~> 5.81'
+pod 'DengageGeofence', '~> 5.81'
 ```
 
 Run `pod install` via terminal
