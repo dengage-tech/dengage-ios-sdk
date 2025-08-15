@@ -254,6 +254,71 @@ extension DengageEventManager {
     private func sendEvent(table: DengageInternalTableName, key: String, params: [String : Any]) {
         sendEventRequest(table: table.rawValue, key: key, params: params)
     }
+
+    private func checkFilterCondition(fieldName: String?, operator: String?, values: [String]?, eventDetails: [String: Any]) -> Bool {
+        guard let fieldName = fieldName, let operatorValue = `operator` else { return true }
+        
+        let fieldValue = eventDetails[fieldName]
+        let op = FilterOperator(rawValue: operatorValue)
+        let filterValues = values ?? []
+        
+        switch op {
+        case .Equals:
+            return filterValues.contains { "\($0)" == "\(fieldValue ?? "")" }
+        case .Not_Equals:
+            return !filterValues.contains { "\($0)" == "\(fieldValue ?? "")" }
+        case .In:
+            return filterValues.contains { "\($0)" == "\(fieldValue ?? "")" }
+        case .Not_In:
+            return !filterValues.contains { "\($0)" == "\(fieldValue ?? "")" }
+        case .Like:
+            return filterValues.contains { "\(fieldValue ?? "")".contains("\($0)") }
+        case .Not_Like:
+            return !filterValues.contains { "\(fieldValue ?? "")".contains("\($0)") }
+        case .Starts_With:
+            return filterValues.contains { "\(fieldValue ?? "")".hasPrefix("\($0)") }
+        case .Not_Starts_With:
+            return !filterValues.contains { "\(fieldValue ?? "")".hasPrefix("\($0)") }
+        case .Ends_With:
+            return filterValues.contains { "\(fieldValue ?? "")".hasSuffix("\($0)") }
+        case .Not_Ends_With:
+            return !filterValues.contains { "\(fieldValue ?? "")".hasSuffix("\($0)") }
+        case .Greater_Than:
+            if let v = fieldValue as? Double, let fv = Double(filterValues.first ?? "") { return v > fv }
+            return false
+        case .Greater_Equal:
+            if let v = fieldValue as? Double, let fv = Double(filterValues.first ?? "") { return v >= fv }
+            return false
+        case .Less_Than:
+            if let v = fieldValue as? Double, let fv = Double(filterValues.first ?? "") { return v < fv }
+            return false
+        case .Less_Equal:
+            if let v = fieldValue as? Double, let fv = Double(filterValues.first ?? "") { return v <= fv }
+            return false
+        case .Between:
+            if let v = fieldValue as? Double, filterValues.count == 2,
+               let min = Double(filterValues[0]), let max = Double(filterValues[1]) {
+                return v >= min && v <= max
+            }
+            return false
+        case .Not_Between:
+            if let v = fieldValue as? Double, filterValues.count == 2,
+               let min = Double(filterValues[0]), let max = Double(filterValues[1]) {
+                return !(v >= min && v <= max)
+            }
+            return false
+        case .Null:
+            return fieldValue == nil
+        case .Not_Null:
+            return fieldValue != nil
+        case .Empty:
+            return "\(fieldValue ?? "")".isEmpty
+        case .Not_Empty:
+            return !"\(fieldValue ?? "")".isEmpty
+        default:
+            return false
+        }
+    }
     
     private func sendEventRequest(table: String, key: String, params: [String : Any]) {
         eventQueue.async { [weak self] in
@@ -267,6 +332,7 @@ extension DengageEventManager {
                 switch result {
                 case .success(_):
                     Logger.log(message: "Event success", argument: table)
+                    self.handleEventSent(tableName: table, key: key, eventDetails: params)
                 case .failure(_):
                     //Logger.log(message: "Event fail \(table)", argument: error.localizedDescription)
                     break
@@ -274,6 +340,107 @@ extension DengageEventManager {
             }
         }
     }
+    
+    private func handleEventSent(tableName: String, key: String, eventDetails: [String: Any]) {
+        guard let sdkParameters = config.remoteConfiguration else { return }
+        
+        guard let eventMapping = sdkParameters.eventMappings.first(where: { $0.eventTableName == tableName }),
+              eventMapping.enableClientHistory == true else { return }
+        
+        guard let clientHistoryOptions = eventMapping.clientHistoryOptions else { return }
+        let maxEventCount = clientHistoryOptions.maxEventCount ?? Int.max
+        let timeWindowInMinutes = clientHistoryOptions.timeWindowInMinutes ?? Int.max
+        
+        guard let eventTypeDefinitions = eventMapping.eventTypeDefinitions else { return }
+        
+        let eventType = eventDetails["event_type"] as? String ?? ""
+        
+        let matchingEventType = eventTypeDefinitions.first { eventTypeDefinition in
+            // Check event type
+            if let expectedEventType = eventTypeDefinition.eventType,
+               !expectedEventType.isEmpty && expectedEventType != eventType {
+                return false
+            }
+            
+            // Check filter conditions
+            let filterConditions = eventTypeDefinition.filterConditions ?? []
+            if filterConditions.isEmpty {
+                return true
+            }
+            
+            let logicOperator = eventTypeDefinition.logicOperator ?? "AND"
+            
+            if logicOperator.uppercased() == "AND" {
+                return filterConditions.allSatisfy { condition in
+                    checkFilterCondition(fieldName: condition.fieldName,
+                                        operator: condition.operator,
+                                        values: condition.values,
+                                        eventDetails: eventDetails)
+                }
+            } else {
+                return filterConditions.contains { condition in
+                    checkFilterCondition(fieldName: condition.fieldName,
+                                        operator: condition.operator,
+                                        values: condition.values,
+                                        eventDetails: eventDetails)
+                }
+            }
+        }
+        
+        guard matchingEventType != nil else { return }
+        
+        var storedEvents = DengageLocalStorage.shared.getStoredEvents()
+        var tableEvents = storedEvents[tableName] ?? []
+        
+        let now = Date().timeIntervalSince1970
+        let timeThreshold = now - Double(timeWindowInMinutes * 60)
+        
+        tableEvents = tableEvents.filter { $0.timestamp >= timeThreshold }
+        
+        let storedEvent = StoredEvent(
+            tableName: tableName,
+            key: key,
+            eventDetails: eventDetails,
+            timestamp: now
+        )
+        tableEvents.append(storedEvent)
+        
+        if tableEvents.count > maxEventCount {
+            tableEvents = Array(tableEvents.sorted(by: { $0.timestamp > $1.timestamp }).prefix(maxEventCount))
+        }
+        
+        storedEvents[tableName] = tableEvents
+        DengageLocalStorage.shared.saveStoredEvents(storedEvents)
+        
+        Logger.log(message: "Event stored for table: \(tableName), current count: \(tableEvents.count)")
+    }
+}
+
+enum FilterOperator: String {
+    case Equals = "Equals"
+    case Not_Equals = "Not_Equals"
+    case Between = "Between"
+    case Not_Between = "Not_Between"
+    case In = "In"
+    case Not_In = "Not_In"
+    case After = "After"
+    case After_Equal = "After_Equal"
+    case Before = "Before"
+    case Before_Equal = "Before_Equal"
+    case Null = "Null"
+    case Not_Null = "Not_Null"
+    case Like = "Like"
+    case Not_Like = "Not_Like"
+    case Starts_With = "Starts_With"
+    case Not_Starts_With = "Not_Starts_With"
+    case Ends_With = "Ends_With"
+    case Not_Ends_With = "Not_Ends_With"
+    case Greater_Than = "Greater_Than"
+    case Greater_Equal = "Greater_Equal"
+    case Less_Than = "Less_Than"
+    case Less_Equal = "Less_Equal"
+    case Empty = "Empty"
+    case Not_Empty = "Not_Empty"
 }
 
 protocol DengageEventProtocolInterface: AnyObject {

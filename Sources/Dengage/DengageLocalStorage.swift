@@ -94,7 +94,7 @@ final public class DengageLocalStorage: NSObject {
         
         case localInboxManagerEnabled = "localInboxManagerEnabled"
         case localInboxMessages = "localInboxMessages"
-        
+        case storedEvents = "storedEvents"
 
     }
 }
@@ -426,5 +426,62 @@ public extension DengageLocalStorage {
         appGroupUserDefaults?.synchronize()
     }
 
+}
+
+// MARK: Events
+extension DengageLocalStorage {
+
+    func saveEvent(table: String, event: [String: Any], maxCount: Int, timeWindowInMinutes: Int) {
+        var storedEvents = getStoredEvents()
+        var tableEvents = storedEvents[table] ?? []
+        
+        let now = Date().timeIntervalSince1970
+        let minTimestamp = now - Double(timeWindowInMinutes * 60)
+        
+        tableEvents = tableEvents.filter { $0.timestamp >= minTimestamp }
+        
+        let storedEvent = StoredEvent(
+            tableName: table,
+            key: nil,
+            eventDetails: event["eventDetails"] as? [String: Any] ?? [:],
+            timestamp: event["timestamp"] as? TimeInterval ?? now
+        )
+        tableEvents.append(storedEvent)
+        
+        if tableEvents.count > maxCount {
+            tableEvents = Array(tableEvents.sorted(by: { $0.timestamp > $1.timestamp }).prefix(maxCount))
+        }
+        
+        storedEvents[table] = tableEvents
+        saveStoredEvents(storedEvents)
+    }
+
+    func getEvents(table: String) -> [StoredEvent] {
+        let storedEvents = getStoredEvents()
+        return storedEvents[table] ?? []
+    }
+    
+    func getStoredEvents() -> [String: [StoredEvent]] {
+        guard let eventsData = userDefaults.object(forKey: Key.storedEvents.rawValue) as? Data else { return [:] }
+        let decoder = JSONDecoder()
+        do {
+            let storedEvents = try decoder.decode([String: [StoredEvent]].self, from: eventsData)
+            return storedEvents
+        } catch {
+            Logger.log(message: "getStoredEvents fail")
+            return [:]
+        }
+    }
+    
+    func saveStoredEvents(_ storedEvents: [String: [StoredEvent]]) {
+        let encoder = JSONEncoder()
+        do {
+            let encoded = try encoder.encode(storedEvents)
+            userDefaults.set(encoded, forKey: Key.storedEvents.rawValue)
+            userDefaults.synchronize()
+        } catch {
+            Logger.log(message: "saving stored events fail")
+        }
+    }
 }
 

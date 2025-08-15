@@ -42,6 +42,7 @@
 		882FE6E22DDEC61300B591F0 /* MarkAsAllReadRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882FE6E12DDEC60D00B591F0 /* MarkAsAllReadRequest.swift */; };
 		882FE6E42DDEC8D200B591F0 /* DeleteAllMessagesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882FE6E32DDEC8CB00B591F0 /* DeleteAllMessagesRequest.swift */; };
 		8845BBF02D5CF24A00715B38 /* Mustache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8845BBEF2D5CF24A00715B38 /* Mustache.swift */; };
+		88A2D4F32E4F80E000811285 /* StoredEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A2D4F22E4F80E000811285 /* StoredEvent.swift */; };
 		88BDCF6A2D09D3E100DAE52C /* TestInAppHtmlViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BDCF662D09D3DE00DAE52C /* TestInAppHtmlViewController.swift */; };
 		88D812E62D64DF90009816E4 /* ApiUrlConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D812E22D64DF8E009816E4 /* ApiUrlConfiguration.swift */; };
 		88E4D7292D16A8A00033A501 /* DengageSubscriptionQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E4D7252D16A89C0033A501 /* DengageSubscriptionQueue.swift */; };
@@ -197,6 +198,7 @@
 		882FE6E12DDEC60D00B591F0 /* MarkAsAllReadRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkAsAllReadRequest.swift; sourceTree = "<group>"; };
 		882FE6E32DDEC8CB00B591F0 /* DeleteAllMessagesRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAllMessagesRequest.swift; sourceTree = "<group>"; };
 		8845BBEF2D5CF24A00715B38 /* Mustache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mustache.swift; sourceTree = "<group>"; };
+		88A2D4F22E4F80E000811285 /* StoredEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoredEvent.swift; sourceTree = "<group>"; };
 		88BDCF662D09D3DE00DAE52C /* TestInAppHtmlViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInAppHtmlViewController.swift; sourceTree = "<group>"; };
 		88D812E22D64DF8E009816E4 /* ApiUrlConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiUrlConfiguration.swift; sourceTree = "<group>"; };
 		88E4D7252D16A89C0033A501 /* DengageSubscriptionQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageSubscriptionQueue.swift; sourceTree = "<group>"; };
@@ -499,6 +501,7 @@
 				A0765BA227CEB4700007215B /* InAppMessage.swift */,
 				A0765BA627CEB4700007215B /* PushContent.swift */,
 				A00EFCBD280777B8004659DE /* RFMScore.swift */,
+				88A2D4F22E4F80E000811285 /* StoredEvent.swift */,
 				88E93AE92C923C2200EE3F5E /* StorySet.swift */,
 				A0765BB827CEB4700007215B /* TagItem.swift */,
 				881709402C91955E00FA8B63 /* VisitCountItem.swift */,
@@ -762,6 +765,7 @@
 				A0765BC927CEB4700007215B /* DengageCarouselCell.swift in Sources */,
 				881709372C91808800FA8B63 /* GetVisitorInfoRequest.swift in Sources */,
 				880068962C932B8700881F71 /* DengageVisitCountManager.swift in Sources */,
+				88A2D4F32E4F80E000811285 /* StoredEvent.swift in Sources */,
 				A0765BC227CEB4700007215B /* DengageInAppMessageManager.swift in Sources */,
 				A0765BD327CEB4700007215B /* DengageInAppMessageUtils.swift in Sources */,
 				881EE0242C996BD900838C23 /* DengageGeofenceCluster.swift in Sources */,

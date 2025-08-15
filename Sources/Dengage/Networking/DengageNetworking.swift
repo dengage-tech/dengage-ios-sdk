@@ -47,8 +47,20 @@ final public class DengageNetworking {
                 }
                 
                 do{
-                    let responseObject = try decoder.decode(T.Response.self, from: data)
-                    completion(.success(responseObject))
+                    if T.Type.self == EventRequest.Type.self {
+                        let encodedJSON = try JSONEncoder().encode("{}")
+                        
+                        let responseObject = try decoder.decode(T.Response.self, from: encodedJSON)
+                        completion(.success(responseObject))
+                        
+                    } else {
+                        let responseObject = try decoder.decode(T.Response.self, from: data)
+                        completion(.success(responseObject))
+                        
+                    }
+                    
+                    
+                    
                     
                 }catch let decodingError {
                     
