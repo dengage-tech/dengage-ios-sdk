@@ -227,22 +227,19 @@ extension DengageManager {
 
 //MARK: - Private
 extension DengageManager {
+    
     private func getSDKParams() {
         Logger.log(message: "getSDKParams Started")
-
-        if let date = (DengageLocalStorage.shared.value(for: .lastFetchedConfigTime) as? Date),
-           let diff = Calendar.current.dateComponents([.hour], from: date, to: Date()).hour,
-           diff > SDKPARAMS_FETCH_INTERVAL {
-            fetchSDK()
-        }else if (DengageLocalStorage.shared.value(for: .lastFetchedConfigTime) as? Date) == nil {
-            fetchSDK()
-        }
-        else
-        {
-            inAppManager.fetchInAppMessages()
-
-        }
         
+        if let date = (DengageLocalStorage.shared.value(for: .lastFetchedConfigTime) as? Date),
+           let diff = Calendar.current.dateComponents([.second], from: date, to: Date()).second,
+           diff > SDKPARAMS_FETCH_INTERVAL_IN_SECONDS {
+            fetchSDK()
+        } else if (DengageLocalStorage.shared.value(for: .lastFetchedConfigTime) as? Date) == nil {
+            fetchSDK()
+        } else {
+            inAppManager.fetchInAppMessages()
+        }
     }
     
     private func fetchSDK(){
