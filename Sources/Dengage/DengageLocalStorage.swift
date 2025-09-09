@@ -94,7 +94,7 @@ final public class DengageLocalStorage: NSObject {
         
         case localInboxManagerEnabled = "localInboxManagerEnabled"
         case localInboxMessages = "localInboxMessages"
-        case storedEvents = "storedEvents"
+        case clientEvents = "clientEvents"
 
     }
 }
@@ -432,55 +432,55 @@ public extension DengageLocalStorage {
 extension DengageLocalStorage {
 
     func saveEvent(table: String, event: [String: Any], maxCount: Int, timeWindowInMinutes: Int) {
-        var storedEvents = getStoredEvents()
-        var tableEvents = storedEvents[table] ?? []
+        var clientEvents = getClientEvents()
+        var tableEvents = clientEvents[table] ?? []
         
         let now = Date().timeIntervalSince1970
         let minTimestamp = now - Double(timeWindowInMinutes * 60)
         
         tableEvents = tableEvents.filter { $0.timestamp >= minTimestamp }
         
-        let storedEvent = StoredEvent(
+        let clientEvent = ClientEvent(
             tableName: table,
             key: nil,
             eventDetails: event["eventDetails"] as? [String: Any] ?? [:],
             timestamp: event["timestamp"] as? TimeInterval ?? now
         )
-        tableEvents.append(storedEvent)
+        tableEvents.append(clientEvent)
         
         if tableEvents.count > maxCount {
             tableEvents = Array(tableEvents.sorted(by: { $0.timestamp > $1.timestamp }).prefix(maxCount))
         }
         
-        storedEvents[table] = tableEvents
-        saveStoredEvents(storedEvents)
+        clientEvents[table] = tableEvents
+        saveClientEvents(clientEvents)
     }
 
-    func getEvents(table: String) -> [StoredEvent] {
-        let storedEvents = getStoredEvents()
-        return storedEvents[table] ?? []
+    func getEvents(table: String) -> [ClientEvent] {
+        let clientEvents = getClientEvents()
+        return clientEvents[table] ?? []
     }
     
-    func getStoredEvents() -> [String: [StoredEvent]] {
-        guard let eventsData = userDefaults.object(forKey: Key.storedEvents.rawValue) as? Data else { return [:] }
+    func getClientEvents() -> [String: [ClientEvent]] {
+        guard let eventsData = userDefaults.object(forKey: Key.clientEvents.rawValue) as? Data else { return [:] }
         let decoder = JSONDecoder()
         do {
-            let storedEvents = try decoder.decode([String: [StoredEvent]].self, from: eventsData)
-            return storedEvents
+            let clientEvents = try decoder.decode([String: [ClientEvent]].self, from: eventsData)
+            return clientEvents
         } catch {
-            Logger.log(message: "getStoredEvents fail")
+            Logger.log(message: "getClientEvents fail")
             return [:]
         }
     }
     
-    func saveStoredEvents(_ storedEvents: [String: [StoredEvent]]) {
+    func saveClientEvents(_ clientEvents: [String: [ClientEvent]]) {
         let encoder = JSONEncoder()
         do {
-            let encoded = try encoder.encode(storedEvents)
-            userDefaults.set(encoded, forKey: Key.storedEvents.rawValue)
+            let encoded = try encoder.encode(clientEvents)
+            userDefaults.set(encoded, forKey: Key.clientEvents.rawValue)
             userDefaults.synchronize()
         } catch {
-            Logger.log(message: "saving stored events fail")
+            Logger.log(message: "saving client events fail")
         }
     }
 }

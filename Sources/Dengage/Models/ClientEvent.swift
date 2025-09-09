@@ -1,6 +1,6 @@
 import Foundation
 
-struct StoredEvent: Codable {
+struct ClientEvent: Codable {
     let tableName: String
     let key: String?
     let eventDetails: [String: Any]

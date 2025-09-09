@@ -389,30 +389,30 @@ extension DengageEventManager {
         
         guard matchingEventType != nil else { return }
         
-        var storedEvents = DengageLocalStorage.shared.getStoredEvents()
-        var tableEvents = storedEvents[tableName] ?? []
+        var clientEvents = DengageLocalStorage.shared.getClientEvents()
+        var tableEvents = clientEvents[tableName] ?? []
         
         let now = Date().timeIntervalSince1970
         let timeThreshold = now - Double(timeWindowInMinutes * 60)
         
         tableEvents = tableEvents.filter { $0.timestamp >= timeThreshold }
         
-        let storedEvent = StoredEvent(
+        let clientEvent = ClientEvent(
             tableName: tableName,
             key: key,
             eventDetails: eventDetails,
             timestamp: now
         )
-        tableEvents.append(storedEvent)
+        tableEvents.append(clientEvent)
         
         if tableEvents.count > maxEventCount {
             tableEvents = Array(tableEvents.sorted(by: { $0.timestamp > $1.timestamp }).prefix(maxEventCount))
         }
         
-        storedEvents[tableName] = tableEvents
-        DengageLocalStorage.shared.saveStoredEvents(storedEvents)
+        clientEvents[tableName] = tableEvents
+        DengageLocalStorage.shared.saveClientEvents(clientEvents)
         
-        Logger.log(message: "Event stored for table: \(tableName), current count: \(tableEvents.count)")
+        Logger.log(message: "Client event stored for table: \(tableName), current count: \(tableEvents.count)")
     }
 }
 
