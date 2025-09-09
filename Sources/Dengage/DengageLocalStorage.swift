@@ -431,31 +431,6 @@ public extension DengageLocalStorage {
 // MARK: Events
 extension DengageLocalStorage {
 
-    func saveEvent(table: String, event: [String: Any], maxCount: Int, timeWindowInMinutes: Int) {
-        var clientEvents = getClientEvents()
-        var tableEvents = clientEvents[table] ?? []
-        
-        let now = Date().timeIntervalSince1970
-        let minTimestamp = now - Double(timeWindowInMinutes * 60)
-        
-        tableEvents = tableEvents.filter { $0.timestamp >= minTimestamp }
-        
-        let clientEvent = ClientEvent(
-            tableName: table,
-            key: nil,
-            eventDetails: event["eventDetails"] as? [String: Any] ?? [:],
-            timestamp: event["timestamp"] as? TimeInterval ?? now
-        )
-        tableEvents.append(clientEvent)
-        
-        if tableEvents.count > maxCount {
-            tableEvents = Array(tableEvents.sorted(by: { $0.timestamp > $1.timestamp }).prefix(maxCount))
-        }
-        
-        clientEvents[table] = tableEvents
-        saveClientEvents(clientEvents)
-    }
-
     func getEvents(table: String) -> [ClientEvent] {
         let clientEvents = getClientEvents()
         return clientEvents[table] ?? []
