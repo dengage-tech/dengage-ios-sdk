@@ -126,6 +126,13 @@ struct Criterion: Codable {
     let comparison: ComparisonType
     let values: [String]
     let valueSource : String
+    // New optional properties for EVENT_HISTORY
+    let aggregateType: String?
+    let aggregateField: String?
+    let eventType: String?
+    let timeWindow: TimeWindow?
+    let filtersLogicalOp: String?
+    let filters: [EventFilter]?
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -135,8 +142,12 @@ struct Criterion: Codable {
         dataType = (try? container.decode(CriterionDataType.self, forKey: .dataType)) ?? .TEXT
         values = try container.decode([String].self, forKey: .values)
         valueSource = try container.decode(String.self, forKey: .valueSource)
-
-        
+        aggregateType = try? container.decode(String.self, forKey: .aggregateType)
+        aggregateField = try? container.decode(String.self, forKey: .aggregateField)
+        eventType = try? container.decode(String.self, forKey: .eventType)
+        timeWindow = try? container.decode(TimeWindow.self, forKey: .timeWindow)
+        filtersLogicalOp = try? container.decode(String.self, forKey: .filtersLogicalOp)
+        filters = try? container.decode([EventFilter].self, forKey: .filters)
     }
     
     enum CodingKeys: String, CodingKey {
@@ -146,7 +157,30 @@ struct Criterion: Codable {
         case comparison
         case values
         case valueSource
+        case aggregateType
+        case aggregateField
+        case eventType
+        case timeWindow
+        case filtersLogicalOp
+        case filters
+    }
+}
 
+struct TimeWindow: Codable {
+    let type: String
+    let unit: String
+    let value: String
+}
+
+struct EventFilter: Codable {
+    let field: String
+    let op: String
+    let values: [String]
+    
+    enum CodingKeys: String, CodingKey {
+        case field = "parameter"
+        case op = "comparison"
+        case values
     }
 }
 
