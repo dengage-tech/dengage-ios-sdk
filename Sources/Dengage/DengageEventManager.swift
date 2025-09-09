@@ -362,6 +362,10 @@ extension DengageEventManager {
                 return false
             }
             
+            if eventTypeDefinitions.count == 1 {
+                return true
+            }
+            
             // Check filter conditions
             let filterConditions = eventTypeDefinition.filterConditions ?? []
             if filterConditions.isEmpty {
