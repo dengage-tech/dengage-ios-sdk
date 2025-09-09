@@ -232,6 +232,14 @@ final public class DengageConfiguration: Encodable {
         realTimeCategoryPath = path
     }
     
+    func setCart(cart: Cart) {
+        DengageLocalStorage.shared.saveClientCart(cart)
+    }
+    
+    func getCart() -> Cart {
+        return DengageLocalStorage.shared.getClientCart() ?? Cart(items: [])
+    }
+    
     func setCart(itemCount: String?) {
         realTimeCartItemCount = itemCount
     }

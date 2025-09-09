@@ -43,6 +43,7 @@
 		882FE6E42DDEC8D200B591F0 /* DeleteAllMessagesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882FE6E32DDEC8CB00B591F0 /* DeleteAllMessagesRequest.swift */; };
 		884389272E703B5600422E78 /* ClientEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884389262E703B5600422E78 /* ClientEvent.swift */; };
 		8843892D2E70566500422E78 /* DengageEventHistoryUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8843892C2E70565F00422E78 /* DengageEventHistoryUtils.swift */; };
+		8843892F2E706B4800422E78 /* Cart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8843892E2E706B4800422E78 /* Cart.swift */; };
 		8845BBF02D5CF24A00715B38 /* Mustache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8845BBEF2D5CF24A00715B38 /* Mustache.swift */; };
 		88BDCF6A2D09D3E100DAE52C /* TestInAppHtmlViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BDCF662D09D3DE00DAE52C /* TestInAppHtmlViewController.swift */; };
 		88D812E62D64DF90009816E4 /* ApiUrlConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D812E22D64DF8E009816E4 /* ApiUrlConfiguration.swift */; };
@@ -200,6 +201,7 @@
 		882FE6E32DDEC8CB00B591F0 /* DeleteAllMessagesRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAllMessagesRequest.swift; sourceTree = "<group>"; };
 		884389262E703B5600422E78 /* ClientEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientEvent.swift; sourceTree = "<group>"; };
 		8843892C2E70565F00422E78 /* DengageEventHistoryUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageEventHistoryUtils.swift; sourceTree = "<group>"; };
+		8843892E2E706B4800422E78 /* Cart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cart.swift; sourceTree = "<group>"; };
 		8845BBEF2D5CF24A00715B38 /* Mustache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mustache.swift; sourceTree = "<group>"; };
 		88BDCF662D09D3DE00DAE52C /* TestInAppHtmlViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInAppHtmlViewController.swift; sourceTree = "<group>"; };
 		88D812E22D64DF8E009816E4 /* ApiUrlConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiUrlConfiguration.swift; sourceTree = "<group>"; };
@@ -499,6 +501,7 @@
 			isa = PBXGroup;
 			children = (
 				A0765BA427CEB4700007215B /* CarouselItem.swift */,
+				8843892E2E706B4800422E78 /* Cart.swift */,
 				884389262E703B5600422E78 /* ClientEvent.swift */,
 				A0765BA527CEB4700007215B /* ContentParams.swift */,
 				A0765BA327CEB4700007215B /* DengageMessage.swift */,
@@ -807,6 +810,7 @@
 				A0765BCB27CEB4700007215B /* TestInAppMessageViewController.swift in Sources */,
 				A0765BDC27CEB4700007215B /* PushContent.swift in Sources */,
 				881709362C91808800FA8B63 /* GetRealTimeMesagesRequest.swift in Sources */,
+				8843892F2E706B4800422E78 /* Cart.swift in Sources */,
 				A0765BC827CEB4700007215B /* CarouselMessage.swift in Sources */,
 				A0765BE427CEB4700007215B /* MarkAsInAppMessageDisplayedRequest.swift in Sources */,
 				A0765BC127CEB4700007215B /* ThreadSafeContainer.swift in Sources */,

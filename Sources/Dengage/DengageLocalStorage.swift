@@ -95,6 +95,7 @@ final public class DengageLocalStorage: NSObject {
         case localInboxManagerEnabled = "localInboxManagerEnabled"
         case localInboxMessages = "localInboxMessages"
         case clientEvents = "clientEvents"
+        case clientCart = "clientCart"
 
     }
 }
@@ -428,13 +429,8 @@ public extension DengageLocalStorage {
 
 }
 
-// MARK: Events
+// MARK: Events & Cart
 extension DengageLocalStorage {
-
-    func getEvents(table: String) -> [ClientEvent] {
-        let clientEvents = getClientEvents()
-        return clientEvents[table] ?? []
-    }
     
     func getClientEvents() -> [String: [ClientEvent]] {
         guard let eventsData = userDefaults.object(forKey: Key.clientEvents.rawValue) as? Data else { return [:] }
@@ -458,5 +454,29 @@ extension DengageLocalStorage {
             Logger.log(message: "saving client events fail")
         }
     }
+    
+    func getClientCart() -> Cart? {
+        guard let cartData = userDefaults.object(forKey: Key.clientCart.rawValue) as? Data else { return nil }
+        let decoder = JSONDecoder()
+        do {
+            let cart = try decoder.decode(Cart.self, from: cartData)
+            return cart
+        } catch {
+            Logger.log(message: "getClientCart fail")
+            return nil
+        }
+    }
+    
+    func saveClientCart(_ cart: Cart) {
+        let encoder = JSONEncoder()
+        do {
+            let encoded = try encoder.encode(cart)
+            userDefaults.set(encoded, forKey: Key.clientCart.rawValue)
+            userDefaults.synchronize()
+        } catch {
+            Logger.log(message: "saving client cart fail")
+        }
+    }
+    
 }
 
