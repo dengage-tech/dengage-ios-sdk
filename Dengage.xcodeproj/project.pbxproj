@@ -70,6 +70,7 @@
 		88E93AE62C923AC600EE3F5E /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ACF2C923AC600EE3F5E /* UIView+Extension.swift */; };
 		88E93AEA2C923C2200EE3F5E /* StorySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93AE92C923C2200EE3F5E /* StorySet.swift */; };
 		88E93AEC2C923C8300EE3F5E /* StoryRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93AEB2C923C8300EE3F5E /* StoryRequest.swift */; };
+		88ED30D12E708987002F9A99 /* CouponAssignRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ED30D02E708987002F9A99 /* CouponAssignRequest.swift */; };
 		A00EFCBE280777B8004659DE /* RFMScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EFCBD280777B8004659DE /* RFMScore.swift */; };
 		A00EFCC328077869004659DE /* DengageRFMManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EFCC228077869004659DE /* DengageRFMManager.swift */; };
 		A0765BBF27CEB4700007215B /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765B8227CEB4700007215B /* Constants.swift */; };
@@ -229,6 +230,7 @@
 		88E93ACF2C923AC600EE3F5E /* UIView+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
 		88E93AE92C923C2200EE3F5E /* StorySet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorySet.swift; sourceTree = "<group>"; };
 		88E93AEB2C923C8300EE3F5E /* StoryRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryRequest.swift; sourceTree = "<group>"; };
+		88ED30D02E708987002F9A99 /* CouponAssignRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CouponAssignRequest.swift; sourceTree = "<group>"; };
 		A00EFCBD280777B8004659DE /* RFMScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RFMScore.swift; sourceTree = "<group>"; };
 		A00EFCC228077869004659DE /* DengageRFMManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageRFMManager.swift; sourceTree = "<group>"; };
 		A0765B7627CEB4300007215B /* Dengage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Dengage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -560,6 +562,7 @@
 		A0765BAD27CEB4700007215B /* InAppMessage */ = {
 			isa = PBXGroup;
 			children = (
+				88ED30D02E708987002F9A99 /* CouponAssignRequest.swift */,
 				880068912C931E9E00881F71 /* ExpiredInAppMessageRequest.swift */,
 				A0765BB027CEB4700007215B /* GetInAppMessagesRequest.swift */,
 				A0765BAF27CEB4700007215B /* MarkAsInAppMessageAsDismissedRequest.swift */,
@@ -795,6 +798,7 @@
 				88BDCF6A2D09D3E100DAE52C /* TestInAppHtmlViewController.swift in Sources */,
 				8815B7362D6E0B26003E9B31 /* DengageWidgetAttributes.swift in Sources */,
 				A0765BD027CEB4700007215B /* InAppMessagesActionsDelegate.swift in Sources */,
+				88ED30D12E708987002F9A99 /* CouponAssignRequest.swift in Sources */,
 				88E93ADB2C923AC600EE3F5E /* StoryDisplayHeaderView.swift in Sources */,
 				A0765BCA27CEB4700007215B /* TestPageViewController.swift in Sources */,
 				881709392C91808800FA8B63 /* MarkAsRealTimeInAppMessageClickedRequest.swift in Sources */,

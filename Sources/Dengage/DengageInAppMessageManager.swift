@@ -3,10 +3,8 @@ import WebKit
 import UIKit
 import SafariServices
 
-public class DengageInAppMessageManager:DengageInAppMessageManagerInterface {
+public class DengageInAppMessageManager: DengageInAppMessageManagerInterface {
    
-   
-    
     var config: DengageConfiguration
     var apiClient: DengageNetworking
     var inAppMessageWindow: UIWindow?
@@ -399,12 +397,49 @@ extension DengageInAppMessageManager {
         } else {
             if let html = priorInAppMessage.data.content.props.html, Mustache.hasCouponSection(html) {
                 let couponContent = Mustache.getCouponContent(html)
+                
+                // Validate coupon before showing the message
+                guard let accountName = config.remoteConfiguration?.accountName,
+                      let couponListKey = couponContent else {
+                    return
+                }
+                
+                validateCoupon(
+                    accountId: accountName,
+                    listKey: couponListKey,
+                    message: priorInAppMessage
+                )
+            } else {
+                showInAppMessage(inAppMessage: priorInAppMessage, couponCode: "")
             }
-            
-            showInAppMessage(inAppMessage: priorInAppMessage)
         }
         storyCompletion?(nil)
 
+    }
+    
+    private func validateCoupon(accountId: String, listKey: String, message: InAppMessage) {
+        let request = CouponAssignRequest(
+            accountId: accountId,
+            listKey: listKey,
+            contactKey: config.contactKey.key,
+            deviceId: config.applicationIdentifier,
+            campaignId: message.id
+        )
+        
+        apiClient.send(request: request) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let response):
+                    if let couponCode = response.code {
+                        self?.showInAppMessage(inAppMessage: message, couponCode: couponCode)
+                    } else {
+                        Logger.log(message: "No coupon code received from server")
+                    }
+                case .failure(let error):
+                    Logger.log(message: "Coupon assignment failed: \(error.localizedDescription)")
+                }
+            }
+        }
     }
 
     func removeInAppMessageDisplay() {
@@ -414,7 +449,7 @@ extension DengageInAppMessageManager {
     }
     
     
-    func showInAppMessage(inAppMessage: InAppMessage) {
+    func showInAppMessage(inAppMessage: InAppMessage, couponCode: String = "") {
         
         let hybridAppEnv = config.getHybridAppEnvironment()
         
@@ -453,7 +488,7 @@ extension DengageInAppMessageManager {
                             }
                         }
                         
-                        self.showInAppMessageController(with: updatedMessage)
+                        self.showInAppMessageController(with: updatedMessage, couponCode: couponCode)
                     }
                     
                 }
@@ -494,7 +529,7 @@ extension DengageInAppMessageManager {
                                   }
                               }
                               
-                              self.showInAppMessageController(with: updatedMessage)
+                              self.showInAppMessageController(with: updatedMessage, couponCode: couponCode)
                           }
                       }
                       
@@ -507,10 +542,10 @@ extension DengageInAppMessageManager {
       
     }
     
-    private func showInAppMessageController(with message:InAppMessage){
+    private func showInAppMessageController(with message:InAppMessage, couponCode: String){
        
         guard message.data.content.props.html != nil else {return}
-        let controller = InAppMessageHTMLViewController(with: message)
+        let controller = InAppMessageHTMLViewController(with: message, couponCode: couponCode)
         controller.delegate = self
         self.createInAppWindow(for: controller)
         
@@ -1055,7 +1090,7 @@ protocol DengageInAppMessageManagerInterface: AnyObject{
     func fetchInAppMessages()
     func setNavigation(screenName: String?, params: Dictionary<String,String>? , propertyID : String? , webView : InAppInlineElementView?
                        ,storyPropertyID: String?, storyCompletion: ((StoriesListView?) -> Void)?)
-    func showInAppMessage(inAppMessage: InAppMessage)
+    func showInAppMessage(inAppMessage: InAppMessage, couponCode: String)
     func fetchInAppExpiredMessageIds()
     func removeInAppMessageDisplay()
     
