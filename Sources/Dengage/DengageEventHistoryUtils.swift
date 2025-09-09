@@ -60,42 +60,23 @@ final class DengageEventHistoryUtils {
     }
     
     private class func parseTimeWindow(_ timeWindow: TimeWindow?) -> Double {
-        guard let timeWindow = timeWindow else { return Double.greatestFiniteMagnitude }
+        guard let timeWindow = timeWindow else { return 30 * 60 * 1000 } // Default to 30 minutes
         
-        do {
-            // Parse ISO 8601 duration format (e.g., P7D, PT24H, P30M)
-            let pattern = "P(?:(\\d+)D)?(?:T(?:(\\d+)H)?(?:(\\d+)M)?(?:(\\d+)S)?)?"
-            let regex = try NSRegularExpression(pattern: pattern)
-            let nsString = timeWindow.value as NSString
-            let results = regex.matches(in: timeWindow.value, range: NSRange(location: 0, length: nsString.length))
-            
-            guard let match = results.first else { return Double.greatestFiniteMagnitude }
-            
-            var days: Double = 0
-            var hours: Double = 0
-            var minutes: Double = 0
-            var seconds: Double = 0
-            
-            if match.range(at: 1).location != NSNotFound {
-                days = Double(nsString.substring(with: match.range(at: 1))) ?? 0
-            }
-            if match.range(at: 2).location != NSNotFound {
-                hours = Double(nsString.substring(with: match.range(at: 2))) ?? 0
-            }
-            if match.range(at: 3).location != NSNotFound {
-                minutes = Double(nsString.substring(with: match.range(at: 3))) ?? 0
-            }
-            if match.range(at: 4).location != NSNotFound {
-                seconds = Double(nsString.substring(with: match.range(at: 4))) ?? 0
-            }
-            
-            return (days * 24 * 60 * 60 * 1000) +
-            (hours * 60 * 60 * 1000) +
-            (minutes * 60 * 1000) +
-            (seconds * 1000)
-        } catch {
-            DengageLog().log(message: "Error parsing time window: \(error.localizedDescription)")
-            return Double.greatestFiniteMagnitude
+        switch timeWindow.unit.uppercased() {
+        case "MINUTE":
+            return (Double(timeWindow.value) ?? 30) * 60 * 1000
+        case "HOUR":
+            return (Double(timeWindow.value) ?? 1) * 60 * 60 * 1000
+        case "DAY":
+            return (Double(timeWindow.value) ?? 1) * 24 * 60 * 60 * 1000
+        case "WEEK":
+            return (Double(timeWindow.value) ?? 1) * 7 * 24 * 60 * 60 * 1000
+        case "MONTH":
+            return (Double(timeWindow.value) ?? 1) * 30 * 24 * 60 * 60 * 1000
+        case "SESSION":
+            return 0 // Return 0 for SESSION type as it's handled separately
+        default:
+            return 30 * 60 * 1000 // Default to 30 minutes
         }
     }
     
