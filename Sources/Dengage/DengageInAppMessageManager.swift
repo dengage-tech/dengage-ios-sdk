@@ -397,6 +397,10 @@ extension DengageInAppMessageManager {
                 return
             }
         } else {
+            if let html = priorInAppMessage.data.content.props.html, Mustache.hasCouponSection(html) {
+                let couponContent = Mustache.getCouponContent(html)
+            }
+            
             showInAppMessage(inAppMessage: priorInAppMessage)
         }
         storyCompletion?(nil)
