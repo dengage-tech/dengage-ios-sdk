@@ -533,8 +533,7 @@ final class DengageInAppMessageUtils{
         case .EVENT_HISTORY:
             return DengageEventHistoryUtils.operateEventHistoryFilter(criterion: criterion)
         case .CART:
-            return true
-
+            return DengageCartUtils.operateCartFilter(criterion: criterion)
         }
     }
     
