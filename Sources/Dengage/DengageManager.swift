@@ -13,9 +13,10 @@ public class DengageManager {
     var sessionManager: DengageSessionManagerInterface
     var inboxManager: DengageInboxManager
     var inAppManager: DengageInAppMessageManager
-    var notificationManager: DengageNotificationManagerInterface
+    var notificationManager: DengageNotificationManagerInterface?
     var dengageRFMManager: DengageRFMManager
     var geofenceManager: DengageGeofenceManagerInterface?
+    var notificationManagerInternal: DengageNotificationManagerInternal?
 
     var testPageWindow: UIWindow?
     
@@ -40,10 +41,30 @@ public class DengageManager {
                                                             service: apiClient,
                                                             sessionManager: sessionManager)
 
-        self.notificationManager = DengageNotificationManager(config: config,
-                                                              service: apiClient,
-                                                              eventManager: eventManager,
-                                                              launchOptions: launchOptions)
+        if let setInternalNotificationDelegate = DengageLocalStorage.shared.value(for: .setInternalNotificationDelegate) as? Bool
+        {
+            if setInternalNotificationDelegate
+            {
+                self.notificationManagerInternal = DengageNotificationManagerInternal(config: config,
+                                                                      service: apiClient,
+                                                                      eventManager: eventManager,
+                                                                      launchOptions: launchOptions)
+            }
+            else
+            {
+                self.notificationManager = DengageNotificationManager(config: config,
+                                                                      service: apiClient,
+                                                                      eventManager: eventManager,
+                                                                      launchOptions: launchOptions)
+            }
+        }
+        else
+        {
+            self.notificationManager = DengageNotificationManager(config: config,
+                                                                  service: apiClient,
+                                                                  eventManager: eventManager,
+                                                                  launchOptions: launchOptions)
+        }
         
         if config.options.enableGeofence
         {

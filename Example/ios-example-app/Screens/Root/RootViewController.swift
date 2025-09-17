@@ -48,9 +48,8 @@ extension RootViewController: UITableViewDelegate{
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch rows[indexPath.row]{
         case .allowNotification:
-            Dengage.promptForPushNotifications { isUserGranted in
-                print(isUserGranted)
-            }
+            Dengage.promptForPushNotifications()
+
         case .deviceInfo:
             self.navigationController?.pushViewController(DeviceInfoViewController(), animated: true)
         case .contactKey:

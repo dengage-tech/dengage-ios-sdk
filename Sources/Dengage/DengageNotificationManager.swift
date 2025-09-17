@@ -78,6 +78,7 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
     }
     
     func didReceive(with userInfo: [AnyHashable: Any]) {
+        
         if let jsonData = try? JSONSerialization.data(withJSONObject: userInfo, options: .prettyPrinted),
            let message = try? JSONDecoder().decode(PushContent.self, from: jsonData)  {
             

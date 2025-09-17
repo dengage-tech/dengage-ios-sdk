@@ -930,21 +930,7 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     
     func promptPushPermission(){
         
-        Dengage.promptForPushNotifications { isUserGranted in
-            
-            if !isUserGranted
-            {
-                if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
-                    
-                    DispatchQueue.main.async {
-                        
-                        UIApplication.shared.open(appSettings)
-
-                    }
-                    
-                }
-            }
-        }
+        Dengage.promptForPushNotifications()
         
     }
     

@@ -24,14 +24,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //op2
 //        2YtmAkaGNiiY4u3CN_s_l_d2oowwIa2YjMDnEnk7g7Dh5MFcUdkV_s_l_H0ECdHEeZvK_s_l_pNkNOJ2b3XMNkvBcZ43UvPW2ULSLkyNLGXFoCR_p_l_xVxYr4x_s_l_ypeE_p_l_XcbwtifyFyLBQVB
         
-
         
-        
-        let option = DengageOptions(disableOpenURL: false, badgeCountReset: true, disableRegisterForRemoteNotifications: false, enableGeofence: true)
-        
-        Dengage.start(apiKey: "2YtmAkaGNiiY4u3CN_s_l_d2oowwIa2YjMDnEnk7g7Dh5MFcUdkV_s_l_H0ECdHEeZvK_s_l_pNkNOJ2b3XMNkvBcZ43UvPW2ULSLkyNLGXFoCR_p_l_xVxYr4x_s_l_ypeE_p_l_XcbwtifyFyLBQVB", application: application, launchOptions: [:], dengageOptions: option)
+        Dengage.start(apiKey: "QE8P6DlqusV4g21EnkO3dk8NVjmqzlRjoLouXpHVTFehUa3wToBlADQqLpacXQ1ySqD3VJVM9Zx9JXsHHasCrqT5s4_s_l_K3wSMc_s_l_S3BZDrs6gJo_p_l_DdSirLDnvHQHC51gcEkYbZrxAjhzgo6kuYQIsfIg_e_q__e_q_", application: application, launchOptions: launchOptions, dengageOptions: DengageOptions())
                 
-        UNUserNotificationCenter.current().delegate = self
+//        UNUserNotificationCenter.current().delegate = self
         window = UIWindow(frame: UIScreen.main.bounds)
         let rootViewController = RootViewController()
         let navigationController = UINavigationController(rootViewController: rootViewController)
@@ -41,20 +37,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             window?.overrideUserInterfaceStyle = .light
         }
         
-        Dengage.promptForPushNotifications { isUserGranted in
-            
-            
-        }
+        Dengage.promptForPushNotifications()
+        
         Dengage.setLog(isVisible: true)
         
         Dengage.setDevelopmentStatus(isDebug: true)
         
         Dengage.handleNotificationActionBlock { notificationResponse in
             
-            print(notificationResponse)
+            print("notificationResponse.notification.request.content.userInfo")
+            print(notificationResponse.notification.request.content.userInfo)
+            
         }
                 
-       // Dengage.set(deviceId: "123456")
+       // Dengage.set(deviceId: "klsdjhopwqowjbdnuwei")
         
        // Dengage.syncSDK()
         

@@ -78,6 +78,7 @@ final class DengageLocalStorage: NSObject {
         case hybridAppEnvironment = "hybridAppEnvironment"
         case delayForInAppMessage = "delayForInAppMessage"
         case language = "language"
+        case setInternalNotificationDelegate = "setInternalNotificationDelegate"
 
 
     }
