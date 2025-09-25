@@ -173,8 +173,8 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
         NSLayoutConstraint.activate([
             scrollview.sLeftAnchor.constraint(equalTo: contentView.sLeftAnchor),
             contentView.sRightAnchor.constraint(equalTo: scrollview.sRightAnchor),
-            scrollview.sTopAnchor.constraint(equalTo: contentView.sTopAnchor),
-            contentView.sBottomAnchor.constraint(equalTo: scrollview.sBottomAnchor),
+            scrollview.topAnchor.constraint(equalTo: contentView.topAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollview.bottomAnchor),
             scrollview.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 1.0),
             scrollview.heightAnchor.constraint(equalTo: contentView.heightAnchor, multiplier: 1.0)
         ])
@@ -182,12 +182,12 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
         NSLayoutConstraint.activate([
             storyHeaderView.sLeftAnchor.constraint(equalTo: contentView.sLeftAnchor),
             contentView.sRightAnchor.constraint(equalTo: storyHeaderView.sRightAnchor),
-            storyHeaderView.sTopAnchor.constraint(equalTo: contentView.sTopAnchor),
+            storyHeaderView.topAnchor.constraint(equalTo: contentView.topAnchor),
             storyHeaderView.heightAnchor.constraint(equalToConstant: 80)
         ])
         
         NSLayoutConstraint.activate([
-            snapButton.sBottomAnchor.constraint(equalTo: scrollview.sBottomAnchor, constant: -50),
+            snapButton.bottomAnchor.constraint(equalTo: scrollview.bottomAnchor, constant: -50),
             snapButton.centerXAnchor.constraint(equalTo: scrollview.centerXAnchor)
         ])
         
@@ -205,10 +205,10 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
         
         NSLayoutConstraint.activate([
             snapView.leadingAnchor.constraint(equalTo: (snapIndex == 0) ? scrollview.leadingAnchor : scrollview.subviews[previousSnapIndex].trailingAnchor),
-            snapView.sTopAnchor.constraint(equalTo: scrollview.sTopAnchor),
+            snapView.topAnchor.constraint(equalTo: scrollview.topAnchor),
             snapView.widthAnchor.constraint(equalTo: scrollview.widthAnchor),
             snapView.heightAnchor.constraint(equalTo: scrollview.heightAnchor),
-            scrollview.sBottomAnchor.constraint(equalTo: snapView.sBottomAnchor)
+            scrollview.bottomAnchor.constraint(equalTo: snapView.bottomAnchor)
         ])
         if(snapIndex != 0) {
             NSLayoutConstraint.activate([
@@ -251,10 +251,10 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
         scrollview.addSubview(videoView)
         NSLayoutConstraint.activate([
             videoView.leadingAnchor.constraint(equalTo: (snapIndex == 0) ? scrollview.leadingAnchor : scrollview.subviews[previousSnapIndex].trailingAnchor),
-            videoView.sTopAnchor.constraint(equalTo: scrollview.sTopAnchor),
+            videoView.topAnchor.constraint(equalTo: scrollview.topAnchor),
             videoView.widthAnchor.constraint(equalTo: scrollview.widthAnchor),
             videoView.heightAnchor.constraint(equalTo: scrollview.heightAnchor),
-            scrollview.sBottomAnchor.constraint(equalTo: videoView.sBottomAnchor)
+            scrollview.bottomAnchor.constraint(equalTo: videoView.bottomAnchor)
         ])
         if(snapIndex != 0) {
             NSLayoutConstraint.activate([
@@ -782,4 +782,3 @@ extension StoryDisplayViewCell: UIGestureRecognizerDelegate {
         return false
     }
 }
-
