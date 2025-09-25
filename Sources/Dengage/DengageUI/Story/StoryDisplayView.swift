@@ -57,9 +57,9 @@ class StoryDisplayView: UIView {
     }
     private func installLayoutConstraints(){
         NSLayoutConstraint.activate([
-            sLeftAnchor.constraint(equalTo: snapsCollectionView.sLeftAnchor),
-            sTopAnchor.constraint(equalTo: snapsCollectionView.sTopAnchor),
-            snapsCollectionView.sRightAnchor.constraint(equalTo: sRightAnchor),
-            snapsCollectionView.sBottomAnchor.constraint(equalTo: sBottomAnchor)])
+            leftAnchor.constraint(equalTo: snapsCollectionView.leftAnchor),
+            topAnchor.constraint(equalTo: snapsCollectionView.topAnchor),
+            snapsCollectionView.rightAnchor.constraint(equalTo: rightAnchor),
+            snapsCollectionView.bottomAnchor.constraint(equalTo: bottomAnchor)])
     }
 }

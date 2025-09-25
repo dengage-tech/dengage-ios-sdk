@@ -93,7 +93,7 @@ public final class StoryDisplayHeaderView: UIView {
         let pv = getProgressView
         NSLayoutConstraint.activate([
             pv.sLeftAnchor.constraint(equalTo: self.sLeftAnchor),
-            pv.sTopAnchor.constraint(equalTo: self.sTopAnchor, constant: 8),
+            pv.topAnchor.constraint(equalTo: self.topAnchor, constant: 8),
             self.sRightAnchor.constraint(equalTo: pv.sRightAnchor),
             pv.heightAnchor.constraint(equalToConstant: 10)
             ])
@@ -218,7 +218,7 @@ public final class StoryDisplayHeaderView: UIView {
             NSLayoutConstraint.activate([
                 pv.sLeftAnchor.constraint(equalTo: pvIndicator.sLeftAnchor),
                 pv.heightAnchor.constraint(equalTo: pvIndicator.heightAnchor),
-                pv.sTopAnchor.constraint(equalTo: pvIndicator.sTopAnchor),
+                pv.topAnchor.constraint(equalTo: pvIndicator.topAnchor),
                 pv.widthConstraint!
                 ])
         }
