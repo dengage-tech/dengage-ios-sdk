@@ -31,6 +31,7 @@ final class StoriesListCell: UICollectionViewCell {
         label.textAlignment = .center
         label.textColor = .black
         label.font = UIFont.systemFont(ofSize: 12)
+        label.numberOfLines = 0
         return label
     }()
     

@@ -93,7 +93,7 @@ public final class StoryDisplayHeaderView: UIView {
         let pv = getProgressView
         NSLayoutConstraint.activate([
             pv.sLeftAnchor.constraint(equalTo: self.sLeftAnchor),
-            pv.topAnchor.constraint(equalTo: self.topAnchor, constant: 8),
+            pv.topAnchor.constraint(equalTo: self.topAnchor, constant: UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 20),
             self.sRightAnchor.constraint(equalTo: pv.sRightAnchor),
             pv.heightAnchor.constraint(equalToConstant: 10)
             ])
@@ -102,9 +102,10 @@ public final class StoryDisplayHeaderView: UIView {
             snaperImageView.widthAnchor.constraint(equalToConstant: 40),
             snaperImageView.heightAnchor.constraint(equalToConstant: 40),
             snaperImageView.sLeftAnchor.constraint(equalTo: self.sLeftAnchor, constant: 10),
-            snaperImageView.sCenterYAnchor.constraint(equalTo: self.sCenterYAnchor),
+            snaperImageView.topAnchor.constraint(equalTo: pv.bottomAnchor, constant: 8),
             detailView.sLeftAnchor.constraint(equalTo: snaperImageView.sRightAnchor, constant: 10)
             ])
+        
         layoutIfNeeded() //To make snaperImageView round. Adding this to somewhere else will create constraint warnings.
         NSLayoutConstraint.activate([
             detailView.sLeftAnchor.constraint(equalTo: snaperImageView.sRightAnchor, constant: 10),
@@ -114,7 +115,7 @@ public final class StoryDisplayHeaderView: UIView {
             ])
         NSLayoutConstraint.activate([
             closeButton.sLeftAnchor.constraint(equalTo: detailView.sRightAnchor, constant: 10),
-            closeButton.sCenterYAnchor.constraint(equalTo: self.sCenterYAnchor),
+            closeButton.sCenterYAnchor.constraint(equalTo: snaperImageView.sCenterYAnchor),
             closeButton.sRightAnchor.constraint(equalTo: self.sRightAnchor),
             closeButton.widthAnchor.constraint(equalToConstant: 60),
             closeButton.heightAnchor.constraint(equalToConstant: 80)

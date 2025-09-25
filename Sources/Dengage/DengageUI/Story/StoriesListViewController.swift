@@ -101,7 +101,7 @@ extension StoriesListViewController: UICollectionViewDelegate,UICollectionViewDa
                                sizeForItemAt indexPath: IndexPath) -> CGSize {
         let size = storySet.styling.headerCover.size
         
-        return CGSize(width: size + 12, height: size + 32)
+        return CGSize(width: size + 8, height: size + 50)
     }
 }
 
