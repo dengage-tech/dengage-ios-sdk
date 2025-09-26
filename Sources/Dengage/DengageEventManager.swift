@@ -256,6 +256,11 @@ extension DengageEventManager {
     }
     
     private func sendEventRequest(table: String, key: String, params: [String : Any]) {
+        
+        if(table == DengageInternalTableName.pageView.rawValue) {
+            config.incrementPageViewCount()
+        }
+        
         eventQueue.async { [weak self] in
             guard let self = self else { return }
             let request = EventRequest(integrationKey: self.config.integrationKey,
