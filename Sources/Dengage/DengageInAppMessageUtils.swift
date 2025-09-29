@@ -445,7 +445,7 @@ final class DengageInAppMessageUtils{
             return operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: (config.contactKey.type == "c").description, message: message, valueSource: criterion.valueSource)
+                           userParam: (config.contactKey.type == "d").description, message: message, valueSource: criterion.valueSource)
         case .VISIT_DURATION:
             guard let lastSessionStartTime = DengageLocalStorage.shared.value(for: .lastSessionStartTime) as? Double else {
                 return true
