@@ -357,18 +357,12 @@ extension DengageEventManager {
         
         guard let eventTypeDefinitions = eventMapping.eventTypeDefinitions else { return }
         
-        let eventType = eventDetails["event_type"] as? String ?? ""
         
         let matchingEventType = eventTypeDefinitions.first { eventTypeDefinition in
             // Check if client history is enabled for this event type
             guard eventTypeDefinition.enableClientHistory == true else { return false }
             
-            // Check event type
-            if let expectedEventType = eventTypeDefinition.eventType,
-               !expectedEventType.isEmpty && expectedEventType != eventType {
-                return false
-            }
-            
+            // If there's only one eventTypeDefinition, skip filter condition check
             if eventTypeDefinitions.count == 1 {
                 return true
             }
@@ -398,8 +392,13 @@ extension DengageEventManager {
             }
         }
         
-        guard let eventTypeDefinition = matchingEventType,
-              let clientHistoryOptions = eventTypeDefinition.clientHistoryOptions else { return }
+        guard
+            let eventTypeDefinition = matchingEventType,
+            let clientHistoryOptions = eventTypeDefinition.clientHistoryOptions,
+            let eventType = eventTypeDefinition.eventType
+        else {
+            return
+        }
         
         let maxEventCount = clientHistoryOptions.maxEventCount ?? Int.max
         let timeWindowInMinutes = clientHistoryOptions.timeWindowInMinutes ?? Int.max
