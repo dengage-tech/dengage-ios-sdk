@@ -159,15 +159,15 @@ final class DengageCartUtils {
         case "category_path":
             return item.categoryPath
         case "price":
-            return item.price?.description
+            return item.price.description
         case "discounted_price":
-            return item.discountedPrice?.description
+            return item.discountedPrice.description
         case "has_discount":
-            return item.hasDiscount?.description
+            return item.hasDiscount.description
         case "has_promotion":
-            return item.hasPromotion?.description
+            return item.hasPromotion.description
         case "quantity":
-            return item.quantity?.description
+            return item.quantity.description
         case "effective_price":
             return item.effectivePrice.description
         case "line_total":
@@ -182,9 +182,9 @@ final class DengageCartUtils {
             // Handle attributes with dot notation (e.g., "attributes.brand")
             if field.hasPrefix("attributes.") {
                 let attributeKey = String(field.dropFirst("attributes.".count))
-                return item.attributes?[attributeKey]
+                return item.attributes[attributeKey]
             } else {
-                return item.attributes?[field]
+                return item.attributes[field]
             }
         }
     }
@@ -200,11 +200,11 @@ final class DengageCartUtils {
         return items.reduce(0.0) { sum, item in
             switch field {
             case "price":
-                return sum + Double(item.price ?? 0)
+                return sum + Double(item.price)
             case "discounted_price":
-                return sum + Double(item.discountedPrice ?? 0)
+                return sum + Double(item.discountedPrice)
             case "quantity":
-                return sum + Double(item.quantity ?? 0)
+                return sum + Double(item.quantity)
             case "effective_price":
                 return sum + Double(item.effectivePrice)
             case "line_total":
@@ -224,11 +224,11 @@ final class DengageCartUtils {
         let values = items.compactMap { item -> Double? in
             switch field {
             case "price":
-                return item.price != nil ? Double(item.price!) : nil
+                return Double(item.price)
             case "discounted_price":
-                return item.discountedPrice != nil ? Double(item.discountedPrice!) : nil
+                return  Double(item.discountedPrice)
             case "quantity":
-                return item.quantity != nil ? Double(item.quantity!) : nil
+                return Double(item.quantity)
             case "effective_price":
                 return Double(item.effectivePrice)
             case "line_total":
@@ -249,11 +249,11 @@ final class DengageCartUtils {
         let values = items.compactMap { item -> Double? in
             switch field {
             case "price":
-                return item.price != nil ? Double(item.price!) : nil
+                return Double(item.price)
             case "discounted_price":
-                return item.discountedPrice != nil ? Double(item.discountedPrice!) : nil
+                return Double(item.discountedPrice)
             case "quantity":
-                return item.quantity != nil ? Double(item.quantity!) : nil
+                return Double(item.quantity)
             case "effective_price":
                 return Double(item.effectivePrice)
             case "line_total":

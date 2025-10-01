@@ -327,14 +327,6 @@ public class Dengage {
         dengage?.config.setCategory(path: path)
     }
     
-    @objc public static func setCart(cart: Cart) {
-        dengage?.config.setCart(cart: cart)
-    }
-    
-    @objc public static func getCart() -> Cart {
-        return dengage?.config.getCart() ?? Cart(items: [CartItem]())
-    }
-    
     @objc public static func setCart(itemCount: String?) {
         dengage?.config.setCart(itemCount: itemCount)
     }
@@ -550,6 +542,20 @@ extension Dengage{
     @objc public static func sendDeviceIdToServer(route:String , token : String) {
         DengageLocalStorage.shared.set(value: route, for: .deviceIdRoute)
         dengage?.dengageDeviceIdSendToServer(token: token)
+    }
+}
+
+
+
+//MARK: - InApp Filters
+extension Dengage {
+    
+    public static func setCart(cart: Cart) {
+        dengage?.config.setCart(cart: cart)
+    }
+    
+    public static func getCart() -> Cart {
+        return dengage?.config.getCart() ?? Cart(items: [CartItem]())
     }
 }
 

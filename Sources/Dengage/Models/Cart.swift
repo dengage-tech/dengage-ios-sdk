@@ -1,10 +1,10 @@
 import Foundation
 
-@objc public class Cart: NSObject, Codable {
+public class Cart: NSObject, Codable {
     let items: [CartItem]
     let summary: CartSummary
     
-    init(items: [CartItem]) {
+    public init(items: [CartItem]) {
         self.items = items
         self.summary = CartSummary.calculate(items: items)
     }
@@ -15,16 +15,16 @@ import Foundation
     }
 }
 
-@objc public class CartItem: NSObject, Codable {
-    let productId: String?
-    let productVariantId: String?
-    let categoryPath: String?
-    let price: Int?
-    let discountedPrice: Int?
-    let hasDiscount: Bool?
-    let hasPromotion: Bool?
-    let quantity: Int?
-    let attributes: [String: String]?
+public class CartItem: NSObject, Codable {
+    let productId: String
+    let productVariantId: String
+    let categoryPath: String
+    let price: Int
+    let discountedPrice: Int
+    let hasDiscount: Bool
+    let hasPromotion: Bool
+    let quantity: Int
+    let attributes: [String: String]
     
     // Calculated fields - these will be computed by the SDK
     let effectivePrice: Int
@@ -36,15 +36,15 @@ import Foundation
     let categorySegments: [String]
     let categoryRoot: String
     
-    init(productId: String?,
-         productVariantId: String?,
-         categoryPath: String?,
-         price: Int?,
-         discountedPrice: Int?,
-         hasDiscount: Bool?,
-         hasPromotion: Bool?,
-         quantity: Int?,
-         attributes: [String: String]?) {
+    public init(productId: String,
+         productVariantId: String,
+         categoryPath: String,
+         price: Int,
+         discountedPrice: Int,
+         hasDiscount: Bool,
+         hasPromotion: Bool,
+         quantity: Int,
+         attributes: [String: String]) {
         self.productId = productId
         self.productVariantId = productVariantId
         self.categoryPath = categoryPath
@@ -67,15 +67,17 @@ import Foundation
     required public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        productId = try container.decodeIfPresent(String.self, forKey: .productId)
-        productVariantId = try container.decodeIfPresent(String.self, forKey: .productVariantId)
-        categoryPath = try container.decodeIfPresent(String.self, forKey: .categoryPath)
-        price = try container.decodeIfPresent(Int.self, forKey: .price)
-        discountedPrice = try container.decodeIfPresent(Int.self, forKey: .discountedPrice)
-        hasDiscount = try container.decodeIfPresent(Bool.self, forKey: .hasDiscount)
-        hasPromotion = try container.decodeIfPresent(Bool.self, forKey: .hasPromotion)
-        quantity = try container.decodeIfPresent(Int.self, forKey: .quantity)
-        attributes = try container.decodeIfPresent([String: String].self, forKey: .attributes)
+        productId = (try? container.decode(String.self, forKey: .productId)) ?? ""
+        productVariantId = (try? container.decode(String.self, forKey: .productVariantId)) ?? ""
+        categoryPath = (try? container.decode(String.self, forKey: .categoryPath)) ?? ""
+        price = (try? container.decode(Int.self, forKey: .price)) ?? 0
+        discountedPrice = (try? container.decode(Int.self, forKey: .discountedPrice)) ?? 0
+        hasDiscount = (try? container.decode(Bool.self, forKey: .hasDiscount)) ?? false
+        hasPromotion = (try? container.decode(Bool.self, forKey: .hasPromotion)) ?? false
+        quantity = (try? container.decode(Int.self, forKey: .quantity)) ?? 0
+        attributes = (try? container.decode([String: String].self, forKey: .attributes)) ?? [:]
+
+
         
         effectivePrice = try container.decodeIfPresent(Int.self, forKey: .effectivePrice) ?? CartItem.calculateEffectivePrice(price: price, discountedPrice: discountedPrice, hasDiscount: hasDiscount, hasPromotion: hasPromotion)
         lineTotal = try container.decodeIfPresent(Int.self, forKey: .lineTotal) ?? CartItem.calculateLineTotal(price: price, quantity: quantity)
