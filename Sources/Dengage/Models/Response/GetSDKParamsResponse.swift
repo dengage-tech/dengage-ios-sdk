@@ -1,6 +1,6 @@
 import Foundation
 
-struct GetSDKParamsResponse: Codable {
+public struct GetSDKParamsResponse: Codable {
     let accountName: String?
     let eventsEnabled: Bool
     let inboxEnabled: Bool
@@ -9,7 +9,7 @@ struct GetSDKParamsResponse: Codable {
     let appId: String?
     let realTimeInAppEnabled: Bool
     let realTimeInAppSessionTimeoutMinutes: Int
-    let eventMappings: [EventMapping]
+    public let eventMappings: [EventMapping]
     
     private let inAppFetchIntervalInMin: Int
     private let inAppMinSecBetweenMessages: Int
@@ -27,7 +27,7 @@ struct GetSDKParamsResponse: Codable {
         Double(inAppMinSecBetweenMessages * 1000)
     }
     
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         accountName = try? container.decode(String.self, forKey: .accountName)
         eventsEnabled = (try? container.decode(Bool.self, forKey: .eventsEnabled)) ?? false
@@ -61,25 +61,25 @@ struct GetSDKParamsResponse: Codable {
 
 // MARK: - EventMapping Models
 
-struct EventMapping: Codable {
-    let eventTableName: String?
-    let eventTypeDefinitions: [EventTypeDefinition]?
+public struct EventMapping: Codable {
+    public let eventTableName: String?
+    public let eventTypeDefinitions: [EventTypeDefinition]?
 }
 
-struct EventTypeDefinition: Codable {
-    let eventTypeId: Int?
-    let eventType: String?
-    let logicOperator: String?
-    let filterConditions: [FilterCondition]?
-    let enableClientHistory: Bool?
-    let clientHistoryOptions: ClientHistoryOptions?
-    let attributes: [EventAttribute]?
+public struct EventTypeDefinition: Codable {
+    public let eventTypeId: Int?
+    public let eventType: String?
+    public let logicOperator: String?
+    public let filterConditions: [FilterCondition]?
+    public let enableClientHistory: Bool?
+    public let clientHistoryOptions: ClientHistoryOptions?
+    public let attributes: [EventAttribute]?
 }
 
-struct FilterCondition: Codable {
-    let fieldName: String?
-    let `operator`: String?
-    let values: [String]?
+public struct FilterCondition: Codable {
+    public let fieldName: String?
+    public let `operator`: String?
+    public let values: [String]?
     
     enum CodingKeys: String, CodingKey {
         case fieldName
@@ -88,13 +88,13 @@ struct FilterCondition: Codable {
     }
 }
 
-struct ClientHistoryOptions: Codable {
-    let maxEventCount: Int?
-    let timeWindowInMinutes: Int?
+public struct ClientHistoryOptions: Codable {
+    public let maxEventCount: Int?
+    public let timeWindowInMinutes: Int?
 }
 
-struct EventAttribute: Codable {
-    let name: String?
-    let dataType: String?
-    let tableColumnName: String?
+public struct EventAttribute: Codable {
+    public let name: String?
+    public let dataType: String?
+    public let tableColumnName: String?
 }

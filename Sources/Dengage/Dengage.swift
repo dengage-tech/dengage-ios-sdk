@@ -557,5 +557,9 @@ extension Dengage {
     public static func getCart() -> Cart {
         return dengage?.config.getCart() ?? Cart(items: [CartItem]())
     }
+    
+    public static func getSdkParameters() -> GetSDKParamsResponse? {
+        return DengageLocalStorage.shared.getConfig()
+    }
 }
 
