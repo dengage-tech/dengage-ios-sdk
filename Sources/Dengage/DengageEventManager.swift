@@ -172,7 +172,9 @@ extension DengageEventManager {
         var params = parameters
         params["session_id"] = sessionManager.currentSessionId
         params["dn_device_id"] = config.applicationIdentifier
-        params["dn_contact_key"] = config.contactKey
+        if let contactKey = config.getContactKey() {
+            params["dn_contact_key"] = config.contactKey
+        }
         sendEventRequest(table: eventTable, key: config.applicationIdentifier, params: params)
     }
 }
@@ -191,7 +193,9 @@ extension DengageEventManager {
         
         params["session_id"] = sessionId
         params["dn_device_id"] = config.applicationIdentifier
-        params["dn_contact_key"] = config.contactKey
+        if let contactKey = config.getContactKey() {
+            params["dn_contact_key"] = config.contactKey
+        }
         params["event_type"] = eventType.rawValue
         params["event_id"] = eventId
       
