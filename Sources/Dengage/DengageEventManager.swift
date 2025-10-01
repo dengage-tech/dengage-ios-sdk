@@ -353,18 +353,16 @@ extension DengageEventManager {
     private func handleEventSent(tableName: String, key: String, eventDetails: [String: Any]) {
         guard let sdkParameters = config.remoteConfiguration else { return }
         
-        guard let eventMapping = sdkParameters.eventMappings.first(where: { $0.eventTableName == tableName }),
-              eventMapping.enableClientHistory == true else { return }
-        
-        guard let clientHistoryOptions = eventMapping.clientHistoryOptions else { return }
-        let maxEventCount = clientHistoryOptions.maxEventCount ?? Int.max
-        let timeWindowInMinutes = clientHistoryOptions.timeWindowInMinutes ?? Int.max
+        guard let eventMapping = sdkParameters.eventMappings.first(where: { $0.eventTableName == tableName }) else { return }
         
         guard let eventTypeDefinitions = eventMapping.eventTypeDefinitions else { return }
         
         let eventType = eventDetails["event_type"] as? String ?? ""
         
         let matchingEventType = eventTypeDefinitions.first { eventTypeDefinition in
+            // Check if client history is enabled for this event type
+            guard eventTypeDefinition.enableClientHistory == true else { return false }
+            
             // Check event type
             if let expectedEventType = eventTypeDefinition.eventType,
                !expectedEventType.isEmpty && expectedEventType != eventType {
@@ -400,13 +398,17 @@ extension DengageEventManager {
             }
         }
         
-        guard matchingEventType != nil else { return }
+        guard let eventTypeDefinition = matchingEventType,
+              let clientHistoryOptions = eventTypeDefinition.clientHistoryOptions else { return }
+        
+        let maxEventCount = clientHistoryOptions.maxEventCount ?? Int.max
+        let timeWindowInMinutes = clientHistoryOptions.timeWindowInMinutes ?? Int.max
         
         var clientEvents = DengageLocalStorage.shared.getClientEvents()
         var eventTypeEvents = clientEvents[eventType] ?? []
         
-        let now = Date().timeIntervalSince1970
-        let timeThreshold = now - Double(timeWindowInMinutes * 60)
+        let now = Date().timeIntervalSince1970 * 1000 // Convert to milliseconds
+        let timeThreshold = now - Double(timeWindowInMinutes * 60 * 1000)
         eventTypeEvents = eventTypeEvents.filter { $0.timestamp >= timeThreshold }
         
         let clientEvent = ClientEvent(
@@ -425,7 +427,7 @@ extension DengageEventManager {
         clientEvents[eventType] = eventTypeEvents
         DengageLocalStorage.shared.saveClientEvents(clientEvents)
         
-        Logger.log(message: "Client event stored for table: \(tableName), eventType: \(eventType) current count: \(clientEvents.count)")
+        Logger.log(message: "Client event stored for table: \(tableName), eventType: \(eventType) current count: \(eventTypeEvents.count)")
     }
 }
 

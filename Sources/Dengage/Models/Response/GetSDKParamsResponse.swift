@@ -63,14 +63,7 @@ struct GetSDKParamsResponse: Codable {
 
 struct EventMapping: Codable {
     let eventTableName: String?
-    let enableClientHistory: Bool?
-    let clientHistoryOptions: ClientHistoryOptions?
     let eventTypeDefinitions: [EventTypeDefinition]?
-}
-
-struct ClientHistoryOptions: Codable {
-    let maxEventCount: Int?
-    let timeWindowInMinutes: Int?
 }
 
 struct EventTypeDefinition: Codable {
@@ -78,6 +71,13 @@ struct EventTypeDefinition: Codable {
     let eventType: String?
     let logicOperator: String?
     let filterConditions: [FilterCondition]?
+    let enableClientHistory: Bool?
+    let clientHistoryOptions: ClientHistoryOptions?
+}
+
+struct ClientHistoryOptions: Codable {
+    let maxEventCount: Int?
+    let timeWindowInMinutes: Int?
 }
 
 struct FilterCondition: Codable {
@@ -91,3 +91,4 @@ struct FilterCondition: Codable {
         case values
     }
 }
+
