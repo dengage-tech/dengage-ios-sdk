@@ -231,14 +231,28 @@ extension DengageManager {
     private func getSDKParams() {
         Logger.log(message: "getSDKParams Started")
         
-        if let date = (DengageLocalStorage.shared.value(for: .lastFetchedConfigTime) as? Date),
-           let diff = Calendar.current.dateComponents([.second], from: date, to: Date()).second,
-           diff > SDKPARAMS_FETCH_INTERVAL_IN_SECONDS {
+        let hasRemoteConfig = config.remoteConfiguration != nil
+        let lastFetchedDate = DengageLocalStorage.shared.value(for: .lastFetchedConfigTime) as? Date
+        
+        // If no remote configuration, fetch immediately
+        if !hasRemoteConfig {
             fetchSDK()
-        } else if (DengageLocalStorage.shared.value(for: .lastFetchedConfigTime) as? Date) == nil {
-            fetchSDK()
-        } else {
-            inAppManager.fetchInAppMessages()
+            return
+        }
+        
+        // Check if we need to fetch based on time (1 minute interval)
+        if let fetchedDate = lastFetchedDate {
+            let timeSinceLastFetch = Date().timeIntervalSince(fetchedDate)
+            if timeSinceLastFetch < 60 { // 1 minute in seconds
+                inAppManager.fetchInAppMessages()
+                return
+            }
+        }
+        
+        // Add random delay between 0-60 seconds before fetching
+        let randomDelay = Double.random(in: 0...60)
+        DispatchQueue.main.asyncAfter(deadline: .now() + randomDelay) { [weak self] in
+            self?.fetchSDK()
         }
     }
     
