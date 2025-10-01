@@ -173,7 +173,7 @@ extension DengageEventManager {
         params["session_id"] = sessionManager.currentSessionId
         params["dn_device_id"] = config.applicationIdentifier
         if let contactKey = config.getContactKey() {
-            params["dn_contact_key"] = config.contactKey
+            params["dn_contact_key"] = contactKey
         }
         sendEventRequest(table: eventTable, key: config.applicationIdentifier, params: params)
     }
@@ -194,7 +194,7 @@ extension DengageEventManager {
         params["session_id"] = sessionId
         params["dn_device_id"] = config.applicationIdentifier
         if let contactKey = config.getContactKey() {
-            params["dn_contact_key"] = config.contactKey
+            params["dn_contact_key"] = contactKey
         }
         params["event_type"] = eventType.rawValue
         params["event_id"] = eventId
@@ -332,6 +332,8 @@ extension DengageEventManager {
         
         if(table == DengageInternalTableName.pageView.rawValue) {
             config.incrementPageViewCount()
+            // Set page parameters for real-time in-app messages
+            config.setClientPageInfo(eventDetails: params)
         }
         
         eventQueue.async { [weak self] in

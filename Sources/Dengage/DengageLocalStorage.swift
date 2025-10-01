@@ -96,6 +96,7 @@ final public class DengageLocalStorage: NSObject {
         case localInboxMessages = "localInboxMessages"
         case clientEvents = "clientEvents"
         case clientCart = "clientCart"
+        case clientPageInfo = "clientPageInfo"
 
     }
 }
@@ -475,6 +476,34 @@ extension DengageLocalStorage {
             userDefaults.synchronize()
         } catch {
             Logger.log(message: "saving client cart fail")
+        }
+    }
+    
+}
+
+// MARK: Client Page Info
+extension DengageLocalStorage {
+    
+    func getClientPageInfo() -> ClientPageInfo? {
+        guard let pageInfoData = userDefaults.object(forKey: Key.clientPageInfo.rawValue) as? Data else { return nil }
+        let decoder = JSONDecoder()
+        do {
+            let pageInfo = try decoder.decode(ClientPageInfo.self, from: pageInfoData)
+            return pageInfo
+        } catch {
+            Logger.log(message: "getClientPageInfo fail")
+            return nil
+        }
+    }
+    
+    func saveClientPageInfo(_ pageInfo: ClientPageInfo) {
+        let encoder = JSONEncoder()
+        do {
+            let encoded = try encoder.encode(pageInfo)
+            userDefaults.set(encoded, forKey: Key.clientPageInfo.rawValue)
+            userDefaults.synchronize()
+        } catch {
+            Logger.log(message: "saving client page info fail")
         }
     }
     

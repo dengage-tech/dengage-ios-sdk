@@ -534,6 +534,31 @@ final class DengageInAppMessageUtils{
             return DengageEventHistoryUtils.operateEventHistoryFilter(criterion: criterion)
         case .CART_ITEMS:
             return DengageCartUtils.operateCartFilter(criterion: criterion)
+        case .LAST_PRODUCT_ID:
+            return operate(with: criterion.comparison,
+                           for: criterion.dataType,
+                           ruleParam: criterion.values,
+                           userParam: config.getLastProductId() ?? "", message: message, valueSource: criterion.valueSource)
+        case .LAST_PRODUCT_PRICE:
+            return operate(with: criterion.comparison,
+                           for: criterion.dataType,
+                           ruleParam: criterion.values,
+                           userParam: config.getLastProductPrice() ?? "", message: message, valueSource: criterion.valueSource)
+        case .LAST_CATEGORY_PATH:
+            return operate(with: criterion.comparison,
+                           for: criterion.dataType,
+                           ruleParam: criterion.values,
+                           userParam: config.getLastCategoryPath() ?? "", message: message, valueSource: criterion.valueSource)
+        case .CURRENT_PAGE_TITLE:
+            return operate(with: criterion.comparison,
+                           for: criterion.dataType,
+                           ruleParam: criterion.values,
+                           userParam: config.getCurrentPageTitle() ?? "", message: message, valueSource: criterion.valueSource)
+        case .CURRENT_PAGE_TYPE:
+            return operate(with: criterion.comparison,
+                           for: criterion.dataType,
+                           ruleParam: criterion.values,
+                           userParam: config.getCurrentPageType() ?? "", message: message, valueSource: criterion.valueSource)
         }
     }
     
@@ -718,6 +743,11 @@ enum SpecialRuleParameter: String {
     case TAG = "dn.tag"
     case EVENT_HISTORY = "event_history"
     case CART_ITEMS = "cart_items"
+    case LAST_PRODUCT_ID = "last_product_id"
+    case LAST_PRODUCT_PRICE = "last_product_price"
+    case LAST_CATEGORY_PATH = "last_category_path"
+    case CURRENT_PAGE_TITLE = "current_page_title"
+    case CURRENT_PAGE_TYPE = "current_page_type"
 }
 
 struct VisitCountData: Codable {

@@ -264,6 +264,55 @@ final public class DengageConfiguration: Encodable {
         pageViewCount = 0
     }
     
+    func setClientPageInfo(eventDetails: [String: Any]) {
+        let currentPageInfo = getClientPageInfo()
+        
+        var updatedPageInfo = ClientPageInfo(
+            lastProductId: currentPageInfo.lastProductId,
+            lastProductPrice: currentPageInfo.lastProductPrice,
+            lastCategoryPath: currentPageInfo.lastCategoryPath,
+            currentPageTitle: eventDetails["page_title"] as? String ?? currentPageInfo.currentPageTitle,
+            currentPageType: eventDetails["page_type"] as? String ?? currentPageInfo.currentPageType
+        )
+        
+        // If page_type is "product", update last product information
+        if eventDetails["page_type"] as? String == "product" {
+            updatedPageInfo = ClientPageInfo(
+                lastProductId: eventDetails["product_id"] as? String ?? currentPageInfo.lastProductId,
+                lastProductPrice: eventDetails["price"] as? String ?? currentPageInfo.lastProductPrice,
+                lastCategoryPath: eventDetails["category_path"] as? String ?? currentPageInfo.lastCategoryPath,
+                currentPageTitle: updatedPageInfo.currentPageTitle,
+                currentPageType: updatedPageInfo.currentPageType
+            )
+        }
+        
+        DengageLocalStorage.shared.saveClientPageInfo(updatedPageInfo)
+    }
+    
+    func getClientPageInfo() -> ClientPageInfo {
+        return DengageLocalStorage.shared.getClientPageInfo() ?? ClientPageInfo()
+    }
+    
+    func getLastProductId() -> String? {
+        return getClientPageInfo().lastProductId
+    }
+    
+    func getLastProductPrice() -> String? {
+        return getClientPageInfo().lastProductPrice
+    }
+    
+    func getLastCategoryPath() -> String? {
+        return getClientPageInfo().lastCategoryPath
+    }
+    
+    func getCurrentPageTitle() -> String? {
+        return getClientPageInfo().currentPageTitle
+    }
+    
+    func getCurrentPageType() -> String? {
+        return getClientPageInfo().currentPageType
+    }
+    
     func getContactKey() -> String? {
         DengageLocalStorage.shared.value(for: .contactKey) as? String
     }
