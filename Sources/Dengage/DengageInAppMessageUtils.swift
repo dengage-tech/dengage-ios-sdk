@@ -532,7 +532,7 @@ final class DengageInAppMessageUtils{
                                       userParam: tags.map{String($0)})
         case .EVENT_HISTORY:
             return DengageEventHistoryUtils.operateEventHistoryFilter(criterion: criterion)
-        case .CART:
+        case .CART_ITEMS:
             return DengageCartUtils.operateCartFilter(criterion: criterion)
         }
     }
@@ -717,7 +717,7 @@ enum SpecialRuleParameter: String {
     case SEGMENT = "dn.segment"
     case TAG = "dn.tag"
     case EVENT_HISTORY = "event_history"
-    case CART = "cart"
+    case CART_ITEMS = "cart_items"
 }
 
 struct VisitCountData: Codable {
