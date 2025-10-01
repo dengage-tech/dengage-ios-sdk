@@ -66,6 +66,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let val = DengageLocalStorage.shared.getLocalInboxManagerEnabled()
 
+        
+        Dengage.setLog(isVisible: true)
+        Dengage.setDevelopmentStatus(isDebug: true)
         Dengage.start(apiKey: test_sandbox, application: application, launchOptions: [:],
                       dengageOptions: option)
         
@@ -88,9 +91,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         
         
-        Dengage.setLog(isVisible: true)
         
-        Dengage.setDevelopmentStatus(isDebug: true)
         
         Dengage.inAppLinkConfiguration(deeplink: "dengagelink://")
         
