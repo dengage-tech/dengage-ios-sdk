@@ -101,7 +101,7 @@ final class EventHistoryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        loadEventTypesFromSDK()
+        self.loadEventTypesFromSDK()
     }
     
     private func setupUI(){
@@ -125,7 +125,9 @@ final class EventHistoryViewController: UIViewController {
     }
     
     private func loadEventTypesFromSDK() {
+        
         guard let sdkParameters = Dengage.getSdkParameters() else {
+            print("ERROR: SDK parameters not available")
             showToast("SDK parameters not available")
             return
         }
@@ -133,19 +135,26 @@ final class EventHistoryViewController: UIViewController {
         eventTypesMap.removeAll()
         let systemAttributes: Set<String> = ["event_time", "device_id", "session_id"]
         
-        for eventMapping in sdkParameters.eventMappings {
-            guard let tableName = eventMapping.eventTableName, !tableName.isEmpty else { continue }
+        for (index, eventMapping) in sdkParameters.eventMappings.enumerated() {
+            print("Processing event mapping \(index): \(eventMapping.eventTableName ?? "nil")")
+            
+            guard let tableName = eventMapping.eventTableName, !tableName.isEmpty else { 
+                print("Skipping mapping \(index): empty table name")
+                continue 
+            }
             
             if let eventTypeDefinitions = eventMapping.eventTypeDefinitions {
-                for eventTypeDefinition in eventTypeDefinitions {
+                for (_, eventTypeDefinition) in eventTypeDefinitions.enumerated() {
                     guard let eventType = eventTypeDefinition.eventType,
                           !eventType.isEmpty,
-                          allowedEventTypes.contains(eventType) else { continue }
-                    
+                          allowedEventTypes.contains(eventType) else {
+                        continue
+                    }
+                                        
                     var parameters: [EventParameter] = []
                     
-                    // Add filter condition parameters first
                     if let filterConditions = eventTypeDefinition.filterConditions {
+                        print("Filter conditions count: \(filterConditions.count)")
                         for filterCondition in filterConditions {
                             guard let fieldName = filterCondition.fieldName,
                                   !fieldName.isEmpty,
@@ -176,13 +185,11 @@ final class EventHistoryViewController: UIViewController {
                         }
                     }
                     
-                    // Add regular attribute parameters using tableColumnName
                     if let attributes = eventTypeDefinition.attributes {
+                        print("Attributes count: \(attributes.count)")
                         for attribute in attributes {
                             guard let tableColumnName = attribute.tableColumnName,
                                   !systemAttributes.contains(tableColumnName) else { continue }
-                            
-                            // Check if this attribute is already added as filter condition
                             let alreadyExists = parameters.contains { $0.key == tableColumnName }
                             if !alreadyExists {
                                 parameters.append(EventParameter(key: tableColumnName, value: ""))
@@ -199,11 +206,28 @@ final class EventHistoryViewController: UIViewController {
         }
         
         availableEventTypes = Array(eventTypesMap.keys).sorted()
-        eventTypePickerView.reloadAllComponents()
         
-        if !availableEventTypes.isEmpty {
-            updateTableNameLabel(for: availableEventTypes[0])
+        if availableEventTypes.isEmpty {
+            print("No event types found, adding fallback")
         }
+        
+        // Picker view'ı güncelle ve ilk değeri seç
+        DispatchQueue.main.async {
+            print("Updating picker view with \(self.availableEventTypes.count) items")
+            self.eventTypePickerView.reloadAllComponents()
+            
+            if !self.availableEventTypes.isEmpty {
+                // İlk event type'ı seç
+                let firstEventType = self.availableEventTypes[0]
+                print("Selecting first event type: \(firstEventType)")
+                self.eventTypeTextField.text = firstEventType
+                self.eventTypePickerView.selectRow(0, inComponent: 0, animated: false)
+                self.loadParametersForEventType(firstEventType)
+                self.updateTableNameLabel(for: firstEventType)
+            }
+        }
+        
+        print("=== loadEventTypesFromSDK completed ===")
     }
     
     private func loadParametersForEventType(_ eventType: String) {
@@ -221,7 +245,6 @@ final class EventHistoryViewController: UIViewController {
             }
         }
         
-        // Remove existing parameter views
         for view in stackView.arrangedSubviews {
             if view is EventParameterItemView {
                 stackView.removeArrangedSubview(view)
@@ -229,7 +252,6 @@ final class EventHistoryViewController: UIViewController {
             }
         }
         
-        // Add parameter views
         for (index, parameter) in currentParameters.enumerated() {
             let parameterView = EventParameterItemView(parameter: parameter) { [weak self] in
                 self?.removeParameter(at: index)
@@ -250,7 +272,6 @@ final class EventHistoryViewController: UIViewController {
         
         currentParameters.remove(at: index)
         
-        // Find and remove the corresponding view
         let parameterViews = stackView.arrangedSubviews.compactMap { $0 as? EventParameterItemView }
         if index < parameterViews.count {
             let viewToRemove = parameterViews[index]
@@ -313,15 +334,28 @@ extension EventHistoryViewController: UIPickerViewDataSource, UIPickerViewDelega
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return availableEventTypes.count
+        let count = availableEventTypes.count
+        print("Picker numberOfRows: \(count)")
+        return count
     }
     
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, inComponent component: Int) -> String? {
-        return availableEventTypes[row]
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        guard row < availableEventTypes.count else { 
+            print("Picker titleForRow: row \(row) out of bounds (\(availableEventTypes.count))")
+            return "Error"
+        }
+        let title = availableEventTypes[row]
+        print("Picker titleForRow \(row): \(title)")
+        return title
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        guard row < availableEventTypes.count else { 
+            print("Picker didSelectRow: row \(row) out of bounds")
+            return 
+        }
         let selectedEventType = availableEventTypes[row]
+        print("Picker selected: \(selectedEventType)")
         eventTypeTextField.text = selectedEventType
         loadParametersForEventType(selectedEventType)
         view.endEditing(true)
@@ -333,6 +367,22 @@ extension EventHistoryViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.view.endEditing(true)
         return false
+    }
+    
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        // EventTypeTextField için klavye ile editlemeyi engelle, sadece picker'dan seçim yapılabilsin
+        if textField == eventTypeTextField {
+            return true // Picker view açılabilir ama klavye ile yazılamaz
+        }
+        return true
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        // EventTypeTextField için karakterlerin değiştirilmesini engelle
+        if textField == eventTypeTextField {
+            return false
+        }
+        return true
     }
 }
 
@@ -454,7 +504,7 @@ extension EventHistoryViewController.EventParameterItemView: UIPickerViewDataSou
         return parameter.options.count
     }
     
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, inComponent component: Int) -> String? {
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return parameter.options[row]
     }
     
