@@ -10,11 +10,11 @@ struct GetSDKParamsResponse: Codable {
     let realTimeInAppEnabled: Bool
     let realTimeInAppSessionTimeoutMinutes: Int
     let eventMappings: [EventMapping]
-
+    
     private let inAppFetchIntervalInMin: Int
     private let inAppMinSecBetweenMessages: Int
     private let expiredMessagesFetchIntervalInMin: Int
-
+    
     var fetchIntervalInMin: Double {
         Double(inAppFetchIntervalInMin * 60000)
     }
@@ -73,11 +73,7 @@ struct EventTypeDefinition: Codable {
     let filterConditions: [FilterCondition]?
     let enableClientHistory: Bool?
     let clientHistoryOptions: ClientHistoryOptions?
-}
-
-struct ClientHistoryOptions: Codable {
-    let maxEventCount: Int?
-    let timeWindowInMinutes: Int?
+    let attributes: [EventAttribute]?
 }
 
 struct FilterCondition: Codable {
@@ -92,3 +88,13 @@ struct FilterCondition: Codable {
     }
 }
 
+struct ClientHistoryOptions: Codable {
+    let maxEventCount: Int?
+    let timeWindowInMinutes: Int?
+}
+
+struct EventAttribute: Codable {
+    let name: String?
+    let dataType: String?
+    let tableColumnName: String?
+}
