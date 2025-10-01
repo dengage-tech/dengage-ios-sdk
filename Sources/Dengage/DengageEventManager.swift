@@ -350,13 +350,36 @@ extension DengageEventManager {
         }
     }
     
+    private func transformEventDetailsKeys(matchingEventType: EventTypeDefinition, eventDetails: [String: Any]) -> [String: Any] {
+        // Get attributes for matching event type definition
+        guard let allAttributes = matchingEventType.attributes else { return eventDetails }
+        
+        // Create mapping from tableColumnName to name
+        var keyMappings: [String: String] = [:]
+        for attribute in allAttributes {
+            if let tableColumnName = attribute.tableColumnName,
+               let name = attribute.name {
+                keyMappings[tableColumnName] = name
+            }
+        }
+        
+        // Transform the event details
+        var transformedDetails: [String: Any] = [:]
+        
+        for (key, value) in eventDetails {
+            let newKey = keyMappings[key] ?? key
+            transformedDetails[newKey] = value
+        }
+        
+        return transformedDetails
+    }
+
     private func handleEventSent(tableName: String, key: String, eventDetails: [String: Any]) {
         guard let sdkParameters = config.remoteConfiguration else { return }
         
         guard let eventMapping = sdkParameters.eventMappings.first(where: { $0.eventTableName == tableName }) else { return }
         
         guard let eventTypeDefinitions = eventMapping.eventTypeDefinitions else { return }
-        
         
         let matchingEventType = eventTypeDefinitions.first { eventTypeDefinition in
             // Check if client history is enabled for this event type
@@ -400,6 +423,12 @@ extension DengageEventManager {
             return
         }
         
+        // Transform event details keys first
+        let transformedEventDetails = transformEventDetailsKeys(
+            matchingEventType: eventTypeDefinition,
+            eventDetails: eventDetails
+        )
+        
         let maxEventCount = clientHistoryOptions.maxEventCount ?? Int.max
         let timeWindowInMinutes = clientHistoryOptions.timeWindowInMinutes ?? Int.max
         
@@ -414,7 +443,7 @@ extension DengageEventManager {
             tableName: tableName,
             eventType: eventType,
             key: key,
-            eventDetails: eventDetails,
+            eventDetails: transformedEventDetails,
             timestamp: now
         )
         eventTypeEvents.append(clientEvent)

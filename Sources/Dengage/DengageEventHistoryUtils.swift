@@ -16,8 +16,7 @@ final class DengageEventHistoryUtils {
             guard let currentSession = DengageLocalStorage.shared.getSession() else { return false }
             let currentSessionId = currentSession.sessionId
             eventsInWindow = eventTypeEvents.filter { event in
-                let eventSessionId = event.eventDetails["session_id"] as? String
-                return eventSessionId == currentSessionId
+                return event.sessionId == currentSessionId
             }
         } else {
             // For other time window types, filter by time
@@ -241,3 +240,4 @@ final class DengageEventHistoryUtils {
     }
     
 }
+
