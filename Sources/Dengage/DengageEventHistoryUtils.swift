@@ -146,17 +146,17 @@ final class DengageEventHistoryUtils {
     }
     
     private class func applyEventFilter(event: ClientEvent, filter: EventFilter) -> Bool {
-        guard let fieldValue = event.eventDetails[filter.field] as? String else { return false }
+        guard let fieldValue = event.eventDetails[filter.parameter] as? String else { return false }
         
-        switch filter.op.uppercased() {
+        switch filter.comparison.uppercased() {
         case "EQUALS", "EQ":
-            return filter.values.contains { $0.lowercased() == fieldValue.lowercased() }
+            return handleEqualsComparison(fieldValue: fieldValue, filter: filter)
         case "NOT_EQUALS", "NE":
-            return !filter.values.contains { $0.lowercased() == fieldValue.lowercased() }
+            return !handleEqualsComparison(fieldValue: fieldValue, filter: filter)
         case "IN":
-            return filter.values.contains { $0.lowercased() == fieldValue.lowercased() }
+            return handleEqualsComparison(fieldValue: fieldValue, filter: filter)
         case "NOT_IN":
-            return !filter.values.contains { $0.lowercased() == fieldValue.lowercased() }
+            return !handleEqualsComparison(fieldValue: fieldValue, filter: filter)
         case "LIKE":
             return filter.values.contains { fieldValue.lowercased().contains($0.lowercased()) }
         case "NOT_LIKE":
@@ -182,21 +182,13 @@ final class DengageEventHistoryUtils {
                 fieldValue.lowercased().contains(value.lowercased())
             }
         case "GREATER_THAN", "GT":
-            guard let numFieldValue = Double(fieldValue),
-                  let numFilterValue = Double(filter.values.first ?? "") else { return false }
-            return numFieldValue > numFilterValue
+            return handleNumericComparison(fieldValue: fieldValue, filter: filter) { $0 > $1 }
         case "GREATER_EQUAL", "GTE":
-            guard let numFieldValue = Double(fieldValue),
-                  let numFilterValue = Double(filter.values.first ?? "") else { return false }
-            return numFieldValue >= numFilterValue
+            return handleNumericComparison(fieldValue: fieldValue, filter: filter) { $0 >= $1 }
         case "LESS_THAN", "LT":
-            guard let numFieldValue = Double(fieldValue),
-                  let numFilterValue = Double(filter.values.first ?? "") else { return false }
-            return numFieldValue < numFilterValue
+            return handleNumericComparison(fieldValue: fieldValue, filter: filter) { $0 < $1 }
         case "LESS_EQUAL", "LTE":
-            guard let numFieldValue = Double(fieldValue),
-                  let numFilterValue = Double(filter.values.first ?? "") else { return false }
-            return numFieldValue <= numFilterValue
+            return handleNumericComparison(fieldValue: fieldValue, filter: filter) { $0 <= $1 }
         case "EXISTS":
             return !fieldValue.isEmpty
         case "NOT_EXISTS":
@@ -204,6 +196,48 @@ final class DengageEventHistoryUtils {
         default:
             return false
         }
+    }
+    
+    private class func handleEqualsComparison(fieldValue: String, filter: EventFilter) -> Bool {
+        switch filter.dataType.uppercased() {
+        case "BOOL":
+            let boolFieldValue = parseBoolValue(fieldValue)
+            return filter.values.contains { value in
+                let boolFilterValue = parseBoolValue(value)
+                return boolFieldValue == boolFilterValue
+            }
+        default:
+            return filter.values.contains { $0.lowercased() == fieldValue.lowercased() }
+        }
+    }
+    
+    private class func handleNumericComparison(fieldValue: String, filter: EventFilter, comparison: (Double, Double) -> Bool) -> Bool {
+        guard let filterValue = filter.values.first else { return false }
+        
+        switch filter.dataType.uppercased() {
+        case "INT":
+            guard let numFieldValue = Int(fieldValue),
+                  let numFilterValue = Int(filterValue) else { return false }
+            return comparison(Double(numFieldValue), Double(numFilterValue))
+        case "TEXT":
+            guard let numFieldValue = Double(fieldValue),
+                  let numFilterValue = Double(filterValue) else { return false }
+            return comparison(numFieldValue, numFilterValue)
+        case "BOOL":
+            let boolFieldValue = parseBoolValue(fieldValue)
+            let boolFilterValue = parseBoolValue(filterValue)
+            let fieldInt = boolFieldValue ? 1.0 : 0.0
+            let filterInt = boolFilterValue ? 1.0 : 0.0
+            return comparison(fieldInt, filterInt)
+        default:
+            guard let numFieldValue = Double(fieldValue),
+                  let numFilterValue = Double(filterValue) else { return false }
+            return comparison(numFieldValue, numFilterValue)
+        }
+    }
+    
+    private class func parseBoolValue(_ value: String) -> Bool {
+        return value.lowercased() == "true" || value == "1"
     }
     
 }

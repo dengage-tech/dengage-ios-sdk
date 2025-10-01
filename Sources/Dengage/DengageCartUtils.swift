@@ -83,9 +83,9 @@ final class DengageCartUtils {
     }
     
     private class func applyCartFilter(item: CartItem, filter: EventFilter) -> Bool {
-        guard let fieldValue = getFieldValue(item: item, field: filter.field) else { return false }
+        guard let fieldValue = getFieldValue(item: item, field: filter.parameter) else { return false }
         
-        switch filter.op.uppercased() {
+        switch filter.comparison.uppercased() {
         case "EQUALS", "EQ":
             return filter.values.contains { $0.lowercased() == fieldValue.lowercased() }
         case "NOT_EQUALS", "NE":
@@ -112,7 +112,7 @@ final class DengageCartUtils {
             return !filter.values.contains { fieldValue.lowercased().contains($0.lowercased()) }
         case "CONTAINS_ALL":
             // Special case for category_path - check if all values are present in the path
-            if filter.field == "category_path" {
+            if filter.parameter == "category_path" {
                 return filter.values.allSatisfy { value in
                     fieldValue.lowercased().contains(value.lowercased())
                 }

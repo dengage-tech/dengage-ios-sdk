@@ -173,13 +173,15 @@ struct TimeWindow: Codable {
 }
 
 struct EventFilter: Codable {
-    let field: String
-    let op: String
+    let parameter: String
+    let comparison: String
+    let dataType: String
     let values: [String]
     
     enum CodingKeys: String, CodingKey {
-        case field = "parameter"
-        case op = "comparison"
+        case parameter
+        case comparison
+        case dataType
         case values
     }
 }
