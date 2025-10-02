@@ -35,11 +35,11 @@ final class DengageInAppMessageUtils{
                 }
                 
                 return message.isDisplayTimeAvailable()
-                && operateRealTimeValues(message: message, with: params, config: config)
-                && isInLineInApp(inAppMessage: message, propertyID: propertyId, storyPropertyId: storyPropertyId)
                 && isScreenNameMatching(screenFilters: screenFilters,
                                         screenName: screenName,
                                         logicOperator: message.data.displayCondition.screenNameFilterLogicOperator)
+                && operateRealTimeValues(message: message, with: params, config: config)
+                && isInLineInApp(inAppMessage: message, propertyID: propertyId, storyPropertyId: storyPropertyId)
             }) {
                 return matchedMessage
             }
