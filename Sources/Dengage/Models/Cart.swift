@@ -1,8 +1,8 @@
 import Foundation
 
 public class Cart: NSObject, Codable {
-    let items: [CartItem]
-    let summary: CartSummary
+    public let items: [CartItem]
+    public let summary: CartSummary
     
     public init(items: [CartItem]) {
         self.items = items
@@ -16,25 +16,25 @@ public class Cart: NSObject, Codable {
 }
 
 public class CartItem: NSObject, Codable {
-    let productId: String
-    let productVariantId: String
-    let categoryPath: String
-    let price: Int
-    let discountedPrice: Int
-    let hasDiscount: Bool
-    let hasPromotion: Bool
-    let quantity: Int
-    let attributes: [String: String]
+    public let productId: String
+    public let productVariantId: String
+    public let categoryPath: String
+    public let price: Int
+    public let discountedPrice: Int
+    public let hasDiscount: Bool
+    public let hasPromotion: Bool
+    public let quantity: Int
+    public let attributes: [String: String]
     
     // Calculated fields - these will be computed by the SDK
-    let effectivePrice: Int
-    let lineTotal: Int
-    let discountedLineTotal: Int
-    let effectiveLineTotal: Int
+    public let effectivePrice: Int
+    public let lineTotal: Int
+    public let discountedLineTotal: Int
+    public let effectiveLineTotal: Int
     
     // Normalized fields
-    let categorySegments: [String]
-    let categoryRoot: String
+    public let categorySegments: [String]
+    public let categoryRoot: String
     
     public init(productId: String,
          productVariantId: String,
