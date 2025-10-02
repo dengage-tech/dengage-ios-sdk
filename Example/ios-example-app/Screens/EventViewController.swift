@@ -11,6 +11,7 @@ final class EventViewController: UIViewController {
         view.textColor = .black
         view.delegate = self
         view.text = "page_view_events"
+        view.autocapitalizationType = .none
         return view
     }()
     
@@ -92,6 +93,7 @@ extension EventViewController {
             view.placeholder = "key"
             view.borderStyle = .roundedRect
             view.textColor = .black
+            view.autocapitalizationType = .none
             return view
         }()
         
@@ -100,6 +102,7 @@ extension EventViewController {
             view.placeholder = "value"
             view.borderStyle = .roundedRect
             view.textColor = .black
+            view.autocapitalizationType = .none
             return view
         }()
         
