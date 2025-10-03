@@ -14,8 +14,6 @@ final class CartViewController: UIViewController {
         view.setTitle("Add Item", for: .normal)
         view.addTarget(self, action: #selector(didTapAddItemButton), for: .touchUpInside)
         view.setTitleColor(.blue, for: .normal)
-        view.backgroundColor = .lightGray
-        view.layer.cornerRadius = 8
         return view
     }()
     
@@ -24,8 +22,6 @@ final class CartViewController: UIViewController {
         view.setTitle("Update Cart", for: .normal)
         view.addTarget(self, action: #selector(didTapUpdateCartButton), for: .touchUpInside)
         view.setTitleColor(.blue, for: .normal)
-        view.backgroundColor = .lightGray
-        view.layer.cornerRadius = 8
         return view
     }()
     
@@ -89,30 +85,20 @@ final class CartViewController: UIViewController {
     }
     
     private func loadCurrentCart() {
-        do {
-            let currentCart = Dengage.getCart()
-            cartItems = currentCart.items
-            
-            showToast("Loading cart: \(currentCart.items.count) items")
-            
-            // Clear existing cart item views
-            for view in cartItemsStackView.arrangedSubviews {
-                if view is CartItemView {
-                    cartItemsStackView.removeArrangedSubview(view)
-                    view.removeFromSuperview()
-                }
+        let currentCart = Dengage.getCart()
+        cartItems = currentCart.items
+        showToast("Loading cart: \(currentCart.items.count) items")
+        for view in cartItemsStackView.arrangedSubviews {
+            if view is CartItemView {
+                cartItemsStackView.removeArrangedSubview(view)
+                view.removeFromSuperview()
             }
-            
-            // Add cart item views
-            for (index, cartItem) in cartItems.enumerated() {
-                let cartItemView = CartItemView(cartItem: cartItem) { [weak self] in
-                    self?.removeCartItem(at: index)
-                }
-                cartItemsStackView.addArrangedSubview(cartItemView)
+        }
+        for (_, cartItem) in cartItems.enumerated() {
+            let cartItemView = CartItemView(cartItem: cartItem) { [weak self] viewToRemove in
+                self?.removeCartItemView(viewToRemove)
             }
-            
-        } catch {
-            showToast("Error loading cart: \(error.localizedDescription)")
+            cartItemsStackView.addArrangedSubview(cartItemView)
         }
     }
     
@@ -131,8 +117,8 @@ final class CartViewController: UIViewController {
         
         cartItems.append(newItem)
         
-        let cartItemView = CartItemView(cartItem: newItem) { [weak self] in
-            self?.removeCartItem(at: self?.cartItems.count ?? 0 - 1)
+        let cartItemView = CartItemView(cartItem: newItem) { [weak self] viewToRemove in
+            self?.removeCartItemView(viewToRemove)
         }
         cartItemsStackView.addArrangedSubview(cartItemView)
         
@@ -140,52 +126,44 @@ final class CartViewController: UIViewController {
     }
     
     @objc private func didTapUpdateCartButton() {
-        do {
-            // Get updated items from cart item views
-            let cartItemViews = cartItemsStackView.arrangedSubviews.compactMap { $0 as? CartItemView }
-            let updatedItems = cartItemViews.compactMap { $0.getUpdatedCartItem() }
-            
-            showToast("Retrieved \(updatedItems.count) items from views")
-            
-            // Create new cart with updated items
-            let newCart = Cart(items: updatedItems)
-            
-            // Update cart in SDK
-            Dengage.setCart(cart: newCart)
-            
-            // Update local cart items
-            cartItems = updatedItems
-            
-            showToast("Cart updated successfully!")
-            
-        } catch {
-            showToast("Error updating cart: \(error.localizedDescription)")
-        }
+        let cartItemViews = cartItemsStackView.arrangedSubviews.compactMap { $0 as? CartItemView }
+        let updatedItems = cartItemViews.compactMap { $0.getUpdatedCartItem() }
+        let newCart = Cart(items: updatedItems)
+        Dengage.setCart(cart: newCart)
+        cartItems = updatedItems
+        showToast("Cart updated successfully!")
     }
     
     private func removeCartItem(at index: Int) {
         guard index >= 0 && index < cartItems.count else { return }
-        
         cartItems.remove(at: index)
-        
-        // Remove corresponding view
         let cartItemViews = cartItemsStackView.arrangedSubviews.compactMap { $0 as? CartItemView }
         if index < cartItemViews.count {
             let viewToRemove = cartItemViews[index]
             cartItemsStackView.removeArrangedSubview(viewToRemove)
             viewToRemove.removeFromSuperview()
         }
-        
+        showToast("Item removed")
+    }
+    
+    private func removeCartItemView(_ viewToRemove: CartItemView) {
+        guard let index = cartItemsStackView.arrangedSubviews.firstIndex(of: viewToRemove) else { return }
+        if index < cartItems.count {
+            cartItems.remove(at: index)
+        }
+        cartItemsStackView.removeArrangedSubview(viewToRemove)
+        viewToRemove.removeFromSuperview()
         showToast("Item removed")
     }
     
     private func showToast(_ message: String) {
         let alert = UIAlertController(title: nil, message: message, preferredStyle: .alert)
         present(alert, animated: true)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             alert.dismiss(animated: true)
         }
     }
+
 }
 
 // MARK: - CartItemView
@@ -299,10 +277,10 @@ extension CartViewController {
             return view
         }()
         
-        private let onRemove: () -> Void
+        private let onRemove: (CartItemView) -> Void
         private var cartItem: CartItem
         
-        init(cartItem: CartItem, onRemove: @escaping () -> Void) {
+        init(cartItem: CartItem, onRemove: @escaping (CartItemView) -> Void) {
             self.cartItem = cartItem
             self.onRemove = onRemove
             super.init(frame: .zero)
@@ -310,7 +288,7 @@ extension CartViewController {
             populateFields()
             setupTextFieldTargets()
         }
-        
+
         required init?(coder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
         }
@@ -441,7 +419,7 @@ extension CartViewController {
         }
         
         @objc private func didTapRemoveButton() {
-            onRemove()
+            onRemove(self)
         }
     }
 }
