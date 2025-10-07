@@ -672,6 +672,14 @@ final class DengageInAppMessageUtils{
             
             let ruleParams = ruleParam.compactMap{Double($0)}
             return ruleParams.first{userParamDouble > $0 } == nil
+        case .CONTAINS_ALL:
+            return ruleParam.allSatisfy { ruleValue in
+                userParam.lowercased().contains(ruleValue.lowercased())
+            }
+        case .CONTAINS_ANY:
+            return ruleParam.contains { ruleValue in
+                userParam.lowercased().contains(ruleValue.lowercased())
+            }
         default:
             return true
         }

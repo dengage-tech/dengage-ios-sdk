@@ -111,15 +111,8 @@ final class DengageCartUtils {
         case "NOT_CONTAINS":
             return !filter.values.contains { fieldValue.lowercased().contains($0.lowercased()) }
         case "CONTAINS_ALL":
-            // Special case for category_path - check if all values are present in the path
-            if filter.parameter == "category_path" {
-                return filter.values.allSatisfy { value in
-                    fieldValue.lowercased().contains(value.lowercased())
-                }
-            } else {
-                return filter.values.allSatisfy { value in
-                    fieldValue.lowercased().contains(value.lowercased())
-                }
+            return filter.values.allSatisfy { value in
+                fieldValue.lowercased().contains(value.lowercased())
             }
         case "CONTAINS_ANY":
             return filter.values.contains { value in

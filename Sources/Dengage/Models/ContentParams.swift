@@ -227,6 +227,8 @@ enum ComparisonType: String, Codable {
     case BETWEEN
     case LATER_THAN
     case LATER_EQUAL
+    case CONTAINS_ALL
+    case CONTAINS_ANY
 }
 
 enum RulesOperatorType: String, Codable {
