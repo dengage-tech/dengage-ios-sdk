@@ -95,7 +95,7 @@ final class EventHistoryViewController: UIViewController {
     
     private var eventTypesMap: [String: EventTypeConfig] = [:]
     private var availableEventTypes: [String] = []
-    private let allowedEventTypes: Set<String> = ["category_view", "product_view", "remove_from_basket", "add_to_basket"]
+    //private let allowedEventTypes: Set<String> = ["category_view", "product_view", "remove_from_basket", "add_to_basket"]
     private var currentParameters: [EventParameter] = []
     
     override func viewDidLoad() {
@@ -146,8 +146,9 @@ final class EventHistoryViewController: UIViewController {
             if let eventTypeDefinitions = eventMapping.eventTypeDefinitions {
                 for (_, eventTypeDefinition) in eventTypeDefinitions.enumerated() {
                     guard let eventType = eventTypeDefinition.eventType,
-                          !eventType.isEmpty,
-                          allowedEventTypes.contains(eventType) else {
+                          !eventType.isEmpty
+                          //allowedEventTypes.contains(eventType)
+                    else {
                         continue
                     }
                                         
@@ -395,6 +396,7 @@ extension EventHistoryViewController {
             view.placeholder = "key"
             view.borderStyle = .roundedRect
             view.textColor = .black
+            view.autocapitalizationType = .none
             return view
         }()
         
@@ -403,6 +405,7 @@ extension EventHistoryViewController {
             view.placeholder = "value"
             view.borderStyle = .roundedRect
             view.textColor = .black
+            view.autocapitalizationType = .none
             return view
         }()
         
