@@ -134,6 +134,18 @@ final class DengageCartUtils {
             guard let numFieldValue = Double(fieldValue),
                   let numFilterValue = Double(filter.values.first ?? "") else { return false }
             return numFieldValue <= numFilterValue
+        case "BETWEEN":
+            guard filter.values.count >= 2,
+                  let numFieldValue = Double(fieldValue),
+                  let minValue = Double(filter.values[0]),
+                  let maxValue = Double(filter.values[1]) else { return false }
+            return numFieldValue >= minValue && numFieldValue <= maxValue
+        case "NOT_BETWEEN":
+            guard filter.values.count >= 2,
+                  let numFieldValue = Double(fieldValue),
+                  let minValue = Double(filter.values[0]),
+                  let maxValue = Double(filter.values[1]) else { return false }
+            return !(numFieldValue >= minValue && numFieldValue <= maxValue)
         case "EXISTS":
             return !fieldValue.isEmpty
         case "NOT_EXISTS":

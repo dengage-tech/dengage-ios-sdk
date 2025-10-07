@@ -188,6 +188,12 @@ final class DengageEventHistoryUtils {
             return handleNumericComparison(fieldValue: fieldValue, filter: filter) { $0 < $1 }
         case "LESS_EQUAL", "LTE":
             return handleNumericComparison(fieldValue: fieldValue, filter: filter) { $0 <= $1 }
+        case "BETWEEN":
+            guard filter.values.count >= 2 else { return false }
+            return handleBetweenComparison(fieldValue: fieldValue, filter: filter, isNegated: false)
+        case "NOT_BETWEEN":
+            guard filter.values.count >= 2 else { return false }
+            return handleBetweenComparison(fieldValue: fieldValue, filter: filter, isNegated: true)
         case "EXISTS":
             return !fieldValue.isEmpty
         case "NOT_EXISTS":
@@ -232,6 +238,31 @@ final class DengageEventHistoryUtils {
             guard let numFieldValue = Double(fieldValue),
                   let numFilterValue = Double(filterValue) else { return false }
             return comparison(numFieldValue, numFilterValue)
+        }
+    }
+    
+    private class func handleBetweenComparison(fieldValue: String, filter: EventFilter, isNegated: Bool) -> Bool {
+        guard filter.values.count >= 2 else { return false }
+        
+        switch filter.dataType.uppercased() {
+        case "INT":
+            guard let numFieldValue = Int(fieldValue),
+                  let minValue = Int(filter.values[0]),
+                  let maxValue = Int(filter.values[1]) else { return false }
+            let isBetween = numFieldValue >= minValue && numFieldValue <= maxValue
+            return isNegated ? !isBetween : isBetween
+        case "TEXT":
+            guard let numFieldValue = Double(fieldValue),
+                  let minValue = Double(filter.values[0]),
+                  let maxValue = Double(filter.values[1]) else { return false }
+            let isBetween = numFieldValue >= minValue && numFieldValue <= maxValue
+            return isNegated ? !isBetween : isBetween
+        default:
+            guard let numFieldValue = Double(fieldValue),
+                  let minValue = Double(filter.values[0]),
+                  let maxValue = Double(filter.values[1]) else { return false }
+            let isBetween = numFieldValue >= minValue && numFieldValue <= maxValue
+            return isNegated ? !isBetween : isBetween
         }
     }
     
