@@ -33,6 +33,7 @@ public final class StoryDisplayHeaderView: UIView {
     
     private let detailView: UIView = {
         let view = UIView()
+       // view.backgroundColor = .green
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -47,6 +48,7 @@ public final class StoryDisplayHeaderView: UIView {
     private lazy var closeButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
+       // button.backgroundColor = .orange
         if let crossImage = UIImage.drawCrossImage(
             size: CGSize(width: 20, height: 20), lineColor: .white, lineWidth: 1.5)
         {
@@ -93,7 +95,7 @@ public final class StoryDisplayHeaderView: UIView {
         let pv = getProgressView
         NSLayoutConstraint.activate([
             pv.sLeftAnchor.constraint(equalTo: self.sLeftAnchor),
-            pv.topAnchor.constraint(equalTo: self.topAnchor, constant: UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 20),
+            pv.topAnchor.constraint(equalTo: self.topAnchor),
             self.sRightAnchor.constraint(equalTo: pv.sRightAnchor),
             pv.heightAnchor.constraint(equalToConstant: 10)
             ])
@@ -102,7 +104,7 @@ public final class StoryDisplayHeaderView: UIView {
             snaperImageView.widthAnchor.constraint(equalToConstant: 40),
             snaperImageView.heightAnchor.constraint(equalToConstant: 40),
             snaperImageView.sLeftAnchor.constraint(equalTo: self.sLeftAnchor, constant: 10),
-            snaperImageView.topAnchor.constraint(equalTo: pv.bottomAnchor, constant: 8),
+            snaperImageView.topAnchor.constraint(equalTo: pv.bottomAnchor, constant: 12),
             detailView.sLeftAnchor.constraint(equalTo: snaperImageView.sRightAnchor, constant: 10)
             ])
         
@@ -116,9 +118,10 @@ public final class StoryDisplayHeaderView: UIView {
         NSLayoutConstraint.activate([
             closeButton.sLeftAnchor.constraint(equalTo: detailView.sRightAnchor, constant: 10),
             closeButton.sCenterYAnchor.constraint(equalTo: snaperImageView.sCenterYAnchor),
+          //  closeButton.topAnchor.constraint(equalTo:pv.bottomAnchor, constant: 8),
             closeButton.sRightAnchor.constraint(equalTo: self.sRightAnchor),
             closeButton.widthAnchor.constraint(equalToConstant: 60),
-            closeButton.heightAnchor.constraint(equalToConstant: 80)
+            closeButton.heightAnchor.constraint(equalToConstant: 60)
             ])
         NSLayoutConstraint.activate([
             snaperNameLabel.sLeftAnchor.constraint(equalTo: detailView.sLeftAnchor),

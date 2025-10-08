@@ -43,6 +43,7 @@ public final class StoryDisplayViewController: UIViewController, UIGestureRecogn
         viewModel = StoryDisplayViewModel.init(self.storyCovers)
         _view.snapsCollectionView.decelerationRate = .fast
         dismissGesture.delegate = self
+        dismissGesture.cancelsTouchesInView = false   // 👈 important
         dismissGesture.addTarget(self, action: #selector(didSwipeDown(_:)))
         _view.snapsCollectionView.addGestureRecognizer(dismissGesture)
     }

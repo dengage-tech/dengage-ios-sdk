@@ -182,7 +182,8 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
         NSLayoutConstraint.activate([
             storyHeaderView.sLeftAnchor.constraint(equalTo: contentView.sLeftAnchor),
             contentView.sRightAnchor.constraint(equalTo: storyHeaderView.sRightAnchor),
-            storyHeaderView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            storyHeaderView.topAnchor.constraint(equalTo: self.topAnchor, constant: UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 20),
+            
             storyHeaderView.heightAnchor.constraint(equalToConstant: 80)
         ])
         
