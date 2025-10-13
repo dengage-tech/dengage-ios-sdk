@@ -624,7 +624,8 @@ final class DengageInAppMessageUtils{
                            ruleParam: criterion.values,
                            userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .PUSH_PERMISSION:
-            actualValue = config.permission.description
+            let existsDeviceToken: Bool = !(config.deviceToken?.isEmpty ?? true)
+            actualValue = (existsDeviceToken && config.permission).description
             result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
