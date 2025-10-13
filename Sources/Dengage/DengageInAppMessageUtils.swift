@@ -845,6 +845,32 @@ final class DengageInAppMessageUtils{
             return ruleParam.contains { ruleValue in
                 userParam.lowercased().contains(ruleValue.lowercased())
             }
+        case .BETWEEN:
+            guard
+                dataType == .DATETIME || dataType == .INT,
+                ruleParam.count >= 2,
+                let userParamDouble = Double(userParam),
+                let firstValue = Double(ruleParam[0]),
+                let lastValue = Double(ruleParam[1])
+            else {
+                return false
+            }
+            let minValue = min(firstValue, lastValue)
+            let maxValue = max(firstValue, lastValue)
+            return userParamDouble >= minValue && userParamDouble <= maxValue
+        case .NOT_BETWEEN:
+            guard
+                dataType == .DATETIME || dataType == .INT,
+                ruleParam.count >= 2,
+                let userParamDouble = Double(userParam),
+                let firstValue = Double(ruleParam[0]),
+                let lastValue = Double(ruleParam[1])
+            else {
+                return false
+            }
+            let minValue = min(firstValue, lastValue)
+            let maxValue = max(firstValue, lastValue)
+            return !(userParamDouble >= minValue && userParamDouble <= maxValue)
         default:
             return true
         }

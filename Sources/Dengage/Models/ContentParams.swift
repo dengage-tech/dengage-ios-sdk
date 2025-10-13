@@ -225,6 +225,7 @@ enum ComparisonType: String, Codable {
     case LESS_THAN
     case LESS_EQUAL
     case BETWEEN
+    case NOT_BETWEEN
     case LATER_THAN
     case LATER_EQUAL
     case CONTAINS_ALL
