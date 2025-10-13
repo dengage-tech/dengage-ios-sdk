@@ -921,6 +921,7 @@ extension DengageInAppMessageManager {
     
     @objc private func willEnterForeground() {
         fetchInAppMessages()
+        Dengage.dengage?.eventManager.cleanupClientEvents()
         
         DengageLocalStorage.shared.set(value: Date().timeIntervalSince1970, for: .lastSessionStartTime)
         

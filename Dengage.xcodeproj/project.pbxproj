@@ -15,6 +15,7 @@
 		8800689C2C933CC300881F71 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8800689A2C933CC300881F71 /* SwiftyJSON.swift */; };
 		8800689D2C933CC300881F71 /* SwiftyJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 8800689B2C933CC300881F71 /* SwiftyJSON.h */; };
 		880B9D0C2E9CB8AF00EB87DB /* DebugLogRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880B9D0A2E9CB8AF00EB87DB /* DebugLogRequest.swift */; };
+		880B9D122E9D017700EB87DB /* ClientPageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880B9D112E9D017700EB87DB /* ClientPageInfo.swift */; };
 		8815B7362D6E0B26003E9B31 /* DengageWidgetAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8815B72F2D6E0B24003E9B31 /* DengageWidgetAttributes.swift */; };
 		8817092E2C91807100FA8B63 /* GeofenceEventSignalRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817092B2C91807100FA8B63 /* GeofenceEventSignalRequest.swift */; };
 		8817092F2C91807100FA8B63 /* GetGeofencesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817092C2C91807100FA8B63 /* GetGeofencesRequest.swift */; };
@@ -174,6 +175,7 @@
 		8800689B2C933CC300881F71 /* SwiftyJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwiftyJSON.h; sourceTree = "<group>"; };
 		880138262D14258D00F06B40 /* Location.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Location.gpx; path = "Example/ios-example-app/Location.gpx"; sourceTree = "<group>"; };
 		880B9D0A2E9CB8AF00EB87DB /* DebugLogRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogRequest.swift; sourceTree = "<group>"; };
+		880B9D112E9D017700EB87DB /* ClientPageInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientPageInfo.swift; sourceTree = "<group>"; };
 		8815B72F2D6E0B24003E9B31 /* DengageWidgetAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageWidgetAttributes.swift; sourceTree = "<group>"; };
 		881709152C91803E00FA8B63 /* DengageCLLocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageCLLocation.swift; sourceTree = "<group>"; };
 		881709162C91803E00FA8B63 /* DengageGeofenceCluster.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageGeofenceCluster.swift; sourceTree = "<group>"; };
@@ -518,6 +520,7 @@
 				A0765BA427CEB4700007215B /* CarouselItem.swift */,
 				8843892E2E706B4800422E78 /* Cart.swift */,
 				884389262E703B5600422E78 /* ClientEvent.swift */,
+				880B9D112E9D017700EB87DB /* ClientPageInfo.swift */,
 				A0765BA527CEB4700007215B /* ContentParams.swift */,
 				A0765BA327CEB4700007215B /* DengageMessage.swift */,
 				A0765BA227CEB4700007215B /* InAppMessage.swift */,
@@ -826,6 +829,7 @@
 				A0765BD427CEB4700007215B /* DengageInboxManager.swift in Sources */,
 				88E93AE32C923AC600EE3F5E /* StoryProgressView.swift in Sources */,
 				A0765BC427CEB4700007215B /* DengageSessionManager.swift in Sources */,
+				880B9D122E9D017700EB87DB /* ClientPageInfo.swift in Sources */,
 				A0765BCB27CEB4700007215B /* TestInAppMessageViewController.swift in Sources */,
 				A0765BDC27CEB4700007215B /* PushContent.swift in Sources */,
 				881709362C91808800FA8B63 /* GetRealTimeMesagesRequest.swift in Sources */,

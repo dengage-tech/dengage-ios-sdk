@@ -177,6 +177,95 @@ extension DengageEventManager {
         }
         sendEventRequest(table: eventTable, key: config.applicationIdentifier, params: params)
     }
+    
+    func cleanupClientEvents() {
+        Logger.log(message: "cleanupClientEvents has been called")
+        let currentTime = Date().timeIntervalSince1970 * 1000 // Convert to milliseconds
+        let lastCleanupTime = DengageLocalStorage.shared.value(for: .clientEventsLastCleanupTime) as? TimeInterval ?? 0
+        
+        // Only cleanup if it's been more than 10 minutes since last cleanup
+        let cleanupInterval: TimeInterval = 10 * 60 * 1000 // 10 minutes in milliseconds
+        if currentTime - lastCleanupTime < cleanupInterval {
+            return
+        }
+        
+        guard let sdkParameters = config.remoteConfiguration else { return }
+        
+        var clientEvents = DengageLocalStorage.shared.getClientEvents()
+        var hasChanges = false
+        
+        // Get all valid event types from eventMappings
+        let validEventTypes = Set(sdkParameters.eventMappings
+            .compactMap { $0.eventTypeDefinitions }
+            .flatMap { $0 }
+            .compactMap { $0.eventType })
+        
+        // Add missing valid event types with empty lists
+        for eventType in validEventTypes {
+            if clientEvents[eventType] == nil {
+                clientEvents[eventType] = []
+                hasChanges = true
+                Logger.log(message: "Added missing event type: \(eventType) with empty list")
+            }
+        }
+        
+        // Remove events that are no longer in eventMappings
+        let orphanedEventTypes = clientEvents.keys.filter { eventType in
+            !validEventTypes.contains(eventType)
+        }
+        
+        for eventType in orphanedEventTypes {
+            clientEvents.removeValue(forKey: eventType)
+            hasChanges = true
+            Logger.log(message: "Removed orphaned event type: \(eventType) (not found in eventMappings)")
+        }
+        
+        // Process remaining valid event types
+        for (eventType, eventTypeEvents) in clientEvents {
+            if !eventTypeEvents.isEmpty {
+                let matchingEventTypeDefinition = sdkParameters.eventMappings
+                    .compactMap { $0.eventTypeDefinitions }
+                    .flatMap { $0 }
+                    .first { $0.eventType == eventType }
+                
+                if let definition = matchingEventTypeDefinition, definition.enableClientHistory == true {
+                    if let clientHistoryOptions = definition.clientHistoryOptions {
+                        let maxEventCount = clientHistoryOptions.maxEventCount ?? Int.max
+                        let timeWindowInMinutes = clientHistoryOptions.timeWindowInMinutes ?? Int.max
+                        
+                        let timeThreshold = currentTime - Double(timeWindowInMinutes * 60 * 1000)
+                        let filteredEvents = eventTypeEvents.filter { $0.timestamp >= timeThreshold }
+                        
+                        // Keep only the latest maxEventCount events
+                        let finalEvents: [ClientEvent]
+                        if filteredEvents.count > maxEventCount {
+                            finalEvents = Array(filteredEvents.sorted { $0.timestamp > $1.timestamp }.prefix(maxEventCount))
+                        } else {
+                            finalEvents = filteredEvents
+                        }
+                        
+                        // Update if there are changes
+                        if finalEvents.count != eventTypeEvents.count {
+                            clientEvents[eventType] = finalEvents
+                            hasChanges = true
+                            Logger.log(message: "Cleaned up events for type: \(eventType), removed: \(eventTypeEvents.count - finalEvents.count) events")
+                        }
+                    }
+                } else {
+                    // Remove events for event types that have enableClientHistory = false
+                    clientEvents.removeValue(forKey: eventType)
+                    hasChanges = true
+                    Logger.log(message: "Removed events for type: \(eventType) (client history disabled)")
+                }
+            }
+        }
+        
+        // Save changes and update cleanup time
+        if hasChanges {
+            DengageLocalStorage.shared.saveClientEvents(clientEvents)
+        }
+        DengageLocalStorage.shared.set(value: currentTime, for: .clientEventsLastCleanupTime)
+    }
 }
 
 // MARK: - Event
@@ -441,9 +530,7 @@ extension DengageEventManager {
         var clientEvents = DengageLocalStorage.shared.getClientEvents()
         var eventTypeEvents = clientEvents[eventType] ?? []
         
-        let now = Date().timeIntervalSince1970 * 1000 // Convert to milliseconds
-        let timeThreshold = now - Double(timeWindowInMinutes * 60 * 1000)
-        eventTypeEvents = eventTypeEvents.filter { $0.timestamp >= timeThreshold }
+        let now = Date().timeIntervalSince1970 * 1000
         
         let clientEvent = ClientEvent(
             tableName: tableName,
@@ -453,11 +540,7 @@ extension DengageEventManager {
             timestamp: now
         )
         eventTypeEvents.append(clientEvent)
-        
-        if eventTypeEvents.count > maxEventCount {
-            eventTypeEvents = Array(eventTypeEvents.sorted(by: { $0.timestamp > $1.timestamp }).prefix(maxEventCount))
-        }
-        
+
         clientEvents[eventType] = eventTypeEvents
         DengageLocalStorage.shared.saveClientEvents(clientEvents)
         
@@ -509,6 +592,7 @@ protocol DengageEventProtocolInterface: AnyObject {
     func addToWithList(parameters: [String: Any])
     func removeFromWithList(parameters: [String: Any])
     func sendCustomEvent(eventTable: String, parameters: [String: Any])
+    func cleanupClientEvents()
 }
 
 enum DengageInternalTableName: String{

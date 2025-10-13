@@ -269,6 +269,7 @@ extension DengageManager {
                 self.inAppManager.fetchInAppMessages()
                 self.sendFirstLaunchTimeIfNeeded()
                 self.inAppManager.fetchInAppExpiredMessageIds()
+                self.eventManager.cleanupClientEvents()
 
             case .failure:
                 Logger.log(message: "SDK PARAMS Config fetchin failed")
