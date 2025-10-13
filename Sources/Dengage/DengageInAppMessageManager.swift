@@ -434,10 +434,74 @@ extension DengageInAppMessageManager {
                         self?.showInAppMessage(inAppMessage: message, couponCode: couponCode)
                     } else {
                         Logger.log(message: "No coupon code received from server")
+                        self?.sendCouponValidationFailureLog(
+                            couponContent: listKey,
+                            errorMessage: "No coupon code received from server",
+                            inAppMessage: message,
+                            screenName: nil
+                        )
                     }
                 case .failure(let error):
                     Logger.log(message: "Coupon assignment failed: \(error.localizedDescription)")
+                    self?.sendCouponValidationFailureLog(
+                        couponContent: listKey,
+                        errorMessage: error.localizedDescription,
+                        inAppMessage: message,
+                        screenName: nil
+                    )
                 }
+            }
+        }
+    }
+    
+    private func sendCouponValidationFailureLog(
+        couponContent: String,
+        errorMessage: String,
+        inAppMessage: InAppMessage,
+        screenName: String?
+    ) {
+        DispatchQueue.global(qos: .background).async { [weak self] in
+            guard let self = self else { return }
+            
+            guard let debugDeviceIds = self.config.remoteConfiguration?.debugDeviceIds,
+                  debugDeviceIds.contains(self.config.applicationIdentifier) else {
+                return
+            }
+            
+            do {
+                let traceId = UUID().uuidString
+                
+                let debugLog = DebugLog(
+                    traceId: traceId,
+                    appGuid: self.config.remoteConfiguration?.appId,
+                    appId: self.config.remoteConfiguration?.appId,
+                    account: self.config.remoteConfiguration?.accountName,
+                    device: self.config.applicationIdentifier,
+                    sessionId: self.sessionManager.currentSessionId,
+                    sdkVersion: SDK_VERSION,
+                    currentCampaignList: [],
+                    campaignId: inAppMessage.id,
+                    campaignType: inAppMessage.data.isRealTime ? "realtime" : "bulk",
+                    sendId: nil,
+                    message: "Coupon validation failed: \(couponContent) - \(errorMessage)",
+                    context: ["coupon_code": couponContent],
+                    contactKey: self.config.getContactKey(),
+                    channel: "ios",
+                    currentRules: [:]
+                )
+                
+                let request = DebugLogRequest(screenName: screenName ?? "unknown", debugLog: debugLog)
+                
+                self.apiClient.send(request: request) { result in
+                    switch result {
+                    case .success:
+                        Logger.log(message: "Coupon validation failure debug log sent successfully")
+                    case .failure(let error):
+                        Logger.log(message: "Error sending coupon validation failure debug log: \(error.localizedDescription)")
+                    }
+                }
+            } catch {
+                Logger.log(message: "Error creating coupon validation failure debug log: \(error.localizedDescription)")
             }
         }
     }

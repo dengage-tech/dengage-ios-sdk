@@ -47,7 +47,7 @@ final public class DengageNetworking {
                 }
                 
                 do{
-                    if T.Type.self == EventRequest.Type.self {
+                    if T.Type.self == EventRequest.Type.self || T.Type.self == DebugLogRequest.Type.self {
                         let encodedJSON = try JSONEncoder().encode("{}")
                         
                         let responseObject = try decoder.decode(T.Response.self, from: encodedJSON)

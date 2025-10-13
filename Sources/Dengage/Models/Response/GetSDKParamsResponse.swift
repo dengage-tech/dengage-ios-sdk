@@ -10,6 +10,7 @@ public struct GetSDKParamsResponse: Codable {
     let realTimeInAppEnabled: Bool
     let realTimeInAppSessionTimeoutMinutes: Int
     public let eventMappings: [EventMapping]
+    let debugDeviceIds: [String]?
     
     private let inAppFetchIntervalInMin: Int
     private let inAppMinSecBetweenMessages: Int
@@ -41,6 +42,7 @@ public struct GetSDKParamsResponse: Codable {
         realTimeInAppEnabled = (try? container.decode(Bool.self, forKey: .realTimeInAppEnabled)) ?? false
         realTimeInAppSessionTimeoutMinutes = (try? container.decode(Int.self, forKey: .realTimeInAppSessionTimeoutMinutes)) ?? 1800
         eventMappings = (try? container.decode([EventMapping].self, forKey: .eventMappings)) ?? []
+        debugDeviceIds = try? container.decode([String].self, forKey: .debugDeviceIds)
     }
     
     enum CodingKeys: String, CodingKey {
@@ -56,6 +58,7 @@ public struct GetSDKParamsResponse: Codable {
         case realTimeInAppEnabled
         case realTimeInAppSessionTimeoutMinutes
         case eventMappings
+        case debugDeviceIds
     }
 }
 
