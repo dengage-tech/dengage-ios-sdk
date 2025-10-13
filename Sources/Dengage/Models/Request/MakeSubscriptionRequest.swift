@@ -26,7 +26,7 @@ struct MakeSubscriptionRequest: APIRequest {
                           "partner_device_id": config.getPartnerDeviceID() ?? "",
                           "advertisingId" : config.advertisingIdentifier as Any,
                           "locationPermission" : config.getLocationPermission() ?? "",
-                          "trackingPermission" : ""]
+                          "trackingPermission" : config.advertisingIdentifier.isEmpty ? false: true]
         return parameters.json
     }
     
