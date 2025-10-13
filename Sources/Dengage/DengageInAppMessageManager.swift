@@ -468,41 +468,39 @@ extension DengageInAppMessageManager {
                 return
             }
             
-            do {
-                let traceId = UUID().uuidString
-                
-                let debugLog = DebugLog(
-                    traceId: traceId,
-                    appGuid: self.config.remoteConfiguration?.appId,
-                    appId: self.config.remoteConfiguration?.appId,
-                    account: self.config.remoteConfiguration?.accountName,
-                    device: self.config.applicationIdentifier,
-                    sessionId: self.sessionManager.currentSessionId,
-                    sdkVersion: SDK_VERSION,
-                    currentCampaignList: [],
-                    campaignId: inAppMessage.id,
-                    campaignType: inAppMessage.data.isRealTime ? "realtime" : "bulk",
-                    sendId: nil,
-                    message: "Coupon validation failed: \(couponContent) - \(errorMessage)",
-                    context: ["coupon_code": couponContent],
-                    contactKey: self.config.getContactKey(),
-                    channel: "ios",
-                    currentRules: [:]
-                )
-                
-                let request = DebugLogRequest(screenName: screenName ?? "unknown", debugLog: debugLog)
-                
-                self.apiClient.send(request: request) { result in
-                    switch result {
-                    case .success:
-                        Logger.log(message: "Coupon validation failure debug log sent successfully")
-                    case .failure(let error):
-                        Logger.log(message: "Error sending coupon validation failure debug log: \(error.localizedDescription)")
-                    }
+            let traceId = UUID().uuidString
+            let campaignId = inAppMessage.data.publicId ?? inAppMessage.id
+            
+            let debugLog = DebugLog(
+                traceId: traceId,
+                appGuid: self.config.remoteConfiguration?.appId,
+                appId: self.config.remoteConfiguration?.appId,
+                account: self.config.remoteConfiguration?.accountName,
+                device: self.config.applicationIdentifier,
+                sessionId: self.sessionManager.currentSessionId,
+                sdkVersion: SDK_VERSION,
+                currentCampaignList: [],
+                campaignId: campaignId,
+                campaignType: inAppMessage.data.isRealTime ? "realtime" : "bulk",
+                sendId: nil,
+                message: "Coupon validation failed: \(couponContent) - \(errorMessage) traceId: \(traceId) campaignId: \(campaignId)",
+                context: ["coupon_code": couponContent],
+                contactKey: self.config.getContactKey() ?? "",
+                channel: "ios",
+                currentRules: [:]
+            )
+            
+            let request = DebugLogRequest(screenName: screenName ?? "unknown", debugLog: debugLog)
+            
+            self.apiClient.send(request: request) { result in
+                switch result {
+                case .success:
+                    Logger.log(message: "Coupon validation failure debug log sent successfully")
+                case .failure(let error):
+                    Logger.log(message: "Error sending coupon validation failure debug log: \(error.localizedDescription)")
                 }
-            } catch {
-                Logger.log(message: "Error creating coupon validation failure debug log: \(error.localizedDescription)")
             }
+            
         }
     }
 

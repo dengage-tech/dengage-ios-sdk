@@ -163,49 +163,48 @@ final class DengageInAppMessageUtils{
         config: DengageConfiguration
     ) {
         DispatchQueue.global(qos: .background).async {
-            do {
-                let sessionManager = DengageSessionManager(config: config)
-                
-                var displayConditionJsonString = ""
-                if let displayConditionJson = try? JSONEncoder().encode(inAppMessage.data.displayCondition) {
-                    displayConditionJsonString = String(data: displayConditionJson, encoding: .utf8) ?? ""
-                }
-                
-                let debugLog = DebugLog(
-                    traceId: traceId,
-                    appGuid: config.remoteConfiguration?.appId,
-                    appId: config.remoteConfiguration?.appId,
-                    account: config.remoteConfiguration?.accountName,
-                    device: config.applicationIdentifier,
-                    sessionId: sessionManager.currentSessionId,
-                    sdkVersion: SDK_VERSION,
-                    currentCampaignList: currentCampaignList,
-                    campaignId: inAppMessage.data.publicId ?? inAppMessage.id,
-                    campaignType: inAppMessage.data.isRealTime ? "realtime" : "bulk",
-                    sendId: inAppMessage.data.isRealTime ? nil : inAppMessage.id,
-                    message: matched ? "Campaign matched for evaluation" : "Campaign unmatched for evaluation",
-                    context: context,
-                    contactKey: config.getContactKey(),
-                    channel: "ios",
-                    currentRules: [
-                        "displayCondition": displayConditionJsonString
-                    ]
-                )
-                
-                let request = DebugLogRequest(screenName: screenName ?? "unknown", debugLog: debugLog)
-                let apiClient = DengageNetworking(config: config)
-                
-                apiClient.send(request: request) { result in
-                    switch result {
-                    case .success:
-                        Logger.log(message: "Debug log sent successfully")
-                    case .failure(let error):
-                        Logger.log(message: "Error sending debug log: \(error.localizedDescription)")
-                    }
-                }
-            } catch {
-                Logger.log(message: "Error creating debug log: \(error.localizedDescription)")
+            let sessionManager = DengageSessionManager(config: config)
+            
+            var displayConditionJsonString = ""
+            if let displayConditionJson = try? JSONEncoder().encode(inAppMessage.data.displayCondition) {
+                displayConditionJsonString = String(data: displayConditionJson, encoding: .utf8) ?? ""
             }
+            let campaignId = inAppMessage.data.publicId ?? inAppMessage.id
+            
+            let debugLog = DebugLog(
+                traceId: traceId,
+                appGuid: config.remoteConfiguration?.appId,
+                appId: config.remoteConfiguration?.appId,
+                account: config.remoteConfiguration?.accountName,
+                device: config.applicationIdentifier,
+                sessionId: sessionManager.currentSessionId,
+                sdkVersion: SDK_VERSION,
+                currentCampaignList: currentCampaignList,
+                campaignId: campaignId,
+                campaignType: inAppMessage.data.isRealTime ? "realtime" : "bulk",
+                sendId: inAppMessage.data.isRealTime ? nil : inAppMessage.id,
+                message: matched ? "Campaign matched for evaluation  traceId: \(traceId) campaignId: \(campaignId)"
+                    : "Campaign unmatched for evaluation traceId: \(traceId) campaignId: \(campaignId)",
+                context: context,
+                contactKey: config.getContactKey(),
+                channel: "ios",
+                currentRules: [
+                    "displayCondition": displayConditionJsonString
+                ]
+            )
+            
+            let request = DebugLogRequest(screenName: screenName ?? "unknown", debugLog: debugLog)
+            let apiClient = DengageNetworking(config: config)
+            
+            apiClient.send(request: request) { result in
+                switch result {
+                case .success:
+                    Logger.log(message: "Debug log sent successfully")
+                case .failure(let error):
+                    Logger.log(message: "Error sending debug log: \(error.localizedDescription)")
+                }
+            }
+            
         }
     }
     
