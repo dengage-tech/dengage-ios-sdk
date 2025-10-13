@@ -25,6 +25,7 @@ struct DebugLogRequest: APIRequest {
     }
 }
 
+
 struct DebugLog: Codable {
     let traceId: String
     let appGuid: String?
@@ -41,7 +42,7 @@ struct DebugLog: Codable {
     let context: [String: String]
     let contactKey: String?
     let channel: String
-    let currentRules: String
+    let currentRules: [String: String]
     
     enum CodingKeys: String, CodingKey {
         case traceId = "trace_id"
@@ -77,7 +78,7 @@ struct DebugLog: Codable {
          context: [String: String],
          contactKey: String?,
          channel: String,
-         currentRules: [String: Any]) {
+         currentRules: [String: String]) {
         
         self.traceId = traceId
         self.appGuid = appGuid
@@ -94,13 +95,6 @@ struct DebugLog: Codable {
         self.context = context
         self.contactKey = contactKey
         self.channel = channel
-        
-        // Convert [String: Any] to JSON string
-        if let jsonData = try? JSONSerialization.data(withJSONObject: currentRules),
-           let jsonString = String(data: jsonData, encoding: .utf8) {
-            self.currentRules = jsonString
-        } else {
-            self.currentRules = "{}"
-        }
+        self.currentRules = currentRules
     }
 }
