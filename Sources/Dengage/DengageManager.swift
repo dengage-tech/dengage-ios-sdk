@@ -249,11 +249,7 @@ extension DengageManager {
             }
         }
         
-        // Add random delay between 0-60 seconds before fetching
-        let randomDelay = Double.random(in: 0...60)
-        DispatchQueue.main.asyncAfter(deadline: .now() + randomDelay) { [weak self] in
-            self?.fetchSDK()
-        }
+        fetchSDK()
     }
     
     private func fetchSDK(){
