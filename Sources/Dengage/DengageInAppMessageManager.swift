@@ -81,8 +81,8 @@ extension DengageInAppMessageManager{
               let appId = remoteConfig.appId
         else { return }
         Logger.log(message: "fetchRealTimeInAppMessages request started")
-        let request = GetRealTimeMesagesRequest(accountName: accountName, appId: appId)
-        apiClient.send(request: request) { [weak self] result in
+        let version2Request = GetRealTimeMesagesRequest(accountName: accountName, appId: appId, version: "v2")
+        apiClient.send(request: version2Request) { [weak self] result in
             switch result {
             case .success(let response):
                 let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchIntervalInMin)
@@ -92,6 +92,19 @@ extension DengageInAppMessageManager{
                 
             case .failure(let error):
                 Logger.log(message: "fetchRealTimeInAppMessages_ERROR", argument: error.localizedDescription)
+                let version1Request = GetRealTimeMesagesRequest(accountName: accountName, appId: appId, version: "")
+                self?.apiClient.send(request: version1Request) { [weak self] result in
+                    switch result {
+                    case .success(let response):
+                        let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchIntervalInMin)
+                        DengageLocalStorage.shared.set(value: nextFetchTime, for: .lastFetchedRealTimeInAppMessageTime)
+                        let arrRealTimeInAppMessages = InAppMessage.mapRealTime(source: response)
+                        self?.addInAppMessagesIfNeeded(arrRealTimeInAppMessages, forRealTime: true)
+                        
+                    case .failure(let error):
+                        Logger.log(message: "fetchRealTimeInAppMessages_ERROR", argument: error.localizedDescription)
+                    }
+                }
             }
         }
     }
