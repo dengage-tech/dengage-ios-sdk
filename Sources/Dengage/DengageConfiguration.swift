@@ -89,6 +89,14 @@ final public class DengageConfiguration: Encodable {
         return (DengageLocalStorage.shared.value(for: .lastFetchedInAppMessageTime) as? Double)
     }
     
+    var lastSuccessfulInAppMessageFetchTime: Double? {
+        return (DengageLocalStorage.shared.value(for: .lastSuccessfulInAppMessageFetchTime) as? Double)
+    }
+    
+    var lastSuccessfulRealTimeInAppMessageFetchTime: Double? {
+        return (DengageLocalStorage.shared.value(for: .lastSuccessfulRealTimeInAppMessageFetchTime) as? Double)
+    }
+    
     var expiredMessagesFetchIntervalInMin:Double? {
         return (DengageLocalStorage.shared.value(for: .expiredMessagesFetchIntervalInMin) as? Double)
     }

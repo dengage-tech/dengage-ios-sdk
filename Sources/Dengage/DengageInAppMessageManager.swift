@@ -12,6 +12,7 @@ public class DengageInAppMessageManager: DengageInAppMessageManagerInterface {
     var inAppBrowserWindow: UIWindow?
     public var returnAfterDeeplinkRecieved : ((String) -> Void)?
     var inAppShowTimer = Timer()
+    var hourlyFetchTimer: Timer?
     
 
     init(config: DengageConfiguration,
@@ -22,6 +23,11 @@ public class DengageInAppMessageManager: DengageInAppMessageManagerInterface {
         self.sessionManager = sessionManager
         DengageLocalStorage.shared.set(value: Date().timeIntervalSince1970, for: .lastSessionStartTime)
         registerLifeCycleTrackers()
+        startHourlyFetchTimer()
+    }
+    
+    deinit {
+        stopHourlyFetchTimer()
     }
 }
 
@@ -43,6 +49,7 @@ extension DengageInAppMessageManager{
             case .success(let response):
                 let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchIntervalInMin)
                 DengageLocalStorage.shared.set(value: nextFetchTime, for: .lastFetchedInAppMessageTime)
+                DengageLocalStorage.shared.set(value: Date().timeMiliseconds, for: .lastSuccessfulInAppMessageFetchTime)
                 self?.addInAppMessagesIfNeeded(response)
                 self?.fetchInAppExpiredMessageIds()
                 
@@ -87,6 +94,7 @@ extension DengageInAppMessageManager{
             case .success(let response):
                 let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchIntervalInMin)
                 DengageLocalStorage.shared.set(value: nextFetchTime, for: .lastFetchedRealTimeInAppMessageTime)
+                DengageLocalStorage.shared.set(value: Date().timeMiliseconds, for: .lastSuccessfulRealTimeInAppMessageFetchTime)
                 let arrRealTimeInAppMessages = InAppMessage.mapRealTime(source: response)
                 self?.addInAppMessagesIfNeeded(arrRealTimeInAppMessages, forRealTime: true)
                 
@@ -98,6 +106,7 @@ extension DengageInAppMessageManager{
                     case .success(let response):
                         let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchIntervalInMin)
                         DengageLocalStorage.shared.set(value: nextFetchTime, for: .lastFetchedRealTimeInAppMessageTime)
+                        DengageLocalStorage.shared.set(value: Date().timeMiliseconds, for: .lastSuccessfulRealTimeInAppMessageFetchTime)
                         let arrRealTimeInAppMessages = InAppMessage.mapRealTime(source: response)
                         self?.addInAppMessagesIfNeeded(arrRealTimeInAppMessages, forRealTime: true)
                         
@@ -357,7 +366,34 @@ extension DengageInAppMessageManager {
                        , inAppInlineElement : InAppInlineElementView? = nil
                        , hideIfNotFound: Bool = false, storyPropertyID: String? = nil, storyCompletion: ((StoriesListView?) -> Void)? = nil) {
         
-        guard !(config.inAppMessageShowTime != 0 && Date().timeMiliseconds < config.inAppMessageShowTime) else {return}
+        // Check if we've received successful responses within the required time frame
+        guard let remoteConfig = config.remoteConfiguration else {
+            storyCompletion?(nil)
+            return
+        }
+        
+        let currentTime = Date().timeMiliseconds
+        let fetchIntervalInMin = remoteConfig.inAppFetchIntervalInMin
+        let timeoutMinutes = max(fetchIntervalInMin * 4, 60) // Use 1 hour minimum
+        let timeoutMilliseconds = Double(timeoutMinutes * 60 * 1000)
+        
+        let lastSuccessfulInAppFetch = config.lastSuccessfulInAppMessageFetchTime ?? 0
+        let lastSuccessfulRealTimeFetch = config.lastSuccessfulRealTimeInAppMessageFetchTime ?? 0
+        
+        let timeSinceLastInAppFetch = currentTime - lastSuccessfulInAppFetch
+        let timeSinceLastRealTimeFetch = currentTime - lastSuccessfulRealTimeFetch
+        
+        // If both fetches are older than the timeout return
+        if timeSinceLastInAppFetch > timeoutMilliseconds && timeSinceLastRealTimeFetch > timeoutMilliseconds {
+            Logger.log(message: "setNavigation blocked: No successful in-app message fetch in the last \(timeoutMinutes) minutes")
+            storyCompletion?(nil)
+            return
+        }
+        
+        guard !(config.inAppMessageShowTime != 0 && Date().timeMiliseconds < config.inAppMessageShowTime) else {
+            storyCompletion?(nil)
+            return
+        }
         
         inAppShowTimer.invalidate()
         
@@ -934,6 +970,9 @@ extension DengageInAppMessageManager {
         fetchInAppMessages()
         Dengage.dengage?.eventManager.cleanupClientEvents()
         
+        // Restart the hourly timer when app comes to foreground
+        startHourlyFetchTimer()
+        
         DengageLocalStorage.shared.set(value: Date().timeIntervalSince1970, for: .lastSessionStartTime)
         
         guard
@@ -963,13 +1002,34 @@ extension DengageInAppMessageManager {
     }
     
     @objc private func didEnterBackground(){
+        // Stop the hourly timer when app goes to background
+        stopHourlyFetchTimer()
+        
         DengageLocalStorage.shared.set(value: Date().timeIntervalSince1970, for: .lastVisitTime)
         guard let lastSessionStartTime = DengageLocalStorage.shared.value(for: .lastSessionStartTime) as? Double else { return }
         let lastSessionDuration = Date().timeIntervalSince1970 - lastSessionStartTime
         DengageLocalStorage.shared.set(value: lastSessionDuration, for: .lastSessionDuration)
     }
     
+    private func startHourlyFetchTimer() {
+        // Stop any existing timer first
+        stopHourlyFetchTimer()
+        
+        // Start a new timer that fires every hour (3600 seconds)
+        hourlyFetchTimer = Timer.scheduledTimer(withTimeInterval: 3600, repeats: true) { [weak self] _ in
+            // Only fetch if app is in foreground
+            if UIApplication.shared.applicationState == .active {
+                self?.fetchInAppMessages()
+            }
+        }
+    }
+    
+    private func stopHourlyFetchTimer() {
+        hourlyFetchTimer?.invalidate()
+        hourlyFetchTimer = nil
+    }
 }
+
 //MARK: - InAppMessagesViewController Delegate
 
 extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
@@ -1184,9 +1244,3 @@ struct VisitData{
     let date:String
     let count: Int
 }
-
-
-final class DengageLifeCycleTracker {
-    
-}
-

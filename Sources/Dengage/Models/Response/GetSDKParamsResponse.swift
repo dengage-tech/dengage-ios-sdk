@@ -12,7 +12,7 @@ public struct GetSDKParamsResponse: Codable {
     public let eventMappings: [EventMapping]
     let debugDeviceIds: [String]?
     
-    private let inAppFetchIntervalInMin: Int
+    let inAppFetchIntervalInMin: Int
     private let inAppMinSecBetweenMessages: Int
     private let expiredMessagesFetchIntervalInMin: Int
     
