@@ -33,7 +33,7 @@ public final class StoryDisplayHeaderView: UIView {
     
     private let detailView: UIView = {
         let view = UIView()
-       // view.backgroundColor = .green
+       
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -42,6 +42,7 @@ public final class StoryDisplayHeaderView: UIView {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .white
+        label.numberOfLines = 0
         return label
     }()
     
@@ -125,6 +126,7 @@ public final class StoryDisplayHeaderView: UIView {
             ])
         NSLayoutConstraint.activate([
             snaperNameLabel.sLeftAnchor.constraint(equalTo: detailView.sLeftAnchor),
+            snaperNameLabel.sRightAnchor.constraint(equalTo: detailView.sRightAnchor),
             //snaperNameLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 100),
             snaperNameLabel.sCenterYAnchor.constraint(equalTo: detailView.sCenterYAnchor)
             ])

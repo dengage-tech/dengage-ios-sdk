@@ -67,14 +67,14 @@ public class StoriesListView: UIView {
     }
     private func installLayoutConstraints(title: String, styling: StorySetStyling) {
         
-        let titleLabelHeight = title.isEmpty ? 0.0 : (styling.headerTitle.fontSize.toFloat * 1.2)
-        let titleBottomAnchor = title.isEmpty ? 0 : 10
+        let titleLabelHeight = title.isEmpty ? 0.0 : (styling.headerTitle.fontSize.toFloat * 1.5)
+        let titleBottomAnchor = title.isEmpty ? 0 : 8
         var titleLabelLeftAnchor = 0.0
         var titleLabelRightAnchor = 0.0
         if styling.headerTitle.textAlignment == .left {
-            titleLabelLeftAnchor = 10
+            titleLabelLeftAnchor = 8
         } else if styling.headerTitle.textAlignment == .right {
-            titleLabelRightAnchor = 10
+            titleLabelRightAnchor = 8
         }
         
         NSLayoutConstraint.activate([
@@ -86,7 +86,7 @@ public class StoriesListView: UIView {
             sLeftAnchor.constraint(equalTo: collectionView.sLeftAnchor),
             sTopAnchor.constraint(equalTo: titleLabel.sTopAnchor),
             collectionView.sRightAnchor.constraint(equalTo: sRightAnchor),
-            collectionView.heightAnchor.constraint(equalToConstant: styling.headerCover.size.toFloat + 32),
+            collectionView.heightAnchor.constraint(equalToConstant: styling.headerCover.size.toFloat + 50),
             collectionView.sBottomAnchor.constraint(equalTo: sBottomAnchor),
             
         ])

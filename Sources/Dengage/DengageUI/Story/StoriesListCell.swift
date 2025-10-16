@@ -113,7 +113,7 @@ final class StoriesListCell: UICollectionViewCell {
             storyCoverNameLabel.sRightAnchor.constraint(equalTo: sRightAnchor),
             storyCoverNameLabel.sTopAnchor.constraint(equalTo: circleImageView.sBottomAnchor, constant: 2),
             storyCoverNameLabel.sCenterXAnchor.constraint(equalTo: sCenterXAnchor),
-            sBottomAnchor.constraint(equalTo: storyCoverNameLabel.sBottomAnchor, constant: 8)])
+            sBottomAnchor.constraint(equalTo: storyCoverNameLabel.sBottomAnchor, constant: 2)])
         
         layoutIfNeeded()
     }

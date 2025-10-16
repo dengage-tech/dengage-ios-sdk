@@ -8,6 +8,7 @@ public final class StoriesListViewController: UIViewController {
     
     weak var collectionView: UICollectionView! {
         didSet {
+         
             collectionView.dataSource = self
             collectionView.delegate = self
         }
@@ -99,9 +100,12 @@ extension StoriesListViewController: UICollectionViewDelegate,UICollectionViewDa
     public func collectionView(_ collectionView: UICollectionView,
                                layout collectionViewLayout: UICollectionViewLayout,
                                sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        
         let size = storySet.styling.headerCover.size
         
-        return CGSize(width: size + 8, height: size + 50)
+        return CGSize(width: size + 12, height: size + 50)
+        
     }
 }
 
