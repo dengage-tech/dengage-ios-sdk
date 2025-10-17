@@ -71,7 +71,7 @@
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.81'
+pod 'Dengage', '~> 5.84'
 ```
 
 Run `pod install` via terminal
@@ -511,7 +511,7 @@ Add the Dengage SDK to your Notification Service Extension target in your `Podfi
 
 ```ruby
 target 'DengageNotificationServiceExtension' do
-    pod 'Dengage', '~> 5.81'
+    pod 'Dengage', '~> 5.84'
 end
 ```
 
@@ -829,6 +829,20 @@ Dengage.showRealTimeInApp(
     params: customParams // For filtering in app messages with respect to custom parameters(optional)
 )
 
+// Set cart for using in real time in app comparisons
+let cart = Cart(items: [CartItem(
+    productId: "product123",
+    productVariantId: "variant456",
+    categoryPath: "Electronics/Phones",
+    price: 999,
+    discountedPrice: 799,
+    hasDiscount: true,
+    hasPromotion: false,
+    quantity: 2,
+    attributes: ["color": "black", "storage":"128GB"]
+)])
+Dengage.setCart(cart: cart)
+
 // Set category path for using in real time in app comparisons
 Dengage.setCategory(path: "category-path")
 
@@ -915,8 +929,8 @@ Parameters:
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.81'
-pod 'DengageGeofence', '~> 5.81'
+pod 'Dengage', '~> 5.84'
+pod 'DengageGeofence', '~> 5.84'
 ```
 
 Run `pod install` via terminal
