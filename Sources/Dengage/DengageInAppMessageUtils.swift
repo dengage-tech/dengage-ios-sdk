@@ -422,7 +422,7 @@ final class DengageInAppMessageUtils{
                     case .LESS_THAN:
                         result = comparisonResult == .orderedAscending
                     case .LESS_EQUAL:
-                        result = comparisonResult == .orderedDescending || comparisonResult == .orderedSame
+                        result = comparisonResult == .orderedAscending || comparisonResult == .orderedSame
                     default:
                         result = true
                     }
