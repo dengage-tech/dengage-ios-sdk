@@ -14,7 +14,7 @@ final class AppStoryViewController: UIViewController {
         view.textColor = .black
         view.delegate = self
         view.autocapitalizationType = .none
-        view.text = "1"
+        view.text = "3"
         return view
     }()
     
@@ -26,7 +26,7 @@ final class AppStoryViewController: UIViewController {
         view.textColor = .black
         view.delegate = self
         view.autocapitalizationType = .none
-        view.text = ""
+        view.text = "ego"
         return view
     }()
     
@@ -38,7 +38,7 @@ final class AppStoryViewController: UIViewController {
         view.textColor = .black
         view.delegate = self
         view.autocapitalizationType = .none
-        view.text = ""
+        view.text = "#ffffff"
         return view
     }()
     
