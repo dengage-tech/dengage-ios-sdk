@@ -362,18 +362,19 @@ final public class DengageConfiguration: Encodable {
         if let apiUrlString = DengageLocalStorage.shared.getApiUrlConfiguration()?.denGeofenceApiUrl,
            !apiUrlString.isEmpty {
             guard let apiUrl = URL(string: apiUrlString) else {
-                fatalError("[DENGAGE] 'DengageGeofenceApiUrl' not correct in ApiUrlConfiguration")
+                return getSubscriptionUrl()
             }
             return apiUrl
         }
         
         
         guard let apiUrlString = Bundle.main.object(forInfoDictionaryKey: "DengageGeofenceApiUrl") as? String else {
-            fatalError("[DENGAGE] 'DengageGeofenceApiUrl' not found in plist file")
+            return getSubscriptionUrl()
         }
         
         guard let apiUrl = URL(string: apiUrlString) else {
-            fatalError("[DENGAGE] 'DengageGeofenceApiUrl' not correct in plist file")
+            
+            return getSubscriptionUrl()
         }
         
         return apiUrl
