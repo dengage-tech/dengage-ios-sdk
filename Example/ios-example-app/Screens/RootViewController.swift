@@ -1,4 +1,3 @@
-
 import UIKit
 import Dengage
 
@@ -23,11 +22,10 @@ class RootViewController: UIViewController {
         view.addSubview(tableView)
         tableView.fillSuperview()
     }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-      //  Dengage.setNavigation()
-
-        
+        //Dengage.setNavigation()
     }
 }
 
@@ -74,19 +72,15 @@ extension RootViewController: UITableViewDelegate{
             self.navigationController?.pushViewController(ShowInLineInAPP(), animated: true)
         case .appStory:
             self.navigationController?.pushViewController(AppStoryViewController(), animated: true)
-        case .liveActivity:
-            if #available(iOS 16.1, *) {
-                self.navigationController?.pushViewController(LiveActivityViewController(), animated: true)
-            } else {
-                // Fallback on earlier versions
-            }
+        case .realTimeInAppFilters:
+            self.navigationController?.pushViewController(RealTimeInAppFiltersViewController(), animated: true)
         }
     }
 }
 
 extension RootViewController{
     enum Actions: CaseIterable{
-        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage , geoFence,inAppInLine, appStory, liveActivity
+        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage , geoFence,inAppInLine, appStory, realTimeInAppFilters
         var title: String{
             switch self{
             case .allowNotification:
@@ -113,8 +107,8 @@ extension RootViewController{
                 return "Show InLine InAPP"
             case .appStory:
                 return "App Story"
-            case .liveActivity:
-                return "Live Activity"
+            case .realTimeInAppFilters:
+                return "REAL TIME IN APP FILTERS"
             }
         }
     }

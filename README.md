@@ -42,7 +42,9 @@
     - [Methods](#methods)
         - [Getting Inbox Messages](#getting-inbox-messages)
         - [Removing an Inbox Message](#removing-an-inbox-message)
-        - [Marking an Inbox Message as Clicked:](#marking-an-inbox-message-as-clicked)
+        - [Removing all Inbox Messages](#removing-all-inbox-messages)
+        - [Marking an Inbox Message as Clicked](#marking-an-inbox-message-as-clicked)
+        - [Marking all Inbox Messages as Clicked](#marking-all-inbox-messages-as-clicked)
 - [In-App Messaging](#in-app-messaging)
     - [Methods](#methods-1)
     - [Real Time In-App Messaging](#real-time-in-app-messaging)
@@ -69,7 +71,7 @@
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.76'
+pod 'Dengage', '~> 5.84'
 ```
 
 Run `pod install` via terminal
@@ -509,7 +511,7 @@ Add the Dengage SDK to your Notification Service Extension target in your `Podfi
 
 ```ruby
 target 'DengageNotificationServiceExtension' do
-    pod 'Dengage', '~> 5.76'
+    pod 'Dengage', '~> 5.84'
 end
 ```
 
@@ -740,7 +742,22 @@ Dengage.deleteInboxMessage(with: "message-id", // ID of the message to delete
 })
 ```
 
-#### Marking an Inbox Message as Clicked:
+#### Removing all Inbox Messages
+
+Delete all inbox messages:
+
+```swift
+Dengage.deleteAllInboxMessages(completion: { result in
+    switch result {
+    case .success:
+        print("All messages deleted successfully!")
+    case .failure(let error):
+        print("Failed to delete all messages: \(error)")
+    }
+})
+```
+
+#### Marking an Inbox Message as Clicked
 
 Mark a message as clicked to update its status:
 
@@ -752,6 +769,21 @@ Dengage.setInboxMessageAsClicked(with: "message-id", // ID of the message to mar
         print("Message marked as clicked successfully!")
     case .failure(let error):
         print("Failed to mark message as clicked: \(error)")
+    }
+})
+```
+
+#### Marking all Inbox Messages as Clicked
+
+Mark all inbox messages as clicked to update their status:
+
+```swift
+Dengage.setAllInboxMessageAsClicked(completion: { result in
+    switch result {
+    case .success:
+        print("All messages marked as clicked successfully!")
+    case .failure(let error):
+        print("Failed to mark all messages as clicked: \(error)")
     }
 })
 ```
@@ -796,6 +828,20 @@ Dengage.showRealTimeInApp(
     screenName: "screen-name", // For filtering in app messages with respect to current screen in your app(optional)
     params: customParams // For filtering in app messages with respect to custom parameters(optional)
 )
+
+// Set cart for using in real time in app comparisons
+let cart = Cart(items: [CartItem(
+    productId: "product123",
+    productVariantId: "variant456",
+    categoryPath: "Electronics/Phones",
+    price: 999,
+    discountedPrice: 799,
+    hasDiscount: true,
+    hasPromotion: false,
+    quantity: 2,
+    attributes: ["color": "black", "storage":"128GB"]
+)])
+Dengage.setCart(cart: cart)
 
 // Set category path for using in real time in app comparisons
 Dengage.setCategory(path: "category-path")
@@ -883,8 +929,8 @@ Parameters:
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.76'
-pod 'DengageGeofence', '~> 5.76'
+pod 'Dengage', '~> 5.84'
+pod 'DengageGeofence', '~> 5.84'
 ```
 
 Run `pod install` via terminal

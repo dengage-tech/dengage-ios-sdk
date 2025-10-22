@@ -26,37 +26,185 @@ final class DengageInAppMessageUtils{
         storyPropertyId: String?
     ) -> InAppMessage? {
         
+        let isDebugDevice = isDebugDevice(config: config)
+        let traceId = isDebugDevice ? UUID().uuidString : nil
+        let currentCampaignList = isDebugDevice ? getCurrentCampaignList(inAppMessages: inAppMessages) : []
+        
         let sortedMessages = inAppMessages.sorted
         
         if let screenName = screenName, !screenName.isEmpty {
             if let matchedMessage = sortedMessages.first(where: { message in
-                guard let screenFilters = message.data.displayCondition.screenNameFilters else {
-                    return false
+                var context = [String: String]()
+                var criterionIndex = 0
+                
+                // Add screen name context if present
+                if let screenNameFilter = message.data.displayCondition.screenNameFilters?.first {
+                    let expectedScreenName = screenNameFilter.value.joined(separator: ",")
+                    let operatorType = screenNameFilter.operatorType.rawValue
+                    let screenNameResult = isScreenNameMatching(screenFilters: message.data.displayCondition.screenNameFilters ?? [], screenName: screenName, logicOperator: message.data.displayCondition.screenNameFilterLogicOperator)
+                    context["screen_name_\(criterionIndex)"] = "\(expectedScreenName)|\(screenName)|\(operatorType)|\(screenNameResult)"
+                    criterionIndex += 1
                 }
                 
-                return message.isDisplayTimeAvailable()
-                && operateRealTimeValues(message: message, with: params, config: config)
-                && isInLineInApp(inAppMessage: message, propertyID: propertyId, storyPropertyId: storyPropertyId)
-                && isScreenNameMatching(screenFilters: screenFilters,
+                // Check display time availability and add context
+                let isDisplayTimeAvailable = if isDebugDevice {
+                    message.isDisplayTimeAvailable(context: &context, criterionIndex: &criterionIndex)
+                } else {
+                    message.isDisplayTimeAvailable()
+                }
+                
+                let result = isDisplayTimeAvailable
+                && isScreenNameMatching(screenFilters: message.data.displayCondition.screenNameFilters ?? [],
                                         screenName: screenName,
                                         logicOperator: message.data.displayCondition.screenNameFilterLogicOperator)
+                && operateRealTimeValues(message: message, with: params, config: config, context: &context, criterionIndex: &criterionIndex, isDebugDevice: isDebugDevice)
+                && isInLineInApp(inAppMessage: message, propertyID: propertyId, storyPropertyId: storyPropertyId)
+                
+                if isDebugDevice, let traceId = traceId {
+                    sendEvaluationLog(
+                        inAppMessage: message,
+                        traceId: traceId,
+                        screenName: screenName,
+                        currentCampaignList: currentCampaignList,
+                        matched: result,
+                        context: context,
+                        config: config
+                    )
+                }
+                
+                return result
             }) {
                 return matchedMessage
             }
             
             return sortedMessages.first { message in
-                (message.data.displayCondition.screenNameFilters ?? []).isEmpty
-                && message.isDisplayTimeAvailable()
-                && operateRealTimeValues(message: message, with: params, config: config)
+                var context = [String: String]()
+                var criterionIndex = 0
+                
+                // Check display time availability and add context
+                let isDisplayTimeAvailable = if isDebugDevice {
+                    message.isDisplayTimeAvailable(context: &context, criterionIndex: &criterionIndex)
+                } else {
+                    message.isDisplayTimeAvailable()
+                }
+                
+                let result = (message.data.displayCondition.screenNameFilters ?? []).isEmpty
+                && isDisplayTimeAvailable
+                && operateRealTimeValues(message: message, with: params, config: config, context: &context, criterionIndex: &criterionIndex, isDebugDevice: isDebugDevice)
                 && isInLineInApp(inAppMessage: message, propertyID: propertyId, storyPropertyId: storyPropertyId)
+                
+                if isDebugDevice, let traceId = traceId, (message.data.displayCondition.screenNameFilters ?? []).isEmpty {
+                    sendEvaluationLog(
+                        inAppMessage: message,
+                        traceId: traceId,
+                        screenName: screenName,
+                        currentCampaignList: currentCampaignList,
+                        matched: result,
+                        context: context,
+                        config: config
+                    )
+                }
+                
+                return result
             }
         } else {
             return sortedMessages.first { message in
-                (message.data.displayCondition.screenNameFilters ?? []).isEmpty
-                && message.isDisplayTimeAvailable()
-                && operateRealTimeValues(message: message, with: params, config: config)
+                var context = [String: String]()
+                var criterionIndex = 0
+                
+                // Check display time availability and add context
+                let isDisplayTimeAvailable = if isDebugDevice {
+                    message.isDisplayTimeAvailable(context: &context, criterionIndex: &criterionIndex)
+                } else {
+                    message.isDisplayTimeAvailable()
+                }
+                
+                let result = (message.data.displayCondition.screenNameFilters ?? []).isEmpty
+                && isDisplayTimeAvailable
+                && operateRealTimeValues(message: message, with: params, config: config, context: &context, criterionIndex: &criterionIndex, isDebugDevice: isDebugDevice)
                 && isInLineInApp(inAppMessage: message, propertyID: propertyId, storyPropertyId: storyPropertyId)
+                
+                if isDebugDevice, let traceId = traceId {
+                    sendEvaluationLog(
+                        inAppMessage: message,
+                        traceId: traceId,
+                        screenName: screenName,
+                        currentCampaignList: currentCampaignList,
+                        matched: result,
+                        context: context,
+                        config: config
+                    )
+                }
+                
+                return result
             }
+        }
+    }
+    
+    private class func isDebugDevice(config: DengageConfiguration) -> Bool {
+        guard let debugDeviceIds = config.remoteConfiguration?.debugDeviceIds else { return false }
+        return debugDeviceIds.contains(config.applicationIdentifier)
+    }
+    
+    private class func getCurrentCampaignList(inAppMessages: [InAppMessage]) -> [String] {
+        return inAppMessages.map { message in
+            let prefix = message.data.isRealTime ? "r_" : "f_"
+            return prefix + (message.data.publicId ?? message.id)
+        }
+    }
+    
+    private class func sendEvaluationLog(
+        inAppMessage: InAppMessage,
+        traceId: String,
+        screenName: String?,
+        currentCampaignList: [String],
+        matched: Bool,
+        context: [String: String],
+        config: DengageConfiguration
+    ) {
+        DispatchQueue.global(qos: .background).async {
+            let sessionManager = DengageSessionManager(config: config)
+            
+            var displayConditionJsonString = ""
+            if let displayConditionJson = try? JSONEncoder().encode(inAppMessage.data.displayCondition) {
+                displayConditionJsonString = String(data: displayConditionJson, encoding: .utf8) ?? ""
+            }
+            let campaignId = inAppMessage.data.publicId ?? inAppMessage.id
+            
+            let debugLog = DebugLog(
+                traceId: traceId,
+                appGuid: config.remoteConfiguration?.appId,
+                appId: config.remoteConfiguration?.appId,
+                account: config.remoteConfiguration?.accountName,
+                device: config.applicationIdentifier,
+                sessionId: sessionManager.currentSessionId,
+                sdkVersion: SDK_VERSION,
+                currentCampaignList: currentCampaignList,
+                campaignId: campaignId,
+                campaignType: inAppMessage.data.isRealTime ? "realtime" : "bulk",
+                sendId: inAppMessage.data.isRealTime ? nil : inAppMessage.id,
+                message: matched ? "Campaign matched for evaluation  traceId: \(traceId) campaignId: \(campaignId)"
+                    : "Campaign unmatched for evaluation traceId: \(traceId) campaignId: \(campaignId)",
+                context: context,
+                contactKey: config.getContactKey(),
+                channel: "ios",
+                currentRules: [
+                    "displayCondition": displayConditionJsonString
+                ]
+            )
+            
+            let request = DebugLogRequest(screenName: screenName ?? "unknown", debugLog: debugLog)
+            let apiClient = DengageNetworking(config: config)
+            
+            apiClient.send(request: request) { result in
+                switch result {
+                case .success:
+                    Logger.log(message: "Debug log sent successfully")
+                case .failure(let error):
+                    Logger.log(message: "Error sending debug log: \(error.localizedDescription)")
+                }
+            }
+            
         }
     }
     
@@ -158,7 +306,7 @@ final class DengageInAppMessageUtils{
     // Real Time
     
     private class func operateRealTimeValues(message: InAppMessage,with params: [String:String]? = nil,
-                                             config: DengageConfiguration) -> Bool {
+                                             config: DengageConfiguration, context: inout [String: String], criterionIndex: inout Int, isDebugDevice: Bool) -> Bool {
         
         guard let ruleSet = message.data.displayCondition.ruleSet,
               message.data.isRealTime
@@ -174,11 +322,11 @@ final class DengageInAppMessageUtils{
             
         case .AND:
             return ruleSet.rules.allSatisfy{ rule in
-                operateDisplay(for: rule, with: params,config: config, message: message)
+                operateDisplay(for: rule, with: params,config: config, message: message, context: &context, criterionIndex: &criterionIndex, isDebugDevice: isDebugDevice)
             }
         case .OR:
             return ruleSet.rules.contains{ rule in
-                operateDisplay(for: rule, with: params, config: config, message: message)
+                operateDisplay(for: rule, with: params, config: config, message: message, context: &context, criterionIndex: &criterionIndex, isDebugDevice: isDebugDevice)
             }
         }
     }
@@ -186,28 +334,37 @@ final class DengageInAppMessageUtils{
     
     private class func operateDisplay(for rule: Rule,
                                       with params: [String:String]? = nil,
-                                      config: DengageConfiguration, message:InAppMessage) -> Bool{
+                                      config: DengageConfiguration, message:InAppMessage, context: inout [String: String], criterionIndex: inout Int, isDebugDevice: Bool) -> Bool{
         
         switch rule.logicOperatorBetweenCriterions {
         case .AND:
             return rule.criterions.allSatisfy{ criterion in
-                operate(criterion, with: params, config: config, message: message)
+                let result = operate(criterion, with: params, config: config, message: message, context: &context, criterionIndex: criterionIndex, isDebugDevice: isDebugDevice)
+                criterionIndex += 1
+                return result
             }
         case .OR:
             return rule.criterions.contains{ criterion in
-                operate(criterion, with: params, config: config, message: message)
+                let result = operate(criterion, with: params, config: config, message: message, context: &context, criterionIndex: criterionIndex, isDebugDevice: isDebugDevice)
+                criterionIndex += 1
+                return result
             }
         }
     }
     
     private class func operate(_ criterion: Criterion,
                                with params: [String:String]? = nil,
-                               config: DengageConfiguration, message:InAppMessage) -> Bool {
+                               config: DengageConfiguration, message:InAppMessage, context: inout [String: String], criterionIndex: Int, isDebugDevice: Bool) -> Bool {
+        
+        var actualValue = ""
+        var result = false
+        
         guard let specialRule = SpecialRuleParameter(rawValue: criterion.parameter) else {
             
             if checkVisitorInfoAttr(parameter: criterion.parameter) != ""
             {
                 let userParam = checkVisitorInfoAttr(parameter: criterion.parameter)
+                actualValue = userParam
                 
                 if criterion.parameter == "dn.master_contact.birth_date" {
                     let daysValue = Int(criterion.values.first ?? "") ?? 0
@@ -233,16 +390,16 @@ final class DengageInAppMessageUtils{
                         ? calendar.date(byAdding: .year, value: -1, to: thisYearBirthday)!
                         : thisYearBirthday
                         let daysSince = calendar.dateComponents([.day], from: lastBirthday, to: today).day ?? Int.max
-                        return (0...window).contains(daysSince)
+                        result = (0...window).contains(daysSince)
                     case 0:
-                        return calendar.isDate(today, inSameDayAs: thisYearBirthday)
+                        result = calendar.isDate(today, inSameDayAs: thisYearBirthday)
                     default:
                         let window = daysValue
                         let nextBirthday = thisYearBirthday < today
                         ? calendar.date(byAdding: .year, value: 1, to: thisYearBirthday)!
                         : thisYearBirthday
                         let daysUntil = calendar.dateComponents([.day], from: today, to: nextBirthday).day ?? Int.max
-                        return (0...window).contains(daysUntil)
+                        result = (0...window).contains(daysUntil)
                     }
                 } else if criterion.dataType == .DATETIME {
                     let dateFormatter = DateFormatter()
@@ -251,86 +408,38 @@ final class DengageInAppMessageUtils{
                     
                     guard let serverDate = dateFormatter.date(from: criterion.values.first ?? "") else { return false }
                     
-                    let result = self.compareDate(visitorInfoDate: visitorInfoDate, serverDate: serverDate)
-                    
+                    let comparisonResult = self.compareDate(visitorInfoDate: visitorInfoDate, serverDate: serverDate)
                     
                     switch criterion.comparison {
                     case .EQUALS:
-                        if result == .orderedSame
-                        {
-                            return true
-                        }
-                        else
-                        {
-                            return false
-                        }
+                        result = comparisonResult == .orderedSame
                     case .NOT_EQUALS:
-                        
-                        if result != .orderedSame
-                        {
-                            return true
-                        }
-                        else
-                        {
-                            return false
-                        }
-                        
+                        result = comparisonResult != .orderedSame
                     case .LATER_THAN:
-                        if result == .orderedDescending
-                        {
-                            return true
-                        }
-                        else
-                        {
-                            return false
-                        }
+                        result = comparisonResult == .orderedDescending
                     case .LATER_EQUAL:
-                        if result == .orderedDescending || result == .orderedSame
-                        {
-                            return true
-                        }
-                        else
-                        {
-                            return false
-                        }
+                        result = comparisonResult == .orderedDescending || comparisonResult == .orderedSame
                     case .LESS_THAN:
-                        
-                        if result == .orderedAscending
-                        {
-                            return true
-                        }
-                        else
-                        {
-                            return false
-                        }
+                        result = comparisonResult == .orderedAscending
                     case .LESS_EQUAL:
-                        if result == .orderedDescending || result == .orderedSame
-                        {
-                            return true
-                        }
-                        else
-                        {
-                            return false
-                        }
+                        result = comparisonResult == .orderedDescending || comparisonResult == .orderedSame
                     default:
-                        return true
+                        result = true
                     }
-                    
-                    
-                    
                 }
                 else
                 {
                     if userParam == "null" && params != nil
                     {
-                        return operate(with: criterion.comparison,
+                        actualValue = params?[criterion.parameter] ?? ""
+                        result = operate(with: criterion.comparison,
                                        for: criterion.dataType,
                                        ruleParam: criterion.values,
-                                       userParam: params?[criterion.parameter], message: message, valueSource: criterion.valueSource)
+                                       userParam: actualValue, message: message, valueSource: criterion.valueSource)
                     }
                     else
                     {
-                        return operate(with: criterion.comparison,
+                        result = operate(with: criterion.comparison,
                                        for: criterion.dataType,
                                        ruleParam: criterion.values,
                                        userParam: userParam, message: message, valueSource: criterion.valueSource)
@@ -342,171 +451,196 @@ final class DengageInAppMessageUtils{
             }
             else
             {
-                return operate(with: criterion.comparison,
+                actualValue = params?[criterion.parameter] ?? ""
+                result = operate(with: criterion.comparison,
                                for: criterion.dataType,
                                ruleParam: criterion.values,
-                               userParam: params?[criterion.parameter], message: message, valueSource: criterion.valueSource)
+                               userParam: actualValue, message: message, valueSource: criterion.valueSource)
+            }
+            
+            if isDebugDevice {
+                let key = "\(criterion.parameter)_\(criterionIndex)"
+                let expectedValue = criterion.values.joined(separator: ",")
+                context[key] = "\(expectedValue)|\(actualValue)|\(criterion.comparison.rawValue)|\(result)"
             }
             
             
+            return result
         }
         
-        
+        // Handle special rule parameters and add to context
         switch specialRule {
         case .CATEGORY_PATH:
-            return operate(with: criterion.comparison,
+            actualValue = config.realTimeCategoryPath ?? ""
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.realTimeCategoryPath ?? "", message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .CART_ITEM_COUNT:
-            return operate(with: criterion.comparison,
+            actualValue = config.realTimeCartItemCount ?? "0"
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.realTimeCartItemCount ?? "0", message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .CART_AMOUNT:
-            return operate(with: criterion.comparison,
+            actualValue = config.realTimeCartAmount ?? "0"
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.realTimeCartAmount ?? "0", message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .STATE:
-            return operate(with: criterion.comparison,
+            actualValue = config.state ?? ""
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.state ?? "", message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .CITY:
-            return operate(with: criterion.comparison,
+            actualValue = config.city ?? ""
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.city ?? "", message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .TIMEZONE:
-            return operate(with: criterion.comparison,
+            actualValue = config.deviceTimeZone
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.deviceTimeZone, message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .LANGUAGE:
-            return operate(with: criterion.comparison,
+            actualValue = config.getLanguage()
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.getLanguage(), message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .SCREEN_WIDTH:
-            return operate(with: criterion.comparison,
+            actualValue = UIScreen.main.nativeBounds.width.description
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: UIScreen.main.nativeBounds.width.description, message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .SCREEN_HEIGHT:
-            return operate(with: criterion.comparison,
+            actualValue = UIScreen.main.nativeBounds.height.description
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: UIScreen.main.nativeBounds.height.description, message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .OS_VERSION:
-            return operate(with: criterion.comparison,
+            actualValue = UserAgentUtils.deviceVersion
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: UserAgentUtils.deviceVersion, message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .OS:
-            return operate(with: criterion.comparison,
+            actualValue = "ios"
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: "ios", message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .DEVICE_NAME:
-            return operate(with: criterion.comparison,
+            actualValue = UserAgentUtils.deviceName
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: UserAgentUtils.deviceName, message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .COUNTRY:
-            return operate(with: criterion.comparison,
+            actualValue = config.deviceCountryCode
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.deviceCountryCode, message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .MONTH:
-            
-            return operate(with: criterion.comparison,
+            actualValue = Date().threeLetterMonth
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: Date().threeLetterMonth, message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .WEEK_DAY:
-            
-            return operate(with: criterion.comparison,
+            actualValue = Date().threeLetterWeekDay
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: Date().threeLetterWeekDay , message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .HOUR:
-
-            return operate(with: criterion.comparison,
+            actualValue = Date().hour
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: Date().hour, message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .PAGE_VIEW_IN_VISIT:
-            return operate(with: criterion.comparison,
+            actualValue = String(config.pageViewCount)
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: String(config.pageViewCount), message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .ANONYMOUS:
-            return operate(with: criterion.comparison,
+            actualValue = (config.contactKey.type == "d").description
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: (config.contactKey.type == "c").description, message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .VISIT_DURATION:
             guard let lastSessionStartTime = DengageLocalStorage.shared.value(for: .lastSessionStartTime) as? Double else {
                 return true
             }
-
             let lastSessionDurationInMinutes = Int((Date().timeIntervalSince1970 - lastSessionStartTime) / 60)
-            
-            return operate(with: criterion.comparison,
+            actualValue = String(lastSessionDurationInMinutes)
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: String(lastSessionDurationInMinutes), message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .FIRST_VISIT:
-            guard
-                let firstVisitTime = DengageLocalStorage.shared.value(for: .firstLaunchTime) as? Double else {return true}
-            
+            guard let firstVisitTime = DengageLocalStorage.shared.value(for: .firstLaunchTime) as? Double else {
+                return true
+            }
             var firstVisit = "false"
             if (Date().timeIntervalSince1970 - firstVisitTime) < 3600 {
                 firstVisit = "true"
             }
-            
-            return operate(with: criterion.comparison,
+            actualValue = firstVisit
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: firstVisit, message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .LAST_VISIT:
-            guard
-                let lastVisitTime = DengageLocalStorage.shared.value(for: .lastVisitTime) as? Double else {return true}
-            return operate(with: criterion.comparison,
+            guard let lastVisitTime = DengageLocalStorage.shared.value(for: .lastVisitTime) as? Double else {
+                return true
+            }
+            actualValue = String(lastVisitTime)
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: String(lastVisitTime), message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .BRAND_NAME:
-            return operate(with: criterion.comparison,
+            actualValue = "apple"
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: "apple", message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .MODEL_NAME:
-            return operate(with: criterion.comparison,
+            actualValue = "iphone"
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: "iphone", message: message, valueSource: criterion.valueSource)
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .PUSH_PERMISSION:
-            return operate(with: criterion.comparison,
+            let existsDeviceToken: Bool = !(config.deviceToken?.isEmpty ?? true)
+            actualValue = (existsDeviceToken && config.permission).description
+            result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,
-                           userParam: config.permission.description, message: message, valueSource: criterion.valueSource)
-            
-    
-            
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .VISIT_COUNT:
             guard (criterion.dataType == .VISITCOUNTPASTXDAYS && !criterion.values.isEmpty) else { return true }
             guard let visitCountData = criterion.values.first else { return true }
             let data = Data(visitCountData.utf8)
             let decoder = JSONDecoder()
             do {
-                let visitCount = try decoder.decode(VisitCountData.self,
-                                                    from: data)
+                let visitCount = try decoder.decode(VisitCountData.self, from: data)
+                actualValue = DengageVisitCountManager.findVisitCount(pastDayCount: visitCount.timeAmount).description
                 return operate(with: criterion.comparison,
                                for: CriterionDataType.INT,
                                ruleParam: [visitCount.count.description],
-                               userParam: DengageVisitCountManager.findVisitCount(pastDayCount: visitCount.timeAmount).description, message: message, valueSource: criterion.valueSource)
+                               userParam: actualValue, message: message, valueSource: criterion.valueSource)
             } catch {
                 return true
             }
@@ -515,7 +649,15 @@ final class DengageInAppMessageUtils{
                 let visitorInfo = DengageLocalStorage.shared.getVisitorInfo(),
                 let segments = visitorInfo.segments,
                 !segments.isEmpty
-            else {return false}
+            else {
+                actualValue = ""
+                result = false
+                let key = "\(criterion.parameter)_\(criterionIndex)"
+                let expectedValue = criterion.values.joined(separator: ",")
+                context[key] = "\(expectedValue)|\(actualValue)|\(criterion.comparison.rawValue)|\(result)"
+                return result
+            }
+            actualValue = segments.map{String($0)}.joined(separator: ",")
             return operateVisitorRule(with: criterion.comparison,
                                       for: criterion.dataType,
                                       ruleParam: criterion.values,
@@ -525,16 +667,64 @@ final class DengageInAppMessageUtils{
                 let visitorInfo = DengageLocalStorage.shared.getVisitorInfo(),
                 let tags = visitorInfo.tags,
                 !tags.isEmpty
-            else {return false}
-            return operateVisitorRule(with: criterion.comparison,
+            else {
+                actualValue = ""
+                result = false
+                let key = "\(criterion.parameter)_\(criterionIndex)"
+                let expectedValue = criterion.values.joined(separator: ",")
+                context[key] = "\(expectedValue)|\(actualValue)|\(criterion.comparison.rawValue)|\(result)"
+                return result
+            }
+            actualValue = tags.map{String($0)}.joined(separator: ",")
+            result = operateVisitorRule(with: criterion.comparison,
                                       for: criterion.dataType,
                                       ruleParam: criterion.values,
                                       userParam: tags.map{String($0)})
-     
-            
-            
-            
+        case .EVENT_HISTORY:
+            actualValue = "event_history_filter"
+            result = DengageEventHistoryUtils.operateEventHistoryFilter(criterion: criterion)
+        case .CART_ITEMS:
+            actualValue = "cart_items_filter"
+            result = DengageCartUtils.operateCartFilter(criterion: criterion)
+        case .LAST_PRODUCT_ID:
+            actualValue = config.getLastProductId() ?? ""
+            result = operate(with: criterion.comparison,
+                           for: criterion.dataType,
+                           ruleParam: criterion.values,
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
+        case .LAST_PRODUCT_PRICE:
+            actualValue = config.getLastProductPrice() ?? ""
+            result = operate(with: criterion.comparison,
+                           for: criterion.dataType,
+                           ruleParam: criterion.values,
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
+        case .LAST_CATEGORY_PATH:
+            actualValue = config.getLastCategoryPath() ?? ""
+            result = operate(with: criterion.comparison,
+                           for: criterion.dataType,
+                           ruleParam: criterion.values,
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
+        case .CURRENT_PAGE_TITLE:
+            actualValue = config.getCurrentPageTitle() ?? ""
+            result = operate(with: criterion.comparison,
+                           for: criterion.dataType,
+                           ruleParam: criterion.values,
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
+        case .CURRENT_PAGE_TYPE:
+            actualValue = config.getCurrentPageType() ?? ""
+            result = operate(with: criterion.comparison,
+                           for: criterion.dataType,
+                           ruleParam: criterion.values,
+                           userParam: actualValue, message: message, valueSource: criterion.valueSource)
         }
+        
+        if isDebugDevice {
+            let key = "\(criterion.parameter)_\(criterionIndex)"
+            let expectedValue = criterion.values.joined(separator: ",")
+            context[key] = "\(expectedValue)|\(actualValue)|\(criterion.comparison.rawValue)|\(result)"
+        }
+        
+        return result
     }
     
     private class func operateVisitorRule(
@@ -647,6 +837,40 @@ final class DengageInAppMessageUtils{
             
             let ruleParams = ruleParam.compactMap{Double($0)}
             return ruleParams.first{userParamDouble > $0 } == nil
+        case .CONTAINS_ALL:
+            return ruleParam.allSatisfy { ruleValue in
+                userParam.lowercased().contains(ruleValue.lowercased())
+            }
+        case .CONTAINS_ANY:
+            return ruleParam.contains { ruleValue in
+                userParam.lowercased().contains(ruleValue.lowercased())
+            }
+        case .BETWEEN:
+            guard
+                dataType == .DATETIME || dataType == .INT,
+                ruleParam.count >= 2,
+                let userParamDouble = Double(userParam),
+                let firstValue = Double(ruleParam[0]),
+                let lastValue = Double(ruleParam[1])
+            else {
+                return false
+            }
+            let minValue = min(firstValue, lastValue)
+            let maxValue = max(firstValue, lastValue)
+            return userParamDouble >= minValue && userParamDouble <= maxValue
+        case .NOT_BETWEEN:
+            guard
+                dataType == .DATETIME || dataType == .INT,
+                ruleParam.count >= 2,
+                let userParamDouble = Double(userParam),
+                let firstValue = Double(ruleParam[0]),
+                let lastValue = Double(ruleParam[1])
+            else {
+                return false
+            }
+            let minValue = min(firstValue, lastValue)
+            let maxValue = max(firstValue, lastValue)
+            return !(userParamDouble >= minValue && userParamDouble <= maxValue)
         default:
             return true
         }
@@ -685,8 +909,8 @@ final class DengageInAppMessageUtils{
         let result = cal.compare(visitorInfoDate, to: serverDate, toGranularity: .day)
         return result
     }
+    
 }
-
 
 enum SpecialRuleParameter: String {
     case CATEGORY_PATH = "dn.cat_path"
@@ -716,9 +940,13 @@ enum SpecialRuleParameter: String {
     case VISIT_COUNT = "dn.visit_count"
     case SEGMENT = "dn.segment"
     case TAG = "dn.tag"
-
-    
-    
+    case EVENT_HISTORY = "event_history"
+    case CART_ITEMS = "cart_items"
+    case LAST_PRODUCT_ID = "last_product_id"
+    case LAST_PRODUCT_PRICE = "last_product_price"
+    case LAST_CATEGORY_PATH = "last_category_path"
+    case CURRENT_PAGE_TITLE = "current_page_title"
+    case CURRENT_PAGE_TYPE = "current_page_type"
 }
 
 struct VisitCountData: Codable {

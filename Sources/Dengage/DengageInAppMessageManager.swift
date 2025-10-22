@@ -3,10 +3,8 @@ import WebKit
 import UIKit
 import SafariServices
 
-public class DengageInAppMessageManager:DengageInAppMessageManagerInterface {
+public class DengageInAppMessageManager: DengageInAppMessageManagerInterface {
    
-   
-    
     var config: DengageConfiguration
     var apiClient: DengageNetworking
     var inAppMessageWindow: UIWindow?
@@ -14,6 +12,7 @@ public class DengageInAppMessageManager:DengageInAppMessageManagerInterface {
     var inAppBrowserWindow: UIWindow?
     public var returnAfterDeeplinkRecieved : ((String) -> Void)?
     var inAppShowTimer = Timer()
+    var hourlyFetchTimer: Timer?
     
 
     init(config: DengageConfiguration,
@@ -24,6 +23,11 @@ public class DengageInAppMessageManager:DengageInAppMessageManagerInterface {
         self.sessionManager = sessionManager
         DengageLocalStorage.shared.set(value: Date().timeIntervalSince1970, for: .lastSessionStartTime)
         registerLifeCycleTrackers()
+        startHourlyFetchTimer()
+    }
+    
+    deinit {
+        stopHourlyFetchTimer()
     }
 }
 
@@ -45,6 +49,7 @@ extension DengageInAppMessageManager{
             case .success(let response):
                 let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchIntervalInMin)
                 DengageLocalStorage.shared.set(value: nextFetchTime, for: .lastFetchedInAppMessageTime)
+                DengageLocalStorage.shared.set(value: Date().timeMiliseconds, for: .lastSuccessfulInAppMessageFetchTime)
                 self?.addInAppMessagesIfNeeded(response)
                 self?.fetchInAppExpiredMessageIds()
                 
@@ -83,17 +88,32 @@ extension DengageInAppMessageManager{
               let appId = remoteConfig.appId
         else { return }
         Logger.log(message: "fetchRealTimeInAppMessages request started")
-        let request = GetRealTimeMesagesRequest(accountName: accountName, appId: appId)
-        apiClient.send(request: request) { [weak self] result in
+        let version2Request = GetRealTimeMesagesRequest(accountName: accountName, appId: appId, version: "v2")
+        apiClient.send(request: version2Request) { [weak self] result in
             switch result {
             case .success(let response):
                 let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchIntervalInMin)
                 DengageLocalStorage.shared.set(value: nextFetchTime, for: .lastFetchedRealTimeInAppMessageTime)
+                DengageLocalStorage.shared.set(value: Date().timeMiliseconds, for: .lastSuccessfulRealTimeInAppMessageFetchTime)
                 let arrRealTimeInAppMessages = InAppMessage.mapRealTime(source: response)
                 self?.addInAppMessagesIfNeeded(arrRealTimeInAppMessages, forRealTime: true)
                 
             case .failure(let error):
                 Logger.log(message: "fetchRealTimeInAppMessages_ERROR", argument: error.localizedDescription)
+                let version1Request = GetRealTimeMesagesRequest(accountName: accountName, appId: appId, version: "")
+                self?.apiClient.send(request: version1Request) { [weak self] result in
+                    switch result {
+                    case .success(let response):
+                        let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchIntervalInMin)
+                        DengageLocalStorage.shared.set(value: nextFetchTime, for: .lastFetchedRealTimeInAppMessageTime)
+                        DengageLocalStorage.shared.set(value: Date().timeMiliseconds, for: .lastSuccessfulRealTimeInAppMessageFetchTime)
+                        let arrRealTimeInAppMessages = InAppMessage.mapRealTime(source: response)
+                        self?.addInAppMessagesIfNeeded(arrRealTimeInAppMessages, forRealTime: true)
+                        
+                    case .failure(let error):
+                        Logger.log(message: "fetchRealTimeInAppMessages_ERROR", argument: error.localizedDescription)
+                    }
+                }
             }
         }
     }
@@ -346,7 +366,34 @@ extension DengageInAppMessageManager {
                        , inAppInlineElement : InAppInlineElementView? = nil
                        , hideIfNotFound: Bool = false, storyPropertyID: String? = nil, storyCompletion: ((StoriesListView?) -> Void)? = nil) {
         
-        guard !(config.inAppMessageShowTime != 0 && Date().timeMiliseconds < config.inAppMessageShowTime) else {return}
+        // Check if we've received successful responses within the required time frame
+        guard let remoteConfig = config.remoteConfiguration else {
+            storyCompletion?(nil)
+            return
+        }
+        
+        let currentTime = Date().timeMiliseconds
+        let fetchIntervalInMin = remoteConfig.inAppFetchIntervalInMin
+        let timeoutMinutes = max(fetchIntervalInMin * 4, 60) // Use 1 hour minimum
+        let timeoutMilliseconds = Double(timeoutMinutes * 60 * 1000)
+        
+        let lastSuccessfulInAppFetch = config.lastSuccessfulInAppMessageFetchTime ?? 0
+        let lastSuccessfulRealTimeFetch = config.lastSuccessfulRealTimeInAppMessageFetchTime ?? 0
+        
+        let timeSinceLastInAppFetch = currentTime - lastSuccessfulInAppFetch
+        let timeSinceLastRealTimeFetch = currentTime - lastSuccessfulRealTimeFetch
+        
+        // If both fetches are older than the timeout return
+        if timeSinceLastInAppFetch > timeoutMilliseconds && timeSinceLastRealTimeFetch > timeoutMilliseconds {
+            Logger.log(message: "setNavigation blocked: No successful in-app message fetch in the last \(timeoutMinutes) minutes")
+            storyCompletion?(nil)
+            return
+        }
+        
+        guard !(config.inAppMessageShowTime != 0 && Date().timeMiliseconds < config.inAppMessageShowTime) else {
+            storyCompletion?(nil)
+            return
+        }
         
         inAppShowTimer.invalidate()
         
@@ -397,10 +444,113 @@ extension DengageInAppMessageManager {
                 return
             }
         } else {
-            showInAppMessage(inAppMessage: priorInAppMessage)
+            if let html = priorInAppMessage.data.content.props.html, Mustache.hasCouponSection(html) {
+                let couponContent = Mustache.getCouponContent(html)
+                
+                // Validate coupon before showing the message
+                guard let accountName = config.remoteConfiguration?.accountName,
+                      let couponListKey = couponContent else {
+                    return
+                }
+                
+                validateCoupon(
+                    accountId: accountName,
+                    listKey: couponListKey,
+                    message: priorInAppMessage
+                )
+            } else {
+                showInAppMessage(inAppMessage: priorInAppMessage, couponCode: "")
+            }
         }
         storyCompletion?(nil)
 
+    }
+    
+    private func validateCoupon(accountId: String, listKey: String, message: InAppMessage) {
+        let request = CouponAssignRequest(
+            accountId: accountId,
+            listKey: listKey,
+            contactKey: config.contactKey.key,
+            deviceId: config.applicationIdentifier,
+            campaignId: message.id
+        )
+        
+        apiClient.send(request: request) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let response):
+                    if let couponCode = response.code {
+                        self?.showInAppMessage(inAppMessage: message, couponCode: couponCode)
+                    } else {
+                        Logger.log(message: "No coupon code received from server")
+                        self?.sendCouponValidationFailureLog(
+                            couponContent: listKey,
+                            errorMessage: "No coupon code received from server",
+                            inAppMessage: message,
+                            screenName: nil
+                        )
+                    }
+                case .failure(let error):
+                    Logger.log(message: "Coupon assignment failed: \(error.localizedDescription)")
+                    self?.sendCouponValidationFailureLog(
+                        couponContent: listKey,
+                        errorMessage: error.localizedDescription,
+                        inAppMessage: message,
+                        screenName: nil
+                    )
+                }
+            }
+        }
+    }
+    
+    private func sendCouponValidationFailureLog(
+        couponContent: String,
+        errorMessage: String,
+        inAppMessage: InAppMessage,
+        screenName: String?
+    ) {
+        DispatchQueue.global(qos: .background).async { [weak self] in
+            guard let self = self else { return }
+            
+            guard let debugDeviceIds = self.config.remoteConfiguration?.debugDeviceIds,
+                  debugDeviceIds.contains(self.config.applicationIdentifier) else {
+                return
+            }
+            
+            let traceId = UUID().uuidString
+            let campaignId = inAppMessage.data.publicId ?? inAppMessage.id
+            
+            let debugLog = DebugLog(
+                traceId: traceId,
+                appGuid: self.config.remoteConfiguration?.appId,
+                appId: self.config.remoteConfiguration?.appId,
+                account: self.config.remoteConfiguration?.accountName,
+                device: self.config.applicationIdentifier,
+                sessionId: self.sessionManager.currentSessionId,
+                sdkVersion: SDK_VERSION,
+                currentCampaignList: [],
+                campaignId: campaignId,
+                campaignType: inAppMessage.data.isRealTime ? "realtime" : "bulk",
+                sendId: nil,
+                message: "Coupon validation failed: \(couponContent) - \(errorMessage) traceId: \(traceId) campaignId: \(campaignId)",
+                context: ["coupon_code": couponContent],
+                contactKey: self.config.getContactKey() ?? "",
+                channel: "ios",
+                currentRules: [:]
+            )
+            
+            let request = DebugLogRequest(screenName: screenName ?? "unknown", debugLog: debugLog)
+            
+            self.apiClient.send(request: request) { result in
+                switch result {
+                case .success:
+                    Logger.log(message: "Coupon validation failure debug log sent successfully")
+                case .failure(let error):
+                    Logger.log(message: "Error sending coupon validation failure debug log: \(error.localizedDescription)")
+                }
+            }
+            
+        }
     }
 
     func removeInAppMessageDisplay() {
@@ -410,7 +560,7 @@ extension DengageInAppMessageManager {
     }
     
     
-    func showInAppMessage(inAppMessage: InAppMessage) {
+    func showInAppMessage(inAppMessage: InAppMessage, couponCode: String = "") {
         
         let hybridAppEnv = config.getHybridAppEnvironment()
         
@@ -449,7 +599,7 @@ extension DengageInAppMessageManager {
                             }
                         }
                         
-                        self.showInAppMessageController(with: updatedMessage)
+                        self.showInAppMessageController(with: updatedMessage, couponCode: couponCode)
                     }
                     
                 }
@@ -490,7 +640,7 @@ extension DengageInAppMessageManager {
                                   }
                               }
                               
-                              self.showInAppMessageController(with: updatedMessage)
+                              self.showInAppMessageController(with: updatedMessage, couponCode: couponCode)
                           }
                       }
                       
@@ -503,10 +653,10 @@ extension DengageInAppMessageManager {
       
     }
     
-    private func showInAppMessageController(with message:InAppMessage){
+    private func showInAppMessageController(with message:InAppMessage, couponCode: String){
        
         guard message.data.content.props.html != nil else {return}
-        let controller = InAppMessageHTMLViewController(with: message)
+        let controller = InAppMessageHTMLViewController(with: message, couponCode: couponCode)
         controller.delegate = self
         self.createInAppWindow(for: controller)
         
@@ -818,6 +968,10 @@ extension DengageInAppMessageManager {
     
     @objc private func willEnterForeground() {
         fetchInAppMessages()
+        Dengage.dengage?.eventManager.cleanupClientEvents()
+        
+        // Restart the hourly timer when app comes to foreground
+        startHourlyFetchTimer()
         
         DengageLocalStorage.shared.set(value: Date().timeIntervalSince1970, for: .lastSessionStartTime)
         
@@ -848,13 +1002,34 @@ extension DengageInAppMessageManager {
     }
     
     @objc private func didEnterBackground(){
+        // Stop the hourly timer when app goes to background
+        stopHourlyFetchTimer()
+        
         DengageLocalStorage.shared.set(value: Date().timeIntervalSince1970, for: .lastVisitTime)
         guard let lastSessionStartTime = DengageLocalStorage.shared.value(for: .lastSessionStartTime) as? Double else { return }
         let lastSessionDuration = Date().timeIntervalSince1970 - lastSessionStartTime
         DengageLocalStorage.shared.set(value: lastSessionDuration, for: .lastSessionDuration)
     }
     
+    private func startHourlyFetchTimer() {
+        // Stop any existing timer first
+        stopHourlyFetchTimer()
+        
+        // Start a new timer that fires every hour (3600 seconds)
+        hourlyFetchTimer = Timer.scheduledTimer(withTimeInterval: 3600, repeats: true) { [weak self] _ in
+            // Only fetch if app is in foreground
+            if UIApplication.shared.applicationState == .active {
+                self?.fetchInAppMessages()
+            }
+        }
+    }
+    
+    private func stopHourlyFetchTimer() {
+        hourlyFetchTimer?.invalidate()
+        hourlyFetchTimer = nil
+    }
 }
+
 //MARK: - InAppMessagesViewController Delegate
 
 extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
@@ -1051,7 +1226,7 @@ protocol DengageInAppMessageManagerInterface: AnyObject{
     func fetchInAppMessages()
     func setNavigation(screenName: String?, params: Dictionary<String,String>? , propertyID : String? , webView : InAppInlineElementView?
                        ,storyPropertyID: String?, storyCompletion: ((StoriesListView?) -> Void)?)
-    func showInAppMessage(inAppMessage: InAppMessage)
+    func showInAppMessage(inAppMessage: InAppMessage, couponCode: String)
     func fetchInAppExpiredMessageIds()
     func removeInAppMessageDisplay()
     
@@ -1069,9 +1244,3 @@ struct VisitData{
     let date:String
     let count: Int
 }
-
-
-final class DengageLifeCycleTracker {
-    
-}
-

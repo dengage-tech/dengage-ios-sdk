@@ -227,22 +227,29 @@ extension DengageManager {
 
 //MARK: - Private
 extension DengageManager {
+    
     private func getSDKParams() {
         Logger.log(message: "getSDKParams Started")
-
-        if let date = (DengageLocalStorage.shared.value(for: .lastFetchedConfigTime) as? Date),
-           let diff = Calendar.current.dateComponents([.hour], from: date, to: Date()).hour,
-           diff > SDKPARAMS_FETCH_INTERVAL {
+        
+        let hasRemoteConfig = config.remoteConfiguration != nil
+        let lastFetchedDate = DengageLocalStorage.shared.value(for: .lastFetchedConfigTime) as? Date
+        
+        // If no remote configuration, fetch immediately
+        if !hasRemoteConfig {
             fetchSDK()
-        }else if (DengageLocalStorage.shared.value(for: .lastFetchedConfigTime) as? Date) == nil {
-            fetchSDK()
-        }
-        else
-        {
-            inAppManager.fetchInAppMessages()
-
+            return
         }
         
+        // Check if we need to fetch based on time (1 minute interval)
+        if let fetchedDate = lastFetchedDate {
+            let timeSinceLastFetch = Date().timeIntervalSince(fetchedDate)
+            if timeSinceLastFetch < 60 { // 1 minute in seconds
+                inAppManager.fetchInAppMessages()
+                return
+            }
+        }
+        
+        fetchSDK()
     }
     
     private func fetchSDK(){
@@ -258,6 +265,7 @@ extension DengageManager {
                 self.inAppManager.fetchInAppMessages()
                 self.sendFirstLaunchTimeIfNeeded()
                 self.inAppManager.fetchInAppExpiredMessageIds()
+                self.eventManager.cleanupClientEvents()
 
             case .failure:
                 Logger.log(message: "SDK PARAMS Config fetchin failed")

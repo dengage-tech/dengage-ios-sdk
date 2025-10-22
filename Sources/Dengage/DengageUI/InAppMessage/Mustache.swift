@@ -55,6 +55,53 @@ class Context {
 
 final class Mustache {
 
+    static func hasCouponSection(_ template: String) -> Bool {
+        let pattern = "\\{\\{#coupon\\}\\}.*?\\{\\{/coupon\\}\\}"
+        do {
+            let regex = try NSRegularExpression(pattern: pattern, options: [.dotMatchesLineSeparators])
+            let range = NSRange(location: 0, length: template.utf16.count)
+            return regex.firstMatch(in: template, options: [], range: range) != nil
+        } catch {
+            Logger.log(message: "Error in hasCouponSection regex: \(error)")
+            return false
+        }
+    }
+    
+    static func getCouponContents(_ template: String) -> [String] {
+        let pattern = "\\{\\{#coupon\\}\\}(.*?)\\{\\{/coupon\\}\\}"
+        do {
+            let regex = try NSRegularExpression(pattern: pattern, options: [.dotMatchesLineSeparators])
+            let range = NSRange(location: 0, length: template.utf16.count)
+            let matches = regex.matches(in: template, options: [], range: range)
+            
+            return matches.compactMap { match in
+                guard match.numberOfRanges > 1 else { return nil }
+                let contentRange = match.range(at: 1)
+                guard let swiftRange = Range(contentRange, in: template) else { return nil }
+                return String(template[swiftRange]).trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+        } catch {
+            Logger.log(message: "Error in getCouponContents regex: \(error)")
+            return []
+        }
+    }
+    
+    static func getCouponContent(_ template: String) -> String? {
+        return getCouponContents(template).first
+    }
+    
+    static func replaceCouponSections(_ template: String, couponCode: String) -> String {
+        let pattern = "\\{\\{#coupon\\}\\}.*?\\{\\{/coupon\\}\\}"
+        do {
+            let regex = try NSRegularExpression(pattern: pattern, options: [.dotMatchesLineSeparators])
+            let range = NSRange(location: 0, length: template.utf16.count)
+            return regex.stringByReplacingMatches(in: template, options: [], range: range, withTemplate: couponCode)
+        } catch {
+            Logger.log(message: "Error in replaceCouponSections regex: \(error)")
+            return template
+        }
+    }
+
     static func render(_ template: String, _ data: [String: Any]) -> String {
         do {
             let tokens = try parse(template)

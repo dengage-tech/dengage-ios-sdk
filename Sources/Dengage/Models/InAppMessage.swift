@@ -38,6 +38,41 @@ struct InAppMessage: Codable {
             return timingCondition && countCondition
         }
     }
+    
+    func isDisplayTimeAvailable(context: inout [String: String], criterionIndex: inout Int) -> Bool {
+        let currentTime = Date().timeMiliseconds
+        
+        // Check show every X minutes constraint
+        let isTimeConstraintMet: Bool
+        if let showEveryXMinutes = data.displayTiming.showEveryXMinutes,
+           showEveryXMinutes != 0 && showEveryXMinutes != -1 {
+            let timeConstraintMet = (nextDisplayTime ?? currentTime) <= currentTime
+            context["show_every_x_minutes_\(criterionIndex)"] = "\(showEveryXMinutes)|\(nextDisplayTime ?? 0)<=\(currentTime)|TIME_CONSTRAINT|\(timeConstraintMet)"
+            criterionIndex += 1
+            isTimeConstraintMet = timeConstraintMet
+        } else {
+            context["show_every_x_minutes_\(criterionIndex)"] = "noLimit|noLimit|TIME_CONSTRAINT|true"
+            criterionIndex += 1
+            isTimeConstraintMet = true
+        }
+        
+        // Check max show count constraint
+        let isShowCountConstraintMet: Bool
+        if let maxShowCount = data.displayTiming.maxShowCount,
+           maxShowCount != 0 && maxShowCount != -1 {
+            let currentShowCount = showCount ?? 0
+            let showCountConstraintMet = currentShowCount < maxShowCount
+            context["max_show_count_\(criterionIndex)"] = "\(maxShowCount)|\(currentShowCount)<\(maxShowCount)|SHOW_COUNT_CONSTRAINT|\(showCountConstraintMet)"
+            criterionIndex += 1
+            isShowCountConstraintMet = showCountConstraintMet
+        } else {
+            context["max_show_count_\(criterionIndex)"] = "noLimit|noLimit|SHOW_COUNT_CONSTRAINT|true"
+            criterionIndex += 1
+            isShowCountConstraintMet = true
+        }
+        
+        return isTimeConstraintMet && isShowCountConstraintMet
+    }
 }
 
 struct InAppMessageData: Codable {

@@ -89,6 +89,14 @@ final public class DengageConfiguration: Encodable {
         return (DengageLocalStorage.shared.value(for: .lastFetchedInAppMessageTime) as? Double)
     }
     
+    var lastSuccessfulInAppMessageFetchTime: Double? {
+        return (DengageLocalStorage.shared.value(for: .lastSuccessfulInAppMessageFetchTime) as? Double)
+    }
+    
+    var lastSuccessfulRealTimeInAppMessageFetchTime: Double? {
+        return (DengageLocalStorage.shared.value(for: .lastSuccessfulRealTimeInAppMessageFetchTime) as? Double)
+    }
+    
     var expiredMessagesFetchIntervalInMin:Double? {
         return (DengageLocalStorage.shared.value(for: .expiredMessagesFetchIntervalInMin) as? Double)
     }
@@ -232,6 +240,14 @@ final public class DengageConfiguration: Encodable {
         realTimeCategoryPath = path
     }
     
+    func setCart(cart: Cart) {
+        DengageLocalStorage.shared.saveClientCart(cart)
+    }
+    
+    func getCart() -> Cart {
+        return DengageLocalStorage.shared.getClientCart() ?? Cart(items: [])
+    }
+    
     func setCart(itemCount: String?) {
         realTimeCartItemCount = itemCount
     }
@@ -254,6 +270,55 @@ final public class DengageConfiguration: Encodable {
     
     func resetPageViewCount(){
         pageViewCount = 0
+    }
+    
+    func setClientPageInfo(eventDetails: [String: Any]) {
+        let currentPageInfo = getClientPageInfo()
+        
+        var updatedPageInfo = ClientPageInfo(
+            lastProductId: currentPageInfo.lastProductId,
+            lastProductPrice: currentPageInfo.lastProductPrice,
+            lastCategoryPath: currentPageInfo.lastCategoryPath,
+            currentPageTitle: eventDetails["page_title"] as? String ?? currentPageInfo.currentPageTitle,
+            currentPageType: eventDetails["page_type"] as? String ?? currentPageInfo.currentPageType
+        )
+        
+        // If page_type is "product", update last product information
+        if eventDetails["page_type"] as? String == "product" {
+            updatedPageInfo = ClientPageInfo(
+                lastProductId: eventDetails["product_id"] as? String ?? currentPageInfo.lastProductId,
+                lastProductPrice: eventDetails["price"] as? String ?? currentPageInfo.lastProductPrice,
+                lastCategoryPath: eventDetails["category_path"] as? String ?? currentPageInfo.lastCategoryPath,
+                currentPageTitle: updatedPageInfo.currentPageTitle,
+                currentPageType: updatedPageInfo.currentPageType
+            )
+        }
+        
+        DengageLocalStorage.shared.saveClientPageInfo(updatedPageInfo)
+    }
+    
+    func getClientPageInfo() -> ClientPageInfo {
+        return DengageLocalStorage.shared.getClientPageInfo() ?? ClientPageInfo()
+    }
+    
+    func getLastProductId() -> String? {
+        return getClientPageInfo().lastProductId
+    }
+    
+    func getLastProductPrice() -> String? {
+        return getClientPageInfo().lastProductPrice
+    }
+    
+    func getLastCategoryPath() -> String? {
+        return getClientPageInfo().lastCategoryPath
+    }
+    
+    func getCurrentPageTitle() -> String? {
+        return getClientPageInfo().currentPageTitle
+    }
+    
+    func getCurrentPageType() -> String? {
+        return getClientPageInfo().currentPageType
     }
     
     func getContactKey() -> String? {

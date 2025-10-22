@@ -545,3 +545,21 @@ extension Dengage{
     }
 }
 
+
+
+//MARK: - InApp Filters
+extension Dengage {
+    
+    public static func setCart(cart: Cart) {
+        dengage?.config.setCart(cart: cart)
+    }
+    
+    public static func getCart() -> Cart {
+        return dengage?.config.getCart() ?? Cart(items: [CartItem]())
+    }
+    
+    public static func getSdkParameters() -> GetSDKParamsResponse? {
+        return DengageLocalStorage.shared.getConfig()
+    }
+}
+

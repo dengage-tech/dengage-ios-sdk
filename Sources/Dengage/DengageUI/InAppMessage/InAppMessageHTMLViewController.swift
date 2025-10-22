@@ -11,6 +11,7 @@ final class InAppMessageHTMLViewController: UIViewController {
 
     var delegate: InAppMessagesActionsDelegate?
     let message: InAppMessage
+    let couponCode: String
     var isIosURLNPresent = false
     var isClicked = false
 
@@ -21,8 +22,9 @@ final class InAppMessageHTMLViewController: UIViewController {
         return UIApplication.shared.delegate?.window??.safeAreaInsets.top ?? 0 > 20
     }
 
-    init(with message: InAppMessage) {
+    init(with message: InAppMessage, couponCode: String) {
         self.message = message
+        self.couponCode = couponCode
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -83,8 +85,15 @@ final class InAppMessageHTMLViewController: UIViewController {
         }
 
         if let htmlString = message.data.content.props.html {
+            
+            var processedHtml = htmlString
+            
+            if !couponCode.isEmpty, Mustache.hasCouponSection(htmlString) {
+                processedHtml = Mustache.replaceCouponSections(processedHtml, couponCode: couponCode)
+            }
+            
             let dataDict: [String: Any] = ["dnInAppDeviceInfo": Dengage.getInAppDeviceInfo()]
-            let renderedHtml = Mustache.render(htmlString, dataDict)
+            let renderedHtml = Mustache.render(processedHtml, dataDict)
             viewSource.webView.loadHTMLString(renderedHtml, baseURL: nil)
         }
         viewSource.webView.contentMode = .scaleAspectFit

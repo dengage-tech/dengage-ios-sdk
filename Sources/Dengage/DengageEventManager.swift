@@ -171,7 +171,100 @@ extension DengageEventManager {
     func sendCustomEvent(eventTable: String, parameters: [String: Any]) {
         var params = parameters
         params["session_id"] = sessionManager.currentSessionId
+        params["dn_device_id"] = config.applicationIdentifier
+        if let contactKey = config.getContactKey() {
+            params["dn_contact_key"] = contactKey
+        }
         sendEventRequest(table: eventTable, key: config.applicationIdentifier, params: params)
+    }
+    
+    func cleanupClientEvents() {
+        Logger.log(message: "cleanupClientEvents has been called")
+        let currentTime = Date().timeIntervalSince1970 * 1000 // Convert to milliseconds
+        let lastCleanupTime = DengageLocalStorage.shared.value(for: .clientEventsLastCleanupTime) as? TimeInterval ?? 0
+        
+        // Only cleanup if it's been more than 10 minutes since last cleanup
+        let cleanupInterval: TimeInterval = 10 * 60 * 1000 // 10 minutes in milliseconds
+        if currentTime - lastCleanupTime < cleanupInterval {
+            return
+        }
+        
+        guard let sdkParameters = config.remoteConfiguration else { return }
+        
+        var clientEvents = DengageLocalStorage.shared.getClientEvents()
+        var hasChanges = false
+        
+        // Get all valid event types from eventMappings
+        let validEventTypes = Set(sdkParameters.eventMappings
+            .compactMap { $0.eventTypeDefinitions }
+            .flatMap { $0 }
+            .compactMap { $0.eventType })
+        
+        // Add missing valid event types with empty lists
+        for eventType in validEventTypes {
+            if clientEvents[eventType] == nil {
+                clientEvents[eventType] = []
+                hasChanges = true
+                Logger.log(message: "Added missing event type: \(eventType) with empty list")
+            }
+        }
+        
+        // Remove events that are no longer in eventMappings
+        let orphanedEventTypes = clientEvents.keys.filter { eventType in
+            !validEventTypes.contains(eventType)
+        }
+        
+        for eventType in orphanedEventTypes {
+            clientEvents.removeValue(forKey: eventType)
+            hasChanges = true
+            Logger.log(message: "Removed orphaned event type: \(eventType) (not found in eventMappings)")
+        }
+        
+        // Process remaining valid event types
+        for (eventType, eventTypeEvents) in clientEvents {
+            if !eventTypeEvents.isEmpty {
+                let matchingEventTypeDefinition = sdkParameters.eventMappings
+                    .compactMap { $0.eventTypeDefinitions }
+                    .flatMap { $0 }
+                    .first { $0.eventType == eventType }
+                
+                if let definition = matchingEventTypeDefinition, definition.enableClientHistory == true {
+                    if let clientHistoryOptions = definition.clientHistoryOptions {
+                        let maxEventCount = clientHistoryOptions.maxEventCount ?? Int.max
+                        let timeWindowInMinutes = clientHistoryOptions.timeWindowInMinutes ?? Int.max
+                        
+                        let timeThreshold = currentTime - Double(timeWindowInMinutes * 60 * 1000)
+                        let filteredEvents = eventTypeEvents.filter { $0.timestamp >= timeThreshold }
+                        
+                        // Keep only the latest maxEventCount events
+                        let finalEvents: [ClientEvent]
+                        if filteredEvents.count > maxEventCount {
+                            finalEvents = Array(filteredEvents.sorted { $0.timestamp > $1.timestamp }.prefix(maxEventCount))
+                        } else {
+                            finalEvents = filteredEvents
+                        }
+                        
+                        // Update if there are changes
+                        if finalEvents.count != eventTypeEvents.count {
+                            clientEvents[eventType] = finalEvents
+                            hasChanges = true
+                            Logger.log(message: "Cleaned up events for type: \(eventType), removed: \(eventTypeEvents.count - finalEvents.count) events")
+                        }
+                    }
+                } else {
+                    // Remove events for event types that have enableClientHistory = false
+                    clientEvents.removeValue(forKey: eventType)
+                    hasChanges = true
+                    Logger.log(message: "Removed events for type: \(eventType) (client history disabled)")
+                }
+            }
+        }
+        
+        // Save changes and update cleanup time
+        if hasChanges {
+            DengageLocalStorage.shared.saveClientEvents(clientEvents)
+        }
+        DengageLocalStorage.shared.set(value: currentTime, for: .clientEventsLastCleanupTime)
     }
 }
 
@@ -188,6 +281,10 @@ extension DengageEventManager {
         let eventId = Utilities.generateUUID()
         
         params["session_id"] = sessionId
+        params["dn_device_id"] = config.applicationIdentifier
+        if let contactKey = config.getContactKey() {
+            params["dn_contact_key"] = contactKey
+        }
         params["event_type"] = eventType.rawValue
         params["event_id"] = eventId
       
@@ -254,19 +351,92 @@ extension DengageEventManager {
     private func sendEvent(table: DengageInternalTableName, key: String, params: [String : Any]) {
         sendEventRequest(table: table.rawValue, key: key, params: params)
     }
+
+    private func checkFilterCondition(fieldName: String?, operator: String?, values: [String]?, eventDetails: [String: Any]) -> Bool {
+        guard let fieldName = fieldName, let operatorValue = `operator` else { return true }
+        
+        let fieldValue = eventDetails[fieldName]
+        let op = FilterOperator(rawValue: operatorValue)
+        let filterValues = values ?? []
+        
+        switch op {
+        case .Equals:
+            return filterValues.contains { "\($0)" == "\(fieldValue ?? "")" }
+        case .Not_Equals:
+            return !filterValues.contains { "\($0)" == "\(fieldValue ?? "")" }
+        case .In:
+            return filterValues.contains { "\($0)" == "\(fieldValue ?? "")" }
+        case .Not_In:
+            return !filterValues.contains { "\($0)" == "\(fieldValue ?? "")" }
+        case .Like:
+            return filterValues.contains { "\(fieldValue ?? "")".contains("\($0)") }
+        case .Not_Like:
+            return !filterValues.contains { "\(fieldValue ?? "")".contains("\($0)") }
+        case .Starts_With:
+            return filterValues.contains { "\(fieldValue ?? "")".hasPrefix("\($0)") }
+        case .Not_Starts_With:
+            return !filterValues.contains { "\(fieldValue ?? "")".hasPrefix("\($0)") }
+        case .Ends_With:
+            return filterValues.contains { "\(fieldValue ?? "")".hasSuffix("\($0)") }
+        case .Not_Ends_With:
+            return !filterValues.contains { "\(fieldValue ?? "")".hasSuffix("\($0)") }
+        case .Greater_Than:
+            if let v = fieldValue as? Double, let fv = Double(filterValues.first ?? "") { return v > fv }
+            return false
+        case .Greater_Equal:
+            if let v = fieldValue as? Double, let fv = Double(filterValues.first ?? "") { return v >= fv }
+            return false
+        case .Less_Than:
+            if let v = fieldValue as? Double, let fv = Double(filterValues.first ?? "") { return v < fv }
+            return false
+        case .Less_Equal:
+            if let v = fieldValue as? Double, let fv = Double(filterValues.first ?? "") { return v <= fv }
+            return false
+        case .Between:
+            if let v = fieldValue as? Double, filterValues.count == 2,
+               let min = Double(filterValues[0]), let max = Double(filterValues[1]) {
+                return v >= min && v <= max
+            }
+            return false
+        case .Not_Between:
+            if let v = fieldValue as? Double, filterValues.count == 2,
+               let min = Double(filterValues[0]), let max = Double(filterValues[1]) {
+                return !(v >= min && v <= max)
+            }
+            return false
+        case .Null:
+            return fieldValue == nil
+        case .Not_Null:
+            return fieldValue != nil
+        case .Empty:
+            return "\(fieldValue ?? "")".isEmpty
+        case .Not_Empty:
+            return !"\(fieldValue ?? "")".isEmpty
+        default:
+            return false
+        }
+    }
     
     private func sendEventRequest(table: String, key: String, params: [String : Any]) {
+        
+        if(table == DengageInternalTableName.pageView.rawValue) {
+            config.incrementPageViewCount()
+            // Set page parameters for real-time in-app messages
+            config.setClientPageInfo(eventDetails: params)
+        }
+        
         eventQueue.async { [weak self] in
             guard let self = self else { return }
             let request = EventRequest(integrationKey: self.config.integrationKey,
                                        key: key,
                                        eventTable: table,
                                        eventDetails: params)
-
+            
             self.service.send(request: request) { result in
                 switch result {
                 case .success(_):
                     Logger.log(message: "Event success", argument: table)
+                    self.handleEventSent(tableName: table, key: key, eventDetails: params)
                 case .failure(_):
                     //Logger.log(message: "Event fail \(table)", argument: error.localizedDescription)
                     break
@@ -274,6 +444,135 @@ extension DengageEventManager {
             }
         }
     }
+    
+    private func transformEventDetailsKeys(matchingEventType: EventTypeDefinition, eventDetails: [String: Any]) -> [String: Any] {
+        // Get attributes for matching event type definition
+        guard let allAttributes = matchingEventType.attributes else { return eventDetails }
+        
+        // Create mapping from tableColumnName to name
+        var keyMappings: [String: String] = [:]
+        for attribute in allAttributes {
+            if let tableColumnName = attribute.tableColumnName,
+               let name = attribute.name {
+                keyMappings[tableColumnName] = name
+            }
+        }
+        
+        // Transform the event details
+        var transformedDetails: [String: Any] = [:]
+        
+        for (key, value) in eventDetails {
+            let newKey = keyMappings[key] ?? key
+            transformedDetails[newKey] = value
+        }
+        
+        return transformedDetails
+    }
+
+    private func handleEventSent(tableName: String, key: String, eventDetails: [String: Any]) {
+        guard let sdkParameters = config.remoteConfiguration else { return }
+        
+        guard let eventMapping = sdkParameters.eventMappings.first(where: { $0.eventTableName == tableName }) else { return }
+        
+        guard let eventTypeDefinitions = eventMapping.eventTypeDefinitions else { return }
+        
+        let matchingEventType = eventTypeDefinitions.first { eventTypeDefinition in
+            // Check if client history is enabled for this event type
+            guard eventTypeDefinition.enableClientHistory == true else { return false }
+            
+            // If there's only one eventTypeDefinition, skip filter condition check
+            if eventTypeDefinitions.count == 1 {
+                return true
+            }
+            
+            // Check filter conditions
+            let filterConditions = eventTypeDefinition.filterConditions ?? []
+            if filterConditions.isEmpty {
+                return true
+            }
+            
+            let logicOperator = eventTypeDefinition.logicOperator ?? "AND"
+            
+            if logicOperator.uppercased() == "AND" {
+                return filterConditions.allSatisfy { condition in
+                    checkFilterCondition(fieldName: condition.fieldName,
+                                        operator: condition.operator,
+                                        values: condition.values,
+                                        eventDetails: eventDetails)
+                }
+            } else {
+                return filterConditions.contains { condition in
+                    checkFilterCondition(fieldName: condition.fieldName,
+                                        operator: condition.operator,
+                                        values: condition.values,
+                                        eventDetails: eventDetails)
+                }
+            }
+        }
+        
+        guard
+            let eventTypeDefinition = matchingEventType,
+            let clientHistoryOptions = eventTypeDefinition.clientHistoryOptions,
+            let eventType = eventTypeDefinition.eventType
+        else {
+            return
+        }
+        
+        // Transform event details keys first
+        let transformedEventDetails = transformEventDetailsKeys(
+            matchingEventType: eventTypeDefinition,
+            eventDetails: eventDetails
+        )
+        
+        let maxEventCount = clientHistoryOptions.maxEventCount ?? Int.max
+        let timeWindowInMinutes = clientHistoryOptions.timeWindowInMinutes ?? Int.max
+        
+        var clientEvents = DengageLocalStorage.shared.getClientEvents()
+        var eventTypeEvents = clientEvents[eventType] ?? []
+        
+        let now = Date().timeIntervalSince1970 * 1000
+        
+        let clientEvent = ClientEvent(
+            tableName: tableName,
+            eventType: eventType,
+            key: key,
+            eventDetails: transformedEventDetails,
+            timestamp: now
+        )
+        eventTypeEvents.append(clientEvent)
+
+        clientEvents[eventType] = eventTypeEvents
+        DengageLocalStorage.shared.saveClientEvents(clientEvents)
+        
+        Logger.log(message: "Client event stored for table: \(tableName), eventType: \(eventType) current count: \(eventTypeEvents.count)")
+    }
+}
+
+enum FilterOperator: String {
+    case Equals = "Equals"
+    case Not_Equals = "Not_Equals"
+    case Between = "Between"
+    case Not_Between = "Not_Between"
+    case In = "In"
+    case Not_In = "Not_In"
+    case After = "After"
+    case After_Equal = "After_Equal"
+    case Before = "Before"
+    case Before_Equal = "Before_Equal"
+    case Null = "Null"
+    case Not_Null = "Not_Null"
+    case Like = "Like"
+    case Not_Like = "Not_Like"
+    case Starts_With = "Starts_With"
+    case Not_Starts_With = "Not_Starts_With"
+    case Ends_With = "Ends_With"
+    case Not_Ends_With = "Not_Ends_With"
+    case Greater_Than = "Greater_Than"
+    case Greater_Equal = "Greater_Equal"
+    case Less_Than = "Less_Than"
+    case Less_Equal = "Less_Equal"
+    case Empty = "Empty"
+    case Not_Empty = "Not_Empty"
 }
 
 protocol DengageEventProtocolInterface: AnyObject {
@@ -293,6 +592,7 @@ protocol DengageEventProtocolInterface: AnyObject {
     func addToWithList(parameters: [String: Any])
     func removeFromWithList(parameters: [String: Any])
     func sendCustomEvent(eventTable: String, parameters: [String: Any])
+    func cleanupClientEvents()
 }
 
 enum DengageInternalTableName: String{

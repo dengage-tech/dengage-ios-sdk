@@ -21,6 +21,9 @@
 		882A92132D6CAD2B00179FC1 /* DengageWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882A920D2D6CAD2B00179FC1 /* DengageWidgetBundle.swift */; };
 		882A92142D6CAD2B00179FC1 /* DengageWidgetLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882A920E2D6CAD2B00179FC1 /* DengageWidgetLiveActivity.swift */; };
 		882A92152D6CAD2B00179FC1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 882A920B2D6CAD2B00179FC1 /* Assets.xcassets */; };
+		8840B86A2E8D59ED00868EFB /* CartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8840B8692E8D59ED00868EFB /* CartViewController.swift */; };
+		8840B86C2E8D59F400868EFB /* EventHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8840B86B2E8D59F400868EFB /* EventHistoryViewController.swift */; };
+		8840B86E2E8D59FE00868EFB /* RealTimeInAppFiltersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8840B86D2E8D59FE00868EFB /* RealTimeInAppFiltersViewController.swift */; };
 		88426DCA2D6378D300B9FBB6 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A099518627AC9CE80089D98D /* UserNotifications.framework */; };
 		88426DCC2D6378D400B9FBB6 /* UserNotificationsUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A099518827AC9CE80089D98D /* UserNotificationsUI.framework */; };
 		88426DD02D6379AD00B9FBB6 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = 88426DCF2D6379AD00B9FBB6 /* Dengage */; };
@@ -106,10 +109,14 @@
 		882A920D2D6CAD2B00179FC1 /* DengageWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageWidgetBundle.swift; sourceTree = "<group>"; };
 		882A920E2D6CAD2B00179FC1 /* DengageWidgetLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageWidgetLiveActivity.swift; sourceTree = "<group>"; };
 		882A920F2D6CAD2B00179FC1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8840B8692E8D59ED00868EFB /* CartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViewController.swift; sourceTree = "<group>"; };
+		8840B86B2E8D59F400868EFB /* EventHistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventHistoryViewController.swift; sourceTree = "<group>"; };
+		8840B86D2E8D59FE00868EFB /* RealTimeInAppFiltersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealTimeInAppFiltersViewController.swift; sourceTree = "<group>"; };
 		8845BBF42D5CF3B700715B38 /* Dengage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Dengage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8845BBF82D5CF3C200715B38 /* DengageGeofence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = DengageGeofence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8845BBFB2D5CF3DC00715B38 /* Dengage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Dengage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8845BBFF2D5CF3E600715B38 /* Dengage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Dengage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		885238E82E98F4B500AC6F37 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		886E50332CE56F0000528A6E /* NotificationContentExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotificationContentExtension.entitlements; sourceTree = "<group>"; };
 		888EB8342D70607600D15827 /* Dengage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Dengage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		88968AFD2D09CF2700312C4C /* ios-example-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ios-example-app.entitlements"; sourceTree = "<group>"; };
@@ -238,13 +245,16 @@
 			children = (
 				882A92062D6CAD2700179FC1 /* Util */,
 				880068852C931B7400881F71 /* AppStoryViewController.swift */,
+				8840B8692E8D59ED00868EFB /* CartViewController.swift */,
 				A0B8857A27B1F4E4004D4360 /* ContactKeyViewController.swift */,
 				A0B8857727B1F197004D4360 /* DeviceInfoViewController.swift */,
+				8840B86B2E8D59F400868EFB /* EventHistoryViewController.swift */,
 				A09951A927ACB2A30089D98D /* EventViewController.swift */,
 				D6472F4D28E88D670076523C /* GeofenceViewController.swift */,
 				A09951A627ACB12E0089D98D /* InAppMessageViewController.swift */,
 				A099519C27ACAD380089D98D /* InboxMessagesViewController.swift */,
 				882A92002D6CAC6900179FC1 /* LiveActivityViewController.swift */,
+				8840B86D2E8D59FE00868EFB /* RealTimeInAppFiltersViewController.swift */,
 				D6810E68293F341200611E55 /* RealTimeViewController.swift */,
 				A0B884FD27B1CF44004D4360 /* RootViewController.swift */,
 				D68141002BB33CEC00663AC8 /* ShowInLineInAPP.swift */,
@@ -429,6 +439,7 @@
 			knownRegions = (
 				en,
 				Base,
+				tr,
 			);
 			mainGroup = A0F46C55275A85B0003A524C;
 			productRefGroup = A0F46C5F275A85B0003A524C /* Products */;
@@ -515,6 +526,7 @@
 				A0B8857B27B1F4E4004D4360 /* ContactKeyViewController.swift in Sources */,
 				A0F46C66275A85B0003A524C /* ViewController.swift in Sources */,
 				A099519D27ACAD380089D98D /* InboxMessagesViewController.swift in Sources */,
+				8840B86C2E8D59F400868EFB /* EventHistoryViewController.swift in Sources */,
 				882A92072D6CAD2700179FC1 /* ActionTableViewCell.swift in Sources */,
 				882A92082D6CAD2700179FC1 /* Extensions.swift in Sources */,
 				882A92092D6CAD2700179FC1 /* InboxMessageTableViewCell.swift in Sources */,
@@ -523,9 +535,11 @@
 				880068872C931B7400881F71 /* AppStoryViewController.swift in Sources */,
 				A0F46C62275A85B0003A524C /* AppDelegate.swift in Sources */,
 				A09951A427ACB0D30089D98D /* TagsViewController.swift in Sources */,
+				8840B86E2E8D59FE00868EFB /* RealTimeInAppFiltersViewController.swift in Sources */,
 				A09951AA27ACB2A30089D98D /* EventViewController.swift in Sources */,
 				A09951A727ACB12E0089D98D /* InAppMessageViewController.swift in Sources */,
 				882A92012D6CAC7200179FC1 /* LiveActivityViewController.swift in Sources */,
+				8840B86A2E8D59ED00868EFB /* CartViewController.swift in Sources */,
 				D68141012BB33CEC00663AC8 /* ShowInLineInAPP.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -555,6 +569,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				A0F46C6D275A85B1003A524C /* Base */,
+				885238E82E98F4B500AC6F37 /* tr */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -572,7 +587,7 @@
 				CODE_SIGN_ENTITLEMENTS = DengageWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 81;
+				CURRENT_PROJECT_VERSION = 89;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -608,7 +623,7 @@
 				CODE_SIGN_ENTITLEMENTS = DengageWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 81;
+				CURRENT_PROJECT_VERSION = 89;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -639,7 +654,7 @@
 				CODE_SIGN_ENTITLEMENTS = NoticationExtension/NoticationExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 81;
+				CURRENT_PROJECT_VERSION = 89;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NoticationExtension/Info.plist;
@@ -668,7 +683,7 @@
 				CODE_SIGN_ENTITLEMENTS = NoticationExtension/NoticationExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 81;
+				CURRENT_PROJECT_VERSION = 89;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NoticationExtension/Info.plist;
@@ -697,7 +712,7 @@
 				CODE_SIGN_ENTITLEMENTS = NotificationContentExtension/NotificationContentExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 81;
+				CURRENT_PROJECT_VERSION = 89;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NotificationContentExtension/Info.plist;
@@ -726,7 +741,7 @@
 				CODE_SIGN_ENTITLEMENTS = NotificationContentExtension/NotificationContentExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 81;
+				CURRENT_PROJECT_VERSION = 89;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NotificationContentExtension/Info.plist;
@@ -753,6 +768,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -814,6 +830,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
@@ -874,7 +891,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ios-example-app/ios-example-app.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 81;
+				CURRENT_PROJECT_VERSION = 89;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-example-app/Info.plist";
@@ -913,7 +930,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ios-example-app/ios-example-app.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 81;
+				CURRENT_PROJECT_VERSION = 89;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-example-app/Info.plist";

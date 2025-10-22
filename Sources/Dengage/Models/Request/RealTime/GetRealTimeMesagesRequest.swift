@@ -7,11 +7,16 @@ struct GetRealTimeMesagesRequest: APIRequest {
     let method: HTTPMethod = .get
     let endpointType: EndpointType = .inappRealTime
     var path: String {
-        return "/\(accountName)/\(appId)/campaign.json"
+        if version.isEmpty {
+            return "/\(accountName)/\(appId)/campaign.json"
+        } else {
+            return "/\(accountName)/\(appId)/\(version)/campaign.json"
+        }
     }
 
     let queryParameters: [URLQueryItem] = []
 
     let accountName: String
     let appId: String
+    let version: String
 }

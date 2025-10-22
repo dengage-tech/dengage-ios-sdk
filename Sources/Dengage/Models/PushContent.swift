@@ -13,6 +13,7 @@ struct PushContent: Decodable{
     let subtitle: String?
     let urlImageString: String?
     let addToInbox: Bool?
+    let muted: Bool?
     
     struct PushAction: Decodable{
         let id: String?

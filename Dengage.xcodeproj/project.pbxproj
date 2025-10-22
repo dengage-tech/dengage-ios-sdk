@@ -14,6 +14,8 @@
 		880068962C932B8700881F71 /* DengageVisitCountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880068952C932B8700881F71 /* DengageVisitCountManager.swift */; };
 		8800689C2C933CC300881F71 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8800689A2C933CC300881F71 /* SwiftyJSON.swift */; };
 		8800689D2C933CC300881F71 /* SwiftyJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = 8800689B2C933CC300881F71 /* SwiftyJSON.h */; };
+		880B9D0C2E9CB8AF00EB87DB /* DebugLogRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880B9D0A2E9CB8AF00EB87DB /* DebugLogRequest.swift */; };
+		880B9D122E9D017700EB87DB /* ClientPageInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880B9D112E9D017700EB87DB /* ClientPageInfo.swift */; };
 		8815B7362D6E0B26003E9B31 /* DengageWidgetAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8815B72F2D6E0B24003E9B31 /* DengageWidgetAttributes.swift */; };
 		8817092E2C91807100FA8B63 /* GeofenceEventSignalRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817092B2C91807100FA8B63 /* GeofenceEventSignalRequest.swift */; };
 		8817092F2C91807100FA8B63 /* GetGeofencesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817092C2C91807100FA8B63 /* GetGeofencesRequest.swift */; };
@@ -41,6 +43,10 @@
 		88209F472D9286090041FCD3 /* DengageLocalInboxManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88209F422D9286040041FCD3 /* DengageLocalInboxManager.swift */; };
 		882FE6E22DDEC61300B591F0 /* MarkAsAllReadRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882FE6E12DDEC60D00B591F0 /* MarkAsAllReadRequest.swift */; };
 		882FE6E42DDEC8D200B591F0 /* DeleteAllMessagesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882FE6E32DDEC8CB00B591F0 /* DeleteAllMessagesRequest.swift */; };
+		884389272E703B5600422E78 /* ClientEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884389262E703B5600422E78 /* ClientEvent.swift */; };
+		8843892D2E70566500422E78 /* DengageEventHistoryUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8843892C2E70565F00422E78 /* DengageEventHistoryUtils.swift */; };
+		8843892F2E706B4800422E78 /* Cart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8843892E2E706B4800422E78 /* Cart.swift */; };
+		884389312E7076A500422E78 /* DengageCartUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884389302E7076A500422E78 /* DengageCartUtils.swift */; };
 		8845BBF02D5CF24A00715B38 /* Mustache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8845BBEF2D5CF24A00715B38 /* Mustache.swift */; };
 		88BDCF6A2D09D3E100DAE52C /* TestInAppHtmlViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BDCF662D09D3DE00DAE52C /* TestInAppHtmlViewController.swift */; };
 		88D812E62D64DF90009816E4 /* ApiUrlConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D812E22D64DF8E009816E4 /* ApiUrlConfiguration.swift */; };
@@ -66,6 +72,7 @@
 		88E93AE62C923AC600EE3F5E /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ACF2C923AC600EE3F5E /* UIView+Extension.swift */; };
 		88E93AEA2C923C2200EE3F5E /* StorySet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93AE92C923C2200EE3F5E /* StorySet.swift */; };
 		88E93AEC2C923C8300EE3F5E /* StoryRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93AEB2C923C8300EE3F5E /* StoryRequest.swift */; };
+		88ED30D12E708987002F9A99 /* CouponAssignRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ED30D02E708987002F9A99 /* CouponAssignRequest.swift */; };
 		A00EFCBE280777B8004659DE /* RFMScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EFCBD280777B8004659DE /* RFMScore.swift */; };
 		A00EFCC328077869004659DE /* DengageRFMManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EFCC228077869004659DE /* DengageRFMManager.swift */; };
 		A0765BBF27CEB4700007215B /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765B8227CEB4700007215B /* Constants.swift */; };
@@ -167,6 +174,8 @@
 		8800689A2C933CC300881F71 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 		8800689B2C933CC300881F71 /* SwiftyJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwiftyJSON.h; sourceTree = "<group>"; };
 		880138262D14258D00F06B40 /* Location.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Location.gpx; path = "Example/ios-example-app/Location.gpx"; sourceTree = "<group>"; };
+		880B9D0A2E9CB8AF00EB87DB /* DebugLogRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLogRequest.swift; sourceTree = "<group>"; };
+		880B9D112E9D017700EB87DB /* ClientPageInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientPageInfo.swift; sourceTree = "<group>"; };
 		8815B72F2D6E0B24003E9B31 /* DengageWidgetAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageWidgetAttributes.swift; sourceTree = "<group>"; };
 		881709152C91803E00FA8B63 /* DengageCLLocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageCLLocation.swift; sourceTree = "<group>"; };
 		881709162C91803E00FA8B63 /* DengageGeofenceCluster.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageGeofenceCluster.swift; sourceTree = "<group>"; };
@@ -196,6 +205,10 @@
 		882A91D12D6CAA6D00179FC1 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		882FE6E12DDEC60D00B591F0 /* MarkAsAllReadRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkAsAllReadRequest.swift; sourceTree = "<group>"; };
 		882FE6E32DDEC8CB00B591F0 /* DeleteAllMessagesRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteAllMessagesRequest.swift; sourceTree = "<group>"; };
+		884389262E703B5600422E78 /* ClientEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientEvent.swift; sourceTree = "<group>"; };
+		8843892C2E70565F00422E78 /* DengageEventHistoryUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageEventHistoryUtils.swift; sourceTree = "<group>"; };
+		8843892E2E706B4800422E78 /* Cart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cart.swift; sourceTree = "<group>"; };
+		884389302E7076A500422E78 /* DengageCartUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageCartUtils.swift; sourceTree = "<group>"; };
 		8845BBEF2D5CF24A00715B38 /* Mustache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mustache.swift; sourceTree = "<group>"; };
 		88BDCF662D09D3DE00DAE52C /* TestInAppHtmlViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInAppHtmlViewController.swift; sourceTree = "<group>"; };
 		88D812E22D64DF8E009816E4 /* ApiUrlConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiUrlConfiguration.swift; sourceTree = "<group>"; };
@@ -221,6 +234,7 @@
 		88E93ACF2C923AC600EE3F5E /* UIView+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
 		88E93AE92C923C2200EE3F5E /* StorySet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorySet.swift; sourceTree = "<group>"; };
 		88E93AEB2C923C8300EE3F5E /* StoryRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryRequest.swift; sourceTree = "<group>"; };
+		88ED30D02E708987002F9A99 /* CouponAssignRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CouponAssignRequest.swift; sourceTree = "<group>"; };
 		A00EFCBD280777B8004659DE /* RFMScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RFMScore.swift; sourceTree = "<group>"; };
 		A00EFCC228077869004659DE /* DengageRFMManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageRFMManager.swift; sourceTree = "<group>"; };
 		A0765B7627CEB4300007215B /* Dengage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Dengage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -296,6 +310,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		880B9D0B2E9CB8AF00EB87DB /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				880B9D0A2E9CB8AF00EB87DB /* DebugLogRequest.swift */,
+			);
+			path = Debug;
+			sourceTree = "<group>";
+		};
 		8817092D2C91807100FA8B63 /* Geofence */ = {
 			isa = PBXGroup;
 			children = (
@@ -404,7 +426,9 @@
 			children = (
 				A0765B8227CEB4700007215B /* Constants.swift */,
 				A0765BBA27CEB4700007215B /* Dengage.swift */,
+				884389302E7076A500422E78 /* DengageCartUtils.swift */,
 				A0765BB927CEB4700007215B /* DengageConfiguration.swift */,
+				8843892C2E70565F00422E78 /* DengageEventHistoryUtils.swift */,
 				A0765BBE27CEB4700007215B /* DengageEventManager.swift */,
 				A0765B8527CEB4700007215B /* DengageInAppMessageManager.swift */,
 				A0765B9B27CEB4700007215B /* DengageInAppMessageUtils.swift */,
@@ -494,6 +518,9 @@
 			isa = PBXGroup;
 			children = (
 				A0765BA427CEB4700007215B /* CarouselItem.swift */,
+				8843892E2E706B4800422E78 /* Cart.swift */,
+				884389262E703B5600422E78 /* ClientEvent.swift */,
+				880B9D112E9D017700EB87DB /* ClientPageInfo.swift */,
 				A0765BA527CEB4700007215B /* ContentParams.swift */,
 				A0765BA327CEB4700007215B /* DengageMessage.swift */,
 				A0765BA227CEB4700007215B /* InAppMessage.swift */,
@@ -525,6 +552,7 @@
 				A0765BB727CEB4700007215B /* MakeSubscriptionRequest.swift */,
 				88E93AEB2C923C8300EE3F5E /* StoryRequest.swift */,
 				A0765BB627CEB4700007215B /* TagsRequest.swift */,
+				880B9D0B2E9CB8AF00EB87DB /* Debug */,
 				A0765BB227CEB4700007215B /* Event */,
 				A0765BAD27CEB4700007215B /* InAppMessage */,
 				A0765BA927CEB4700007215B /* InboxMessage */,
@@ -548,6 +576,7 @@
 		A0765BAD27CEB4700007215B /* InAppMessage */ = {
 			isa = PBXGroup;
 			children = (
+				88ED30D02E708987002F9A99 /* CouponAssignRequest.swift */,
 				880068912C931E9E00881F71 /* ExpiredInAppMessageRequest.swift */,
 				A0765BB027CEB4700007215B /* GetInAppMessagesRequest.swift */,
 				A0765BAF27CEB4700007215B /* MarkAsInAppMessageAsDismissedRequest.swift */,
@@ -758,6 +787,7 @@
 				882FE6E42DDEC8D200B591F0 /* DeleteAllMessagesRequest.swift in Sources */,
 				8800688C2C931DDA00881F71 /* InAppInlineElementView.swift in Sources */,
 				880068922C931E9E00881F71 /* ExpiredInAppMessageRequest.swift in Sources */,
+				884389312E7076A500422E78 /* DengageCartUtils.swift in Sources */,
 				A0765BE527CEB4700007215B /* OpenEventRequest.swift in Sources */,
 				A0765BC927CEB4700007215B /* DengageCarouselCell.swift in Sources */,
 				881709372C91808800FA8B63 /* GetVisitorInfoRequest.swift in Sources */,
@@ -782,6 +812,7 @@
 				88BDCF6A2D09D3E100DAE52C /* TestInAppHtmlViewController.swift in Sources */,
 				8815B7362D6E0B26003E9B31 /* DengageWidgetAttributes.swift in Sources */,
 				A0765BD027CEB4700007215B /* InAppMessagesActionsDelegate.swift in Sources */,
+				88ED30D12E708987002F9A99 /* CouponAssignRequest.swift in Sources */,
 				88E93ADB2C923AC600EE3F5E /* StoryDisplayHeaderView.swift in Sources */,
 				A0765BCA27CEB4700007215B /* TestPageViewController.swift in Sources */,
 				881709392C91808800FA8B63 /* MarkAsRealTimeInAppMessageClickedRequest.swift in Sources */,
@@ -798,9 +829,11 @@
 				A0765BD427CEB4700007215B /* DengageInboxManager.swift in Sources */,
 				88E93AE32C923AC600EE3F5E /* StoryProgressView.swift in Sources */,
 				A0765BC427CEB4700007215B /* DengageSessionManager.swift in Sources */,
+				880B9D122E9D017700EB87DB /* ClientPageInfo.swift in Sources */,
 				A0765BCB27CEB4700007215B /* TestInAppMessageViewController.swift in Sources */,
 				A0765BDC27CEB4700007215B /* PushContent.swift in Sources */,
 				881709362C91808800FA8B63 /* GetRealTimeMesagesRequest.swift in Sources */,
+				8843892F2E706B4800422E78 /* Cart.swift in Sources */,
 				A0765BC827CEB4700007215B /* CarouselMessage.swift in Sources */,
 				A0765BE427CEB4700007215B /* MarkAsInAppMessageDisplayedRequest.swift in Sources */,
 				A0765BC127CEB4700007215B /* ThreadSafeContainer.swift in Sources */,
@@ -830,6 +863,7 @@
 				A0765BF027CEB4700007215B /* DengageEventManager.swift in Sources */,
 				88E93AD42C923AC600EE3F5E /* CircleImageView.swift in Sources */,
 				A0765BE227CEB4700007215B /* MarkAsInAppMessageAsDismissedRequest.swift in Sources */,
+				8843892D2E70566500422E78 /* DengageEventHistoryUtils.swift in Sources */,
 				8845BBF02D5CF24A00715B38 /* Mustache.swift in Sources */,
 				88E93AE02C923AC600EE3F5E /* StoryImageCache.swift in Sources */,
 				88E4D7292D16A8A00033A501 /* DengageSubscriptionQueue.swift in Sources */,
@@ -839,8 +873,10 @@
 				A00EFCBE280777B8004659DE /* RFMScore.swift in Sources */,
 				8817092E2C91807100FA8B63 /* GeofenceEventSignalRequest.swift in Sources */,
 				A0765BC627CEB4700007215B /* DengageNetworking.swift in Sources */,
+				880B9D0C2E9CB8AF00EB87DB /* DebugLogRequest.swift in Sources */,
 				A0765BEE27CEB4700007215B /* DengageLog.swift in Sources */,
 				882FE6E22DDEC61300B591F0 /* MarkAsAllReadRequest.swift in Sources */,
+				884389272E703B5600422E78 /* ClientEvent.swift in Sources */,
 				A0765BD527CEB4700007215B /* DengageLocalStorage.swift in Sources */,
 				A0765BE127CEB4700007215B /* MarkAsInAppMessageClickedRequest.swift in Sources */,
 				A0765BBF27CEB4700007215B /* Constants.swift in Sources */,
