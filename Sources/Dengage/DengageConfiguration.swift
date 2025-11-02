@@ -445,11 +445,9 @@ final public class DengageConfiguration: Encodable {
     
     
     private static func getDeviceCountry() -> String {
-        guard let regionCode = Locale.current.regionCode else { return "Null" }
-        let countryId = Locale.identifier(fromComponents: [NSLocale.Key.countryCode.rawValue: regionCode])
-        guard let countryName = NSLocale(localeIdentifier: "en_US").displayName(forKey: NSLocale.Key.identifier,
-                                                                                value: countryId) else { return "Null" }
-        return countryName
+       
+        return Locale.current.localizedString(forRegionCode: Locale.current.regionCode ?? "") ?? "Unknown"
+        
     }
     
     private static func dengageDeviceIdApiUrl() -> URL {
