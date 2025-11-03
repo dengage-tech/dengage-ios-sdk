@@ -21,8 +21,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //demo
 //        APw9RpIb8xEEVjxNfN8h_s_l_Xknsll3fFa88j6DjEYlo9ZncoMxrLXr2wZcafHPDlAllnV23eAG8sUr9Co4rfs5D67VMc9o_p_l_ovvhwCKF2zTjPh4at_p_l_OZWBxYqhAq2eop_s_l_VOnskTofJnsvTDJ7n5ZR0tzQ_e_q__e_q_
 
-
-        
         Dengage.setLog(isVisible: true)
 
         let dengageOptions = DengageOptions.init(disableOpenURL: false)
@@ -34,7 +32,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Dengage.setDevelopmentStatus(isDebug: true)
                 
         Dengage.promptForPushNotifications { isUserGranted in
-            
             
         }
         

@@ -1,10 +1,10 @@
 import Foundation
 struct EventRequest: APIRequest {
-
+    
     typealias Response = EmptyResponse
 
     let method: HTTPMethod = .post
-    let endpointType: EndpointType = .event
+    let enpointType: EndpointType = .event
     let path: String = "/api/event"
 
     var httpBody: Data?{
