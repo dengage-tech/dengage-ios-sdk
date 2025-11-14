@@ -1,3 +1,4 @@
+
 import Dengage
 import UIKit
 
@@ -68,14 +69,7 @@ final class AppStoryViewController: UIViewController {
         return view
     }()
     
-    private lazy var storiesContainerView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
     var storiesListView: StoriesListView?
-    var storiesListViewArray: [StoriesListView] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -93,16 +87,9 @@ final class AppStoryViewController: UIViewController {
         title = "App Story"
         view.backgroundColor = .lightGray
         view.addSubview(stackView)
-        view.addSubview(storiesContainerView)
-        
         stackView.topAnchor.constraint(equalTo: view.safeAreaTopAnchor, constant: 20).isActive = true
         stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15).isActive = true
         stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15).isActive = true
-        
-        storiesContainerView.topAnchor.constraint(equalTo: stackView.bottomAnchor, constant: 20).isActive = true
-        storiesContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15).isActive = true
-        storiesContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15).isActive = true
-        storiesContainerView.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
     }
     
     
@@ -114,58 +101,26 @@ final class AppStoryViewController: UIViewController {
     
     @objc private func didTapRefreshStoryButton() {
         
-        // Remove existing story views
-        storiesContainerView.subviews
-            .filter { $0.tag == STORY_VIEW_TAG }
-            .forEach { $0.removeFromSuperview() }
         
-        storiesListViewArray.removeAll()
+        if let viewWithTag = stackView.viewWithTag(STORY_VIEW_TAG) {
+            viewWithTag.removeFromSuperview()
+        }
         
         let storyPropertyID = propertyIdTextField.text
         let screenName = screenNameTextField.text
         let customParams = [String: String]()
         
-        // First story (bottom layer)
         Dengage.showAppStory(storyPropertyID: storyPropertyID, screenName: screenName, customParams: customParams) { storyView in
             
             if let storyView = storyView {
-                storyView.translatesAutoresizingMaskIntoConstraints = false
-                storyView.tag = STORY_VIEW_TAG
-                self.storiesListViewArray.append(storyView)
-                self.storiesContainerView.addSubview(storyView)
-                
-                // Position first story to fill container
-                NSLayoutConstraint.activate([
-                    storyView.topAnchor.constraint(equalTo: self.storiesContainerView.topAnchor),
-                    storyView.leadingAnchor.constraint(equalTo: self.storiesContainerView.leadingAnchor),
-                    storyView.trailingAnchor.constraint(equalTo: self.storiesContainerView.trailingAnchor),
-                    storyView.bottomAnchor.constraint(equalTo: self.storiesContainerView.bottomAnchor)
-                ])
-                
-                // Store first story view for background color change
-                if self.storiesListViewArray.count == 1 {
-                    self.storiesListView = storyView
+                self.storiesListView = storyView
+                self.storiesListView?.translatesAutoresizingMaskIntoConstraints = false
+                if let storiesListView = self.storiesListView {
+                    self.storiesListView?.tag = STORY_VIEW_TAG
+                    self.stackView.insertArrangedSubview(storiesListView, at: self.stackView.subviews.count)
                 }
             }
-        }
-        
-        // Second story (top layer - will overlay the first)
-        Dengage.showAppStory(storyPropertyID: storyPropertyID, screenName: screenName, customParams: customParams) { secondStoryView in
             
-            if let secondStoryView = secondStoryView {
-                secondStoryView.translatesAutoresizingMaskIntoConstraints = false
-                secondStoryView.tag = STORY_VIEW_TAG
-                self.storiesListViewArray.append(secondStoryView)
-                self.storiesContainerView.addSubview(secondStoryView)
-                
-                // Position second story to overlay the first (same constraints)
-                NSLayoutConstraint.activate([
-                    secondStoryView.topAnchor.constraint(equalTo: self.storiesContainerView.topAnchor),
-                    secondStoryView.leadingAnchor.constraint(equalTo: self.storiesContainerView.leadingAnchor),
-                    secondStoryView.trailingAnchor.constraint(equalTo: self.storiesContainerView.trailingAnchor),
-                    secondStoryView.bottomAnchor.constraint(equalTo: self.storiesContainerView.bottomAnchor)
-                ])
-            }
         }
     }
     
@@ -177,3 +132,4 @@ extension AppStoryViewController: UITextFieldDelegate {
         return false
     }
 }
+
