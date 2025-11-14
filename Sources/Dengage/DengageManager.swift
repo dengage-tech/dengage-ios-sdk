@@ -40,6 +40,8 @@ public class DengageManager {
         self.eventManager = DengageEventManager(config: config,
                                                 service: apiClient,
                                                 sessionManager: sessionManager)
+        DengageLocalStorage.shared.clearStoryLastDisplayTimes()
+
         self.inAppManager = DengageInAppMessageManager.init(config: config,
                                                             service: apiClient,
                                                             sessionManager: sessionManager)

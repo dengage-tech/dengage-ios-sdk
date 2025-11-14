@@ -2,21 +2,25 @@ import Foundation
 import UIKit
 
 final class Utilities{
-    static func convertDate(to date: String?) -> Date? {
-        guard let dateString = date else {return nil}
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-        formatter.timeZone = TimeZone(abbreviation: "UTC")
-        return formatter.date(from: dateString)
-    }
     
-    static func convertToString(to date: Date?) -> String? {
-        guard let date = date else {return nil}
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-        formatter.timeZone = TimeZone(abbreviation: "UTC")
-        return formatter.string(from: date)
-    }
+    static func convertDate(to date: String?) -> Date? {
+            guard let dateString = date else {return nil}
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+            formatter.timeZone = TimeZone(abbreviation: "UTC")
+            return formatter.date(from: dateString)
+        }
+        
+        static func convertToString(to date: Date?) -> String? {
+            guard let date = date else {return nil}
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+            formatter.timeZone = TimeZone(abbreviation: "UTC")
+            return formatter.string(from: date)
+        }
+    
     
     class func color(hex hexString: String?) -> UIColor? {
         guard let hex = hexString else {return nil}

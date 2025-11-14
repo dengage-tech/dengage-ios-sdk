@@ -100,6 +100,8 @@ final public class DengageLocalStorage: NSObject {
         case clientCart = "clientCart"
         case clientPageInfo = "clientPageInfo"
         case clientEventsLastCleanupTime = "clientEventsLastCleanupTime"
+        case storyLastDisplayTime = "storyLastDisplayTime"
+
 
     }
 }
@@ -512,3 +514,40 @@ extension DengageLocalStorage {
     
 }
 
+extension DengageLocalStorage {
+    
+    func getStoryLastDisplayTimes() -> [String: Double] {
+        guard let displayTimesData = userDefaults.object(forKey: Key.storyLastDisplayTime.rawValue) as? Data else { return [:] }
+        let decoder = JSONDecoder()
+        do {
+            let displayTimes = try decoder.decode([String: Double].self, from: displayTimesData)
+            return displayTimes
+        } catch {
+            Logger.log(message: "getStoryLastDisplayTimes fail")
+            return [:]
+        }
+    }
+    
+    func setStoryLastDisplayTime(publicId: String, timestamp: Double) {
+        var displayTimes = getStoryLastDisplayTimes()
+        displayTimes[publicId] = timestamp
+        let encoder = JSONEncoder()
+        do {
+            let encoded = try encoder.encode(displayTimes)
+            userDefaults.set(encoded, forKey: Key.storyLastDisplayTime.rawValue)
+            userDefaults.synchronize()
+        } catch {
+            Logger.log(message: "setStoryLastDisplayTime fail")
+        }
+    }
+    
+    func getStoryLastDisplayTime(publicId: String) -> Double? {
+        let displayTimes = getStoryLastDisplayTimes()
+        return displayTimes[publicId]
+    }
+    
+    func clearStoryLastDisplayTimes() {
+        userDefaults.removeObject(forKey: Key.storyLastDisplayTime.rawValue)
+        userDefaults.synchronize()
+    }
+}

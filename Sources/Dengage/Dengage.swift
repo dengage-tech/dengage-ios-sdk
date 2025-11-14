@@ -301,6 +301,7 @@ public class Dengage {
         screenName: String? = nil, customParams: [String: String]? = nil, hideIfNotFound: Bool = false,
         storyCompletion: @escaping (StoriesListView?) -> Void
     ) {
+        
         dengage?.inAppManager.setNavigation(
             screenName: screenName, params: customParams, storyPropertyID: storyPropertyID, storyCompletion: storyCompletion)
     }

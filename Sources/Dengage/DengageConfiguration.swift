@@ -445,10 +445,29 @@ final public class DengageConfiguration: Encodable {
     
     
     private static func getDeviceCountry() -> String {
-       
-        return Locale.current.localizedString(forRegionCode: Locale.current.regionCode ?? "") ?? "Unknown"
-        
-    }
+            do {
+                // Safely get region code
+                guard let regionCode = Locale.current.regionCode else { return "Null" }
+                
+                // Use a safer approach to get country name
+                // First try using Locale's localizedString method
+                if let countryName = Locale(identifier: "en_US_POSIX").localizedString(forRegionCode: regionCode) {
+                    return countryName
+                }
+                
+                // Fallback: try with standard en_US locale
+                if let countryName = Locale(identifier: "en_US").localizedString(forRegionCode: regionCode) {
+                    return countryName
+                }
+                
+                // Final fallback: return region code if name cannot be determined
+                return regionCode
+            } catch {
+                // If any exception occurs, return safe fallback
+                Logger.log(message: "getDeviceCountry_ERROR", argument: error.localizedDescription)
+                return Locale.current.regionCode ?? "Null"
+            }
+        }
     
     private static func dengageDeviceIdApiUrl() -> URL {
         
