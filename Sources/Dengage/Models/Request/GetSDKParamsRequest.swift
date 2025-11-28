@@ -12,16 +12,14 @@ struct GetSDKParamsRequest: APIRequest {
     var queryParameters: [URLQueryItem] {
         [
             URLQueryItem(name: "ik", value: integrationKey),
-            URLQueryItem(name: "did", value: deviceId)
         ]
     }
 
     let integrationKey: String
-    let deviceId: String
 
-    init(integrationKey: String, deviceId: String) {
+    init(integrationKey: String) {
         self.integrationKey = integrationKey
-        self.deviceId = deviceId
+
     }
 }
 

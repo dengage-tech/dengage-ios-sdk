@@ -162,7 +162,7 @@ extension DengageManager {
         let carrierId = self.config.getCarrierIdentifier
         let appVersion = self.config.appVersion
         let sdkVersion = SDK_VERSION
-        let country = self.config.deviceCountryCode
+        let country = self.config.getDeviceCountry()
         let language = self.config.getLanguage()
         let timezone = self.config.deviceTimeZone
         let partnerDeviceId = self.config.getPartnerDeviceID() ?? ""
@@ -256,8 +256,7 @@ extension DengageManager {
     
     private func fetchSDK(){
         Logger.log(message: "fetchSDK Started")
-        let request = GetSDKParamsRequest(integrationKey: config.integrationKey,
-                                          deviceId: config.applicationIdentifier)
+        let request = GetSDKParamsRequest(integrationKey: config.integrationKey)
         apiClient.send(request: request) { [weak self] result in
             guard let self = self else { return }
             switch result {

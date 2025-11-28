@@ -42,7 +42,7 @@ private extension AppDelegate {
         //dev-app.dengage.com: egemen-ios-dev-test
         //let test_testflight = "g9XU6x_p_l__p_l__s_l_AnsEBUgVC4F5uGQHpg7PFa1PIfxtOZG4bku0AxtvUMjBqF_s_l_Q0x37TkR1_p_l_vV_s_l_mYwcKHWB7YPNjAClyPViBqp1iRw3zqbtCBZlnapkD7pLGTGMKHGvPreNWf5kPPjZC0og67hsTfSkYBLfA_e_q__e_q_"
         //dev-app.dengage.com: egemen-ios-dev-sandbox-test
-        let test_sandbox = "QE8P6DlqusV4g21EnkO3dk8NVjmqzlRjoLouXpHVTFehUa3wToBlADQqLpacXQ1ySqD3VJVM9Zx9JXsHHasCrqT5s4_s_l_K3wSMc_s_l_S3BZDrs6gJo_p_l_DdSirLDnvHQHC51gcEkYbZrxAjhzgo6kuYQIsfIg_e_q__e_q_"
+        let test_sandbox = "SNjHEXePXzmapR7IpX2XtPbf1_s_l_4uOJFKfcJJwHgQbEezfQU18poowkZoNrDPfbJBUSndjOQGZt03SOkO83FIb8CKTcv8CcSfhuWBo3bb3JPksT5dpMZotNCQYGdkGfkS"
         
         let ApiUrlConfigurationx = ApiUrlConfiguration(
             denEventApiUrl: "https://push.dengage.com",
@@ -52,6 +52,9 @@ private extension AppDelegate {
             fetchRealTimeInAppApiUrl: "https://tr-inapp.lib.dengage.com"
         )
         
+       
+
+        
         let options = DengageOptions(
             disableOpenURL: false,
             badgeCountReset: true,
@@ -60,6 +63,7 @@ private extension AppDelegate {
             localInboxManager: false
         )
         
+        
         Dengage.setLog(isVisible: true)
         Dengage.setDevelopmentStatus(isDebug: true)
         Dengage.start(
@@ -67,9 +71,13 @@ private extension AppDelegate {
             application: application,
             launchOptions: [:],
             dengageOptions: options , apiUrlConfiguration: ApiUrlConfigurationx)
+        
+        Dengage.set(deviceId: "5389699604370100876|7C119580765761580069")
+        
         Dengage.promptForPushNotifications { isUserGranted in
             print("Dengage.promptForPushNotifications isUserGranted: \(isUserGranted)")
         }
+        
         Dengage.inAppLinkConfiguration(deeplink: "dengagelink://")
         Dengage.handleNotificationActionBlock { response in
             print(response)
@@ -92,7 +100,7 @@ private extension AppDelegate {
          }
          */
         
-        DengageGeofence.startGeofence()
+       // DengageGeofence.startGeofence()
     }
 }
 

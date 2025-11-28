@@ -543,7 +543,7 @@ final class DengageInAppMessageUtils{
                            ruleParam: criterion.values,
                            userParam: actualValue, message: message, valueSource: criterion.valueSource)
         case .COUNTRY:
-            actualValue = config.deviceCountryCode
+            actualValue = config.getDeviceCountry()
             result = operate(with: criterion.comparison,
                            for: criterion.dataType,
                            ruleParam: criterion.values,

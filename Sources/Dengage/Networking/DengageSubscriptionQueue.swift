@@ -59,7 +59,7 @@ final class DengageSubscriptionQueue {
         DengageLocalStorage.shared.set(value: config.getCarrierIdentifier, for: .carrierIdSubscription)
         DengageLocalStorage.shared.set(value: config.appVersion, for: .appVersionSubscription)
         DengageLocalStorage.shared.set(value: SDK_VERSION, for: .sdkVersionSubscription)
-        DengageLocalStorage.shared.set(value: config.deviceCountryCode, for: .countrySubscription)
+        DengageLocalStorage.shared.set(value: config.getDeviceCountry(), for: .countrySubscription)
         DengageLocalStorage.shared.set(value: config.getLanguage(), for: .languageSubscription)
         DengageLocalStorage.shared.set(value: config.deviceTimeZone, for: .timezoneSubscription)
         DengageLocalStorage.shared.set(value: config.getPartnerDeviceID() ?? "", for: .partner_device_idSubscription)

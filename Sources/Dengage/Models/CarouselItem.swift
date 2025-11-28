@@ -11,3 +11,13 @@ public struct CarouselItem: Codable {
         case id, title, descriptionText = "desc", mediaUrl, targetUrl
     }
 }
+
+public struct CustomParameters: Codable {
+    public let key: String
+    public let value: String
+  
+    
+    enum CodingKeys: String, CodingKey {
+        case key, value
+    }
+}

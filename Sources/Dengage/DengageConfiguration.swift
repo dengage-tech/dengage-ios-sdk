@@ -8,7 +8,7 @@ final public class DengageConfiguration: Encodable {
     
     let subscriptionURL: URL
     let eventURL: URL
-    let deviceCountryCode: String
+   // let deviceCountryCode: String
     var deviceLanguage: String
     let deviceTimeZone: String
     let appVersion: String
@@ -38,9 +38,10 @@ final public class DengageConfiguration: Encodable {
     
     
     init(integrationKey: String, options: DengageOptions) {
+        
         subscriptionURL = DengageConfiguration.getSubscriptionUrl()
         eventURL = DengageConfiguration.getEventUrl()
-        deviceCountryCode = DengageConfiguration.getDeviceCountry()
+       // deviceCountryCode = DengageConfiguration.getDeviceCountry()
         deviceLanguage = Locale.current.languageCode ?? "Null"
         deviceTimeZone = TimeZone.current.identifier
         appVersion = DengageConfiguration.getAppVersion()
@@ -444,30 +445,20 @@ final public class DengageConfiguration: Encodable {
     
     
     
-    private static func getDeviceCountry() -> String {
-            do {
-                // Safely get region code
-                guard let regionCode = Locale.current.regionCode else { return "Null" }
-                
-                // Use a safer approach to get country name
-                // First try using Locale's localizedString method
-                if let countryName = Locale(identifier: "en_US_POSIX").localizedString(forRegionCode: regionCode) {
-                    return countryName
-                }
-                
-                // Fallback: try with standard en_US locale
-                if let countryName = Locale(identifier: "en_US").localizedString(forRegionCode: regionCode) {
-                    return countryName
-                }
-                
-                // Final fallback: return region code if name cannot be determined
-                return regionCode
-            } catch {
-                // If any exception occurs, return safe fallback
-                Logger.log(message: "getDeviceCountry_ERROR", argument: error.localizedDescription)
-                return Locale.current.regionCode ?? "Null"
-            }
+    func getDeviceCountry() -> String {
+        // Fast path if already on main
+        if Thread.isMainThread {
+            return (Locale.current.regionCode ?? "").uppercased()
         }
+
+        // If called from background, ask main thread synchronously (safe)
+        var country: String = ""
+        DispatchQueue.main.sync {
+            country = (Locale.current.regionCode ?? "").uppercased()
+        }
+        
+        return country
+    }
     
     private static func dengageDeviceIdApiUrl() -> URL {
         
