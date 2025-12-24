@@ -33,6 +33,8 @@ public class Dengage {
     ) {
         startCalled = true
         
+        DengageLocalStorage.shared.set(value: apiKey, for: .integrationKey)
+        
         if let appGroupsKey = options.appGroupsKey, !appGroupsKey.isEmpty {
             DengageLocalStorage.shared.setAppGroupsUserDefaults(appGroupName: appGroupsKey)
         }
