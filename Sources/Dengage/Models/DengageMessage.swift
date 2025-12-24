@@ -10,6 +10,7 @@ import Foundation
     public let receiveDate: Date?
     public var isClicked: Bool
     public let carouselItems: [CarouselItem]?
+    public let customParameters: [CustomParameters]?
     
     public var isDeleted = false
     
@@ -30,6 +31,12 @@ import Foundation
         self.targetUrl = iosTargetUrl ?? json["targetUrl"] as? String
         let receiveDateString = json["receiveDate"] as! String
         self.receiveDate = Utilities.convertDate(to: receiveDateString)
+        if let customParamsArray = json["customParameters"] as? [[String: Any]] {
+            let customData = try JSONSerialization.data(withJSONObject: customParamsArray, options: [])
+            self.customParameters = try JSONDecoder().decode([CustomParameters].self, from: customData)
+        } else {
+            self.customParameters = nil
+        }
     }
     
     enum CodingKeys: String, CodingKey {
@@ -37,6 +44,7 @@ import Foundation
         case isClicked = "is_clicked"
         case message = "message_json"
         case carouselItems = "iosCarouselContent"
+        case customParameters
     }
 }
 
@@ -50,11 +58,13 @@ import Foundation
     public let receiveDate: Date?
     public var isClicked: Bool
     public let carouselItems: [CarouselItem]?
+    public let customParameters: [CustomParameters]?
     public var isDeleted = false
     
     public init(id: String, title: String?, message: String?, mediaURL: String?,
                 targetUrl: String?, receiveDate: Date?, isClicked: Bool = false,
-                carouselItems: [CarouselItem]?, isDeleted: Bool = false) {
+                carouselItems: [CarouselItem]?, customParameters : [CustomParameters]?,
+                isDeleted: Bool = false) {
         self.id = id
         self.title = title
         self.message = message
@@ -63,6 +73,7 @@ import Foundation
         self.receiveDate = receiveDate
         self.isClicked = isClicked
         self.carouselItems = carouselItems
+        self.customParameters = customParameters
         self.isDeleted = false
     }
 }
