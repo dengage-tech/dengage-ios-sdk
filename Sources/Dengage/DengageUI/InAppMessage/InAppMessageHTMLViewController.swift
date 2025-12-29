@@ -197,6 +197,10 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
         
         case "openSettings":
             delegate?.openApplicationSettings()
+            
+        case "copyToClipboard":
+            guard let bodyString = message.body as? String else { return }
+            UIPasteboard.general.string = bodyString
 
         case "dismiss":
             if !isClicked {
