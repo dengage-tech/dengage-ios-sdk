@@ -100,6 +100,11 @@ final public class DengageLocalStorage: NSObject {
         case clientCart = "clientCart"
         case clientPageInfo = "clientPageInfo"
         case clientEventsLastCleanupTime = "clientEventsLastCleanupTime"
+        
+        
+        // LiveActivities
+        case liveActivitiesUpdateTokens = "liveActivitiesUpdateTokens"
+        case liveActivitiesStartTokens = "liveActivitiesStartTokens"
 
     }
 }

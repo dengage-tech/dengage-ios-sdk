@@ -101,7 +101,8 @@ final public class DengageNetworking {
             return config.inAppURL
         case .inappRealTime:
             return config.inAppRealTimeURL
-            
+        case .liveActivity:
+            return config.liveActivityURL
         }
     }
 }

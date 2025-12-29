@@ -5,237 +5,299 @@
 //  Created by Egemen Gülkılık on 24.02.2025.
 //
 
-
 import UIKit
 import Dengage
 import ActivityKit
 
-
-var activityId: String?
-
-
-@available(iOS 16.1, *)
+@available(iOS 16.2, *)
 final class LiveActivityViewController: UIViewController {
     
-    var activity: Activity<DengageWidgetAttributes>?
-    
-    private lazy var channelIdTextField: UITextField = {
-        let view = UITextField()
-        view.placeholder = "Channel Id"
-        view.textAlignment = .center
-        view.borderStyle = .roundedRect
-        view.textColor = .black
-        view.delegate = self
-        view.autocapitalizationType = .none
-        return view
-    }()
+    // MARK: - UI Components
     
     private lazy var activityIdTextField: UITextField = {
-        let view = UITextField()
-        view.placeholder = "Activity Id"
-        view.textAlignment = .center
-        view.borderStyle = .roundedRect
-        view.textColor = .black
-        view.delegate = self
-        view.autocapitalizationType = .none
-        return view
+        let textField = UITextField()
+        textField.placeholder = "Activity ID (optional)"
+        textField.textAlignment = .center
+        textField.borderStyle = .roundedRect
+        textField.textColor = .black
+        textField.backgroundColor = .white
+        textField.delegate = self
+        textField.autocapitalizationType = .none
+        return textField
     }()
     
-    private lazy var pushTokenTextField: UITextField = {
-        let view = UITextField()
-        view.placeholder = "Push Token"
-        view.textAlignment = .center
-        view.borderStyle = .roundedRect
-        view.textColor = .black
-        view.delegate = self
-        view.autocapitalizationType = .none
-        view.text = liveActivityPushTokenString
-        return view
+    private lazy var startActivityButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Start Live Activity", for: .normal)
+        button.backgroundColor = .systemBlue
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
+        button.addTarget(self, action: #selector(startActivity), for: .touchUpInside)
+        return button
     }()
     
-    private lazy var storyBackgroundColorTextField: UITextField = {
-        let view = UITextField()
-        view.placeholder = "Story Background Color"
-        view.textAlignment = .center
-        view.borderStyle = .roundedRect
-        view.textColor = .black
-        view.delegate = self
-        view.autocapitalizationType = .none
-        view.text = "#ffffff"
-        return view
+    private lazy var updateActivityButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Update Live Activity", for: .normal)
+        button.backgroundColor = .systemGreen
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
+        button.addTarget(self, action: #selector(updateActivity), for: .touchUpInside)
+        return button
     }()
     
-    private lazy var startLiveActivityButton: UIButton = {
-        let view = UIButton()
-        view.setTitle("Start Live Activity", for: .normal)
-        if #available(iOS 18.0, *) {
-            view.addTarget(self, action: #selector(startLiveActivityWithChannel), for: .touchUpInside)
-        } else {
-            // Fallback on earlier versions
-        }
-        view.setTitleColor(.blue, for: .normal)
-        return view
+    private lazy var endActivityButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("End Live Activity", for: .normal)
+        button.backgroundColor = .systemRed
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
+        button.addTarget(self, action: #selector(endActivity), for: .touchUpInside)
+        return button
     }()
     
-    private lazy var updateLiveActivityButton: UIButton = {
-        let view = UIButton()
-        view.setTitle("Update Live Activity", for: .normal)
-        if #available(iOS 16.1, *) {
-            view.addTarget(self, action: #selector(updateLiveActivityAsync), for: .touchUpInside)
-        } else {
-            // Fallback on earlier versions
-        }
-        view.setTitleColor(.blue, for: .normal)
-        return view
+    private lazy var sendPushButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Send Push Update", for: .normal)
+        button.backgroundColor = .systemPurple
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
+        button.addTarget(self, action: #selector(sendPush), for: .touchUpInside)
+        return button
     }()
     
-    
-    private lazy var endLiveActivityButton: UIButton = {
-        let view = UIButton()
-        view.setTitle("End Live Activity", for: .normal)
-        if #available(iOS 16.1, *) {
-            view.addTarget(self, action: #selector(endLiveActivity), for: .touchUpInside)
-        } else {
-            // Fallback on earlier versions
-        }
-        view.setTitleColor(.blue, for: .normal)
-        return view
+    private lazy var printTokensButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Print Active Tokens", for: .normal)
+        button.backgroundColor = .systemOrange
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 8
+        button.addTarget(self, action: #selector(printTokens), for: .touchUpInside)
+        return button
     }()
     
     private lazy var stackView: UIStackView = {
-        let view = UIStackView(arrangedSubviews: [
-            channelIdTextField, activityIdTextField, pushTokenTextField, storyBackgroundColorTextField
-            , startLiveActivityButton, updateLiveActivityButton, endLiveActivityButton
+        let stackView = UIStackView(arrangedSubviews: [
+            activityIdTextField,
+            startActivityButton,
+            updateActivityButton,
+            endActivityButton,
+            sendPushButton,
+            printTokensButton
         ])
-        view.axis = .vertical
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.spacing = 10
-        return view
+        stackView.axis = .vertical
+        stackView.spacing = 16
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
     }()
     
-    var storiesListView: StoriesListView?
+    // MARK: - Properties
+    
+    private var currentActivity: Activity<ExampleAppFirstWidgetAttributes>?
+    
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        
-        super.viewWillDisappear(animated)
-        
-        Dengage.removeInAppMessageDisplay()
-    }
+    // MARK: - Setup
     
     private func setupUI() {
-        title = "App Story"
-        view.backgroundColor = .lightGray
+        title = "Live Activity Test"
+        view.backgroundColor = .systemGroupedBackground
+        
         view.addSubview(stackView)
-        stackView.topAnchor.constraint(equalTo: view.safeAreaTopAnchor, constant: 20).isActive = true
-        stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15).isActive = true
-        stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15).isActive = true
-    }
-    
-    
-    @objc private func didTapChangeStoryBackgroundColorButton() {
-        if let storiesListView = storiesListView, let storyColorString = storyBackgroundColorTextField.text {
-            storiesListView.backgroundColor = UIColor(hex: storyColorString) ?? .clear
-        }
-    }
-    
-    
-    @available(iOS 18.0, *)
-    @objc func startLiveActivity() {
-        if #available(iOS 16.1, *) {
-            let attributes = DengageWidgetAttributes(name: "Live Activity")
-            
-            let contentState = DengageWidgetAttributes.ContentState(emoji: "🎉")
-            do {
-                let activity = try Activity<DengageWidgetAttributes>.request(
-                    attributes: attributes,
-                    contentState: contentState,
-                    pushType: .channel("iV8cV/ohEe8AABYdcJ3Xgw==") // Opsiyonel: Push Notifications ile tetikleme
-                )
-                self.activity = activity
-                activityIdTextField.text = activity.id
-                pushTokenTextField.text = activity.pushToken?.description
-                print("Live Activity başlatıldı: \(activity.id)")
-                
-            } catch {
-                print("Live Activity başlatılamadı: \(error.localizedDescription)")
-            }
-        } else {
-            // Fallback on earlier versions
-        }
-    }
-    
-    @available(iOS 18.0, *)
-    @objc func startLiveActivityWithChannel() {
-        let attributes = DengageWidgetAttributes(name: "Live Activity")
-        //var channelId = "iV8cV/ohEe8AABYdcJ3Xgw=="
-        let channelId = channelIdTextField.text ?? ""
         
-        let initialState = DengageWidgetAttributes.ContentState(emoji: "channel")
-        
-        let activity = try? Activity.request(attributes: attributes, content: .init(state: initialState, staleDate: nil), pushType: .channel(channelId))
-        
-        /*let activity = try? Activity<DengageWidgetAttributes>.request(
-         attributes: attributes,
-         contentState: contentState,
-         pushType: .channel(channelId)
-         )
-         */
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            activityIdTextField.heightAnchor.constraint(equalToConstant: 44),
+            startActivityButton.heightAnchor.constraint(equalToConstant: 50),
+            updateActivityButton.heightAnchor.constraint(equalToConstant: 50),
+            endActivityButton.heightAnchor.constraint(equalToConstant: 50),
+            sendPushButton.heightAnchor.constraint(equalToConstant: 50),
+            printTokensButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
     }
     
+    // MARK: - Actions
     
-    func updateLiveActivity(activityId: String) async {
-        if #available(iOS 16.1, *) {
-            
-            for await pushToken in activity!.pushTokenUpdates {
-                let token = pushToken.map {String(format: "%02x", $0)}.joined()
-            }
-            
-            
-            let updatedState = DengageWidgetAttributes.ContentState(emoji: "122")
-            Task {
-                if let targetActivity = Activity<DengageWidgetAttributes>.activities.first(where: { $0.id == activityId }) {
-                    await targetActivity.update(using: updatedState)
-                } else {
-                    print("Activity bulunamadı: \(activityId)")
+    @objc private func startActivity() {
+        showAlert(title: "Error", message: "Live Activities require iOS 16.2+")
+        
+        let activityId = activityIdTextField.text?.isEmpty == false
+        ? activityIdTextField.text!
+        : "test-activity-\(UUID().uuidString)"
+        
+        DengageLiveActivityController.createDengageAwareActivity(activityId: activityId)
+        activityIdTextField.text = activityId
+        
+        // Store the activity for updates
+        Task {
+            for await activity in Activity<ExampleAppFirstWidgetAttributes>.activityUpdates {
+                if activity.id == activityId {
+                    await MainActor.run {
+                        self.currentActivity = activity
+                    }
+                    break
                 }
             }
         }
+        
+        showAlert(title: "Success", message: "Live Activity started with ID: \(activityId)")
     }
     
-    @objc func updateLiveActivityAsync() {
+    @objc private func updateActivity() {
+        showAlert(title: "Error", message: "Live Activities require iOS 16.1+")
         
         Task {
-            if let activity = activity {
-                for await pushToken in activity.pushTokenUpdates {
-                    let token = pushToken.map {String(format: "%02x", $0)}.joined()
-                    print("token \(token)")
+            var activityToUpdate: Activity<ExampleAppFirstWidgetAttributes>?
+            
+            if let current = currentActivity {
+                activityToUpdate = current
+            } else if let firstActivity = Activity<ExampleAppFirstWidgetAttributes>.activities.first {
+                activityToUpdate = firstActivity
+            }
+            
+            guard let activity = activityToUpdate else {
+                await MainActor.run {
+                    showAlert(title: "Error", message: "No active Live Activity found")
                 }
-                await updateLiveActivity(activityId: activity.id)
+                return
+            }
+            
+            let updatedState = ExampleAppFirstWidgetAttributes.ContentState(
+                message: "Updated at \(Date().formatted(date: .omitted, time: .shortened))"
+            )
+            
+            await activity.update(using: updatedState)
+            
+            await MainActor.run {
+                showAlert(title: "Success", message: "Live Activity updated: \(activity.id)")
             }
         }
     }
     
-    
-    @available(iOS 16.1, *)
-    @objc func endLiveActivity() {
+    @objc private func endActivity() {
+        showAlert(title: "Error", message: "Live Activities require iOS 16.1+")
+
+        
         Task {
-            for activity in Activity<DengageWidgetAttributes>.activities {
+            var endedCount = 0
+            
+            for activity in Activity<ExampleAppFirstWidgetAttributes>.activities {
                 await activity.end(dismissalPolicy: .immediate)
+                endedCount += 1
+            }
+            
+            for activity in Activity<ExampleAppSecondWidgetAttributes>.activities {
+                await activity.end(dismissalPolicy: .immediate)
+                endedCount += 1
+            }
+            
+            await MainActor.run {
+                currentActivity = nil
+                showAlert(title: "Success", message: "Ended \(endedCount) Live Activity(ies)")
             }
         }
+    }
+    
+    @objc private func sendPush() {
+        showAlert(title: "Error", message: "Push update requires iOS 16.2+")
+        
+        // Get active tokens
+        let tokens = LiveActivityPushTestHelper.getActiveActivityTokens()
+        guard !tokens.isEmpty else {
+            showAlert(title: "Error", message: "No active Live Activity found. Please start a Live Activity first.")
+            return
+        }
+        
+        // If activity ID is provided, use it; otherwise show selection
+        let activityId = activityIdTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        
+        if !activityId.isEmpty, let token = tokens[activityId] {
+            // Use the provided activity ID
+            showMessageInput(activityId: activityId, token: token)
+        } else if tokens.count == 1, let (id, token) = tokens.first {
+            // Only one activity, use it directly
+            activityIdTextField.text = id
+            showMessageInput(activityId: id, token: token)
+        } else {
+            // Multiple activities, show selection
+            let alert = UIAlertController(
+                title: "Select Activity",
+                message: "Which activity to update?",
+                preferredStyle: .alert
+            )
+            
+            for (id, token) in tokens {
+                alert.addAction(UIAlertAction(title: id, style: .default) { [weak self] _ in
+                    self?.activityIdTextField.text = id
+                    self?.showMessageInput(activityId: id, token: token)
+                })
+            }
+            
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            present(alert, animated: true)
+        }
+    }
+    
+    private func showMessageInput(activityId: String, token: String) {
+        let alert = UIAlertController(title: "Enter Message", message: "Message to send:", preferredStyle: .alert)
+        alert.addTextField { textField in
+            textField.placeholder = "Message"
+            textField.text = "✅ Test message - \(Date().formatted(date: .omitted, time: .shortened))"
+        }
+        
+        alert.addAction(UIAlertAction(title: "Send", style: .default) { [weak self] _ in
+            guard let message = alert.textFields?.first?.text, !message.isEmpty else { return }
+            
+            let loadingAlert = UIAlertController(title: "Sending...", message: nil, preferredStyle: .alert)
+            self?.present(loadingAlert, animated: true)
+            
+            LiveActivityPushTestHelper.sendLiveActivityUpdate(
+                activityId: activityId,
+                token: token,
+                message: message
+            ) { success, resultMessage in
+                DispatchQueue.main.async {
+                    loadingAlert.dismiss(animated: true) {
+                        self?.showAlert(
+                            title: success ? "Success" : "Error",
+                            message: resultMessage
+                        )
+                    }
+                }
+            }
+        })
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        present(alert, animated: true)
+    }
+    
+    @objc private func printTokens() {
+        LiveActivityPushTestHelper.printActiveActivities()
+        showAlert(title: "Tokens Printed", message: "Check console for active Live Activity tokens")
+    }
+    
+    // MARK: - Helpers
+    
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }
 
-@available(iOS 16.1, *)
+// MARK: - UITextFieldDelegate
+
+@available(iOS 16.2, *)
 extension LiveActivityViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        self.view.endEditing(true)
-        return false
+        textField.resignFirstResponder()
+        return true
     }
 }
-

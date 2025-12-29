@@ -74,13 +74,19 @@ extension RootViewController: UITableViewDelegate{
             self.navigationController?.pushViewController(AppStoryViewController(), animated: true)
         case .realTimeInAppFilters:
             self.navigationController?.pushViewController(RealTimeInAppFiltersViewController(), animated: true)
+        case .liveActivity:
+            if #available(iOS 16.2, *) {
+                self.navigationController?.pushViewController(LiveActivityViewController(), animated: true)
+            } else {
+                // Fallback on earlier versions
+            }
         }
     }
 }
 
 extension RootViewController{
     enum Actions: CaseIterable{
-        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage , geoFence,inAppInLine, appStory, realTimeInAppFilters
+        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage , geoFence,inAppInLine, appStory, realTimeInAppFilters, liveActivity
         var title: String{
             switch self{
             case .allowNotification:
@@ -109,6 +115,8 @@ extension RootViewController{
                 return "App Story"
             case .realTimeInAppFilters:
                 return "REAL TIME IN APP FILTERS"
+            case .liveActivity:
+                return "LIVE ACTIVITY"
             }
         }
     }

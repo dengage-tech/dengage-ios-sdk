@@ -34,6 +34,7 @@ final public class DengageConfiguration: Encodable {
     let inAppURL: URL
     let geofenceURL: URL
     let inAppRealTimeURL: URL
+    let liveActivityURL: URL
     var locationPermission: String?
     
     
@@ -56,6 +57,7 @@ final public class DengageConfiguration: Encodable {
         inAppURL = DengageConfiguration.getInAppURL()
         geofenceURL = DengageConfiguration.getGeofenceUrl()
         inAppRealTimeURL = DengageConfiguration.getInAppRealTimeURL()
+        liveActivityURL = DengageConfiguration.getLiveActivityUrl()
         
         dengageDeviceIdApiUrl = DengageConfiguration.dengageDeviceIdApiUrl()
         
@@ -462,6 +464,26 @@ final public class DengageConfiguration: Encodable {
         
         return apiURL
         
+    }
+    
+    private static func getLiveActivityUrl() -> URL {
+        if let apiUrlString = DengageLocalStorage.shared.getApiUrlConfiguration()?.denLiveActivityApiUrl,
+           !apiUrlString.isEmpty {
+            guard let apiUrl = URL(string: apiUrlString) else {
+                return getSubscriptionUrl()
+            }
+            return apiUrl
+        }
+        
+        guard let apiUrlString = Bundle.main.object(forInfoDictionaryKey: "DengageLiveActivityApiUrl") as? String else {
+            return getSubscriptionUrl()
+        }
+        
+        guard let apiUrl = URL(string: apiUrlString) else {
+            return getSubscriptionUrl()
+        }
+        
+        return apiUrl
     }
     
     private static func getAppVersion() -> String {

@@ -13,19 +13,22 @@ import Foundation
     public var denInAppApiUrl: String
     public var denGeofenceApiUrl: String?
     public var fetchRealTimeInAppApiUrl: String
+    public var denLiveActivityApiUrl: String?
 
     public init(
         denEventApiUrl: String,
         denPushApiUrl: String,
         denInAppApiUrl: String,
         denGeofenceApiUrl: String? = nil,
-        fetchRealTimeInAppApiUrl: String
+        fetchRealTimeInAppApiUrl: String,
+        denLiveActivityApiUrl: String? = nil
     ) {
         self.denEventApiUrl = denEventApiUrl
         self.denPushApiUrl = denPushApiUrl
         self.denInAppApiUrl = denInAppApiUrl
         self.denGeofenceApiUrl = denGeofenceApiUrl ?? ""
         self.fetchRealTimeInAppApiUrl = fetchRealTimeInAppApiUrl
+        self.denLiveActivityApiUrl = denLiveActivityApiUrl
     }
 }
 

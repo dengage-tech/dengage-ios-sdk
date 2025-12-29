@@ -44,12 +44,13 @@ private extension AppDelegate {
         //dev-app.dengage.com: egemen-ios-dev-sandbox-test
         let test_sandbox = "7xWJ4ZN3MBF8WueuygcslkO4tbCn_s_l_CzDrTJJxVChxVH2usO_s_l_w310K_s_l_KphZVJD97FUCiSjaaysA51_s_l_GO_s_l_S7YGzD_p_l_RUuYwqzNBI5_p_l_i7Qml_p_l_rOC_p_l_7W_s_l_Nm3pGbCqAgqecsthxiH16a13SJDJALI50mgCHQ_e_q__e_q_"
         
-        let _ = ApiUrlConfiguration(
-            denEventApiUrl: "https://push.dengage.com",
-            denPushApiUrl: "https://push.dengage.com",
-            denInAppApiUrl: "https://push.dengage.com",
-            denGeofenceApiUrl: "https://push.dengage.com/geoapi/",
-            fetchRealTimeInAppApiUrl: "https://tr-inapp.lib.dengage.com/"
+        let apiUrlConfig = ApiUrlConfiguration(
+            denEventApiUrl: "https://dev-push.dengage.com",
+            denPushApiUrl: "https://dev-push.dengage.com",
+            denInAppApiUrl: "https://dev-push.dengage.com",
+            denGeofenceApiUrl: "https://dev-push.dengage.com/geoapi/",
+            fetchRealTimeInAppApiUrl: "https://dev-inapp.lib.dengage.com/",
+            denLiveActivityApiUrl: "http://localhost:3000" // Local test server for Live Activities
         )
         
         let options = DengageOptions(
@@ -66,7 +67,8 @@ private extension AppDelegate {
             apiKey: test_sandbox,
             application: application,
             launchOptions: [:],
-            dengageOptions: options
+            dengageOptions: options,
+            apiUrlConfiguration: apiUrlConfig
         )
         Dengage.promptForPushNotifications { isUserGranted in
             print("Dengage.promptForPushNotifications isUserGranted: \(isUserGranted)")
@@ -94,6 +96,11 @@ private extension AppDelegate {
          */
         
         DengageGeofence.startGeofence()
+        
+        // Initialize Live Activities
+        if #available(iOS 16.1, *) {
+            DengageLiveActivityController.start()
+        }
     }
 }
 
@@ -152,39 +159,5 @@ extension AppDelegate {
     ) -> Bool {
         print("UIApplication.OpenURLOptionsKey \(url.host ?? "")")
         return true
-    }
-}
-
-// MARK: - Live Activities (iOS 17.2+)
-extension AppDelegate {
-    static func listenForTokenToStartActivityViaPush() {
-        if #available(iOS 17.2, *) {
-            Task {
-                for await pushToken in Activity<DengageWidgetAttributes>.pushToStartTokenUpdates {
-                    let tokenString = pushToken.map { String(format: "%02x", $0) }.joined()
-                    liveActivityPushTokenString = tokenString
-                    print("=== [START] DengageWidgetAttributes: \(tokenString)")
-                }
-            }
-        }
-    }
-    
-    static func listenForTokenToUpdateActivityViaPush() {
-        if #available(iOS 17.2, *) {
-            Task {
-                for await activity in Activity<DengageWidgetAttributes>.activityUpdates {
-                    for await tokenData in activity.pushTokenUpdates {
-                        let token = tokenData.map { String(format: "%02x", $0) }.joined()
-                        print("=== [UPDATE] DengageWidgetAttributes [\(activity.id)] : \(token)")
-                    }
-                    for await state in activity.activityStateUpdates {
-                        print("=== [STATE] DengageWidgetAttributes [\(activity.id)] : \(state)")
-                    }
-                    for await content in activity.contentUpdates {
-                        print("=== [CONTENT] DengageWidgetAttributes [\(activity.id)] : \(content)")
-                    }
-                }
-            }
-        }
     }
 }

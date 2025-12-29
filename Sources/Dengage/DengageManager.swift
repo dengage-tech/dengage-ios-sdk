@@ -53,6 +53,15 @@ public class DengageManager {
         
         self.subscriptionQueue = DengageSubscriptionQueue(apiClient: apiClient, config: config)
         
+        // Initialize Live Activities infrastructure
+        // This sets up the executor and API client for Live Activities.
+        // Note: This is different from DengageLiveActivityController.start() which registers
+        // specific activity types. This initialize() call is required for the SDK to work,
+        // while start() is for the app to register its own activity types.
+        if #available(iOS 16.1, *) {
+            DengageLiveActivitiesManagerImpl.initialize(apiClient: apiClient, config: config)
+        }
+        
         syncSubscription()
         getSDKParams()
         
