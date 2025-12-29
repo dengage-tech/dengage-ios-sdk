@@ -79,7 +79,8 @@ final class InAppMessageHTMLViewController: UIViewController {
          "sendClick",
          "promptPushPermission",
          "openSettings",
-         "setTags"
+         "setTags",
+         "copyToClipboard"
         ].forEach {
             contentController.add(self, name: $0)
         }
@@ -264,6 +265,9 @@ extension InAppMessageHTMLViewController {
             },
             openSettings: () => {
                 window.webkit.messageHandlers.openSettings.postMessage(null);
+            },
+            copyToClipboard: (value) => {
+                window.webkit.messageHandlers.copyToClipboard.postMessage(value);
             }
         }
         """
