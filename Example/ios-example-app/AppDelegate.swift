@@ -49,7 +49,7 @@ private extension AppDelegate {
             denPushApiUrl: "https://dev-push.dengage.com",
             denInAppApiUrl: "https://dev-push.dengage.com",
             denGeofenceApiUrl: "https://dev-push.dengage.com/geoapi/",
-            fetchRealTimeInAppApiUrl: "https://dev-inapp.lib.dengage.com/",
+            fetchRealTimeInAppApiUrl: "https://dev-inapp.lib.dengage.com",
             denLiveActivityApiUrl: "http://localhost:3000" // Local test server for Live Activities
         )
         
