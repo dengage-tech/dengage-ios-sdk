@@ -19,6 +19,8 @@ class DengageLiveActivityController: NSObject {
         // There is a "built in" Live Activity Widget Attributes called `DefaultLiveActivityAttributes`.
         // This is mostly for cross-platform SDKs and allows Dengage to handle everything but the
         // creation of the Widget Extension.
+        
+        /*
         Dengage.setupDefaultLiveActivity()
 
         if #available(iOS 17.2, *) {
@@ -48,6 +50,7 @@ class DengageLiveActivityController: NSObject {
                 }
             }
         }
+         */
     }
 
      /**
@@ -74,6 +77,38 @@ class DengageLiveActivityController: NSObject {
      }
 
     /**
+     An example of starting a Live Activity with ExampleAppSecondWidgetAttributes. The SDK will handle listening for update tokens on behalf of the app.
+     */
+    static var counter2 = 0
+    @available(iOS 13.0, *)
+    @objc
+    static func createSecondWidgetActivity(activityId: String) {
+        if #available(iOS 16.1, *) {
+            counter2 += 1
+            let dengageAttribute = DengageLiveActivityAttributeData.create(activityId: activityId)
+            let attributes = ExampleAppSecondWidgetAttributes(
+                title: "#" + String(counter2) + " Second Widget Activity",
+                dengage: dengageAttribute
+            )
+            let contentState = ExampleAppSecondWidgetAttributes.ContentState(
+                message: "🚀 Live Activity başlatıldı!",
+                progress: 0.5,
+                status: "İşlem devam ediyor...",
+                bugs: 0
+            )
+            do {
+                _ = try Activity<ExampleAppSecondWidgetAttributes>.request(
+                    attributes: attributes,
+                    contentState: contentState,
+                    pushType: .token
+                )
+            } catch let error {
+                print("Error starting ExampleAppSecondWidgetAttributes: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    /**
      An example of starting a Live Activity using the DefaultLiveActivityAttributes.  The SDK will handle listening for update tokens on behalf of the app.
      */
     @available(iOS 13.0, *)
@@ -90,7 +125,6 @@ class DengageLiveActivityController: NSObject {
     /**
      An example of starting a Live Activity whose attributes are **not** "Dengage SDK aware".  The app must handle listening for update tokens and notify the Dengage SDK.
      */
-    static var counter2 = 0
     @available(iOS 13.0, *)
     @objc
     static func createActivity(activityId: String) async {

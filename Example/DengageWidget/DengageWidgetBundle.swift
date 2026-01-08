@@ -13,5 +13,6 @@ struct DengageWidgetBundle: WidgetBundle {
     var body: some Widget {
         DengageWidget()
         DengageWidgetLiveActivity()
+        DengageWidgetSecondLiveActivity()
     }
 }

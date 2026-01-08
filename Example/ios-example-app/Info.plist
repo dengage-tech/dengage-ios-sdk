@@ -29,6 +29,10 @@
 		<string>location</string>
 		<string>remote-notification</string>
 	</array>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+    <key>NSSupportsLiveActivitiesFrequentUpdates</key>
+    <true/>
 	<key>fetchRealTimeINAPPURL</key>
 	<string>https://dev-inapp.lib.dengage.com</string>
 </dict>
