@@ -995,3 +995,84 @@ To request location permissions at runtime, use the `DengageGeofence.requestLoca
 ```swift
 DengageGeofence.requestLocationPermissions()
 ```
+
+### Performance Considerations and Best Practices
+
+Geofence usage can have significant impacts on your application's performance and battery consumption. Here are important considerations:
+
+#### App Launch Behavior
+
+When a geofence is triggered while the app is not running (terminated state), iOS launches the app in the background and calls the `application(_:didFinishLaunchingWithOptions:)` method. This has important implications:
+
+- **Initialization Order**: All code in `didFinishLaunchingWithOptions` will execute when a geofence triggers, even if the user hasn't explicitly opened the app. Ensure your initialization code handles this scenario gracefully.
+- **Heavy Operations**: Avoid placing heavy synchronous operations (large data loads, complex UI setup, network calls that block the main thread) at the beginning of `didFinishLaunchingWithOptions`. These will delay geofence event processing and may cause the system to terminate your app.
+- **Launch Options Check**: You can check if the app was launched due to a location event:
+
+```swift
+func application(_ application: UIApplication,
+                 didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
+    if let _ = launchOptions?[.location] {
+        // App was launched due to a location event (geofence trigger)
+        // Perform minimal initialization here
+        initializeEssentialServicesOnly()
+    } else {
+        // Normal app launch
+        initializeAllServices()
+    }
+
+    return true
+}
+```
+
+- **Background Execution Time**: When launched in the background, your app has limited execution time (~10 seconds). Perform only essential operations and defer non-critical tasks.
+
+#### How DengageGeofence SDK Works
+
+DengageGeofence SDK uses iOS's native region monitoring capabilities with the following characteristics:
+
+- **Region Monitoring**: The SDK uses `CLLocationManager`'s region monitoring (not continuous GPS tracking), which is battery-efficient as iOS handles geofence detection at the system level.
+- **Maximum 20 Regions**: iOS limits apps to monitor up to 20 regions simultaneously. The SDK automatically manages this limit by selecting the 20 nearest geofences to the user's current location.
+- **Automatic Region Updates**: When the user moves, the SDK recalculates and updates the monitored regions to always track the nearest 20 geofences from the server.
+- **Low-Power Location Manager**: The SDK uses a secondary low-power location manager with 3km accuracy for background location updates, minimizing battery impact.
+- **Rate Limiting**: Geofence data is fetched from the server at most every 15 minutes, and event signals for the same geofence are rate-limited to once every 5 minutes.
+
+#### Recommendations
+
+1. **Lazy Initialization**: Defer non-essential service initialization when the app is launched due to a geofence trigger:
+
+```swift
+func application(_ application: UIApplication,
+                 didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
+    // Always initialize Dengage SDK first
+    Dengage.start(apiKey: "your-api-key",
+                  application: application,
+                  launchOptions: launchOptions,
+                  dengageOptions: DengageOptions())
+
+    // Initialize geofence
+    DengageGeofence.startGeofence()
+
+    // Defer heavy initialization when launched by geofence
+    if launchOptions?[.location] == nil {
+        // Only initialize these when user opens the app
+        initializeAnalytics()
+        initializeUIComponents()
+        preloadCachedData()
+    }
+
+    return true
+}
+```
+
+2. **Minimize Background Work**: When the app is launched due to a geofence trigger, minimize the work performed:
+   - Avoid UI-related operations
+   - Skip non-essential network requests
+   - Don't load large datasets into memory
+
+3. **Test Background Scenarios**: Thoroughly test your app's behavior when launched from a terminated state due to geofence triggers. Use Xcode's location simulation features to test various scenarios.
+
+4. **User Communication**: Inform users about the benefits of location permissions and how geofencing enhances their experience. Users are more likely to grant "Always" location permission if they understand the value.
+
+> **Note**: If your app doesn't require geofence functionality, avoid including the `DengageGeofence` module to prevent unnecessary location permission requests.
