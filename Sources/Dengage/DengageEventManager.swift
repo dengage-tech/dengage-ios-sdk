@@ -418,13 +418,19 @@ extension DengageEventManager {
     }
     
     private func sendEventRequest(table: String, key: String, params: [String : Any]) {
-        
+
         if(table == DengageInternalTableName.pageView.rawValue) {
             config.incrementPageViewCount()
             // Set page parameters for real-time in-app messages
             config.setClientPageInfo(eventDetails: params)
         }
-        
+
+        // Check if events are enabled (skip sending if disabled)
+        if let remoteConfig = config.remoteConfiguration, !remoteConfig.eventsEnabled {
+            Logger.log(message: "Event skipped (eventsEnabled=false)", argument: table)
+            return
+        }
+
         eventQueue.async { [weak self] in
             guard let self = self else { return }
             let request = EventRequest(integrationKey: self.config.integrationKey,
