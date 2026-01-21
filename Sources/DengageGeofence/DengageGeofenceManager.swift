@@ -68,13 +68,23 @@ final class DengageGeofenceManager: NSObject, DengageGeofenceManagerInterface {
         lPLManager.allowsBackgroundLocationUpdates =     tOptions.locationBackgroundMode
         lManager.delegate = self
         lPLManager.delegate = self
+
+        // Check server-side geofenceEnabled first
+        if let sdkParams = Dengage.getSdkParameters(), !sdkParams.geofenceEnabled {
+            DengageGeofenceState.setGeofenceEnabled(false)
+        }
+
         updateTracking(location: nil, fromInitialize: true)
         if DengageGeofenceState.getGeofenceEnabled() {
-            startTracking(options: tOptions, fromInitialize: true)
+            if let sdkParams = Dengage.getSdkParameters(), sdkParams.geofenceEnabled {
+                startTracking(options: tOptions, fromInitialize: true)
+            } else {
+                stopGeofence()
+            }
         }
         setLocationPermission()
     }
-    
+
     init(config: DengageConfiguration, service: DengageNetworking) {
         self.config = config
         self.apiClient = service
@@ -90,12 +100,22 @@ final class DengageGeofenceManager: NSObject, DengageGeofenceManagerInterface {
         lPLManager.allowsBackgroundLocationUpdates = tOptions.locationBackgroundMode
         lManager.delegate = self
         lPLManager.delegate = self
+
+        // Check server-side geofenceEnabled first
+        if let sdkParams = Dengage.getSdkParameters(), !sdkParams.geofenceEnabled {
+            DengageGeofenceState.setGeofenceEnabled(false)
+        }
+
         updateTracking(location: nil, fromInitialize: true)
         if DengageGeofenceState.getGeofenceEnabled() {
-            startTracking(options: tOptions, fromInitialize: true)
+            if let sdkParams = Dengage.getSdkParameters(), sdkParams.geofenceEnabled {
+                startTracking(options: tOptions, fromInitialize: true)
+            } else {
+                stopGeofence()
+            }
         }
     }
-    
+
     deinit {
         lManager.delegate = nil
         lPLManager.delegate = nil
@@ -133,11 +153,11 @@ final class DengageGeofenceManager: NSObject, DengageGeofenceManagerInterface {
     }
     
     private func stopUpdates() {
-        guard let timer = timer else {
-            return
+        if let timer = timer {
+            Logger.log(message: "Stopping geofence timer")
+            timer.invalidate()
+            self.timer = nil
         }
-        Logger.log(message: "Stopping geofence timer")
-        timer.invalidate()
         started = false
         startedInterval = 0
         if !sending {
@@ -146,11 +166,14 @@ final class DengageGeofenceManager: NSObject, DengageGeofenceManagerInterface {
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
                 self?.shutDown()
             }
+        } else {
+            shutDown()
         }
     }
     
     @objc func shutDown() {
         Logger.log(message: "Shutting geofence down")
+        lManager.stopUpdatingLocation()
         lPLManager.stopUpdatingLocation()
     }
     
@@ -216,9 +239,8 @@ final class DengageGeofenceManager: NSObject, DengageGeofenceManagerInterface {
             } else {
                 self.stopUpdates()
                 self.removeAllRegions()
-                if !fromInitialize {
-                    self.lManager.stopMonitoringSignificantLocationChanges()
-                }
+                self.lManager.stopUpdatingLocation()
+                self.lManager.stopMonitoringSignificantLocationChanges()
             }
             
             
@@ -310,6 +332,12 @@ extension DengageGeofenceManager {
     
     func handleLocation(_ location: CLLocation, source: DengageLocationSource, region: CLRegion? = nil) {
         //Logger.log(message: "Handling location | source = \(source); location = \(String(describing: location))")
+        
+        if let sdkParams = Dengage.getSdkParameters(), !sdkParams.geofenceEnabled {
+            stopGeofence()
+            return
+        }
+        
         
         if !DengageGeofenceState.validLocation(location) {
             Logger.log(message: "Invalid location | source = \(source); location = \(String(describing: location))")
@@ -623,7 +651,7 @@ extension DengageGeofenceManager: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        //Logger.log(message: "locationManager_didEnterRegion: \(region.identifier)")
+        Logger.log(message: "locationManager_didEnterRegion: \(region.identifier)")
         guard let location = manager.location, region.identifier.hasPrefix(kIdentifierPrefix) else {
             return
         }
@@ -640,20 +668,28 @@ extension DengageGeofenceManager: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        Logger.log(message: "locationManager_didFailWithError_ERROR", argument: error.localizedDescription)
+        Logger.log(message: "locationManager_didFailWithError_ERROR \(String(describing: manager.monitoredRegions.first?.identifier))", argument: error.localizedDescription)
     }
     
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         Logger.log(message: "didChangeAuthorization: \(status)")
         setLocationPermission(status: status)
-        startTracking(options: tOptions, fromInitialize: true)
+        if let sdkParams = Dengage.getSdkParameters(), sdkParams.geofenceEnabled {
+            startTracking(options: tOptions, fromInitialize: true)
+        } else {
+            stopGeofence()
+        }
     }
-    
+
     @available(iOS 14.0, *)
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         Logger.log(message: "locationManagerDidChangeAuthorization: \(manager.authorizationStatus)")
         setLocationPermission(status: manager.authorizationStatus)
-        startTracking(options: tOptions, fromInitialize: true)
+        if let sdkParams = Dengage.getSdkParameters(), sdkParams.geofenceEnabled {
+            startTracking(options: tOptions, fromInitialize: true)
+        } else {
+            stopGeofence()
+        }
     }
     
 }

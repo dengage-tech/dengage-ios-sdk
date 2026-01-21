@@ -7,6 +7,7 @@
 
 import CoreLocation
 import UIKit
+import Dengage
 
 @objc(DengageGeofence)
 public class DengageGeofence: NSObject {
@@ -15,7 +16,11 @@ public class DengageGeofence: NSObject {
 
 
     @objc public static func startGeofence() {
-        geofenceManager.startTracking(options: DengageGeofenceTrackingOptions(), fromInitialize: true)
+        if let sdkParams = Dengage.getSdkParameters(), sdkParams.geofenceEnabled {
+            geofenceManager.startTracking(options: DengageGeofenceTrackingOptions(), fromInitialize: true)
+        } else {
+            stopGeofence()
+        }
     }
 
     @objc public static func stopGeofence() {

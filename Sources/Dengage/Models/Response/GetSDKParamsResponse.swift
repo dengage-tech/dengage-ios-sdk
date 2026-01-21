@@ -3,6 +3,7 @@ import Foundation
 public struct GetSDKParamsResponse: Codable {
     let accountName: String?
     let eventsEnabled: Bool
+    public let geofenceEnabled: Bool
     let inboxEnabled: Bool
     let inAppEnabled: Bool
     let subscriptionEnabled: Bool
@@ -35,6 +36,7 @@ public struct GetSDKParamsResponse: Codable {
         inboxEnabled = (try? container.decode(Bool.self, forKey: .inboxEnabled)) ?? false
         inAppEnabled = (try? container.decode(Bool.self, forKey: .inAppEnabled)) ?? false
         subscriptionEnabled = (try? container.decode(Bool.self, forKey: .subscriptionEnabled)) ?? false
+        geofenceEnabled = (try? container.decode(Bool.self, forKey: .geofenceEnabled)) ?? true
         inAppFetchIntervalInMin = (try? container.decode(Int.self, forKey: .inAppFetchIntervalInMin)) ?? 0
         inAppMinSecBetweenMessages = (try? container.decode(Int.self, forKey: .inAppMinSecBetweenMessages)) ?? 0
         expiredMessagesFetchIntervalInMin = (try? container.decode(Int.self, forKey: .expiredMessagesFetchIntervalInMin)) ?? 0
@@ -48,6 +50,7 @@ public struct GetSDKParamsResponse: Codable {
     enum CodingKeys: String, CodingKey {
         case accountName
         case eventsEnabled
+        case geofenceEnabled
         case inboxEnabled
         case inAppEnabled
         case subscriptionEnabled
