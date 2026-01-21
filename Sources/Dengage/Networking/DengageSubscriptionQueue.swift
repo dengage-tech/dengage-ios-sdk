@@ -35,6 +35,12 @@ final class DengageSubscriptionQueue {
     }
         
     private func performSubscriptionRequest() {
+        // Check if subscription is enabled (skip sending if disabled)
+        if let remoteConfig = config.remoteConfiguration, !remoteConfig.subscriptionEnabled {
+            Logger.log(message: "DengageSubscriptionQueue -> sync skipped (subscriptionEnabled=false)")
+            return
+        }
+
         Dengage.dengage?.eventManager.eventSessionStart()
         let request = MakeSubscriptionRequest(config: config)
         Logger.log(message: "DengageSubscriptionQueue -> sync started")
