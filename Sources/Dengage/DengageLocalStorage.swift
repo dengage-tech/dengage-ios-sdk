@@ -100,6 +100,7 @@ final public class DengageLocalStorage: NSObject {
         case clientCart = "clientCart"
         case clientPageInfo = "clientPageInfo"
         case clientEventsLastCleanupTime = "clientEventsLastCleanupTime"
+        case inAppMessageShowHistory = "inAppMessageShowHistory"
 
     }
 }
@@ -509,6 +510,58 @@ extension DengageLocalStorage {
             Logger.log(message: "saving client page info fail")
         }
     }
-    
+
+}
+
+// MARK: In-App Message Show History
+struct ShowHistoryEntry: Codable {
+    let showCount: Int
+    let timestamp: Double
+}
+
+extension DengageLocalStorage {
+    private static let twoWeeksInMilliseconds: Double = 14 * 24 * 60 * 60 * 1000
+
+    func getInAppMessageShowHistory() -> [String: ShowHistoryEntry] {
+        guard let historyData = userDefaults.object(forKey: Key.inAppMessageShowHistory.rawValue) as? Data else { return [:] }
+        let decoder = JSONDecoder()
+        do {
+            let history = try decoder.decode([String: ShowHistoryEntry].self, from: historyData)
+            return history
+        } catch {
+            Logger.log(message: "getInAppMessageShowHistory fail")
+            return [:]
+        }
+    }
+
+    func saveInAppMessageShowHistory(_ history: [String: ShowHistoryEntry]) {
+        let encoder = JSONEncoder()
+        do {
+            let encoded = try encoder.encode(history)
+            userDefaults.set(encoded, forKey: Key.inAppMessageShowHistory.rawValue)
+            userDefaults.synchronize()
+        } catch {
+            Logger.log(message: "saving in-app message show history fail")
+        }
+    }
+
+    func updateInAppMessageShowCount(messageId: String, showCount: Int) {
+        var history = getInAppMessageShowHistory()
+        history[messageId] = ShowHistoryEntry(showCount: showCount, timestamp: Date().timeMiliseconds)
+        saveInAppMessageShowHistory(history)
+    }
+
+    func cleanupExpiredShowHistory() {
+        var history = getInAppMessageShowHistory()
+        let currentTime = Date().timeMiliseconds
+        let expiredKeys = history.filter { currentTime - $0.value.timestamp > DengageLocalStorage.twoWeeksInMilliseconds }.keys
+        for key in expiredKeys {
+            history.removeValue(forKey: key)
+        }
+        if !expiredKeys.isEmpty {
+            saveInAppMessageShowHistory(history)
+            Logger.log(message: "Cleaned up \(expiredKeys.count) expired show history entries")
+        }
+    }
 }
 
