@@ -332,6 +332,20 @@ extension DengageInAppMessageManager {
     func showAppStory(inAppMessage: InAppMessage, storyCompletion: ((StoriesListView?) -> Void)?) {
         let data = inAppMessage.data
         
+        // Check if same publicId was displayed within last 2 seconds
+        if let publicId = data.publicId {
+            let currentTime = Date().timeIntervalSince1970
+            if let lastDisplayTime = DengageLocalStorage.shared.getStoryLastDisplayTime(publicId: publicId) {
+                let timeDifference = currentTime - lastDisplayTime
+                if timeDifference < 2.0 {
+                    // Same publicId displayed within 2 seconds, prevent duplicate display
+                    Logger.log(message: "showAppStory: Duplicate display prevented for publicId: \(publicId), timeDifference: \(timeDifference)")
+                    storyCompletion?(nil)
+                    return
+                }
+            }
+        }
+        
         if let storySet = data.content.props.storySet {
             let storiesListView = StoriesListView()
             let storiesListViewController = StoriesListViewController()
@@ -346,6 +360,12 @@ extension DengageInAppMessageManager {
             storyCompletion?(storiesListView)
             
             self.storyEvent(eventType: .display, message: inAppMessage)
+            
+            // Update last display time after successfully displaying the story
+            if let publicId = data.publicId {
+                let currentTime = Date().timeIntervalSince1970
+                DengageLocalStorage.shared.setStoryLastDisplayTime(publicId: publicId, timestamp: currentTime)
+            }
             
         }
     }
