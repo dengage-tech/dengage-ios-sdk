@@ -129,13 +129,9 @@ final public class DengageConfiguration: Encodable {
         let languageSubscription = DengageLocalStorage.shared.value(for: .languageSubscription) as? String
         self.deviceLanguage = language
         DengageLocalStorage.shared.set(value: language, for: .language)
-
-        if (languageSubscription != nil) && (self.deviceLanguage != languageSubscription)
-        {
+        if (languageSubscription != nil) && (self.deviceLanguage != languageSubscription) {
             Dengage.syncSubscription()
-
         }
-        
     }
     
     func getLocationPermission() -> String? {
@@ -146,21 +142,7 @@ final public class DengageConfiguration: Encodable {
     func setLocationPermission(locationPermission: String) {
         DengageLocalStorage.shared.set(value: locationPermission, for: .locationPermission)
         self.locationPermission = locationPermission
-        /*
-        let previous = self.config.getContactKey()
-        if previous != contactKey {
-            let newKey = (contactKey?.isEmpty ?? true) ? nil : contactKey
-            DengageLocalStorage.shared.set(value: newKey, for: .contactKey)
-            inboxManager.inboxMessages.removeAll()
-            inboxManager.inboxMessages = []
-            _ = sessionManager.createSession(force: true)
-            resetUsageStats()
-            Dengage.syncSubscription()
-        }
-         */
     }
-    
-    
     
     func setPartnerDeviceId(adid: String?){
         
@@ -185,11 +167,8 @@ final public class DengageConfiguration: Encodable {
         
     }
     
-    func setinAppLinkConfiguration( deeplink : String){
-        
-        
+    func setinAppLinkConfiguration( deeplink : String) {
         DengageLocalStorage.shared.set(value: deeplink, for: .deeplink)
-        
     }
     
     func getOpenInAppBrowser()-> Bool
@@ -445,9 +424,28 @@ final public class DengageConfiguration: Encodable {
     
     
     private static func getDeviceCountry() -> String {
-       
-        return Locale.current.localizedString(forRegionCode: Locale.current.regionCode ?? "") ?? "Unknown"
-        
+        do {
+            // Safely get region code
+            guard let regionCode = Locale.current.regionCode else { return "Null" }
+            
+            // Use a safer approach to get country name
+            // First try using Locale's localizedString method
+            if let countryName = Locale(identifier: "en_US_POSIX").localizedString(forRegionCode: regionCode) {
+                return countryName
+            }
+            
+            // Fallback: try with standard en_US locale
+            if let countryName = Locale(identifier: "en_US").localizedString(forRegionCode: regionCode) {
+                return countryName
+            }
+            
+            // Final fallback: return region code if name cannot be determined
+            return regionCode
+        } catch {
+            // If any exception occurs, return safe fallback
+            Logger.log(message: "getDeviceCountry_ERROR", argument: error.localizedDescription)
+            return Locale.current.regionCode ?? "Null"
+        }
     }
     
     private static func dengageDeviceIdApiUrl() -> URL {
