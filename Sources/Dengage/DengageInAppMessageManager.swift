@@ -13,6 +13,7 @@ public class DengageInAppMessageManager: DengageInAppMessageManagerInterface {
     public var returnAfterDeeplinkRecieved : ((String) -> Void)?
     var inAppShowTimer = Timer()
     var hourlyFetchTimer: Timer?
+    var isInAppMessageShowing = false
     
 
     init(config: DengageConfiguration,
@@ -365,7 +366,14 @@ extension DengageInAppMessageManager {
     func setNavigation(screenName: String? = nil, params: Dictionary<String,String>? = nil , propertyID : String? = nil
                        , inAppInlineElement : InAppInlineElementView? = nil
                        , hideIfNotFound: Bool = false, storyPropertyID: String? = nil, storyCompletion: ((StoriesListView?) -> Void)? = nil) {
-        
+
+        // Check if an in-app message is already being displayed (skip inline and story messages)
+        if isInAppMessageShowing && inAppInlineElement == nil && storyPropertyID == nil {
+            Logger.log(message: "setNavigation skipped: An in-app message is already being displayed")
+            storyCompletion?(nil)
+            return
+        }
+
         // Check if we've received successful responses within the required time frame
         guard let remoteConfig = config.remoteConfiguration else {
             storyCompletion?(nil)
@@ -561,7 +569,9 @@ extension DengageInAppMessageManager {
     
     
     func showInAppMessage(inAppMessage: InAppMessage, couponCode: String = "") {
-        
+        // Mark as showing immediately to prevent duplicate calls
+        isInAppMessageShowing = true
+
         let hybridAppEnv = config.getHybridAppEnvironment()
         
         if hybridAppEnv
@@ -1038,8 +1048,9 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     }
     
     func open(url: String?) {
+        isInAppMessageShowing = false
         inAppMessageWindow = nil
-        
+
         guard let urlDeeplink = url, let urlStr = URL(string: urlDeeplink) else { return }
         
         let deeplink = config.getDeeplink()
@@ -1087,6 +1098,7 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     }
     
     func sendDismissEvent(message: InAppMessage) {
+        isInAppMessageShowing = false
         inAppMessageWindow = nil
         if message.data.isRealTime {
             setRealTimeInAppMessageAsDismissed(message)
@@ -1096,6 +1108,7 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     }
     
     func sendClickEvent(message: InAppMessage, buttonId:String?, buttonType: String?) {
+        isInAppMessageShowing = false
         inAppMessageWindow = nil
         if message.data.isRealTime {
             setRealtimeInAppMessageAsClicked(message, buttonId, buttonType)
@@ -1126,6 +1139,7 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     }
     
     func close() {
+        isInAppMessageShowing = false
         inAppMessageWindow = nil
     }
     
