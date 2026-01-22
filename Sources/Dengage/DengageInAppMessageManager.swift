@@ -475,6 +475,9 @@ extension DengageInAppMessageManager {
     }
     
     private func validateCoupon(accountId: String, listKey: String, message: InAppMessage) {
+        // Mark as showing immediately to prevent duplicate calls during async validation
+        isInAppMessageShowing = true
+
         let request = CouponAssignRequest(
             accountId: accountId,
             listKey: listKey,
@@ -482,7 +485,7 @@ extension DengageInAppMessageManager {
             deviceId: config.applicationIdentifier,
             campaignId: message.id
         )
-        
+
         apiClient.send(request: request) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
@@ -490,6 +493,7 @@ extension DengageInAppMessageManager {
                     if let couponCode = response.code {
                         self?.showInAppMessage(inAppMessage: message, couponCode: couponCode)
                     } else {
+                        self?.isInAppMessageShowing = false
                         Logger.log(message: "No coupon code received from server")
                         self?.sendCouponValidationFailureLog(
                             couponContent: listKey,
@@ -499,6 +503,7 @@ extension DengageInAppMessageManager {
                         )
                     }
                 case .failure(let error):
+                    self?.isInAppMessageShowing = false
                     Logger.log(message: "Coupon assignment failed: \(error.localizedDescription)")
                     self?.sendCouponValidationFailureLog(
                         couponContent: listKey,
@@ -577,13 +582,13 @@ extension DengageInAppMessageManager {
         if hybridAppEnv
         {
             let inappShowTime = (Date().timeMiliseconds) + (config.remoteConfiguration?.minSecBetweenMessages ?? 0.0)
-            
+
             DengageLocalStorage.shared.set(value: inappShowTime, for: .inAppMessageShowTime)
 
             let delay = inAppMessage.data.displayTiming.delay ?? 0
-            
+
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(delay)) {
-                
+
                 if let cancelInAppMessage = DengageLocalStorage.shared.value(for: .cancelInAppMessage) as? Bool
                 {
                     if !cancelInAppMessage
@@ -608,12 +613,14 @@ extension DengageInAppMessageManager {
                                     .messageDetails ?? "")
                             }
                         }
-                        
+
                         self.showInAppMessageController(with: updatedMessage, couponCode: couponCode)
+                    } else {
+                        self.isInAppMessageShowing = false
                     }
-                    
+
                 }
-                
+
             }
         }
         else
@@ -624,7 +631,7 @@ extension DengageInAppMessageManager {
                   let delay = inAppMessage.data.displayTiming.delay ?? 0
                   
                   inAppShowTimer = Timer.scheduledTimer(withTimeInterval: Double(delay), repeats: false, block: { _ in
-                      
+
                       if let cancelInAppMessage = DengageLocalStorage.shared.value(for: .cancelInAppMessage) as? Bool
                       {
                           if !cancelInAppMessage
@@ -649,11 +656,13 @@ extension DengageInAppMessageManager {
                                           .messageDetails ?? "")
                                   }
                               }
-                              
+
                               self.showInAppMessageController(with: updatedMessage, couponCode: couponCode)
+                          } else {
+                              self.isInAppMessageShowing = false
                           }
                       }
-                      
+
                   })
               
         }
