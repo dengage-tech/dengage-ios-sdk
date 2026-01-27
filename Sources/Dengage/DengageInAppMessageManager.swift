@@ -1170,7 +1170,6 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     
     func sendClickEvent(message: InAppMessage, buttonId:String?, buttonType: String?) {
         isInAppMessageShowing = false
-        inAppMessageWindow = nil
         if message.data.isRealTime {
             setRealtimeInAppMessageAsClicked(message, buttonId, buttonType)
         } else {

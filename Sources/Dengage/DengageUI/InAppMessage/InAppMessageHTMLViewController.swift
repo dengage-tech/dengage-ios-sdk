@@ -15,6 +15,10 @@ final class InAppMessageHTMLViewController: UIViewController {
     var isIosURLNPresent = false
     var isClicked = false
 
+    // DengageBridge support
+    private var dengageBridge: DengageBridge?
+    private var legacyHandler: LegacyDnHandler?
+
     var hasTopNotch: Bool {
         if #available(iOS 13.0, *), let _ = UIApplication.shared.connectedScenes.first as? UIWindowScene {
             return true
@@ -38,9 +42,10 @@ final class InAppMessageHTMLViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        isIosURLNPresent = message.data.content.props.html?.contains("Dn.iosUrlN") ?? false
+        setupBridge()
         setupJavascript()
         viewSource.setupConstraints(for: message.data.content.props, message: message)
-        isIosURLNPresent = message.data.content.props.html?.contains("Dn.iosUrlN") ?? false
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapView(sender:)))
         view.addGestureRecognizer(tapGesture)
@@ -56,14 +61,47 @@ final class InAppMessageHTMLViewController: UIViewController {
         })
     }
 
+    private func setupBridge() {
+        // Create legacy handler with callbacks
+        legacyHandler = LegacyDnHandler(
+            delegate: delegate,
+            message: message,
+            isIosURLNPresent: isIosURLNPresent,
+            onClicked: { [weak self] in
+                self?.isClicked = true
+            },
+            onFinish: { [weak self] in
+                self?.delegate?.close()
+            }
+        )
+
+        // Create handler registry and register handlers
+        let registry = BridgeHandlerRegistry()
+        if let handler = legacyHandler {
+            registry.register(handler)
+        }
+        registry.register(HttpRequestHandler(inAppMessage: message))
+        registry.register(DeviceInfoHandler())
+        registry.register(StorageHandler())
+
+        // Attach bridge to webView
+        dengageBridge = DengageBridge.attach(to: viewSource.webView, handlerRegistry: registry)
+    }
+
     private func setupJavascript() {
-        let userScript = WKUserScript(
+        let contentController = viewSource.webView.configuration.userContentController
+
+        // Add bridge JavaScript as user script
+        let bridgeScript = BridgeJavaScript.createUserScript()
+        contentController.addUserScript(bridgeScript)
+
+        // Keep legacy interface for backwards compatibility
+        let legacyScript = WKUserScript(
             source: javascriptInterface,
             injectionTime: .atDocumentEnd,
             forMainFrameOnly: true
         )
-        let contentController = viewSource.webView.configuration.userContentController
-        contentController.addUserScript(userScript)
+        contentController.addUserScript(legacyScript)
 
         if #available(iOS 14.0, *) {
             viewSource.webView.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
@@ -71,6 +109,7 @@ final class InAppMessageHTMLViewController: UIViewController {
             viewSource.webView.configuration.preferences.javaScriptEnabled = true
         }
 
+        // Keep legacy message handlers for backwards compatibility
         ["dismiss",
          "close",
          "closeN",
@@ -80,19 +119,28 @@ final class InAppMessageHTMLViewController: UIViewController {
          "promptPushPermission",
          "openSettings",
          "setTags",
-         "copyToClipboard"
+         "copyToClipboard",
+         "consoleLog"
         ].forEach {
             contentController.add(self, name: $0)
         }
 
+        // Add console.log bridge script
+        let consoleScript = WKUserScript(
+            source: consoleLogBridge,
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: false
+        )
+        contentController.addUserScript(consoleScript)
+
         if let htmlString = message.data.content.props.html {
-            
+
             var processedHtml = htmlString
-            
+
             if !couponCode.isEmpty, Mustache.hasCouponSection(htmlString) {
                 processedHtml = Mustache.replaceCouponSections(processedHtml, couponCode: couponCode)
             }
-            
+
             let dataDict: [String: Any] = ["dnInAppDeviceInfo": Dengage.getInAppDeviceInfo()]
             let renderedHtml = Mustache.render(processedHtml, dataDict)
             viewSource.webView.loadHTMLString(renderedHtml, baseURL: nil)
@@ -101,11 +149,19 @@ final class InAppMessageHTMLViewController: UIViewController {
         viewSource.webView.sizeToFit()
         viewSource.webView.autoresizesSubviews = true
     }
+
+    /// Update delegate reference in legacy handler
+    func updateDelegate(_ newDelegate: InAppMessagesActionsDelegate?) {
+        self.delegate = newDelegate
+        legacyHandler?.delegate = newDelegate
+    }
 }
 
 extension InAppMessageHTMLViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         self.setWebViewHeight()
+        // Inject bridge JS after page loads for dynamic content
+        BridgeJavaScript.inject(into: webView)
     }
 
     func webView(_ webView: WKWebView,
@@ -195,10 +251,10 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
 
         case "promptPushPermission":
             delegate?.promptPushPermission()
-        
+
         case "openSettings":
             delegate?.openApplicationSettings()
-            
+
         case "copyToClipboard":
             guard let bodyString = message.body as? String else { return }
             UIPasteboard.general.string = bodyString
@@ -223,6 +279,12 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             }
             delegate?.close()
 
+        case "consoleLog":
+            guard let dict = message.body as? [String: Any],
+                  let logMessage = dict["message"] as? String else { return }
+            let level = dict["level"] as? String ?? "log"
+            Logger.log(message: "[WebView \(level)] \(logMessage)")
+
         default:
             break
         }
@@ -230,6 +292,66 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
 }
 
 extension InAppMessageHTMLViewController {
+
+    fileprivate var consoleLogBridge: String {
+        """
+        (function() {
+            var originalConsole = {
+                log: console.log,
+                warn: console.warn,
+                error: console.error,
+                info: console.info,
+                debug: console.debug
+            };
+
+            function sendToNative(level, args) {
+                var message = Array.prototype.slice.call(args).map(function(arg) {
+                    if (typeof arg === 'object') {
+                        try {
+                            return JSON.stringify(arg);
+                        } catch (e) {
+                            return String(arg);
+                        }
+                    }
+                    return String(arg);
+                }).join(' ');
+
+                try {
+                    window.webkit.messageHandlers.consoleLog.postMessage({
+                        level: level,
+                        message: message
+                    });
+                } catch (e) {}
+            }
+
+            console.log = function() {
+                sendToNative('log', arguments);
+                originalConsole.log.apply(console, arguments);
+            };
+
+            console.warn = function() {
+                sendToNative('warn', arguments);
+                originalConsole.warn.apply(console, arguments);
+            };
+
+            console.error = function() {
+                sendToNative('error', arguments);
+                originalConsole.error.apply(console, arguments);
+            };
+
+            console.info = function() {
+                sendToNative('info', arguments);
+                originalConsole.info.apply(console, arguments);
+            };
+
+            console.debug = function() {
+                sendToNative('debug', arguments);
+                originalConsole.debug.apply(console, arguments);
+            };
+        })();
+        """
+    }
+
     fileprivate var javascriptInterface: String {
         """
         var Dn = {
