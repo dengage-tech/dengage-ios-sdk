@@ -23,7 +23,7 @@ class DeviceInfoViewController: UIViewController {
     func getInfo(){
         let currentDevice = UIDevice.current
         var text = ""
-        text += "Integration Key: " + Dengage.getIntegrationKey() + "\n"
+        text += "Integration Key: " + (Dengage.dengage?.config.integrationKey ?? "") + "\n"
         text += "Device Id: " + (Dengage.getDeviceId() ?? "") + "\n"
         text += "Contact Key: " + (Dengage.getContactKey() ?? "") + "\n"
         text += "User Permission: " + Dengage.getPermission().description + "\n"
