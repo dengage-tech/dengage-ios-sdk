@@ -38,6 +38,7 @@ public class Dengage {
         }
 
         if let id = deviceId {
+            
             dengage?.config.set(deviceId: id)
 
             if !id.isEmpty {
@@ -136,6 +137,13 @@ public class Dengage {
         self.set(permission: permission)
     }
     
+    @objc public static func setTrackingPermission(trackingPermission: Bool) {
+        
+        dengage?.set(trackingPermission: trackingPermission)
+
+    }
+    
+    
     @objc public static func getPermission() -> Bool {
         dengage?.config.permission ?? false
     }
@@ -152,11 +160,17 @@ public class Dengage {
         dengage?.config.deviceToken
     }
     
+    @objc public static func removeOldUDIDAndGenerateNew()
+    {
+        DengageKeychain.remove(Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier")
+    }
+    
     @objc public static func getLastPushPayload() -> String? {
         let pushPayload = DengageLocalStorage.shared.value(for: .lastPushPayload) as? String
         DengageLocalStorage.shared.set(value: "", for: .lastPushPayload)
         return pushPayload
     }
+    
     
     @objc public static func getSdkVersion() -> String? {
         dengage?.config.sdkVersion

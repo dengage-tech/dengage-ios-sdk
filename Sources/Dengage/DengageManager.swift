@@ -115,6 +115,14 @@ extension DengageManager {
         }
     }
     
+    func set(trackingPermission: Bool) {
+        let previous = self.config.trackingPermission
+        if previous != trackingPermission {
+            self.config.set(trackingPermission: trackingPermission)
+            Dengage.syncSubscription()
+        }
+    }
+    
     func set(locationPermission: String) {
         let previous = self.config.getLocationPermission()
         if previous != locationPermission {

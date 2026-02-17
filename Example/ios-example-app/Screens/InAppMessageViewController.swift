@@ -123,10 +123,13 @@ final class InAppMessageViewController: UIViewController {
             Dengage.setInAppDeviceInfo(key: key, value: value)
         }
         
-        Dengage.setNavigation(screenName: text)
-        //        Dengage.handleInAppDeeplink { str in
-        //
-        //        }
+        Dengage.setNavigation(screenName: "full")
+        
+        Dengage.handleInAppDeeplink { str in
+            
+            
+            
+        }
         
         view.endEditing(true)
         navigationButton.setTitleColor(.black, for: .normal)

@@ -20,6 +20,8 @@ final public class DengageConfiguration: Encodable {
     public var deviceToken: String?
     let userAgent: String
     var permission: Bool
+    var trackingPermission: Bool
+
     let dengageDeviceIdApiUrl: URL
     var partnerDeviceId: String?
     
@@ -51,6 +53,7 @@ final public class DengageConfiguration: Encodable {
         self.options = options
         self.userAgent = UserAgentUtils.userAgent
         self.permission = DengageConfiguration.getPermission()
+        self.trackingPermission = DengageConfiguration.getTrackingPermission()
         self.deviceToken = DengageConfiguration.getToken()
         inAppURL = DengageConfiguration.getInAppURL()
         geofenceURL = DengageConfiguration.getGeofenceUrl()
@@ -214,6 +217,11 @@ final public class DengageConfiguration: Encodable {
         DengageLocalStorage.shared.set(value: permission, for: .userPermission)
     }
     
+    func set(trackingPermission: Bool) {
+        self.trackingPermission = trackingPermission
+        DengageLocalStorage.shared.set(value: trackingPermission, for: .trackingPermission)
+    }
+    
     func setCategory(path: String?) {
         realTimeCategoryPath = path
     }
@@ -314,6 +322,10 @@ final public class DengageConfiguration: Encodable {
     
     static func getPermission() -> Bool{
         return DengageLocalStorage.shared.value(for: .userPermission) as? Bool ?? true
+    }
+    
+    static func getTrackingPermission() -> Bool{
+        return DengageLocalStorage.shared.value(for: .trackingPermission) as? Bool ?? true
     }
     
     private static func getSubscriptionUrl() -> URL {
@@ -472,6 +484,8 @@ final public class DengageConfiguration: Encodable {
             return uuidString
         }
     }
+    
+ 
     
     static func getAdvertisingId() -> String{
         

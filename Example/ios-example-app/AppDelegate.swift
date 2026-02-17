@@ -44,13 +44,15 @@ private extension AppDelegate {
         //dev-app.dengage.com: egemen-ios-dev-sandbox-test
         let test_sandbox = "7xWJ4ZN3MBF8WueuygcslkO4tbCn_s_l_CzDrTJJxVChxVH2usO_s_l_w310K_s_l_KphZVJD97FUCiSjaaysA51_s_l_GO_s_l_S7YGzD_p_l_RUuYwqzNBI5_p_l_i7Qml_p_l_rOC_p_l_7W_s_l_Nm3pGbCqAgqecsthxiH16a13SJDJALI50mgCHQ_e_q__e_q_"
         
-        let _ = ApiUrlConfiguration(
+        let api = ApiUrlConfiguration(
             denEventApiUrl: "https://push.dengage.com",
             denPushApiUrl: "https://push.dengage.com",
             denInAppApiUrl: "https://push.dengage.com",
             denGeofenceApiUrl: "https://push.dengage.com/geoapi/",
             fetchRealTimeInAppApiUrl: "https://tr-inapp.lib.dengage.com/"
         )
+        
+        
         
         let options = DengageOptions(
             disableOpenURL: false,
@@ -60,14 +62,18 @@ private extension AppDelegate {
             localInboxManager: false
         )
         
+        Dengage.removeOldUDIDAndGenerateNew()
         Dengage.setLog(isVisible: true)
         Dengage.setDevelopmentStatus(isDebug: true)
         Dengage.start(
-            apiKey: test_sandbox,
+            apiKey: "A80DAdoQta4rOzTlSbRO2_s_l_xJaTDNpZAGZnWS94zp8BpmXugFZMwtJFwUVsW6Ny2xGNMvqGpBjPrqIL8dAcpnsMFhDxo5Qm105bbkjg8E3D7LckvR1to4iLVitGr7lNijV4uXX2i47UqsEYi1I2Ptzg_e_q__e_q_",
             application: application,
             launchOptions: [:],
-            dengageOptions: options
+            dengageOptions: options,apiUrlConfiguration: api
         )
+        
+        
+        
         Dengage.promptForPushNotifications { isUserGranted in
             print("Dengage.promptForPushNotifications isUserGranted: \(isUserGranted)")
         }
@@ -93,9 +99,40 @@ private extension AppDelegate {
          }
          */
         
+      
+        
+      //  Dengage.set(contactKey: "//unique id ")
         DengageGeofence.startGeofence()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+               self.showLaunchAlert()
+           }
+
+        
     }
+    
+    func showLaunchAlert() {
+         
+        let payload = Dengage.getLastPushPayload() ?? "No push received yet"
+        
+        guard let rootVC = window?.rootViewController else {
+            print("❌ rootViewController not ready")
+            return
+        }
+
+        let alert = UIAlertController(
+            title: "App Launched",
+            message: payload ,
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+
+        rootVC.present(alert, animated: true)
+    }
+
 }
+
 
 // MARK: - Push Registration
 extension AppDelegate {
@@ -130,7 +167,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        completionHandler([.alert, .sound, .badge])
+        //completionHandler([.alert, .sound, .badge])
+        Dengage.didReceive(with: notification.request.content.userInfo)
+
     }
     
     func userNotificationCenter(

@@ -303,6 +303,8 @@ final class EventHistoryViewController: UIViewController {
             }
         }
         
+        let param = ["key":"value"]
+        
         Dengage.sendCustomEvent(eventTable: eventConfig.tableName, parameters: eventData)
         showToast("Event sent to table: \(eventConfig.tableName)")
     }
