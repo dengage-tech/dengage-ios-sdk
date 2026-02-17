@@ -62,7 +62,7 @@ private extension AppDelegate {
             localInboxManager: false
         )
         
-        Dengage.removeOldUDIDAndGenerateNew()
+       // Dengage.removeOldUDIDAndGenerateNew()
         Dengage.setLog(isVisible: true)
         Dengage.setDevelopmentStatus(isDebug: true)
         Dengage.start(
