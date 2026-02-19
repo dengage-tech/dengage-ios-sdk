@@ -132,6 +132,13 @@ public class Dengage {
         dengage?.set(permission: permission)
     }
     
+    @objc public static func setTrackingPermission(trackingPermission: Bool) {
+           
+           dengage?.set(trackingPermission: trackingPermission)
+
+       }
+    
+    
     @objc public static func setUserPermission(permission: Bool) {
         self.set(permission: permission)
     }

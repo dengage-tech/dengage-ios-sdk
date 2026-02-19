@@ -426,10 +426,14 @@ extension DengageEventManager {
         }
 
         // Check if events are enabled (skip sending if disabled)
-        if let remoteConfig = config.remoteConfiguration, !remoteConfig.eventsEnabled {
-            Logger.log(message: "Event skipped (eventsEnabled=false)", argument: table)
-            return
+        if !config.trackingPermission {
+                 
+            Logger.log(message: "Event skipped (trackingPermission=false)", argument: table)
+                   return
+             
         }
+        
+       
 
         eventQueue.async { [weak self] in
             guard let self = self else { return }
