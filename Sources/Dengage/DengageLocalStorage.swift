@@ -31,6 +31,7 @@ final public class DengageLocalStorage: NSObject {
         case PartnerDeviceId = "PartnerDeviceId"
         case integrationKey = "integrationKey"
         case userPermission = "userPermission"
+        case trackingPermission = "trackingPermission"
         case inboxMessages = "inboxMessages"
         case configParams = "configParams"
         case lastFetchedConfigTime = "lastFetchedConfigTime"

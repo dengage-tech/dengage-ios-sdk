@@ -20,6 +20,7 @@ final public class DengageConfiguration: Encodable {
     public var deviceToken: String?
     let userAgent: String
     var permission: Bool
+    var trackingPermission: Bool
     let dengageDeviceIdApiUrl: URL
     var partnerDeviceId: String?
     
@@ -50,6 +51,7 @@ final public class DengageConfiguration: Encodable {
         self.integrationKey = integrationKey
         self.options = options
         self.userAgent = UserAgentUtils.userAgent
+        self.trackingPermission = DengageConfiguration.getTrackingPermission()
         self.permission = DengageConfiguration.getPermission()
         self.deviceToken = DengageConfiguration.getToken()
         inAppURL = DengageConfiguration.getInAppURL()
@@ -212,6 +214,15 @@ final public class DengageConfiguration: Encodable {
     func set(permission: Bool) {
         self.permission = permission
         DengageLocalStorage.shared.set(value: permission, for: .userPermission)
+    }
+    
+    func set(trackingPermission: Bool) {
+        self.trackingPermission = trackingPermission
+        DengageLocalStorage.shared.set(value: trackingPermission, for: .trackingPermission)
+    }
+    
+    static func getTrackingPermission() -> Bool {
+        return DengageLocalStorage.shared.value(for: .trackingPermission) as? Bool ?? true
     }
     
     func setCategory(path: String?) {

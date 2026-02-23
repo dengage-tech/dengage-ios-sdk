@@ -1,5 +1,21 @@
 # Changelog
 
+
+## [5.90] - 2026-02-21
+
+### New Features
+
+- Change in event manager based on tracking permission
+
+### Bug Fixes
+
+- Prevent duplicate push open events using messageDetails deduplication
+- Fix HttpRequestHandler response body
+
+
+
+
+
 ## [5.89] - 2026-01-22
 
 ### New Features
