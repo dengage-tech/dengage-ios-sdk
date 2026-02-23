@@ -7,26 +7,29 @@ class DengageRequestSetStartToken: APIRequest, DengageLiveActivityRequest, Denga
     }
     
     var path: String {
-        guard let appId = config?.remoteConfiguration?.appId,
-              let activityType = self.key.addingPercentEncoding(withAllowedCharacters: .urlUserAllowed),
-              let subscriptionId = config?.applicationIdentifier.addingPercentEncoding(withAllowedCharacters: .urlUserAllowed) else {
-            return ""
-        }
-        return "/activities/tokens/start/\(activityType)/subscriptions/\(subscriptionId)"
+        return "/p/liveActivity/collect/pushToStart"
     }
-    
+
     var method: HTTPMethod {
-        return .put
+        return .post
     }
-    
+
     var queryParameters: [URLQueryItem] {
         return []
     }
-    
+
     var httpBody: Data? {
+        guard let accountGuid = config?.remoteConfiguration?.accountName,
+              let deviceId = config?.applicationIdentifier else {
+            return nil
+        }
+        let contactKey = config?.getContactKey() ?? ""
         let body: [String: Any] = [
-            "activity_token": self.token,
-            "device_type": 0
+            "accountGuid": accountGuid,
+            "deviceId": deviceId,
+            "contactKey": contactKey,
+            "livePushToStartToken": self.token,
+            "activityType": self.key
         ]
         return body.json
     }
@@ -42,18 +45,13 @@ class DengageRequestSetStartToken: APIRequest, DengageLiveActivityRequest, Denga
     weak var config: DengageConfiguration?
     
     func prepareForExecution() -> Bool {
-        guard config?.remoteConfiguration?.appId != nil else {
-            Logger.log(message: "Cannot generate the set start token request due to null app ID.")
+        guard config?.remoteConfiguration?.accountName != nil else {
+            Logger.log(message: "Cannot generate the set start token request due to null account name.")
             return false
         }
 
         guard config?.applicationIdentifier != nil else {
-            Logger.log(message: "Cannot generate the set start token request due to null subscription ID.")
-            return false
-        }
-
-        guard self.key.addingPercentEncoding(withAllowedCharacters: .urlUserAllowed) != nil else {
-            Logger.log(message: "Cannot translate activity type to url encoded string.")
+            Logger.log(message: "Cannot generate the set start token request due to null device ID.")
             return false
         }
 

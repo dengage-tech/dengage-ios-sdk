@@ -9,5 +9,6 @@ struct CachedRequest: Codable {
     let requestSuccessful: Bool
     let timestamp: Date
     let requestType: String // "SetUpdateToken", "SetStartToken", "RemoveUpdateToken", "RemoveStartToken"
+    let activityType: String?
 }
 

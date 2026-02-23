@@ -31,7 +31,7 @@ class RequestCache {
             switch cachedRequest.requestType {
             case "SetUpdateToken":
                 guard let token = cachedRequest.token else { continue }
-                let req = DengageRequestSetUpdateToken(key: cachedRequest.key, token: token, config: config)
+                let req = DengageRequestSetUpdateToken(key: cachedRequest.key, token: token, activityType: cachedRequest.activityType ?? "", config: config)
                 req.requestSuccessful = cachedRequest.requestSuccessful
                 req.timestamp = cachedRequest.timestamp
                 request = req
@@ -123,12 +123,20 @@ class RequestCache {
             return
         }
         
+        let activityTypeValue: String?
+        if let setUpdate = request as? DengageRequestSetUpdateToken {
+            activityTypeValue = setUpdate.activityType
+        } else {
+            activityTypeValue = nil
+        }
+
         self.cachedRequests[request.key] = CachedRequest(
             key: request.key,
             token: token,
             requestSuccessful: request.requestSuccessful,
             timestamp: request.timestamp,
-            requestType: requestType
+            requestType: requestType,
+            activityType: activityTypeValue
         )
         self.save()
     }
@@ -151,7 +159,8 @@ class RequestCache {
                     token: cachedRequest.token,
                     requestSuccessful: false,
                     timestamp: cachedRequest.timestamp,
-                    requestType: cachedRequest.requestType
+                    requestType: cachedRequest.requestType,
+                    activityType: cachedRequest.activityType
                 )
                 self.cachedRequests[key] = updated
             }
@@ -175,7 +184,8 @@ class RequestCache {
                         token: cachedRequest.token,
                         requestSuccessful: true,
                         timestamp: cachedRequest.timestamp,
-                        requestType: cachedRequest.requestType
+                        requestType: cachedRequest.requestType,
+                        activityType: cachedRequest.activityType
                     )
                     self.cachedRequests[request.key] = updated
                 }
@@ -330,7 +340,7 @@ class DengageLiveActivitiesExecutor {
         // Re-inject config into request if needed
         if let setUpdateRequest = request as? DengageRequestSetUpdateToken,
            setUpdateRequest.config == nil {
-            let newRequest = DengageRequestSetUpdateToken(key: setUpdateRequest.key, token: setUpdateRequest.token, config: config)
+            let newRequest = DengageRequestSetUpdateToken(key: setUpdateRequest.key, token: setUpdateRequest.token, activityType: setUpdateRequest.activityType, config: config)
             newRequest.requestSuccessful = setUpdateRequest.requestSuccessful
             newRequest.timestamp = setUpdateRequest.timestamp
             executeAPIRequest(cache, request: newRequest, apiRequest: newRequest)

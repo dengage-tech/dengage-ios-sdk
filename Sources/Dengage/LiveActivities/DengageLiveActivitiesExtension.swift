@@ -69,10 +69,11 @@ public extension Dengage {
      - Parameters
         - activityId: The activity identifier the live activity on this device will receive updates for.
         - withToken: The live activity's update token to receive the updates.
+        - activityType: The activity type name.
      */
     @objc
-    static func enterLiveActivity(_ activityId: String, withToken: String) {
-        DengageLiveActivitiesManagerImpl.enter(activityId, withToken: withToken)
+    static func enterLiveActivity(_ activityId: String, withToken: String, activityType: String) {
+        DengageLiveActivitiesManagerImpl.enter(activityId, withToken: withToken, activityType: activityType)
     }
 
     /**

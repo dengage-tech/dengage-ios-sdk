@@ -7,29 +7,30 @@ class DengageRequestSetUpdateToken: APIRequest, DengageLiveActivityRequest, Deng
     }
     
     var path: String {
-        guard let appId = config?.remoteConfiguration?.appId,
-              let activityId = self.key.addingPercentEncoding(withAllowedCharacters: .urlUserAllowed) else {
-            return ""
-        }
-        return "/live_activities/\(activityId)/token"
+        return "/p/liveActivity/collect/updateActivityToken"
     }
-    
+
     var method: HTTPMethod {
         return .post
     }
-    
+
     var queryParameters: [URLQueryItem] {
         return []
     }
-    
+
     var httpBody: Data? {
-        guard let subscriptionId = config?.applicationIdentifier else {
+        guard let accountGuid = config?.remoteConfiguration?.accountName,
+              let deviceId = config?.applicationIdentifier else {
             return nil
         }
+        let contactKey = config?.getContactKey() ?? ""
         let body: [String: Any] = [
-            "subscription_id": subscriptionId,
-            "push_token": self.token,
-            "device_type": 0
+            "accountGuid": accountGuid,
+            "deviceId": deviceId,
+            "contactKey": contactKey,
+            "updateToken": self.token,
+            "activityId": self.key,
+            "activityType": self.activityType
         ]
         return body.json
     }
@@ -39,24 +40,20 @@ class DengageRequestSetUpdateToken: APIRequest, DengageLiveActivityRequest, Deng
     var requestSuccessful: Bool
     var key: String
     var token: String
+    var activityType: String
     var shouldForgetWhenSuccessful: Bool = false
     var timestamp: Date
-    
+
      weak var config: DengageConfiguration?
     
     func prepareForExecution() -> Bool {
-        guard config?.remoteConfiguration?.appId != nil else {
-            Logger.log(message: "Cannot generate the set update token request due to null app ID.")
+        guard config?.remoteConfiguration?.accountName != nil else {
+            Logger.log(message: "Cannot generate the set update token request due to null account name.")
             return false
         }
 
         guard config?.applicationIdentifier != nil else {
-            Logger.log(message: "Cannot generate the set update token request due to null subscription ID.")
-            return false
-        }
-
-        guard self.key.addingPercentEncoding(withAllowedCharacters: .urlUserAllowed) != nil else {
-            Logger.log(message: "Cannot translate activity type to url encoded string.")
+            Logger.log(message: "Cannot generate the set update token request due to null device ID.")
             return false
         }
 
@@ -75,9 +72,10 @@ class DengageRequestSetUpdateToken: APIRequest, DengageLiveActivityRequest, Deng
         return self.timestamp >= existing.timestamp
     }
 
-    init(key: String, token: String, config: DengageConfiguration) {
+    init(key: String, token: String, activityType: String, config: DengageConfiguration) {
         self.key = key
         self.token = token
+        self.activityType = activityType
         self.requestSuccessful = false
         self.timestamp = Date()
         self.config = config
@@ -86,6 +84,7 @@ class DengageRequestSetUpdateToken: APIRequest, DengageLiveActivityRequest, Deng
     func encode(with coder: NSCoder) {
         coder.encode(key, forKey: "key")
         coder.encode(token, forKey: "token")
+        coder.encode(activityType, forKey: "activityType")
         coder.encode(requestSuccessful, forKey: "requestSuccessful")
         coder.encode(timestamp, forKey: "timestamp")
     }
@@ -100,6 +99,7 @@ class DengageRequestSetUpdateToken: APIRequest, DengageLiveActivityRequest, Deng
         }
         self.key = key
         self.token = token
+        self.activityType = coder.decodeObject(forKey: "activityType") as? String ?? ""
         self.requestSuccessful = coder.decodeBool(forKey: "requestSuccessful")
         self.timestamp = timestamp
         self.config = nil

@@ -13,7 +13,7 @@ class DengageLiveActivityController: NSObject {
     static func start() {
         // ExampleAppFirstWidgetAttributes and ExampleAppSecondWidgetAttributes enable the Dengage SDK to
         // listen for start/update tokens, this is the only call needed.
-        Dengage.setupLiveActivity(ExampleAppFirstWidgetAttributes.self)
+        //Dengage.setupLiveActivity(ExampleAppFirstWidgetAttributes.self)
         Dengage.setupLiveActivity(ExampleAppSecondWidgetAttributes.self)
 
         // There is a "built in" Live Activity Widget Attributes called `DefaultLiveActivityAttributes`.
@@ -44,7 +44,7 @@ class DengageLiveActivityController: NSObject {
                     Task {
                         for await pushToken in activity.pushTokenUpdates {
                             let token = pushToken.map {String(format: "%02x", $0)}.joined()
-                            Dengage.enterLiveActivity("my-activity-id", withToken: token)
+                            Dengage.enterLiveActivity("my-activity-id", withToken: token, activityType: "ExampleAppThirdWidgetAttributes")
                         }
                     }
                 }
@@ -139,7 +139,7 @@ class DengageLiveActivityController: NSObject {
                         pushType: .token)
                 for await data in activity.pushTokenUpdates {
                     let myToken = data.map {String(format: "%02x", $0)}.joined()
-                    Dengage.enterLiveActivity(activityId, withToken: myToken)
+                    Dengage.enterLiveActivity(activityId, withToken: myToken, activityType: "ExampleAppThirdWidgetAttributes")
                 }
             } catch let error {
                 print(error.localizedDescription)

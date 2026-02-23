@@ -50,7 +50,7 @@ private extension AppDelegate {
             denInAppApiUrl: "https://dev-push.dengage.com",
             denGeofenceApiUrl: "https://dev-push.dengage.com/geoapi/",
             fetchRealTimeInAppApiUrl: "https://dev-inapp.lib.dengage.com",
-            denLiveActivityApiUrl: "http://localhost:3000" // Local test server for Live Activities
+            denLiveActivityApiUrl: "https://dev-push.dengage.com" // Local test server for Live Activities
         )
         
         let options = DengageOptions(

@@ -25,13 +25,13 @@ public class DengageLiveActivitiesManagerImpl: NSObject {
         _executor?.start()
     }
 
-    public static func enter(_ activityId: String, withToken: String) {
+    public static func enter(_ activityId: String, withToken: String, activityType: String) {
         guard let config = config else {
             Logger.log(message: "Dengage.LiveActivities enter called but not initialized")
             return
         }
-        Logger.log(message: "Dengage.LiveActivities enter called with activityId: \(activityId) token: \(withToken)")
-        let request = DengageRequestSetUpdateToken(key: activityId, token: withToken, config: config)
+        Logger.log(message: "Dengage.LiveActivities enter called with activityId: \(activityId) activityType: \(activityType) token: \(withToken)")
+        let request = DengageRequestSetUpdateToken(key: activityId, token: withToken, activityType: activityType, config: config)
         _executor?.append(request)
     }
 
@@ -225,11 +225,13 @@ public class DengageLiveActivitiesManagerImpl: NSObject {
              the initial values were already provided.
              */
 
+            let activityTypeName = "\(Attributes.self)"
+
             // Set the initial pushToken (if one exists)
             if let pushToken = activity.pushToken {
                 Logger.log(message: "Dengage.LiveActivities enter with existing pushToken for: \(activityType):\(activity.attributes.dengage.activityId):\(activity.id)")
                 let token = pushToken.map {String(format: "%02x", $0)}.joined()
-                DengageLiveActivitiesManagerImpl.enter(activity.attributes.dengage.activityId, withToken: token)
+                DengageLiveActivitiesManagerImpl.enter(activity.attributes.dengage.activityId, withToken: token, activityType: activityTypeName)
             }
 
             // listen for activity update token updates so we can tell Dengage how to update the activity
@@ -238,7 +240,7 @@ public class DengageLiveActivitiesManagerImpl: NSObject {
                 for await pushToken in activity.pushTokenUpdates {
                     Logger.log(message: "Dengage.LiveActivities pushTokenUpdates observed for: \(activityType):\(activity.attributes.dengage.activityId):\(activity.id)")
                     let token = pushToken.map {String(format: "%02x", $0)}.joined()
-                    DengageLiveActivitiesManagerImpl.enter(activity.attributes.dengage.activityId, withToken: token)
+                    DengageLiveActivitiesManagerImpl.enter(activity.attributes.dengage.activityId, withToken: token, activityType: activityTypeName)
                 }
             }
         }
