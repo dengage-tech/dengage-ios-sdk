@@ -1,4 +1,3 @@
-
 import Foundation
 import UIKit
 
@@ -136,19 +135,31 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
     }
     
     private func sendEventWithContent(content: UNNotificationContent, actionIdentifier: String?) {
-        
+
         guard let messageId = content.message?.messageId else {
             Logger.log(message: "MSG_ID is not found")
             return
         }
         Logger.log(message: "MSG_ID is", argument: String(messageId))
-        
+
         guard let messageDetails = content.message?.messageDetails else {
             Logger.log(message: "MSG_DETAILS is not found")
             return
         }
         Logger.log(message: "MSG_DETAILS is", argument: messageDetails)
-        
+
+        // Duplicate open event check
+        var sentDetails = (DengageLocalStorage.shared.value(for: .sentOpenEventMessageDetails) as? [String]) ?? []
+        if sentDetails.contains(messageDetails) {
+            Logger.log(message: "Duplicate open event detected for messageDetails: \(messageDetails), skipping.")
+            return
+        }
+        sentDetails.append(messageDetails)
+        if sentDetails.count > 10 {
+            sentDetails.removeFirst()
+        }
+        DengageLocalStorage.shared.set(value: sentDetails, for: .sentOpenEventMessageDetails)
+
         if let actionIdentifier = actionIdentifier, actionIdentifier.isEmpty == false {
             Logger.log(message: "BUTTON_ID is", argument: String(actionIdentifier))
         }
@@ -177,19 +188,31 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
     }
     
     private func sendEventWithContent(messageId: Int? , messageDetails : String?, transactionId:String? , actionIdentifier: String?) {
-        
+
         guard let messageId = messageId else {
             Logger.log(message: "MSG_ID is not found")
             return
         }
         Logger.log(message: "MSG_ID is", argument: String(messageId))
-        
+
         guard let messageDetails = messageDetails else {
             Logger.log(message: "MSG_DETAILS is not found")
             return
         }
         Logger.log(message: "MSG_DETAILS is", argument: messageDetails)
-        
+
+        // Duplicate open event check
+        var sentDetails = (DengageLocalStorage.shared.value(for: .sentOpenEventMessageDetails) as? [String]) ?? []
+        if sentDetails.contains(messageDetails) {
+            Logger.log(message: "Duplicate open event detected for messageDetails: \(messageDetails), skipping.")
+            return
+        }
+        sentDetails.append(messageDetails)
+        if sentDetails.count > 10 {
+            sentDetails.removeFirst()
+        }
+        DengageLocalStorage.shared.set(value: sentDetails, for: .sentOpenEventMessageDetails)
+
         if let actionIdentifier = actionIdentifier, actionIdentifier.isEmpty == false {
             Logger.log(message: "BUTTON_ID is", argument: String(actionIdentifier))
         }

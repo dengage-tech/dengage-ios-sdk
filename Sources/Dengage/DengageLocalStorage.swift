@@ -102,6 +102,8 @@ final public class DengageLocalStorage: NSObject {
         case clientEventsLastCleanupTime = "clientEventsLastCleanupTime"
         case inAppMessageShowHistory = "inAppMessageShowHistory"
         case storyLastDisplayTime = "storyLastDisplayTime"
+        
+        case sentOpenEventMessageDetails = "sentOpenEventMessageDetails"
 
     }
 }
