@@ -63,7 +63,7 @@ private extension AppDelegate {
         Dengage.setLog(isVisible: true)
         Dengage.setDevelopmentStatus(isDebug: true)
         Dengage.start(
-            apiKey: test_sandbox,
+            apiKey: "A80DAdoQta4rOzTlSbRO2_s_l_xJaTDNpZAGZnWS94zp8BpmXugFZMwtJFwUVsW6Ny2xGNMvqGpBjPrqIL8dAcpnsMFhDxo5Qm105bbkjg8E3D7LckvR1to4iLVitGr7lNijV4uXX2i47UqsEYi1I2Ptzg_e_q__e_q_",
             application: application,
             launchOptions: [:],
             dengageOptions: options
