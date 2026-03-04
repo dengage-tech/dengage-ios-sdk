@@ -20,12 +20,14 @@ class DengageRequestSetStartToken: APIRequest, DengageLiveActivityRequest, Denga
 
     var httpBody: Data? {
         guard let accountGuid = config?.remoteConfiguration?.accountName,
+              let appId = config?.remoteConfiguration?.appId,
               let deviceId = config?.applicationIdentifier else {
             return nil
         }
         let contactKey = config?.getContactKey() ?? ""
         let body: [String: Any] = [
             "accountGuid": accountGuid,
+            "appGuid": appId,
             "deviceId": deviceId,
             "contactKey": contactKey,
             "livePushToStartToken": self.token,

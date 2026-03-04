@@ -13,7 +13,7 @@ class DengageLiveActivityController: NSObject {
     static func start() {
         // ExampleAppFirstWidgetAttributes and ExampleAppSecondWidgetAttributes enable the Dengage SDK to
         // listen for start/update tokens, this is the only call needed.
-        //Dengage.setupLiveActivity(ExampleAppFirstWidgetAttributes.self)
+        Dengage.setupLiveActivity(ExampleAppFirstWidgetAttributes.self)
         Dengage.setupLiveActivity(ExampleAppSecondWidgetAttributes.self)
 
         // There is a "built in" Live Activity Widget Attributes called `DefaultLiveActivityAttributes`.
