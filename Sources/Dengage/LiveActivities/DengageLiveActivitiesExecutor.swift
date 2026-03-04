@@ -296,6 +296,20 @@ class DengageLiveActivitiesExecutor {
         }
     }
 
+    func resendAllRequests() {
+        self.requestDispatch.async { [weak self] in
+            guard let self = self else { return }
+            Logger.log(message: "Dengage.LiveActivities resending all requests due to contactKey change")
+
+            self.caches { cache in
+                cache.markAllUnsuccessful()
+                for request in cache.items.values {
+                    self.executeRequest(cache, request: request)
+                }
+            }
+        }
+    }
+
     private func pollPendingRequests() {
         Logger.log(message: "Dengage.LiveActivities pollPendingRequests")
 

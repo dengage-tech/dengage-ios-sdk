@@ -45,6 +45,10 @@ public class DengageLiveActivitiesManagerImpl: NSObject {
         _executor?.append(request)
     }
 
+    public static func resendAllRequests() {
+        _executor?.resendAllRequests()
+    }
+
     @available(iOS 17.2, *)
     public static func setPushToStartToken(_ activityType: String, withToken: String) throws {
         guard let config = config else {
