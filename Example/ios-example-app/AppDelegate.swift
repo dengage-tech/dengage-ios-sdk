@@ -40,9 +40,9 @@ private extension AppDelegate {
         //app.dengage.com: Priya-iOS-Sandbox
         // let bfsi_sandbox = "QE8P6DlqusV4g21EnkO3dk8NVjmqzlRjoLouXpHVTFehUa3wToBlADQqLpacXQ1ySqD3VJVM9Zx9JXsHHasCrqT5s4_s_l_K3wSMc_s_l_S3BZDrs6gJo_p_l_DdSirLDnvHQHC51gcEkYbZrxAjhzgo6kuYQIsfIg_e_q__e_q_"
         //dev-app.dengage.com: egemen-ios-dev-test
-        //let test_testflight = "g9XU6x_p_l__p_l__s_l_AnsEBUgVC4F5uGQHpg7PFa1PIfxtOZG4bku0AxtvUMjBqF_s_l_Q0x37TkR1_p_l_vV_s_l_mYwcKHWB7YPNjAClyPViBqp1iRw3zqbtCBZlnapkD7pLGTGMKHGvPreNWf5kPPjZC0og67hsTfSkYBLfA_e_q__e_q_"
+        let test_testflight = "g9XU6x_p_l__p_l__s_l_AnsEBUgVC4F5uGQHpg7PFa1PIfxtOZG4bku0AxtvUMjBqF_s_l_Q0x37TkR1_p_l_vV_s_l_mYwcKHWB7YPNjAClyPViBqp1iRw3zqbtCBZlnapkD7pLGTGMKHGvPreNWf5kPPjZC0og67hsTfSkYBLfA_e_q__e_q_"
         //dev-app.dengage.com: egemen-ios-dev-sandbox-test
-        let test_sandbox = "7xWJ4ZN3MBF8WueuygcslkO4tbCn_s_l_CzDrTJJxVChxVH2usO_s_l_w310K_s_l_KphZVJD97FUCiSjaaysA51_s_l_GO_s_l_S7YGzD_p_l_RUuYwqzNBI5_p_l_i7Qml_p_l_rOC_p_l_7W_s_l_Nm3pGbCqAgqecsthxiH16a13SJDJALI50mgCHQ_e_q__e_q_"
+        //let test_sandbox = "7xWJ4ZN3MBF8WueuygcslkO4tbCn_s_l_CzDrTJJxVChxVH2usO_s_l_w310K_s_l_KphZVJD97FUCiSjaaysA51_s_l_GO_s_l_S7YGzD_p_l_RUuYwqzNBI5_p_l_i7Qml_p_l_rOC_p_l_7W_s_l_Nm3pGbCqAgqecsthxiH16a13SJDJALI50mgCHQ_e_q__e_q_"
         
         let apiUrlConfig = ApiUrlConfiguration(
             denEventApiUrl: "https://dev-push.dengage.com",
@@ -64,7 +64,7 @@ private extension AppDelegate {
         Dengage.setLog(isVisible: true)
         Dengage.setDevelopmentStatus(isDebug: true)
         Dengage.start(
-            apiKey: test_sandbox,
+            apiKey: test_testflight,
             application: application,
             launchOptions: [:],
             dengageOptions: options,
