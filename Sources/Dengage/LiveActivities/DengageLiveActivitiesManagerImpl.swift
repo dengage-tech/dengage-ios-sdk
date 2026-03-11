@@ -10,13 +10,15 @@ enum LiveActivitiesError: Error {
 
 public class DengageLiveActivitiesManagerImpl: NSObject {
     private static var _executor: DengageLiveActivitiesExecutor?
-    
+
     private static var apiClient: DengageNetworking?
     private static var config: DengageConfiguration?
+    private static var registeredActivityIds: Set<String> = []
 
     public static func initialize(apiClient: DengageNetworking, config: DengageConfiguration) {
         self.apiClient = apiClient
         self.config = config
+        self.registeredActivityIds = []
         _executor = DengageLiveActivitiesExecutor(
             requestDispatch: DispatchQueue(label: "Dengage.LiveActivities"),
             apiClient: apiClient,
@@ -60,7 +62,7 @@ public class DengageLiveActivitiesManagerImpl: NSObject {
             throw LiveActivitiesError.invalidActivityType("Cannot translate activity type to url encoded string.")
         }
 
-        let request = DengageRequestSetStartToken(key: activityType, token: withToken, config: config)
+        let request = DengageRequestSetStartToken(key: "pushToStartToken", token: withToken, config: config)
         _executor?.append(request)
     }
 
@@ -75,7 +77,7 @@ public class DengageLiveActivitiesManagerImpl: NSObject {
             throw LiveActivitiesError.invalidActivityType("Cannot translate activity type to url encoded string.")
         }
 
-        let request = DengageRequestRemoveStartToken(key: activityType, config: config)
+        let request = DengageRequestRemoveStartToken(key: "pushToStartToken", config: config)
         _executor?.append(request)
     }
 
@@ -169,6 +171,8 @@ public class DengageLiveActivitiesManagerImpl: NSObject {
 
         // Establish listeners for activity (if any exist)
         for activity in Activity<Attributes>.activities {
+            guard !registeredActivityIds.contains(activity.id) else { continue }
+            registeredActivityIds.insert(activity.id)
             listenForActivityStateUpdates(activityType, activity: activity, options: options)
             listenForActivityPushToUpdate(activityType, activity: activity, options: options)
             if #available(iOS 16.2, *) {
@@ -191,6 +195,8 @@ public class DengageLiveActivitiesManagerImpl: NSObject {
                     }
                 }
 
+                guard !registeredActivityIds.contains(activity.id) else { continue }
+                registeredActivityIds.insert(activity.id)
                 listenForActivityStateUpdates(activityType, activity: activity, options: options)
                 listenForActivityPushToUpdate(activityType, activity: activity, options: options)
                 if #available(iOS 16.2, *) {

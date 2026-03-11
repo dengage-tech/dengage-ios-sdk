@@ -30,8 +30,7 @@ class DengageRequestSetStartToken: APIRequest, DengageLiveActivityRequest, Denga
             "appGuid": appId,
             "deviceId": deviceId,
             "contactKey": contactKey,
-            "livePushToStartToken": self.token,
-            "activityType": self.key
+            "livePushToStartToken": self.token
         ]
         return body.json
     }
