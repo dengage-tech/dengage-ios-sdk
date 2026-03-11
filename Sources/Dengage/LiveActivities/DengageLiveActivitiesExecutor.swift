@@ -38,11 +38,13 @@ class RequestCache {
                 
             case "SetStartToken":
                 guard let token = cachedRequest.token else { continue }
-                let req = DengageRequestSetStartToken(key: cachedRequest.key, token: token, config: config)
+                // Normalize to the canonical key regardless of what was stored (old cache may have
+                // used the activity type name as the key; we now use a single constant key).
+                let req = DengageRequestSetStartToken(key: "pushToStartToken", token: token, config: config)
                 req.requestSuccessful = cachedRequest.requestSuccessful
                 req.timestamp = cachedRequest.timestamp
                 request = req
-                
+
             case "RemoveUpdateToken":
                 let req = DengageRequestRemoveUpdateToken(key: cachedRequest.key, config: config)
                 req.requestSuccessful = cachedRequest.requestSuccessful
@@ -60,10 +62,10 @@ class RequestCache {
             }
             
             if let request = request {
-                requests[key] = request
+                requests[request.key] = request
             }
         }
-        
+
         self.items = requests
     }
 
@@ -176,6 +178,10 @@ class RequestCache {
                 self.cachedRequests.removeValue(forKey: request.key)
             } else {
                 request.requestSuccessful = true
+                // Also mark the cached object itself successful (handles the case where
+                // executeRequest created a new request for config injection and `request`
+                // is the original cached object — or a different instance).
+                self.items[request.key]?.requestSuccessful = true
                 // Update cached request
                 if let cachedRequest = self.cachedRequests[request.key] {
                     // Create new CachedRequest with updated requestSuccessful
@@ -258,7 +264,11 @@ class DengageLiveActivitiesExecutor {
     // The live activities request dispatch queue, serial.  This synchronizes access to `updateTokens` and `startTokens`.
     private var requestDispatch: DispatchQueue
     private var pollIntervalSeconds = 30.0
-    
+
+    // Pending resend work item — cancelled and replaced on each new resendAllRequests call so that
+    // only the last one in a rapid succession actually executes.
+    private var pendingResendWorkItem: DispatchWorkItem?
+
     private weak var apiClient: DengageNetworking?
     private weak var config: DengageConfiguration?
 
@@ -296,17 +306,39 @@ class DengageLiveActivitiesExecutor {
         }
     }
 
+    /// Removes cached SetUpdateToken entries for activities of the given type that are no longer running.
+    /// Uses a sync dispatch so that pruning is ordered relative to any pending resendAllRequests calls.
+    func pruneUpdateTokens(notIn activeActivityIds: Set<String>, ofActivityType activityType: String) {
+        requestDispatch.sync { [self] in
+            let staleRequests = updateTokens.items.values.filter { request in
+                guard let setRequest = request as? DengageRequestSetUpdateToken else { return false }
+                return setRequest.activityType == activityType && !activeActivityIds.contains(setRequest.key)
+            }
+            for request in staleRequests {
+                Logger.log(message: "Dengage.LiveActivities pruning stale update token for ended activity: \(request.key)")
+                updateTokens.remove(request)
+            }
+        }
+    }
+
     func resendAllRequests() {
+        // Enqueue a setup block that cancels any previously scheduled resend and schedules a new one.
+        // This way, rapid successive calls collapse into a single execution (last one wins).
         self.requestDispatch.async { [weak self] in
             guard let self = self else { return }
-            Logger.log(message: "Dengage.LiveActivities resending all requests due to contactKey change")
-
-            self.caches { cache in
-                cache.markAllUnsuccessful()
-                for request in cache.items.values {
-                    self.executeRequest(cache, request: request)
+            self.pendingResendWorkItem?.cancel()
+            let workItem = DispatchWorkItem { [weak self] in
+                guard let self = self else { return }
+                Logger.log(message: "Dengage.LiveActivities resending all requests due to contactKey change")
+                self.caches { cache in
+                    cache.markAllUnsuccessful()
+                    for request in cache.items.values {
+                        self.executeRequest(cache, request: request)
+                    }
                 }
             }
+            self.pendingResendWorkItem = workItem
+            self.requestDispatch.async(execute: workItem)
         }
     }
 
@@ -351,40 +383,41 @@ class DengageLiveActivitiesExecutor {
             return
         }
         
-        // Re-inject config into request if needed
+        // Re-inject config into request if needed.
+        // Pass the original `request` (cached object) so markSuccessful updates the correct instance.
         if let setUpdateRequest = request as? DengageRequestSetUpdateToken,
            setUpdateRequest.config == nil {
             let newRequest = DengageRequestSetUpdateToken(key: setUpdateRequest.key, token: setUpdateRequest.token, activityType: setUpdateRequest.activityType, config: config)
             newRequest.requestSuccessful = setUpdateRequest.requestSuccessful
             newRequest.timestamp = setUpdateRequest.timestamp
-            executeAPIRequest(cache, request: newRequest, apiRequest: newRequest)
+            executeAPIRequest(cache, request: request, apiRequest: newRequest)
             return
         }
-        
+
         if let setStartRequest = request as? DengageRequestSetStartToken,
            setStartRequest.config == nil {
             let newRequest = DengageRequestSetStartToken(key: setStartRequest.key, token: setStartRequest.token, config: config)
             newRequest.requestSuccessful = setStartRequest.requestSuccessful
             newRequest.timestamp = setStartRequest.timestamp
-            executeAPIRequest(cache, request: newRequest, apiRequest: newRequest)
+            executeAPIRequest(cache, request: request, apiRequest: newRequest)
             return
         }
-        
+
         if let removeUpdateRequest = request as? DengageRequestRemoveUpdateToken,
            removeUpdateRequest.config == nil {
             let newRequest = DengageRequestRemoveUpdateToken(key: removeUpdateRequest.key, config: config)
             newRequest.requestSuccessful = removeUpdateRequest.requestSuccessful
             newRequest.timestamp = removeUpdateRequest.timestamp
-            executeAPIRequest(cache, request: newRequest, apiRequest: newRequest)
+            executeAPIRequest(cache, request: request, apiRequest: newRequest)
             return
         }
-        
+
         if let removeStartRequest = request as? DengageRequestRemoveStartToken,
            removeStartRequest.config == nil {
             let newRequest = DengageRequestRemoveStartToken(key: removeStartRequest.key, config: config)
             newRequest.requestSuccessful = removeStartRequest.requestSuccessful
             newRequest.timestamp = removeStartRequest.timestamp
-            executeAPIRequest(cache, request: newRequest, apiRequest: newRequest)
+            executeAPIRequest(cache, request: request, apiRequest: newRequest)
             return
         }
 

@@ -14,11 +14,12 @@ public class DengageLiveActivitiesManagerImpl: NSObject {
     private static var apiClient: DengageNetworking?
     private static var config: DengageConfiguration?
     private static var registeredActivityIds: Set<String> = []
+    private static var registeredActivityIdsLock = NSLock()
 
     public static func initialize(apiClient: DengageNetworking, config: DengageConfiguration) {
         self.apiClient = apiClient
         self.config = config
-        self.registeredActivityIds = []
+        registeredActivityIdsLock.withLock { self.registeredActivityIds = [] }
         _executor = DengageLiveActivitiesExecutor(
             requestDispatch: DispatchQueue(label: "Dengage.LiveActivities"),
             apiClient: apiClient,
@@ -109,6 +110,11 @@ public class DengageLiveActivitiesManagerImpl: NSObject {
 
     @available(iOS 16.1, *)
     public static func setup<Attributes: DengageLiveActivityAttributes>(_ activityType: Attributes.Type, options: LiveActivitySetupOptions? = nil) {
+        // Remove cached update tokens for activities of this type that are no longer running.
+        // Uses sync dispatch so pruning is ordered before any pending resendAllRequests.
+        let activeIds = Set(Activity<Attributes>.activities.map { $0.attributes.dengage.activityId })
+        _executor?.pruneUpdateTokens(notIn: activeIds, ofActivityType: "\(Attributes.self)")
+
         if #available(iOS 17.2, *) {
             listenForPushToStart(activityType, options: options)
         }
@@ -146,6 +152,16 @@ public class DengageLiveActivitiesManagerImpl: NSObject {
         }
     }
 
+    /// Atomically checks and inserts the activity ID. Returns true if the activity was newly registered,
+    /// false if it was already registered. Thread-safe.
+    private static func tryRegisterActivity(_ activityId: String) -> Bool {
+        registeredActivityIdsLock.lock()
+        defer { registeredActivityIdsLock.unlock() }
+        guard !registeredActivityIds.contains(activityId) else { return false }
+        registeredActivityIds.insert(activityId)
+        return true
+    }
+
     @available(iOS 17.2, *)
     private static func listenForPushToStart<Attributes: DengageLiveActivityAttributes>(_ activityType: Attributes.Type, options: LiveActivitySetupOptions? = nil) {
         if options == nil || options!.enablePushToStart {
@@ -171,8 +187,7 @@ public class DengageLiveActivitiesManagerImpl: NSObject {
 
         // Establish listeners for activity (if any exist)
         for activity in Activity<Attributes>.activities {
-            guard !registeredActivityIds.contains(activity.id) else { continue }
-            registeredActivityIds.insert(activity.id)
+            guard tryRegisterActivity(activity.id) else { continue }
             listenForActivityStateUpdates(activityType, activity: activity, options: options)
             listenForActivityPushToUpdate(activityType, activity: activity, options: options)
             if #available(iOS 16.2, *) {
@@ -195,8 +210,7 @@ public class DengageLiveActivitiesManagerImpl: NSObject {
                     }
                 }
 
-                guard !registeredActivityIds.contains(activity.id) else { continue }
-                registeredActivityIds.insert(activity.id)
+                guard tryRegisterActivity(activity.id) else { continue }
                 listenForActivityStateUpdates(activityType, activity: activity, options: options)
                 listenForActivityPushToUpdate(activityType, activity: activity, options: options)
                 if #available(iOS 16.2, *) {
