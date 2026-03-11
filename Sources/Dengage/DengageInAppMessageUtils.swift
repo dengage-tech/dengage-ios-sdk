@@ -2,6 +2,7 @@ import Foundation
 import UIKit
 
 final class DengageInAppMessageUtils{
+
     /**
      * Find not expired in app messages with controlling expire date and date now
      *
@@ -10,7 +11,9 @@ final class DengageInAppMessageUtils{
     class func findNotExpiredInAppMessages(untilDate: Date, _ inAppMessages: [InAppMessage]) -> [InAppMessage] {
         return inAppMessages.filter{ message -> Bool in
             guard let expireDate = Utilities.convertDate(to: message.data.expireDate) else {return false}
-            return untilDate.compare(expireDate) != .orderedDescending
+            if untilDate.compare(expireDate) == .orderedDescending { return false }
+            if isCountdownToWinExpired(message) { return false }
+            return true
         }
     }
     
@@ -908,6 +911,47 @@ final class DengageInAppMessageUtils{
         let cal = Calendar.current
         let result = cal.compare(visitorInfoDate, to: serverDate, toGranularity: .day)
         return result
+    }
+    
+    private struct CountdownSettings: Codable {
+        let isRelative: Bool
+        let absoluteEndDate: String?
+    }
+
+    /// Parses the dn-countdown-settings script tag from HTML and checks if the absolute end date has passed.
+    /// Returns true if the countdown has expired and the message should be suppressed.
+    class func isCountdownToWinExpired(_ message: InAppMessage) -> Bool {
+        guard ("COUNTDOWN_TO_WIN".caseInsensitiveCompare(message.data.content.type ?? "") == .orderedSame),
+              let html = message.data.content.props.html else {
+            return false
+        }
+
+        let pattern = #"<script[^>]*class="dn-countdown-settings"[^>]*>([\s\S]*?)</script>"#
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: []),
+              let match = regex.firstMatch(in: html, range: NSRange(html.startIndex..., in: html)),
+              let jsonRange = Range(match.range(at: 1), in: html) else {
+            return false
+        }
+
+        let jsonString = String(html[jsonRange]).trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let jsonData = jsonString.data(using: .utf8),
+              let settings = try? JSONDecoder().decode(CountdownSettings.self, from: jsonData) else {
+            return false
+        }
+
+        guard !settings.isRelative, let absoluteEndDateStr = settings.absoluteEndDate else {
+            return false
+        }
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MM/dd/yyyy HH:mm:ss"
+        dateFormatter.timeZone = TimeZone(identifier: "UTC")
+
+        guard let endDate = dateFormatter.date(from: absoluteEndDateStr) else {
+            return false
+        }
+
+        return Date() > endDate
     }
     
 }
