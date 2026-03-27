@@ -42,14 +42,15 @@ private extension AppDelegate {
         //dev-app.dengage.com: egemen-ios-dev-test
         //let test_testflight = "g9XU6x_p_l__p_l__s_l_AnsEBUgVC4F5uGQHpg7PFa1PIfxtOZG4bku0AxtvUMjBqF_s_l_Q0x37TkR1_p_l_vV_s_l_mYwcKHWB7YPNjAClyPViBqp1iRw3zqbtCBZlnapkD7pLGTGMKHGvPreNWf5kPPjZC0og67hsTfSkYBLfA_e_q__e_q_"
         //dev-app.dengage.com: egemen-ios-dev-sandbox-test
-        let test_sandbox = "7xWJ4ZN3MBF8WueuygcslkO4tbCn_s_l_CzDrTJJxVChxVH2usO_s_l_w310K_s_l_KphZVJD97FUCiSjaaysA51_s_l_GO_s_l_S7YGzD_p_l_RUuYwqzNBI5_p_l_i7Qml_p_l_rOC_p_l_7W_s_l_Nm3pGbCqAgqecsthxiH16a13SJDJALI50mgCHQ_e_q__e_q_"
         
-        let _ = ApiUrlConfiguration(
-            denEventApiUrl: "https://push.dengage.com",
-            denPushApiUrl: "https://push.dengage.com",
-            denInAppApiUrl: "https://push.dengage.com",
-            denGeofenceApiUrl: "https://push.dengage.com/geoapi/",
-            fetchRealTimeInAppApiUrl: "https://tr-inapp.lib.dengage.com/"
+        let test_sandbox = "ISF1SkvnJTgrVE1NWgfsF3TU_p_l_I3t_s_l_uVF7i_s_l_C1EGES0rB0HcToRYRCY_s_l_ioPhbsdIY22SfKjLKK8F5x2cZgtCvLILmbZH2fy6tNQD1BqKHyQZ2VZhExl7_s_l_jRes6Sqf_p_l_cI3"
+        
+        let api = ApiUrlConfiguration(
+            denEventApiUrl: "https://op-pub.dengage.com",
+            denPushApiUrl: "https://op-pub.dengage.com",
+            denInAppApiUrl: "https://op-pub.dengage.com",
+            denGeofenceApiUrl: "https://op-pub.dengage.com/geoapi/",
+            fetchRealTimeInAppApiUrl: "https://op-pub.dengage.com/api/realtime-inapp/"
         )
         
         let options = DengageOptions(
@@ -66,7 +67,7 @@ private extension AppDelegate {
             apiKey: test_sandbox,
             application: application,
             launchOptions: [:],
-            dengageOptions: options
+            dengageOptions: options,apiUrlConfiguration: api
         )
         Dengage.promptForPushNotifications { isUserGranted in
             print("Dengage.promptForPushNotifications isUserGranted: \(isUserGranted)")

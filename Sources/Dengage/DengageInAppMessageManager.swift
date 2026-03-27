@@ -374,7 +374,11 @@ extension DengageInAppMessageManager {
     {
         if let htmlSTR = inAppMessage.data.content.props.html
         {
-          
+            // `hideIfNotFound` / applyHideInlineIfNeeded sets isHidden + zero frame; must undo before re-showing.
+            webView.isHidden = false
+            webView.alpha = 1
+            webView.superview?.setNeedsLayout()
+            webView.superview?.layoutIfNeeded()
             webView.message = inAppMessage
             webView.delegate = self
             webView.loadHTMLString(htmlSTR, baseURL: nil)
@@ -398,6 +402,7 @@ extension DengageInAppMessageManager {
 
         // Check if we've received successful responses within the required time frame
         guard let remoteConfig = config.remoteConfiguration else {
+            applyHideInlineIfNeeded(inAppInlineElement: inAppInlineElement, propertyID: propertyID, hideIfNotFound: hideIfNotFound)
             storyCompletion?(nil)
             return
         }
@@ -416,11 +421,13 @@ extension DengageInAppMessageManager {
         // If both fetches are older than the timeout return
         if timeSinceLastInAppFetch > timeoutMilliseconds && timeSinceLastRealTimeFetch > timeoutMilliseconds {
             Logger.log(message: "setNavigation blocked: No successful in-app message fetch in the last \(timeoutMinutes) minutes")
+            applyHideInlineIfNeeded(inAppInlineElement: inAppInlineElement, propertyID: propertyID, hideIfNotFound: hideIfNotFound)
             storyCompletion?(nil)
             return
         }
         
         guard !(config.inAppMessageShowTime != 0 && Date().timeMiliseconds < config.inAppMessageShowTime) else {
+            applyHideInlineIfNeeded(inAppInlineElement: inAppInlineElement, propertyID: propertyID, hideIfNotFound: hideIfNotFound)
             storyCompletion?(nil)
             return
         }
@@ -431,6 +438,7 @@ extension DengageInAppMessageManager {
 
         let messages = DengageLocalStorage.shared.getInAppMessages()
         guard !messages.isEmpty else {
+            applyHideInlineIfNeeded(inAppInlineElement: inAppInlineElement, propertyID: propertyID, hideIfNotFound: hideIfNotFound)
             storyCompletion?(nil)
             return
         }
@@ -438,6 +446,7 @@ extension DengageInAppMessageManager {
         let inAppMessages = DengageInAppMessageUtils.findNotExpiredInAppMessages(untilDate: Date(), messages)
         
         guard let priorInAppMessage = DengageInAppMessageUtils.findPriorInAppMessage(inAppMessages: inAppMessages, screenName: screenName, params:params, config: config, propertyId: propertyID, storyPropertyId: storyPropertyID ) else {
+            applyHideInlineIfNeeded(inAppInlineElement: inAppInlineElement, propertyID: propertyID, hideIfNotFound: hideIfNotFound)
             storyCompletion?(nil)
             return
         }
@@ -494,6 +503,15 @@ extension DengageInAppMessageManager {
         }
         storyCompletion?(nil)
 
+    }
+
+    /// Hides the inline placeholder when no matching inline message should be shown and the app requested it via `hideIfNotFound`.
+    private func applyHideInlineIfNeeded(inAppInlineElement: InAppInlineElementView?, propertyID: String?, hideIfNotFound: Bool) {
+        guard hideIfNotFound else { return }
+        guard let pid = propertyID, !pid.isEmpty else { return }
+        guard let element = inAppInlineElement else { return }
+        element.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
+        element.isHidden = true
     }
     
     private func validateCoupon(accountId: String, listKey: String, message: InAppMessage) {
@@ -1110,6 +1128,13 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     
     func open(url: String?) {
         isInAppMessageShowing = false
+        inAppMessageWindow?.isHidden = true
+        inAppMessageWindow?.rootViewController = nil
+        if #available(iOS 13.0, *) {
+                    inAppMessageWindow?.windowScene = nil
+                } else {
+                    // Fallback on earlier versions
+                }
         inAppMessageWindow = nil
 
         guard let urlDeeplink = url, let urlStr = URL(string: urlDeeplink) else { return }
@@ -1159,8 +1184,18 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     }
     
     func sendDismissEvent(message: InAppMessage) {
+        
         isInAppMessageShowing = false
-        inAppMessageWindow = nil
+               inAppMessageWindow?.isHidden = true
+               inAppMessageWindow?.rootViewController = nil
+               
+               if #available(iOS 13.0, *) {
+                   inAppMessageWindow?.windowScene = nil
+               } else {
+                   // Fallback on earlier versions
+               }
+               inAppMessageWindow = nil
+        
         if message.data.isRealTime {
             setRealTimeInAppMessageAsDismissed(message)
         }else {
@@ -1199,7 +1234,16 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     }
     
     func close() {
+        
         isInAppMessageShowing = false
+        inAppMessageWindow?.isHidden = true
+        inAppMessageWindow?.rootViewController = nil
+        
+        if #available(iOS 13.0, *) {
+            inAppMessageWindow?.windowScene = nil
+        } else {
+            // Fallback on earlier versions
+        }
         inAppMessageWindow = nil
     }
     
@@ -1318,3 +1362,4 @@ struct VisitData{
     let date:String
     let count: Int
 }
+
