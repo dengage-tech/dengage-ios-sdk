@@ -273,7 +273,8 @@ class Story: Codable {
         mediaUrl = try? container.decode(String.self, forKey: .mediaUrl)
         type = try? container.decode(String.self, forKey: .type)
         bgColors = try? container.decode([String].self, forKey: .bgColors)
-        cta = try? container.decode(StoryCta.self, forKey: .cta)
+        let decodedCta = try? container.decode(StoryCta.self, forKey: .cta)
+        cta = decodedCta?.isEnabled == true ? decodedCta : nil
     }
 
     
