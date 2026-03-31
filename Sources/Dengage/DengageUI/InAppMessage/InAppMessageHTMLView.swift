@@ -19,12 +19,6 @@ final class InAppMessageHTMLView: UIView {
     private var leftConstraint: NSLayoutConstraint?
     private var rightConstraint: NSLayoutConstraint?
     
-    var ignoresSafeArea = false
-
-         override var safeAreaInsets: UIEdgeInsets {
-             ignoresSafeArea ? .zero : super.safeAreaInsets
-         }
-
     var height: NSLayoutConstraint?
     
     init() {
@@ -55,7 +49,7 @@ final class InAppMessageHTMLView: UIView {
     
     func setupConstraints(for params: ContentParams, message: InAppMessage) {
         backgroundColor = UIColor(hex: params.backgroundColor ?? "") ?? .clear
-        ignoresSafeArea = (params.position == .full)
+        
         setCornerRadius(params.radius)
         
         topConstraint?.constant = verticalPercentage(params.marginTop)

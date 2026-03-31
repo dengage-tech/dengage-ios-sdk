@@ -43,14 +43,14 @@ private extension AppDelegate {
         //let test_testflight = "g9XU6x_p_l__p_l__s_l_AnsEBUgVC4F5uGQHpg7PFa1PIfxtOZG4bku0AxtvUMjBqF_s_l_Q0x37TkR1_p_l_vV_s_l_mYwcKHWB7YPNjAClyPViBqp1iRw3zqbtCBZlnapkD7pLGTGMKHGvPreNWf5kPPjZC0og67hsTfSkYBLfA_e_q__e_q_"
         //dev-app.dengage.com: egemen-ios-dev-sandbox-test
         
-        let test_sandbox = "ISF1SkvnJTgrVE1NWgfsF3TU_p_l_I3t_s_l_uVF7i_s_l_C1EGES0rB0HcToRYRCY_s_l_ioPhbsdIY22SfKjLKK8F5x2cZgtCvLILmbZH2fy6tNQD1BqKHyQZ2VZhExl7_s_l_jRes6Sqf_p_l_cI3"
+        let test_sandbox = "A80DAdoQta4rOzTlSbRO2_s_l_xJaTDNpZAGZnWS94zp8BpmXugFZMwtJFwUVsW6Ny2xGNMvqGpBjPrqIL8dAcpnsMFhDxo5Qm105bbkjg8E3D7LckvR1to4iLVitGr7lNijV4uXX2i47UqsEYi1I2Ptzg_e_q__e_q_"
         
         let api = ApiUrlConfiguration(
-            denEventApiUrl: "https://op-pub.dengage.com",
-            denPushApiUrl: "https://op-pub.dengage.com",
-            denInAppApiUrl: "https://op-pub.dengage.com",
-            denGeofenceApiUrl: "https://op-pub.dengage.com/geoapi/",
-            fetchRealTimeInAppApiUrl: "https://op-pub.dengage.com/api/realtime-inapp/"
+            denEventApiUrl: "https://event.dengage.com",
+            denPushApiUrl: "https://push.dengage.com",
+            denInAppApiUrl: "https://push.dengage.com",
+            denGeofenceApiUrl: "https://push.dengage.com/geoapi",
+            fetchRealTimeInAppApiUrl: "https://tr-inapp.lib.dengage.com/api/realtime-inapp"
         )
         
         let options = DengageOptions(
