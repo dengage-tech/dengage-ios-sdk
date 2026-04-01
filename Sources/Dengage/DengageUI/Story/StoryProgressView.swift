@@ -35,7 +35,7 @@ extension ViewAnimator where Self: StoryProgressView {
             //TODO: EGEMEN: SORUN BURADA SANIRIM: finished oluyor nedense?
             if finished == true {
                 if let strongSelf = self {
-                    return completion(strongSelf.storyCoverIdentifier!, strongSelf.snapIndex!, strongSelf.storyCover.isCancelledAbruptly)
+                    return completion(self?.storyCoverIdentifier ?? "Unknown", self?.snapIndex ?? 0, self?.storyCover.isCancelledAbruptly ?? true)
                 }
             } else {
                 return completion(self?.storyCoverIdentifier ?? "Unknown", self?.snapIndex ?? 0, self?.storyCover.isCancelledAbruptly ?? true)
