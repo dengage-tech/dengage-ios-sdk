@@ -42,14 +42,18 @@ private extension AppDelegate {
         //dev-app.dengage.com: egemen-ios-dev-test
         //let test_testflight = "g9XU6x_p_l__p_l__s_l_AnsEBUgVC4F5uGQHpg7PFa1PIfxtOZG4bku0AxtvUMjBqF_s_l_Q0x37TkR1_p_l_vV_s_l_mYwcKHWB7YPNjAClyPViBqp1iRw3zqbtCBZlnapkD7pLGTGMKHGvPreNWf5kPPjZC0og67hsTfSkYBLfA_e_q__e_q_"
         //dev-app.dengage.com: egemen-ios-dev-sandbox-test
-        let test_sandbox = "7xWJ4ZN3MBF8WueuygcslkO4tbCn_s_l_CzDrTJJxVChxVH2usO_s_l_w310K_s_l_KphZVJD97FUCiSjaaysA51_s_l_GO_s_l_S7YGzD_p_l_RUuYwqzNBI5_p_l_i7Qml_p_l_rOC_p_l_7W_s_l_Nm3pGbCqAgqecsthxiH16a13SJDJALI50mgCHQ_e_q__e_q_"
+        //let test_sandbox = "7xWJ4ZN3MBF8WueuygcslkO4tbCn_s_l_CzDrTJJxVChxVH2usO_s_l_w310K_s_l_KphZVJD97FUCiSjaaysA51_s_l_GO_s_l_S7YGzD_p_l_RUuYwqzNBI5_p_l_i7Qml_p_l_rOC_p_l_7W_s_l_Nm3pGbCqAgqecsthxiH16a13SJDJALI50mgCHQ_e_q__e_q_"
         
-        let _ = ApiUrlConfiguration(
-            denEventApiUrl: "https://push.dengage.com",
-            denPushApiUrl: "https://push.dengage.com",
-            denInAppApiUrl: "https://push.dengage.com",
-            denGeofenceApiUrl: "https://push.dengage.com/geoapi/",
-            fetchRealTimeInAppApiUrl: "https://tr-inapp.lib.dengage.com/"
+        // dev-app.dengage.com: dengage_reco: egemen-ios-dev-test
+        let test_sandbox = "bWzSDsQybZh_s_l_6QWZtJQoTqaPLHZ_p_l_z7j9OuHE4fcPKbAFnbdBEUYHb7Z0dqML15LGW0qECdzc7DLCuuNIDRYrMBuG11JjPxRkADi4ehIyAytIenojq0eKyAdTiUGiDzqIl3Gae6efrlfcumM9B_s_l_33Pw_e_q__e_q_"
+        
+        let apiUrlConfiguration = ApiUrlConfiguration(
+            denEventApiUrl: "https://dev-push.dengage.com",
+            denPushApiUrl: "https://dev-push.dengage.com",
+            denInAppApiUrl: "https://dev-push.dengage.com",
+            denGeofenceApiUrl: "https://dev-push.dengage.com/geoapi/",
+            fetchRealTimeInAppApiUrl: "https://dev-push.dengage.com/api/realtime-inapp/"
+            //fetchRealTimeInAppApiUrl: "https://tr-inapp.lib.dengage.com/"
         )
         
         let options = DengageOptions(
@@ -66,7 +70,8 @@ private extension AppDelegate {
             apiKey: test_sandbox,
             application: application,
             launchOptions: [:],
-            dengageOptions: options
+            dengageOptions: options,
+            apiUrlConfiguration: apiUrlConfiguration
         )
         Dengage.promptForPushNotifications { isUserGranted in
             print("Dengage.promptForPushNotifications isUserGranted: \(isUserGranted)")

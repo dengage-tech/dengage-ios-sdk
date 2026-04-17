@@ -31,6 +31,8 @@ final public class DengageConfiguration: Encodable {
     var city: String?
     var state: String?
     var pageViewCount = 0
+    var lastPurchasedProducts: [String] = []
+    var lastPurchasedCategories: [String] = []
     let inAppURL: URL
     let geofenceURL: URL
     let inAppRealTimeURL: URL
@@ -261,29 +263,52 @@ final public class DengageConfiguration: Encodable {
         pageViewCount = 0
     }
     
+    private static let maxViewedItems = 10
+
     func setClientPageInfo(eventDetails: [String: Any]) {
         let currentPageInfo = getClientPageInfo()
-        
-        var updatedPageInfo = ClientPageInfo(
-            lastProductId: currentPageInfo.lastProductId,
-            lastProductPrice: currentPageInfo.lastProductPrice,
-            lastCategoryPath: currentPageInfo.lastCategoryPath,
-            currentPageTitle: eventDetails["page_title"] as? String ?? currentPageInfo.currentPageTitle,
-            currentPageType: eventDetails["page_type"] as? String ?? currentPageInfo.currentPageType
-        )
-        
-        // If page_type is "product", update last product information
+
+        var lastProductId = currentPageInfo.lastProductId
+        var lastProductPrice = currentPageInfo.lastProductPrice
+        var lastCategoryPath = currentPageInfo.lastCategoryPath
+        var lastViewedProducts = currentPageInfo.lastViewedProducts
+        var lastViewedCategories = currentPageInfo.lastViewedCategories
+
         if eventDetails["page_type"] as? String == "product" {
-            updatedPageInfo = ClientPageInfo(
-                lastProductId: eventDetails["product_id"] as? String ?? currentPageInfo.lastProductId,
-                lastProductPrice: eventDetails["price"] as? String ?? currentPageInfo.lastProductPrice,
-                lastCategoryPath: eventDetails["category_path"] as? String ?? currentPageInfo.lastCategoryPath,
-                currentPageTitle: updatedPageInfo.currentPageTitle,
-                currentPageType: updatedPageInfo.currentPageType
-            )
+            let productId = eventDetails["product_id"] as? String
+            lastProductId = productId ?? lastProductId
+            lastProductPrice = eventDetails["price"] as? String ?? lastProductPrice
+            lastCategoryPath = eventDetails["category_path"] as? String ?? lastCategoryPath
+            if let productId = productId, !productId.isEmpty {
+                lastViewedProducts = DengageConfiguration.addToViewedList(lastViewedProducts, productId)
+            }
         }
-        
+
+        if let categoryPath = eventDetails["category_path"] as? String, !categoryPath.isEmpty {
+            lastViewedCategories = DengageConfiguration.addToViewedList(lastViewedCategories, categoryPath)
+        }
+
+        let updatedPageInfo = ClientPageInfo(
+            lastProductId: lastProductId,
+            lastProductPrice: lastProductPrice,
+            lastCategoryPath: lastCategoryPath,
+            currentPageTitle: eventDetails["page_title"] as? String ?? currentPageInfo.currentPageTitle,
+            currentPageType: eventDetails["page_type"] as? String ?? currentPageInfo.currentPageType,
+            lastViewedProducts: lastViewedProducts,
+            lastViewedCategories: lastViewedCategories
+        )
+
         DengageLocalStorage.shared.saveClientPageInfo(updatedPageInfo)
+    }
+
+    private static func addToViewedList(_ list: [String], _ item: String) -> [String] {
+        var mutable = list
+        mutable.removeAll { $0 == item }
+        mutable.insert(item, at: 0)
+        if mutable.count > maxViewedItems {
+            return Array(mutable.prefix(maxViewedItems))
+        }
+        return mutable
     }
     
     func getClientPageInfo() -> ClientPageInfo {
@@ -308,6 +333,14 @@ final public class DengageConfiguration: Encodable {
     
     func getCurrentPageType() -> String? {
         return getClientPageInfo().currentPageType
+    }
+
+    func getLastViewedProducts() -> [String] {
+        return getClientPageInfo().lastViewedProducts
+    }
+
+    func getLastViewedCategories() -> [String] {
+        return getClientPageInfo().lastViewedCategories
     }
     
     func getContactKey() -> String? {

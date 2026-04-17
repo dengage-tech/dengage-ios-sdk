@@ -74,13 +74,15 @@ extension RootViewController: UITableViewDelegate{
             self.navigationController?.pushViewController(AppStoryViewController(), animated: true)
         case .realTimeInAppFilters:
             self.navigationController?.pushViewController(RealTimeInAppFiltersViewController(), animated: true)
+        case .recommendation:
+            self.navigationController?.pushViewController(RecommendationViewController(), animated: true)
         }
     }
 }
 
 extension RootViewController{
     enum Actions: CaseIterable{
-        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage , geoFence,inAppInLine, appStory, realTimeInAppFilters
+        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage , geoFence,inAppInLine, appStory, realTimeInAppFilters, recommendation
         var title: String{
             switch self{
             case .allowNotification:
@@ -109,6 +111,8 @@ extension RootViewController{
                 return "App Story"
             case .realTimeInAppFilters:
                 return "REAL TIME IN APP FILTERS"
+            case .recommendation:
+                return "RECOMMENDATION"
             }
         }
     }

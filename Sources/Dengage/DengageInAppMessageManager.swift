@@ -370,6 +370,63 @@ extension DengageInAppMessageManager {
         }
     }
     
+    func getRecommendation(
+        recommendationView: RecommendationView,
+        recommendationPropertyId: String,
+        screenName: String? = nil,
+        params: [String: String]? = nil
+    ) {
+        let messages = DengageLocalStorage.shared.getInAppMessages()
+        let inAppMessages = DengageInAppMessageUtils.findNotExpiredInAppMessages(untilDate: Date(), messages)
+        DengageLocalStorage.shared.save(inAppMessages)
+
+        guard !inAppMessages.isEmpty else {
+            Logger.log(message: "getRecommendation: No in-app messages available")
+            return
+        }
+
+        guard let priorMessage = DengageInAppMessageUtils.findPriorRecommendationMessage(
+            inAppMessages: inAppMessages,
+            recommendationPropertyId: recommendationPropertyId,
+            screenName: screenName,
+            params: params,
+            config: config
+        ) else {
+            Logger.log(message: "getRecommendation: No matching recommendation message found")
+            return
+        }
+
+        Logger.log(message: "getRecommendation: Found matching recommendation message: \(priorMessage.id)")
+
+        recommendationView.isHidden = false
+        // Delegate handles URL opening (item tap → navigate). Dismiss is a no-op
+        // inside RecommendationView's native `Dn` handler to mirror
+        // dengage-android-sdk's recommendation behavior.
+        recommendationView.updateDelegate(self)
+        recommendationView.populateRecommendation(inAppMessage: priorMessage)
+
+        if priorMessage.data.isRealTime {
+            markAsRealTimeInAppMessageAsDisplayed(message: priorMessage)
+        } else {
+            markAsInAppMessageAsDisplayed(
+                inAppMessageId: priorMessage.data.messageDetails,
+                contentId: priorMessage.data.content.contentId ?? ""
+            )
+        }
+
+        var updatedMessage = priorMessage
+        updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
+        if let showEveryXMinutes = priorMessage.data.displayTiming.showEveryXMinutes,
+           showEveryXMinutes != 0 {
+            updatedMessage.nextDisplayTime = Date().timeMiliseconds + Double(showEveryXMinutes) * 60000.0
+            updateInAppMessageOnCache(updatedMessage)
+        }
+        DengageLocalStorage.shared.updateInAppMessageShowCount(
+            messageId: updatedMessage.id,
+            showCount: updatedMessage.showCount ?? 0
+        )
+    }
+
     func showinlineInapp(propertyId : String , webView : InAppInlineElementView , inAppMessage: InAppMessage)
     {
         if let htmlSTR = inAppMessage.data.content.props.html

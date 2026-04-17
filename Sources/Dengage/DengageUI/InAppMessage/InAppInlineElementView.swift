@@ -17,7 +17,6 @@ open class InAppInlineElementView: WKWebView, WKScriptMessageHandler {
 
     // DengageBridge support
     private var dengageBridge: DengageBridge?
-    private var legacyHandler: LegacyDnHandler?
 
     override public init(frame: CGRect, configuration: WKWebViewConfiguration) {
 
@@ -46,10 +45,11 @@ open class InAppInlineElementView: WKWebView, WKScriptMessageHandler {
         let bridgeScript = BridgeJavaScript.createUserScript()
         configuration.userContentController.addUserScript(bridgeScript)
 
-        // Keep legacy interface for backwards compatibility
+        // Native `Dn` override. Injected at .atDocumentStart AFTER the bridge
+        // script so it wins before any inline <script> in the campaign HTML runs.
         let userScript = WKUserScript(
             source: javascriptInterface,
-            injectionTime: WKUserScriptInjectionTime.atDocumentEnd,
+            injectionTime: .atDocumentStart,
             forMainFrameOnly: true
         )
         configuration.userContentController.addUserScript(userScript)
@@ -80,38 +80,22 @@ open class InAppInlineElementView: WKWebView, WKScriptMessageHandler {
     }
 
     private func setupBridge() {
-        // Create legacy handler with callbacks
-        legacyHandler = LegacyDnHandler(
-            delegate: delegate,
-            message: message,
-            isIosURLNPresent: false,
-            onClicked: nil,
-            onFinish: nil
-        )
-
-        // Create handler registry and register handlers
         let registry = BridgeHandlerRegistry()
-        if let handler = legacyHandler {
-            registry.register(handler)
-        }
         registry.register(HttpRequestHandler(inAppMessage: message))
         registry.register(DeviceInfoHandler())
         registry.register(StorageHandler())
+        registry.register(RecommendationHandler())
+        registry.register(RecommendationEventHandler())
 
-        // Attach bridge to self (WKWebView)
         dengageBridge = DengageBridge.attach(to: self, handlerRegistry: registry)
     }
 
-    /// Update delegate reference in legacy handler
     func updateDelegate(_ newDelegate: InAppMessagesActionsDelegate?) {
         self.delegate = newDelegate
-        legacyHandler?.delegate = newDelegate
     }
 
-    /// Update message reference
     func updateMessage(_ newMessage: InAppMessage?) {
         self.message = newMessage
-        legacyHandler?.message = newMessage
     }
 
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {

@@ -30,6 +30,7 @@
 		88426DD22D6379B900B9FBB6 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = 88426DD12D6379B900B9FBB6 /* Dengage */; };
 		88426DD42D6379D100B9FBB6 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = 88426DD32D6379D100B9FBB6 /* Dengage */; };
 		88426DD62D6379D100B9FBB6 /* DengageGeofence in Frameworks */ = {isa = PBXBuildFile; productRef = 88426DD52D6379D100B9FBB6 /* DengageGeofence */; };
+		886C11DD2F8FBCF9001E6F20 /* RecommendationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886C11DC2F8FBCF9001E6F20 /* RecommendationViewController.swift */; };
 		888EB8392D70608B00D15827 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = 888EB8382D70608B00D15827 /* Dengage */; };
 		A099517627AB600C0089D98D /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099517527AB600C0089D98D /* NotificationService.swift */; };
 		A099517A27AB600C0089D98D /* NoticationExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = A099517327AB600C0089D98D /* NoticationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -117,6 +118,7 @@
 		8845BBFB2D5CF3DC00715B38 /* Dengage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Dengage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8845BBFF2D5CF3E600715B38 /* Dengage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Dengage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		885238E82E98F4B500AC6F37 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		886C11DC2F8FBCF9001E6F20 /* RecommendationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationViewController.swift; sourceTree = "<group>"; };
 		886E50332CE56F0000528A6E /* NotificationContentExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotificationContentExtension.entitlements; sourceTree = "<group>"; };
 		888EB8342D70607600D15827 /* Dengage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Dengage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		88968AFD2D09CF2700312C4C /* ios-example-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ios-example-app.entitlements"; sourceTree = "<group>"; };
@@ -256,6 +258,7 @@
 				882A92002D6CAC6900179FC1 /* LiveActivityViewController.swift */,
 				8840B86D2E8D59FE00868EFB /* RealTimeInAppFiltersViewController.swift */,
 				D6810E68293F341200611E55 /* RealTimeViewController.swift */,
+				886C11DC2F8FBCF9001E6F20 /* RecommendationViewController.swift */,
 				A0B884FD27B1CF44004D4360 /* RootViewController.swift */,
 				D68141002BB33CEC00663AC8 /* ShowInLineInAPP.swift */,
 				A09951A327ACB0D30089D98D /* TagsViewController.swift */,
@@ -536,6 +539,7 @@
 				A0F46C62275A85B0003A524C /* AppDelegate.swift in Sources */,
 				A09951A427ACB0D30089D98D /* TagsViewController.swift in Sources */,
 				8840B86E2E8D59FE00868EFB /* RealTimeInAppFiltersViewController.swift in Sources */,
+				886C11DD2F8FBCF9001E6F20 /* RecommendationViewController.swift in Sources */,
 				A09951AA27ACB2A30089D98D /* EventViewController.swift in Sources */,
 				A09951A727ACB12E0089D98D /* InAppMessageViewController.swift in Sources */,
 				882A92012D6CAC7200179FC1 /* LiveActivityViewController.swift in Sources */,
@@ -587,7 +591,7 @@
 				CODE_SIGN_ENTITLEMENTS = DengageWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 95;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -602,7 +606,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.Example.DengageWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -623,7 +627,7 @@
 				CODE_SIGN_ENTITLEMENTS = DengageWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 95;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -638,7 +642,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.Example.DengageWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -654,7 +658,7 @@
 				CODE_SIGN_ENTITLEMENTS = NoticationExtension/NoticationExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 95;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NoticationExtension/Info.plist;
@@ -666,7 +670,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.Example.NotifServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -683,7 +687,7 @@
 				CODE_SIGN_ENTITLEMENTS = NoticationExtension/NoticationExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 95;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NoticationExtension/Info.plist;
@@ -695,7 +699,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.Example.NotifServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -712,7 +716,7 @@
 				CODE_SIGN_ENTITLEMENTS = NotificationContentExtension/NotificationContentExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 95;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NotificationContentExtension/Info.plist;
@@ -724,7 +728,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.Example.ContentExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -741,7 +745,7 @@
 				CODE_SIGN_ENTITLEMENTS = NotificationContentExtension/NotificationContentExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 95;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NotificationContentExtension/Info.plist;
@@ -753,7 +757,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.Example.ContentExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -891,7 +895,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ios-example-app/ios-example-app.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 95;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-example-app/Info.plist";
@@ -911,7 +915,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.Example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -930,7 +934,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ios-example-app/ios-example-app.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 95;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-example-app/Info.plist";
@@ -950,7 +954,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.Example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

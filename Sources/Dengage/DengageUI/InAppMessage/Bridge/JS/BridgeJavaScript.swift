@@ -55,12 +55,28 @@ struct BridgeJavaScript {
                  * @param {object} payload - The payload object
                  * @returns {Promise} - Resolves with response data
                  */
-                callAsync: function(action, payload) {
+                callAsync: function(action) {
+                    var restArgs = Array.prototype.slice.call(arguments, 1);
+                    var payload;
+                    if (restArgs.length === 0) {
+                        payload = null;
+                    } else if (restArgs.length === 1 && restArgs[0] !== null && typeof restArgs[0] === 'object' && !Array.isArray(restArgs[0])) {
+                        payload = restArgs[0];
+                    } else if (
+                        restArgs.length === 2 &&
+                        typeof restArgs[0] === 'string' &&
+                        (restArgs[1] == null || (typeof restArgs[1] === 'object' && !Array.isArray(restArgs[1])))
+                    ) {
+                        payload = Object.assign({ containerKey: restArgs[0] }, restArgs[1] || {});
+                    } else {
+                        payload = { args: restArgs };
+                    }
                     var self = this;
                     return new Promise(function(resolve, reject) {
                         self.call(action, payload, function(response) {
                             if (response.success) {
-                                resolve(response.data);
+                                //resolve(response.data);
+                                resolve(response);
                             } else {
                                 reject({
                                     code: response.errorCode,
@@ -122,71 +138,6 @@ struct BridgeJavaScript {
                 }
             };
 
-            // Legacy Dn compatibility layer
-            if (!window.Dn || !window.Dn._nativeInterface) {
-                window.Dn = window.Dn || {};
-
-                window.Dn.dismiss = function() {
-                    DengageBridge.fire('legacy_dismiss', {});
-                };
-
-                window.Dn.iosUrl = function(targetUrl) {
-                    DengageBridge.fire('legacy_iosUrl', { targetUrl: targetUrl });
-                };
-
-                window.Dn.iosUrlN = function(targetUrl, inAppBrowser, retrieveOnSameLink) {
-                    DengageBridge.fire('legacy_iosUrlN', {
-                        targetUrl: targetUrl,
-                        inAppBrowser: inAppBrowser,
-                        retrieveOnSameLink: retrieveOnSameLink
-                    });
-                };
-
-                window.Dn.androidUrl = function(targetUrl) {
-                    DengageBridge.fire('legacy_androidUrl', { targetUrl: targetUrl });
-                };
-
-                window.Dn.androidUrlN = function(targetUrl, inAppBrowser, retrieveOnSameLink) {
-                    DengageBridge.fire('legacy_androidUrlN', {
-                        targetUrl: targetUrl,
-                        inAppBrowser: inAppBrowser,
-                        retrieveOnSameLink: retrieveOnSameLink
-                    });
-                };
-
-                window.Dn.sendClick = function(buttonId, buttonType) {
-                    DengageBridge.fire('legacy_sendClick', { buttonId: buttonId, buttonType: buttonType });
-                };
-
-                window.Dn.close = function() {
-                    DengageBridge.fire('legacy_close', {});
-                };
-
-                window.Dn.closeN = function() {
-                    DengageBridge.fire('legacy_closeN', {});
-                };
-
-                window.Dn.setTags = function(tags) {
-                    DengageBridge.fire('legacy_setTags', { tags: tags });
-                };
-
-                window.Dn.promptPushPermission = function() {
-                    DengageBridge.fire('legacy_promptPushPermission', {});
-                };
-
-                window.Dn.showRating = function() {
-                    DengageBridge.fire('legacy_showRating', {});
-                };
-
-                window.Dn.openSettings = function() {
-                    DengageBridge.fire('legacy_openSettings', {});
-                };
-
-                window.Dn.copyToClipboard = function(value) {
-                    DengageBridge.fire('legacy_copyToClipboard', { value: value });
-                };
-            }
-
             console.log('DengageBridge initialized');
         })();
         """
@@ -197,11 +148,13 @@ struct BridgeJavaScript {
         webView.evaluateJavaScript(bridgeCode, completionHandler: nil)
     }
 
-    /// Create a WKUserScript for early injection
+    /// Create a WKUserScript for early injection.
+    /// Injected at `.atDocumentStart` so that `window.DengageBridge` is defined
+    /// BEFORE any inline <script> in the campaign HTML tries to use it.
     static func createUserScript() -> WKUserScript {
         return WKUserScript(
             source: bridgeCode,
-            injectionTime: .atDocumentEnd,
+            injectionTime: .atDocumentStart,
             forMainFrameOnly: true
         )
     }

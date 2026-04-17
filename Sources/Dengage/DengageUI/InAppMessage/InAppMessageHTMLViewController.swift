@@ -17,7 +17,6 @@ final class InAppMessageHTMLViewController: UIViewController {
 
     // DengageBridge support
     private var dengageBridge: DengageBridge?
-    private var legacyHandler: LegacyDnHandler?
 
     var hasTopNotch: Bool {
         if #available(iOS 13.0, *), let _ = UIApplication.shared.connectedScenes.first as? UIWindowScene {
@@ -62,29 +61,13 @@ final class InAppMessageHTMLViewController: UIViewController {
     }
 
     private func setupBridge() {
-        // Create legacy handler with callbacks
-        legacyHandler = LegacyDnHandler(
-            delegate: delegate,
-            message: message,
-            isIosURLNPresent: isIosURLNPresent,
-            onClicked: { [weak self] in
-                self?.isClicked = true
-            },
-            onFinish: { [weak self] in
-                self?.delegate?.close()
-            }
-        )
-
-        // Create handler registry and register handlers
         let registry = BridgeHandlerRegistry()
-        if let handler = legacyHandler {
-            registry.register(handler)
-        }
         registry.register(HttpRequestHandler(inAppMessage: message))
         registry.register(DeviceInfoHandler())
         registry.register(StorageHandler())
+        registry.register(RecommendationHandler())
+        registry.register(RecommendationEventHandler())
 
-        // Attach bridge to webView
         dengageBridge = DengageBridge.attach(to: viewSource.webView, handlerRegistry: registry)
     }
 
@@ -95,10 +78,16 @@ final class InAppMessageHTMLViewController: UIViewController {
         let bridgeScript = BridgeJavaScript.createUserScript()
         contentController.addUserScript(bridgeScript)
 
-        // Keep legacy interface for backwards compatibility
+        // Native `Dn` interface must override the BridgeJavaScript legacy shim
+        // BEFORE any inline <script> in the campaign HTML runs (the COUNTDOWN_TO_WIN
+        // template, for example, invokes `Dn.close()` synchronously during parsing
+        // when the countdown end date is in the past). Since BridgeJavaScript is
+        // injected at .atDocumentStart and WKUserScripts execute in the order they
+        // are added to the controller, injecting this at .atDocumentStart AFTER the
+        // bridge script guarantees the native message-handler routed `Dn` wins.
         let legacyScript = WKUserScript(
             source: javascriptInterface,
-            injectionTime: .atDocumentEnd,
+            injectionTime: .atDocumentStart,
             forMainFrameOnly: true
         )
         contentController.addUserScript(legacyScript)
@@ -150,10 +139,8 @@ final class InAppMessageHTMLViewController: UIViewController {
         viewSource.webView.autoresizesSubviews = true
     }
 
-    /// Update delegate reference in legacy handler
     func updateDelegate(_ newDelegate: InAppMessagesActionsDelegate?) {
         self.delegate = newDelegate
-        legacyHandler?.delegate = newDelegate
     }
 }
 

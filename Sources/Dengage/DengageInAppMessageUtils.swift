@@ -144,6 +144,63 @@ final class DengageInAppMessageUtils{
         }
     }
     
+    /**
+     * Find prior recommendation in-app message for a given recommendationPropertyId.
+     * Mirrors Android InAppMessageUtils.findPriorRecommendationMessage.
+     */
+    class func findPriorRecommendationMessage(
+        inAppMessages: [InAppMessage],
+        recommendationPropertyId: String,
+        screenName: String? = nil,
+        params: [String: String]? = nil,
+        config: DengageConfiguration
+    ) -> InAppMessage? {
+        let sortedMessages = inAppMessages.sorted
+
+        var context = [String: String]()
+        var criterionIndex = 0
+
+        let matchedWithoutScreenFilters = sortedMessages.first { message in
+            let screenFiltersEmpty = (message.data.displayCondition.screenNameFilters ?? []).isEmpty
+            return screenFiltersEmpty &&
+                isRecommendationInApp(inAppMessage: message, recommendationPropertyId: recommendationPropertyId) &&
+                message.isDisplayTimeAvailable() &&
+                operateRealTimeValues(message: message, with: params, config: config, context: &context, criterionIndex: &criterionIndex, isDebugDevice: false)
+        }
+
+        guard let screenName = screenName, !screenName.isEmpty else {
+            return matchedWithoutScreenFilters
+        }
+
+        let matchedWithScreenFilters = sortedMessages.first { message in
+            let screenFilters = message.data.displayCondition.screenNameFilters ?? []
+            return !screenFilters.isEmpty &&
+                isRecommendationInApp(inAppMessage: message, recommendationPropertyId: recommendationPropertyId) &&
+                message.isDisplayTimeAvailable() &&
+                isScreenNameMatching(
+                    screenFilters: screenFilters,
+                    screenName: screenName,
+                    logicOperator: message.data.displayCondition.screenNameFilterLogicOperator
+                ) &&
+                operateRealTimeValues(message: message, with: params, config: config, context: &context, criterionIndex: &criterionIndex, isDebugDevice: false)
+        }
+
+        return matchedWithScreenFilters ?? matchedWithoutScreenFilters
+    }
+
+    internal class func isRecommendationInApp(inAppMessage: InAppMessage, recommendationPropertyId: String?) -> Bool {
+        if ("INLINE_CAROUSEL".caseInsensitiveCompare(inAppMessage.data.content.type ?? "")) != .orderedSame {
+            return false
+        }
+        let isPropertyEmpty = recommendationPropertyId == nil || recommendationPropertyId == ""
+        let iosSelector = inAppMessage.data.inlineTarget?.iosSelector
+        let isSelectorEmpty = iosSelector == nil || iosSelector == ""
+        if isPropertyEmpty || isSelectorEmpty {
+            return false
+        }
+        return iosSelector == recommendationPropertyId
+    }
+
     private class func isDebugDevice(config: DengageConfiguration) -> Bool {
         guard let debugDeviceIds = config.remoteConfiguration?.debugDeviceIds else { return false }
         return debugDeviceIds.contains(config.applicationIdentifier)

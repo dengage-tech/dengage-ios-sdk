@@ -346,6 +346,18 @@ public class Dengage {
     @objc public static func setCity(name: String?) {
         dengage?.config.setCity(name: name)
     }
+
+    /// Set last purchased product IDs. Used as the `lpp` field when the
+    /// recommendation engine requests personalization context.
+    @objc public static func setLastPurchasedProducts(_ productIds: [String]) {
+        dengage?.config.lastPurchasedProducts = productIds
+    }
+
+    /// Set last purchased category IDs. Used as the `lpc` field when the
+    /// recommendation engine requests personalization context.
+    @objc public static func setLastPurchasedCategories(_ categoryIds: [String]) {
+        dengage?.config.lastPurchasedCategories = categoryIds
+    }
     
     @objc public static func setPartnerDeviceId(adid: String?) {
         
@@ -564,6 +576,20 @@ extension Dengage {
     
     public static func getSdkParameters() -> GetSDKParamsResponse? {
         return DengageLocalStorage.shared.getConfig()
+    }
+
+    public static func getRecommendation(
+        recommendationPropertyId: String,
+        recommendationView: RecommendationView,
+        screenName: String? = nil,
+        customParams: [String: String]? = nil
+    ) {
+        dengage?.inAppManager.getRecommendation(
+            recommendationView: recommendationView,
+            recommendationPropertyId: recommendationPropertyId,
+            screenName: screenName,
+            params: customParams
+        )
     }
 }
 
