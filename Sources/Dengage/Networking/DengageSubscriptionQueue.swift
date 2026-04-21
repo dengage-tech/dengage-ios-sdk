@@ -62,8 +62,10 @@ final class DengageSubscriptionQueue {
 
     private func fetchPushPermission(completion: @escaping (Bool) -> Void) {
         UNUserNotificationCenter.current().getNotificationSettings { settings in
-            var granted = settings.authorizationStatus == .authorized ||
-                          settings.authorizationStatus == .provisional
+            var granted = settings.authorizationStatus == .authorized
+            if #available(iOS 12.0, *) {
+                granted = granted || settings.authorizationStatus == .provisional
+            }
             if #available(iOS 14.0, *) {
                 granted = granted || settings.authorizationStatus == .ephemeral
             }

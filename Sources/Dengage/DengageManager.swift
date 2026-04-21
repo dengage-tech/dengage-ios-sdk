@@ -213,8 +213,10 @@ extension DengageManager {
         guard !Utilities.isiOSAppExtension() else { return }
         UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
             guard let self = self else { return }
-            var pushPermission = settings.authorizationStatus == .authorized ||
-                                 settings.authorizationStatus == .provisional
+            var pushPermission = settings.authorizationStatus == .authorized
+            if #available(iOS 12.0, *) {
+                pushPermission = pushPermission || settings.authorizationStatus == .provisional
+            }
             if #available(iOS 14.0, *) {
                 pushPermission = pushPermission || settings.authorizationStatus == .ephemeral
             }
