@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UserNotifications
 
 final class DengageSubscriptionQueue {
 
@@ -42,25 +43,39 @@ final class DengageSubscriptionQueue {
         }
 
         Dengage.dengage?.eventManager.eventSessionStart()
-        let request = MakeSubscriptionRequest(config: config)
-        Logger.log(message: "DengageSubscriptionQueue -> sync started")
-        apiClient.send(request: request) { [weak self] result in
-            switch result {
-            case .success(_):
-                Logger.log(message: "DengageSubscriptionQueue -> sync success")
-                self?.updateLocalStorage()
-                
-            case .failure(_):
-                Logger.log(message: "DengageSubscriptionQueue -> sync error")
+        fetchPushPermission { [weak self] pushPermission in
+            guard let self = self else { return }
+            let request = MakeSubscriptionRequest(config: self.config, pushPermission: pushPermission)
+            Logger.log(message: "DengageSubscriptionQueue -> sync started")
+            self.apiClient.send(request: request) { [weak self] result in
+                switch result {
+                case .success(_):
+                    Logger.log(message: "DengageSubscriptionQueue -> sync success")
+                    self?.updateLocalStorage(pushPermission: pushPermission)
+
+                case .failure(_):
+                    Logger.log(message: "DengageSubscriptionQueue -> sync error")
+                }
             }
         }
     }
+
+    private func fetchPushPermission(completion: @escaping (Bool) -> Void) {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            var granted = settings.authorizationStatus == .authorized ||
+                          settings.authorizationStatus == .provisional
+            if #available(iOS 14.0, *) {
+                granted = granted || settings.authorizationStatus == .ephemeral
+            }
+            completion(granted)
+        }
+    }
     
-    private func updateLocalStorage() {
+    private func updateLocalStorage(pushPermission: Bool) {
         DengageLocalStorage.shared.set(value: config.integrationKey, for: .integrationKeySubscription)
         DengageLocalStorage.shared.set(value: config.deviceToken, for: .tokenSubscription)
         DengageLocalStorage.shared.set(value: config.getContactKey() ?? "", for: .contactKeySubscription)
-        DengageLocalStorage.shared.set(value: config.permission, for: .permissionSubscription)
+        DengageLocalStorage.shared.set(value: config.permission && pushPermission, for: .permissionSubscription)
         DengageLocalStorage.shared.set(value: config.applicationIdentifier, for: .udidSubscription)
         DengageLocalStorage.shared.set(value: config.getCarrierIdentifier, for: .carrierIdSubscription)
         DengageLocalStorage.shared.set(value: config.appVersion, for: .appVersionSubscription)

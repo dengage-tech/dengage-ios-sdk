@@ -145,7 +145,7 @@ extension DengageManager {
         }
     }
     
-    private func shouldMakeSubscriptionRequest() -> Bool {
+    private func shouldMakeSubscriptionRequest(pushPermission: Bool) -> Bool {
         let integrationKeySubscription = DengageLocalStorage.shared.value(for: .integrationKeySubscription) as? String
         let tokenSubscription = DengageLocalStorage.shared.value(for: .tokenSubscription) as? String
         let contactKeySubscription = DengageLocalStorage.shared.value(for: .contactKeySubscription) as? String
@@ -160,11 +160,11 @@ extension DengageManager {
         let partnerDeviceIdSubscription = DengageLocalStorage.shared.value(for: .partner_device_idSubscription) as? String
         let advertisingIdSubscription = DengageLocalStorage.shared.value(for: .advertisingIdSubscription) as? String
         let locationPermissionSubscription = DengageLocalStorage.shared.value(for: .locationPermissionSubscription) as? String
-        
+
         let integrationKey = self.config.integrationKey
         let token = self.config.deviceToken
         let contactKey = self.config.getContactKey()
-        let userPermission = self.config.permission
+        let effectivePermission = self.config.permission && pushPermission
         let udid = self.config.applicationIdentifier
         let carrierId = self.config.getCarrierIdentifier
         let appVersion = self.config.appVersion
@@ -175,14 +175,14 @@ extension DengageManager {
         let partnerDeviceId = self.config.getPartnerDeviceID() ?? ""
         let advertisingId = self.config.advertisingIdentifier
         let locationPermission = self.config.locationPermission
-        
+
         if integrationKeySubscription != integrationKey {
             return true
         } else if tokenSubscription != token {
             return true
         } else if contactKeySubscription != contactKey {
             return true
-        } else if permissionSubscription != userPermission {
+        } else if permissionSubscription != effectivePermission {
             return true
         } else if udidSubscription != udid {
             return true
@@ -210,9 +210,16 @@ extension DengageManager {
     }
     
     func syncSubscription() {
-        if !Utilities.isiOSAppExtension() {
-            if shouldMakeSubscriptionRequest() || shouldMakeSubscriptionRequestBasedOnTime() {
-                subscriptionQueue.enqueueSubscription()
+        guard !Utilities.isiOSAppExtension() else { return }
+        UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
+            guard let self = self else { return }
+            var pushPermission = settings.authorizationStatus == .authorized ||
+                                 settings.authorizationStatus == .provisional
+            if #available(iOS 14.0, *) {
+                pushPermission = pushPermission || settings.authorizationStatus == .ephemeral
+            }
+            if self.shouldMakeSubscriptionRequest(pushPermission: pushPermission) || self.shouldMakeSubscriptionRequestBasedOnTime() {
+                self.subscriptionQueue.enqueueSubscription()
             }
         }
     }

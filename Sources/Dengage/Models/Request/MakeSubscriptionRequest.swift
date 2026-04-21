@@ -14,7 +14,7 @@ struct MakeSubscriptionRequest: APIRequest {
         let parameters = ["integrationKey": config.integrationKey,
                           "token": config.deviceToken ?? "",
                           "contactKey": config.getContactKey() ?? "",
-                          "permission": config.permission,
+                          "permission": config.permission && pushPermission,
                           "udid": config.applicationIdentifier,
                           "carrierId": config.getCarrierIdentifier,
                           "appVersion": config.appVersion,
@@ -29,9 +29,10 @@ struct MakeSubscriptionRequest: APIRequest {
                           "trackingPermission" : config.trackingPermission]
         return parameters.json
     }
-    
+
     let queryParameters: [URLQueryItem] = []
-    
+
     let config: DengageConfiguration
+    let pushPermission: Bool
 }
 
