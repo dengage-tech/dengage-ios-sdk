@@ -76,7 +76,7 @@ struct BridgeJavaScript {
                         self.call(action, payload, function(response) {
                             if (response.success) {
                                 //resolve(response.data);
-                                resolve(response);
+                                resolve(response.data);
                             } else {
                                 reject({
                                     code: response.errorCode,
