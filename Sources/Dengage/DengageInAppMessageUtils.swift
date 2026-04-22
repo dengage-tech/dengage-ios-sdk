@@ -944,8 +944,9 @@ final class DengageInAppMessageUtils{
         }
 
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MM/dd/yyyy HH:mm:ss"
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
         dateFormatter.timeZone = TimeZone(identifier: "UTC")
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
 
         guard let endDate = dateFormatter.date(from: absoluteEndDateStr) else {
             return false
