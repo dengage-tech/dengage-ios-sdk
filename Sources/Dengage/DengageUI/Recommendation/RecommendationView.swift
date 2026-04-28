@@ -121,7 +121,14 @@ open class RecommendationView: WKWebView, WKScriptMessageHandler, WKNavigationDe
             else if let d = message.body as? Double { height = CGFloat(d) }
             else { return }
             adjustHeight(height)
-
+        case "sendClick":
+            
+            guard let dict = message.body as? [String: Any] else { return }
+            let buttonId = dict["buttonId"] as? String ?? ""
+            let buttonType = dict["buttonType"] as? String ?? ""
+            if let message = self.message {
+                delegate?.sendClickEvent(message: message, buttonId: buttonId, buttonType: buttonType)
+            }
         case "iosUrl":
             guard let url = message.body as? String else { return }
             delegate?.open(url: url)
@@ -147,7 +154,6 @@ open class RecommendationView: WKWebView, WKScriptMessageHandler, WKNavigationDe
         // but must NOT emit a dismiss event. sendClick / setTags / androidUrl
         // are not applicable in the recommendation context.
         case "dismiss", "close", "closeN",
-             "sendClick",
              "setTags",
              "promptPushPermission",
              "openSettings",
