@@ -97,6 +97,8 @@ final class RecommendationHandler: AsyncBridgeHandler {
 
             let rawBody: String? = data.flatMap { String(data: $0, encoding: .utf8) }
 
+            Logger.log(message: "RecommendationHandler response (\(http.statusCode)) for \(url.absoluteString): \(rawBody ?? "<empty>")")
+
             guard (200..<300).contains(http.statusCode) else {
                 Logger.log(message: "RecommendationHandler error: \(http.statusCode) - \(rawBody ?? "")")
                 DispatchQueue.main.async {
