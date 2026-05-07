@@ -14,6 +14,8 @@ public class DengageGeofence: NSObject {
 
     private static let geofenceManager = DengageGeofenceManager()
 
+    @objc public static var geofenceInterceptor: DengageGeofenceInterceptor?
+
 
     @objc public static func startGeofence() {
         if let sdkParams = Dengage.getSdkParameters(), sdkParams.geofenceEnabled {

@@ -210,20 +210,20 @@ final class DengageGeofenceManager: NSObject, DengageGeofenceManagerInterface {
                     }
                     
                     if self.tOptions.useStoppedGeofence, let location = location {
-                        self.replaceBubbleGeofence(location, radius: self.tOptions.stoppedGeofenceRadius)
+                        self.replaceBubbleGeofence(location, radius: self.tOptions.stoppedGeofenceRadius, stopped: true)
                     } else {
                         self.removeBubbleGeofence()
                     }
-                    
+
                 } else {
-                    
+
                     if self.tOptions.desiredMovingUpdateInterval == 0 {
                         self.stopUpdates()
                     } else if startUpdates {
                         self.startUpdates(self.tOptions.desiredMovingUpdateInterval)
                     }
                     if self.tOptions.useMovingGeofence, let location = location {
-                        self.replaceBubbleGeofence(location, radius: self.tOptions.movingGeofenceRadius)
+                        self.replaceBubbleGeofence(location, radius: self.tOptions.movingGeofenceRadius, stopped: false)
                     } else {
                         self.removeBubbleGeofence()
                     }
@@ -249,19 +249,28 @@ final class DengageGeofenceManager: NSObject, DengageGeofenceManagerInterface {
         
     }
     
-    func replaceBubbleGeofence(_ location: CLLocation, radius: Int) {
+    func replaceBubbleGeofence(_ location: CLLocation, radius: Int, stopped: Bool) {
         removeBubbleGeofence()
         if !DengageGeofenceState.getGeofenceEnabled() {
             return
         }
-        lManager.startMonitoring(for: CLCircularRegion(center: location.coordinate, radius: CLLocationDistance(radius), identifier: "\(kBubbleGeofenceIdentifierPrefix)\(UUID().uuidString)"))
+        let kind = stopped ? "stopped" : "moving"
+        let identifier = "\(kBubbleGeofenceIdentifierPrefix)\(UUID().uuidString)"
+        Logger.log(message: "Adding \(kind) bubble geofence | latitude = \(location.coordinate.latitude); longitude = \(location.coordinate.longitude); radius = \(radius); identifier = \(identifier)")
+        lManager.startMonitoring(for: CLCircularRegion(center: location.coordinate, radius: CLLocationDistance(radius), identifier: identifier))
+        Logger.log(message: "Successfully added \(kind) bubble geofence")
     }
-    
+
     func removeBubbleGeofence() {
+        var removed = 0
         for region in lManager.monitoredRegions {
             if region.identifier.hasPrefix(kBubbleGeofenceIdentifierPrefix) {
                 lManager.stopMonitoring(for: region)
+                removed += 1
             }
+        }
+        if removed > 0 {
+            Logger.log(message: "Removed bubble geofences | count = \(removed)")
         }
     }
     
@@ -484,18 +493,30 @@ extension DengageGeofenceManager {
                 sending = false
                 return
             }
-            guard let geofences = cluster.geofences, let _ = geofences.first(where: { $0.id == geofenceId}) else {
+            guard let geofences = cluster.geofences, let geofenceItem = geofences.first(where: { $0.id == geofenceId}) else {
                 sending = false
                 return
             }
-            
+
             if let events = geofenceHistory.eventHistory[identifier],
                let lastEvent = events.sorted(by: { $0.key > $1.key }).first?.value,
                GEOFENCE_MAX_EVENT_SIGNAL_INTERVAL > (Date().timeIntervalSince1970 - lastEvent.et.timeIntervalSince1970) {
                 sending = false
                 return
             }
-            
+
+            if source == .geofenceEnter {
+                DengageGeofence.geofenceInterceptor?.onGeofenceEnter(
+                    latitude: geofenceItem.lat,
+                    longitude: geofenceItem.lon,
+                    radius: geofenceItem.radius,
+                    clusterId: clusterId,
+                    clusterName: cluster.name,
+                    geofenceItemId: geofenceId,
+                    geofenceItemName: geofenceItem.name
+                )
+            }
+
             checkNotificationPermit { [weak self] pushPermit in
                 let request = GeofenceEventSignalRequest(integrationKey: config.integrationKey,
                                                          clusterId: clusterId,

@@ -93,7 +93,50 @@ private extension AppDelegate {
          }
          */
         
+        DengageGeofence.geofenceInterceptor = self
         DengageGeofence.startGeofence()
+    }
+}
+
+// MARK: - DengageGeofenceInterceptor
+extension AppDelegate: DengageGeofenceInterceptor {
+    func onGeofenceEnter(latitude: Double,
+                         longitude: Double,
+                         radius: Double,
+                         clusterId: Int,
+                         clusterName: String?,
+                         geofenceItemId: Int,
+                         geofenceItemName: String?) {
+        print("GeofenceInterceptor enter | lat=\(latitude), lon=\(longitude), radius=\(radius), clusterId=\(clusterId), clusterName=\(clusterName ?? "nil"), itemId=\(geofenceItemId), itemName=\(geofenceItemName ?? "nil")")
+        showGeofenceEnterNotification(latitude: latitude,
+                                      longitude: longitude,
+                                      radius: radius,
+                                      clusterId: clusterId,
+                                      clusterName: clusterName,
+                                      geofenceItemId: geofenceItemId,
+                                      geofenceItemName: geofenceItemName)
+    }
+
+    private func showGeofenceEnterNotification(latitude: Double,
+                                               longitude: Double,
+                                               radius: Double,
+                                               clusterId: Int,
+                                               clusterName: String?,
+                                               geofenceItemId: Int,
+                                               geofenceItemName: String?) {
+        let content = UNMutableNotificationContent()
+        content.title = geofenceItemName.map { "Geofence Enter: \($0)" } ?? "Geofence Enter"
+        content.body = "cluster=\(clusterName ?? "\(clusterId)") item=\(geofenceItemName ?? "\(geofenceItemId)")\nlat=\(latitude), lon=\(longitude), radius=\(radius)"
+        content.sound = .default
+
+        let request = UNNotificationRequest(identifier: UUID().uuidString,
+                                            content: content,
+                                            trigger: nil)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Failed to post geofence notification: \(error)")
+            }
+        }
     }
 }
 
