@@ -2,7 +2,7 @@ import Foundation
 import UserNotifications
 import UIKit
 public class DengageManager {
-
+    
     public var config: DengageConfiguration
     var application: UIApplication?
     var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -16,7 +16,7 @@ public class DengageManager {
     var notificationManager: DengageNotificationManagerInterface
     var dengageRFMManager: DengageRFMManager
     var subscriptionQueue: DengageSubscriptionQueue
-
+    
     var testPageWindow: UIWindow?
     
     init(with apiKey: String,
@@ -44,7 +44,7 @@ public class DengageManager {
         self.inAppManager = DengageInAppMessageManager.init(config: config,
                                                             service: apiClient,
                                                             sessionManager: sessionManager)
-
+        
         self.notificationManager = DengageNotificationManager(config: config,
                                                               service: apiClient,
                                                               eventManager: eventManager,
@@ -145,7 +145,7 @@ extension DengageManager {
         }
     }
     
-    private func shouldMakeSubscriptionRequest() -> Bool {
+    private func shouldMakeSubscriptionRequest(pushPermission: Bool) -> Bool {
         let integrationKeySubscription = DengageLocalStorage.shared.value(for: .integrationKeySubscription) as? String
         let tokenSubscription = DengageLocalStorage.shared.value(for: .tokenSubscription) as? String
         let contactKeySubscription = DengageLocalStorage.shared.value(for: .contactKeySubscription) as? String
@@ -164,7 +164,7 @@ extension DengageManager {
         let integrationKey = self.config.integrationKey
         let token = self.config.deviceToken
         let contactKey = self.config.getContactKey()
-        let userPermission = self.config.permission
+        let effectivePermission = self.config.permission && pushPermission
         let udid = self.config.applicationIdentifier
         let carrierId = self.config.getCarrierIdentifier
         let appVersion = self.config.appVersion
@@ -182,7 +182,7 @@ extension DengageManager {
             return true
         } else if contactKeySubscription != contactKey {
             return true
-        } else if permissionSubscription != userPermission {
+        } else if permissionSubscription != effectivePermission {
             return true
         } else if udidSubscription != udid {
             return true
@@ -210,9 +210,18 @@ extension DengageManager {
     }
     
     func syncSubscription() {
-        if !Utilities.isiOSAppExtension() {
-            if shouldMakeSubscriptionRequest() || shouldMakeSubscriptionRequestBasedOnTime() {
-                subscriptionQueue.enqueueSubscription()
+        guard !Utilities.isiOSAppExtension() else { return }
+        UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
+            guard let self = self else { return }
+            var pushPermission = settings.authorizationStatus == .authorized
+            if #available(iOS 12.0, *) {
+                pushPermission = pushPermission || settings.authorizationStatus == .provisional
+            }
+            if #available(iOS 14.0, *) {
+                pushPermission = pushPermission || settings.authorizationStatus == .ephemeral
+            }
+            if self.shouldMakeSubscriptionRequest(pushPermission: pushPermission) || self.shouldMakeSubscriptionRequestBasedOnTime() {
+                self.subscriptionQueue.enqueueSubscription()
             }
         }
     }
@@ -274,7 +283,7 @@ extension DengageManager {
                 self.sendFirstLaunchTimeIfNeeded()
                 self.inAppManager.fetchInAppExpiredMessageIds()
                 self.eventManager.cleanupClientEvents()
-
+                
             case .failure:
                 Logger.log(message: "SDK PARAMS Config fetchin failed")
             }
