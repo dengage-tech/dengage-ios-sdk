@@ -15,8 +15,8 @@ import CoreLocation
     var showBlueBar = false
     var useStoppedGeofence = true
     var stoppedGeofenceRadius = 100
-    var useMovingGeofence = false
-    var movingGeofenceRadius = 0
+    var useMovingGeofence = true
+    var movingGeofenceRadius = 1000
     var syncGeofences = true
     var useSignificantLocationChanges = true
     
