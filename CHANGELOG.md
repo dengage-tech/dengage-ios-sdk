@@ -1,6 +1,24 @@
 # Changelog
 
 
+## [5.95] - 2026-05-09
+
+### New Features
+
+- Implement GeofenceInterceptor
+- Include system push authorization status in subscription permission
+
+
+
+## [5.94] - 2026-04-01
+
+### Bug Fixes
+
+- Fix for StoryProgressView crash
+
+
+
+
 ## [5.93] - 2026-03-31
 
 ### Bug Fixes
