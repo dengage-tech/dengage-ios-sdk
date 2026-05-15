@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -147,6 +147,10 @@
 		D6810E68293F341200611E55 /* RealTimeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealTimeViewController.swift; sourceTree = "<group>"; };
 		D68141002BB33CEC00663AC8 /* ShowInLineInAPP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShowInLineInAPP.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		88C4E1DB2FB6FBAA000E065F /* Font */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Font; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		882A91E72D6CAAC300179FC1 /* Frameworks */ = {
@@ -298,6 +302,7 @@
 				A0F46C6A275A85B1003A524C /* Assets.xcassets */,
 				A0F46C6C275A85B1003A524C /* LaunchScreen.storyboard */,
 				A0F46C6F275A85B1003A524C /* Info.plist */,
+				88C4E1DB2FB6FBAA000E065F /* Font */,
 				A099519B27ACAD260089D98D /* Screens */,
 			);
 			path = "ios-example-app";
@@ -398,6 +403,9 @@
 				A099517927AB600C0089D98D /* PBXTargetDependency */,
 				A099519227AC9CE80089D98D /* PBXTargetDependency */,
 				882A91FA2D6CAAC400179FC1 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				88C4E1DB2FB6FBAA000E065F /* Font */,
 			);
 			name = "ios-example-app";
 			packageProductDependencies = (
@@ -587,7 +595,7 @@
 				CODE_SIGN_ENTITLEMENTS = DengageWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 95;
+				CURRENT_PROJECT_VERSION = 103;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -623,7 +631,7 @@
 				CODE_SIGN_ENTITLEMENTS = DengageWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 95;
+				CURRENT_PROJECT_VERSION = 103;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -654,7 +662,7 @@
 				CODE_SIGN_ENTITLEMENTS = NoticationExtension/NoticationExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 95;
+				CURRENT_PROJECT_VERSION = 103;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NoticationExtension/Info.plist;
@@ -683,7 +691,7 @@
 				CODE_SIGN_ENTITLEMENTS = NoticationExtension/NoticationExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 95;
+				CURRENT_PROJECT_VERSION = 103;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NoticationExtension/Info.plist;
@@ -712,7 +720,7 @@
 				CODE_SIGN_ENTITLEMENTS = NotificationContentExtension/NotificationContentExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 95;
+				CURRENT_PROJECT_VERSION = 103;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NotificationContentExtension/Info.plist;
@@ -741,7 +749,7 @@
 				CODE_SIGN_ENTITLEMENTS = NotificationContentExtension/NotificationContentExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 95;
+				CURRENT_PROJECT_VERSION = 103;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NotificationContentExtension/Info.plist;
@@ -891,7 +899,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ios-example-app/ios-example-app.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 95;
+				CURRENT_PROJECT_VERSION = 103;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-example-app/Info.plist";
@@ -930,7 +938,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ios-example-app/ios-example-app.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 95;
+				CURRENT_PROJECT_VERSION = 103;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-example-app/Info.plist";

@@ -23,7 +23,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let nav = UINavigationController(rootViewController: RootViewController())
         window?.rootViewController = nav
         window?.makeKeyAndVisible()
-        if #available(iOS 13.0, *) { window?.overrideUserInterfaceStyle = .light }
         UNUserNotificationCenter.current().delegate = self
         configureDengage(application: application)
         return true

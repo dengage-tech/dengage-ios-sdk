@@ -15,7 +15,7 @@ enum SnapMovementDirectionState {
 
 fileprivate let snapViewTagIndicator: Int = 8
 private let snapTapPercentageForPrevious: Double = 0.2
-private let storyDuration = TimeInterval(10) // 10 seconds
+private let storyDuration = TimeInterval(10) // 10 seconds — default when story.duration is missing
 
 final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
     
@@ -273,21 +273,36 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
     
     //TODO: EGEMEN: SORUN BURADA SANIRIM: 2 KEZ GİRİYOR BURAYA
     private func startRequest(snapView: UIImageView, url: String, bgColors: [UIColor] = []) {
+        // Capture the index at request time. fillUpMissingImageViews briefly walks snapIndex
+        // through earlier indices, and their startRequest callbacks must NOT trigger
+        // recordStoryViewed/startProgressors for the resumed snap (especially when story
+        // mediaUrls are identical across stories so the url-equality check passes accidentally).
+        let initiatedAtIndex = snapIndex
+
+        // Apply per-story image positioning (fit/fill) and resolved background color.
+        if let story = storyCover?.coverStories[safe: snapIndex] {
+            applyImagePositioning(to: snapView, for: story)
+            applyResolvedBackgroundColor(to: snapView, for: story)
+        }
+
         snapView.setImage(url: url, bgColors: bgColors, style: .squared) { result in
-            
+
             DispatchQueue.main.async { [weak self] in
                 guard let strongSelf = self else { return}
                 switch result {
                     case .success(_):
-                        if let storyCover = strongSelf.storyCover, (strongSelf.handpickedSnapIndex == strongSelf.snapIndex
-                           && url == storyCover.coverStories[strongSelf.snapIndex].mediaUrl!) {
-                            
+                        if let storyCover = strongSelf.storyCover,
+                           strongSelf.handpickedSnapIndex == strongSelf.snapIndex,
+                           initiatedAtIndex == strongSelf.snapIndex,
+                           url == storyCover.coverStories[strongSelf.snapIndex].mediaUrl! {
+
                             if let inAppMessage = strongSelf.inAppMessage {
                                 let story = storyCover.coverStories[strongSelf.snapIndex]
                                 strongSelf.storyActionsDelegate?.storyEvent(eventType: .storyDisplay, message: inAppMessage, storyProfileId: storyCover.id
                                                                             , storyProfileName: storyCover.name, storyId: story.id, storyName: story.name, buttonUrl: "")
+                                strongSelf.recordStoryViewed(story: story, in: storyCover)
                             }
-                            
+
                             strongSelf.startProgressors()
                     }
                     case .failure(_):
@@ -295,22 +310,11 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
                 }
             }
         }
-        
+
         if let storyCover = storyCover, storyCover.storiesCount > snapIndex {
-            //print("startRequest")
-            //TODO: EGEMEN IMPRESSION EVENT gönder
-            //storyActionsDelegate?.storyEvent(eventType: .storyDisplay, message: n, storyProfileId: storyCover.id
-            //                                 , storyProfileName: storyCover.name, storyId: "", storyName: "", buttonUrl: "")
-            if let cta = storyCover.stories[snapIndex].cta, cta.label.count > 0 {
-                snapButton.isHidden = false
-                snapButton.setTitle(cta.label, for: .normal)
-                snapButton.backgroundColor = cta.bgUIColor
-                snapButton.setTitleColor(cta.textUIColor, for: .normal)
-            } else {
-                snapButton.isHidden = true
-            }
+            applyCtaStyling(for: storyCover.coverStories[snapIndex])
         }
-        
+
     }
     
     private func showRetryButton(with url: String, for snapView: UIImageView) {
@@ -325,6 +329,7 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
         ])
     }
     private func startPlayer(videoView: StoryPlayerView, with url: String) {
+        let initiatedAtIndex = snapIndex
 
         if scrollview.subviews.count > 0 {
             if storyCover?.isCompletelyVisible == true {
@@ -333,14 +338,16 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
                     guard let strongSelf = self else { return }
                     switch result {
                         case .success(let videoURL):
-                            if(strongSelf.handpickedSnapIndex == strongSelf.snapIndex) {
-                                
+                            if strongSelf.handpickedSnapIndex == strongSelf.snapIndex,
+                               initiatedAtIndex == strongSelf.snapIndex {
+
                                 if let inAppMessage = strongSelf.inAppMessage, let storyCover = strongSelf.storyCover {
                                     let story = storyCover.coverStories[strongSelf.snapIndex]
                                     strongSelf.storyActionsDelegate?.storyEvent(eventType: .storyDisplay, message: inAppMessage, storyProfileId: storyCover.id
                                                                                 , storyProfileName: storyCover.name, storyId: story.id, storyName: story.name, buttonUrl: "")
+                                    strongSelf.recordStoryViewed(story: story, in: storyCover)
                                 }
-                                
+
                                 let videoResource = VideoResource(filePath: videoURL.absoluteString)
                                 videoView.play(with: videoResource)
                         }
@@ -350,20 +357,12 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
                     }
                 }
             }
-            
+
             if let storyCover = storyCover, storyCover.storiesCount > snapIndex {
-                //TODO: EGEMEN IMPRESSION EVENT gönder
-                if let cta = storyCover.stories[snapIndex].cta, cta.label.count > 0 {
-                    snapButton.isHidden = false
-                    snapButton.setTitle(cta.label, for: .normal)
-                    snapButton.backgroundColor = cta.bgUIColor
-                    snapButton.setTitleColor(cta.textUIColor, for: .normal)
-                } else {
-                    snapButton.isHidden = true
-                }
+                applyCtaStyling(for: storyCover.coverStories[snapIndex])
             }
-            
-            
+
+
         }
     }
     @objc private func didLongPress(_ sender: UILongPressGestureRecognizer) {
@@ -549,9 +548,16 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
             let progressView = getProgressView(with: snapIndex){
             progressView.storyCoverIdentifier = self.storyCover?.id
             progressView.snapIndex = snapIndex
+            // Per-story duration overrides the default. story.duration is in seconds.
+            let perStoryDuration: TimeInterval = {
+                if let secs = storyCover?.coverStories[safe: snapIndex]?.duration, secs > 0 {
+                    return TimeInterval(secs)
+                }
+                return storyDuration
+            }()
             DispatchQueue.main.async {
                 if type == .image {
-                    progressView.start(with: storyDuration, holderView: holderView, completion: {(identifier, snapIndex, isCancelledAbruptly) in
+                    progressView.start(with: perStoryDuration, holderView: holderView, completion: {(identifier, snapIndex, isCancelledAbruptly) in
                         print("Completed story index: \(snapIndex)")
                         
                         /*
@@ -632,7 +638,15 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
         fillUpMissingImageViews(sIndex)
         fillupLastPlayedSnaps(sIndex)
         snapIndex = sIndex
-        
+        // Force autolayout to recompute contentSize now that the snap view at sIndex has been
+        // added; otherwise UIScrollView clamps the contentOffset to the previous max width
+        // and the page is stuck on snap sIndex-1 while audio for the snap at sIndex plays.
+        if sIndex != 0 {
+            scrollview.setNeedsLayout()
+            scrollview.layoutIfNeeded()
+            scrollview.contentOffset = CGPoint(x: sIndex.toFloat * scrollview.bounds.width, y: 0)
+        }
+
         //Remove the previous observors
         NotificationCenter.default.removeObserver(self)
         
@@ -643,7 +657,13 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
     public func startSnapProgress(with sIndex: Int) {
         if let indicatorView = getProgressIndicatorView(with: sIndex),
             let pv = getProgressView(with: sIndex) {
-            pv.start(with: storyDuration, holderView: indicatorView, completion: { (identifier, snapIndex, isCancelledAbruptly) in
+            let duration: TimeInterval = {
+                if let secs = storyCover?.coverStories[safe: sIndex]?.duration, secs > 0 {
+                    return TimeInterval(secs)
+                }
+                return storyDuration
+            }()
+            pv.start(with: duration, holderView: indicatorView, completion: { (identifier, snapIndex, isCancelledAbruptly) in
                 if isCancelledAbruptly == false {
                     self.didCompleteProgress()
                 }
@@ -708,6 +728,144 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
             v.removeRetryButton()
             self.startPlayer(videoView: v, with: url)
         }
+    }
+
+    // MARK: - Styling helpers (migration guide parity with Android SDK)
+
+    private var styling: StorySetStyling? {
+        return inAppMessage?.data.content.props.storySet?.styling
+    }
+
+    private var isDarkMode: Bool {
+        // Per migration guide: dark theme is only configured when styling.dark is present.
+        guard styling?.dark != nil else { return false }
+        if #available(iOS 12.0, *) {
+            return traitCollection.userInterfaceStyle == .dark
+        }
+        return false
+    }
+
+    private func applyImagePositioning(to imageView: UIImageView, for story: Story) {
+        switch story.imagePositioningEnum {
+        case .fill:
+            imageView.contentMode = .scaleAspectFill
+            imageView.clipsToBounds = true
+        case .fit, .none:
+            imageView.contentMode = .scaleAspectFit
+        }
+    }
+
+    private func applyResolvedBackgroundColor(to view: UIView, for story: Story) {
+        // Per migration guide fallback chain:
+        // dark.storyBackgroundColor (dark) → styling.storyBackgroundColor → story.bgColors[0].
+        if let resolved = styling?.resolvedStoryBackgroundColor(for: story, isDarkMode: isDarkMode) {
+            view.backgroundColor = resolved
+        } else {
+            view.backgroundColor = .black
+        }
+    }
+
+    private func applyCtaStyling(for story: Story) {
+        let cta = story.cta
+        let visible = cta?.isEnabled == true && (cta?.label.count ?? 0) > 0
+        snapButton.isHidden = !visible
+        guard visible, let cta = cta else { return }
+
+        let dark = isDarkMode
+        let titleStyle = styling?.resolvedButtonTitle(isDarkMode: dark)
+        let boxStyle = styling?.resolvedButton(isDarkMode: dark)
+
+        let bgColor = styling?.resolvedButtonBackgroundColor(cta: cta, isDarkMode: dark) ?? cta.bgUIColor
+        let textColor = styling?.resolvedButtonTextColor(cta: cta, isDarkMode: dark) ?? cta.textUIColor
+        let borderColor = styling?.resolvedButtonBorderColor(isDarkMode: dark)
+
+        snapButton.setTitle(cta.label, for: .normal)
+        snapButton.backgroundColor = bgColor
+        snapButton.setTitleColor(textColor, for: .normal)
+
+        if let borderColor = borderColor {
+            snapButton.layer.borderColor = borderColor.cgColor
+            snapButton.layer.borderWidth = 1
+        } else {
+            snapButton.layer.borderWidth = 0
+        }
+
+        snapButton.layer.cornerRadius = CGFloat(boxStyle?.borderRadius ?? 10)
+        snapButton.layer.masksToBounds = true
+
+        let fontSize = CGFloat(titleStyle?.fontSize ?? 16)
+        let isBold = titleStyle?.fontWeight == .bold
+        let familyName = titleStyle?.fontFamily ?? styling?.effectiveFontFamily
+        snapButton.titleLabel?.font = StoryDisplayViewCell.resolveFont(name: familyName, size: fontSize, bold: isBold)
+
+        switch (titleStyle?.textAlign ?? "").lowercased() {
+        case "left":
+            snapButton.contentHorizontalAlignment = .left
+        case "right":
+            snapButton.contentHorizontalAlignment = .right
+        default:
+            snapButton.contentHorizontalAlignment = .center
+        }
+
+        // fitContent=true → ignore padding (per Android SDK parity).
+        if boxStyle?.fitContent == true {
+            snapButton.contentEdgeInsets = .zero
+        } else if let padding = boxStyle?.padding {
+            snapButton.contentEdgeInsets = UIEdgeInsets(
+                top: CGFloat(padding.top),
+                left: CGFloat(padding.left),
+                bottom: CGFloat(padding.bottom),
+                right: CGFloat(padding.right)
+            )
+        } else {
+            snapButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        }
+    }
+
+    private func recordStoryViewed(story: Story, in storyCover: StoryCover) {
+        guard let storySetId = inAppMessage?.data.content.props.storySet?.id else { return }
+        let allIds = storyCover.coverStories.map { $0.id }
+        storyActionsDelegate?.setStoryViewed(
+            storyId: story.id,
+            storyCoverId: storyCover.id,
+            storySetId: storySetId,
+            allStoryIdsInCover: allIds
+        )
+        // Track the last index the user was on so we can resume at +1 on next open.
+        storyActionsDelegate?.setLastViewedStoryIndex(storyCoverId: storyCover.id, index: snapIndex)
+    }
+
+    /// Looks up [name] via UIFont(name:size:) — works for system family names ("Helvetica")
+    /// AND for fonts bundled with the host app via Info.plist's UIAppFonts. Supports CSS-style
+    /// stacks ("Arial, Helvetica, sans-serif") by trying each candidate in order.
+    static func resolveFont(name: String?, size: CGFloat, bold: Bool) -> UIFont {
+        let trimmed = name?.trimmingCharacters(in: .whitespaces)
+        guard let raw = trimmed, !raw.isEmpty else {
+            return bold ? .boldSystemFont(ofSize: size) : .systemFont(ofSize: size)
+        }
+        let stripChars = CharacterSet(charactersIn: "\"'")
+        let candidates = raw.split(separator: ",").map {
+            $0.trimmingCharacters(in: .whitespaces).trimmingCharacters(in: stripChars)
+        }.filter { !$0.isEmpty }
+        for candidate in candidates {
+            if bold, let boldFont = UIFont(name: "\(candidate)-Bold", size: size) {
+                return boldFont
+            }
+            if let font = UIFont(name: candidate, size: size) {
+                if bold {
+                    let descriptor = font.fontDescriptor.withSymbolicTraits(.traitBold) ?? font.fontDescriptor
+                    return UIFont(descriptor: descriptor, size: size)
+                }
+                return font
+            }
+        }
+        return bold ? .boldSystemFont(ofSize: size) : .systemFont(ofSize: size)
+    }
+}
+
+private extension Array {
+    subscript(safe index: Int) -> Element? {
+        return indices.contains(index) ? self[index] : nil
     }
 }
 

@@ -1291,7 +1291,37 @@ extension DengageInAppMessageManager: StoryActionsDelegate {
         }
         return notShownStoryCovers + shownStoryCovers
     }
-    
+
+    func setStoryViewed(storyId: String, storyCoverId: String, storySetId: String, allStoryIdsInCover: [String]) {
+        var shownStoryDic = DengageLocalStorage.shared.value(for: .shownStoryDic) as? [String: [String]] ?? [:]
+        var seenStoryIds = shownStoryDic[storyCoverId] ?? []
+        if !seenStoryIds.contains(storyId) {
+            seenStoryIds.append(storyId)
+        }
+        shownStoryDic[storyCoverId] = seenStoryIds
+        DengageLocalStorage.shared.set(value: shownStoryDic, for: .shownStoryDic)
+
+        if !allStoryIdsInCover.isEmpty && allStoryIdsInCover.allSatisfy({ seenStoryIds.contains($0) }) {
+            setStoryCoverShown(storyCoverId: storyCoverId, storySetId: storySetId)
+        }
+    }
+
+    func getViewedStoryIds(storyCoverId: String) -> [String] {
+        let shownStoryDic = DengageLocalStorage.shared.value(for: .shownStoryDic) as? [String: [String]] ?? [:]
+        return shownStoryDic[storyCoverId] ?? []
+    }
+
+    func setLastViewedStoryIndex(storyCoverId: String, index: Int) {
+        var dic = DengageLocalStorage.shared.value(for: .lastViewedStoryIndexDic) as? [String: Int] ?? [:]
+        dic[storyCoverId] = index
+        DengageLocalStorage.shared.set(value: dic, for: .lastViewedStoryIndexDic)
+    }
+
+    func getLastViewedStoryIndex(storyCoverId: String) -> Int {
+        let dic = DengageLocalStorage.shared.value(for: .lastViewedStoryIndexDic) as? [String: Int] ?? [:]
+        return dic[storyCoverId] ?? -1
+    }
+
 }
 
 

@@ -13,6 +13,16 @@ final class StoriesListCell: UICollectionViewCell {
     var storyCover: StoryCover? {
         didSet {
             self.storyCoverNameLabel.text = storyCover?.name
+            // Apply per-cover image positioning (fit/fill) per the migration guide.
+            switch storyCover?.imagePositioningEnum {
+            case .fill:
+                self.circleImageView.imageView.contentMode = .scaleAspectFill
+            case .fit:
+                self.circleImageView.imageView.contentMode = .scaleAspectFit
+            case .none:
+                break // keep CircleImageView's default
+            }
+            self.circleImageView.imageView.clipsToBounds = true
             if let mediaUrl = storyCover?.mediaUrl {
                 self.circleImageView.imageView.setImage(url: mediaUrl, bgColors: [.clear])
             }

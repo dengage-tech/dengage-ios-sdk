@@ -31,5 +31,9 @@
 	</array>
 	<key>fetchRealTimeINAPPURL</key>
 	<string>https://dev-inapp.lib.dengage.com</string>
+    <key>UIAppFonts</key>
+    <array>
+        <string>geistmono.ttf</string>
+    </array>
 </dict>
 </plist>

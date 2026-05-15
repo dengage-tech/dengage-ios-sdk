@@ -11,10 +11,9 @@ final class AppStoryViewController: UIViewController {
         view.placeholder = "Property Id"
         view.textAlignment = .center
         view.borderStyle = .roundedRect
-        view.textColor = .black
         view.delegate = self
         view.autocapitalizationType = .none
-        view.text = "3"
+        view.text = "1"
         return view
     }()
     
@@ -23,7 +22,6 @@ final class AppStoryViewController: UIViewController {
         view.placeholder = "Screen Name"
         view.textAlignment = .center
         view.borderStyle = .roundedRect
-        view.textColor = .black
         view.delegate = self
         view.autocapitalizationType = .none
         view.text = "ego"
@@ -35,7 +33,6 @@ final class AppStoryViewController: UIViewController {
         view.placeholder = "Story Background Color"
         view.textAlignment = .center
         view.borderStyle = .roundedRect
-        view.textColor = .black
         view.delegate = self
         view.autocapitalizationType = .none
         view.text = "#ffffff"

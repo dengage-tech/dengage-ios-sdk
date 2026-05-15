@@ -81,19 +81,33 @@ extension StoriesListViewController: UICollectionViewDelegate,UICollectionViewDa
         storyActionsDelegate?.setStoryCoverShown(storyCoverId: storyCoverId, storySetId: storySetId)
 
         
+        // Resume rule (matches Android SDK):
+        // start at lastViewedIndex + 1; if past the end, replay from 0.
+        let tappedCover = self.storySet.covers[indexPath.row]
+        let resumeIndex: Int = {
+            guard let delegate = self.storyActionsDelegate else { return 0 }
+            let lastIdx = delegate.getLastViewedStoryIndex(storyCoverId: tappedCover.id)
+            guard lastIdx >= 0 else { return 0 }
+            let nextIdx = lastIdx + 1
+            return nextIdx >= tappedCover.storiesCount ? 0 : nextIdx
+        }()
+
         DispatchQueue.main.async {
-            
+
             for index in self.storySet.covers.indices {
                 self.storySet.covers[index].lastPlayedSnapIndex = 0
                 self.storySet.covers[index].isCompletelyVisible = false
                 self.storySet.covers[index].isCancelledAbruptly = false
             }
-            
-            let storyPreviewScene = StoryDisplayViewController.init(inAppMessage: self.inAppMessage, handPickedStoryCoverIndex:  indexPath.row, handPickedStoryIndex: 0)
+            // Pre-set the tapped cover's resume snap index so the display controller
+            // starts on the correct story right away.
+            self.storySet.covers[indexPath.row].lastPlayedSnapIndex = resumeIndex
+
+            let storyPreviewScene = StoryDisplayViewController.init(inAppMessage: self.inAppMessage, handPickedStoryCoverIndex:  indexPath.row, handPickedStoryIndex: resumeIndex)
             storyPreviewScene.storyActionsDelegate = self.storyActionsDelegate
             storyPreviewScene.modalPresentationStyle = .fullScreen
             Utilities.getRootViewController()?.present(storyPreviewScene, animated: true, completion: collectionView.reloadData)
-            
+
         }
     }
     

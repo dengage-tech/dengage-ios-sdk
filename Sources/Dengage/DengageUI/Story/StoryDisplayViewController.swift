@@ -19,6 +19,7 @@ public final class StoryDisplayViewController: UIViewController, UIGestureRecogn
     private(set) var handPickedStoryIndex: Int //starts with(i)
     
     private var nStoryCoverIndex: Int = 0 //iteration(i+1)
+    private var previousDisplayedIndex: Int?
     private var storyCoverCopy: StoryCover?
     private(set) var layoutType: StoryLayoutType
     private(set) var executeOnce = false
@@ -154,7 +155,9 @@ extension StoryDisplayViewController: UICollectionViewDelegate {
             if let storyCoverId = cell.storyCover?.id, let storySetId = inAppMessage.data.content.props.storySet?.id {
                 storyActionsDelegate?.setStoryCoverShown(storyCoverId: storyCoverId, storySetId: storySetId)
             }
+            // handPickedStoryIndex carries the resume index (computed in StoriesListViewController).
             cell.willDisplayCellForZerothIndex(with: cell.storyCover?.lastPlayedSnapIndex ?? 0, handpickedSnapIndex: handPickedStoryIndex)
+            previousDisplayedIndex = indexPath.item
             return
         }
         if indexPath.item == nStoryCoverIndex {
@@ -162,7 +165,13 @@ extension StoryDisplayViewController: UICollectionViewDelegate {
             if let storySetId = inAppMessage.data.content.props.storySet?.id {
                 storyActionsDelegate?.setStoryCoverShown(storyCoverId: storyCover.id, storySetId: storySetId)
             }
-            cell.willDisplayCell(with: storyCover.lastPlayedSnapIndex)
+            // If this displayed cover is BEFORE the previously displayed one, the user navigated
+            // backward — restart it from index 0 per the migration rule.
+            let isBackward = previousDisplayedIndex.map { indexPath.item < $0 } ?? false
+            let resolvedIndex = isBackward ? 0 : storyCover.lastPlayedSnapIndex
+            storyCover.lastPlayedSnapIndex = resolvedIndex
+            previousDisplayedIndex = indexPath.item
+            cell.willDisplayCell(with: resolvedIndex)
         }
         /// Setting to 0, otherwise for next story snaps, it will consider the same previous story's handPickedSnapIndex. It will create issue in starting the snap progressors.
         handPickedStoryIndex = 0
@@ -294,5 +303,5 @@ extension StoryDisplayViewController: StoryPreviewProtocol {
     func didTapCloseButton() {
         self.dismiss(animated: true, completion:nil)
     }
-    
+
 }
