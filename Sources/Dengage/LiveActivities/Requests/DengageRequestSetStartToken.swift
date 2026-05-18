@@ -7,7 +7,7 @@ class DengageRequestSetStartToken: APIRequest, DengageLiveActivityRequest, Denga
     }
     
     var path: String {
-        return "/p/liveActivity/collect/pushToStart"
+        return "/p/liveActivity/collect/pushToStartToken"
     }
 
     var method: HTTPMethod {
