@@ -795,8 +795,12 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
 
         let fontSize = CGFloat(titleStyle?.fontSize ?? 16)
         let isBold = titleStyle?.fontWeight == .bold
-        let familyName = titleStyle?.fontFamily ?? styling?.effectiveFontFamily
-        snapButton.titleLabel?.font = StoryDisplayViewCell.resolveFont(name: familyName, size: fontSize, bold: isBold)
+        let familyName = styling?.effectiveFontFamily
+        snapButton.titleLabel?.font = StoryFontResolver.resolve(
+            familyName: familyName,
+            size: fontSize,
+            weight: isBold ? .bold : .regular
+        )
 
         switch (titleStyle?.textAlign ?? "").lowercased() {
         case "left":
@@ -835,32 +839,6 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
         storyActionsDelegate?.setLastViewedStoryIndex(storyCoverId: storyCover.id, index: snapIndex)
     }
 
-    /// Looks up [name] via UIFont(name:size:) — works for system family names ("Helvetica")
-    /// AND for fonts bundled with the host app via Info.plist's UIAppFonts. Supports CSS-style
-    /// stacks ("Arial, Helvetica, sans-serif") by trying each candidate in order.
-    static func resolveFont(name: String?, size: CGFloat, bold: Bool) -> UIFont {
-        let trimmed = name?.trimmingCharacters(in: .whitespaces)
-        guard let raw = trimmed, !raw.isEmpty else {
-            return bold ? .boldSystemFont(ofSize: size) : .systemFont(ofSize: size)
-        }
-        let stripChars = CharacterSet(charactersIn: "\"'")
-        let candidates = raw.split(separator: ",").map {
-            $0.trimmingCharacters(in: .whitespaces).trimmingCharacters(in: stripChars)
-        }.filter { !$0.isEmpty }
-        for candidate in candidates {
-            if bold, let boldFont = UIFont(name: "\(candidate)-Bold", size: size) {
-                return boldFont
-            }
-            if let font = UIFont(name: candidate, size: size) {
-                if bold {
-                    let descriptor = font.fontDescriptor.withSymbolicTraits(.traitBold) ?? font.fontDescriptor
-                    return UIFont(descriptor: descriptor, size: size)
-                }
-                return font
-            }
-        }
-        return bold ? .boldSystemFont(ofSize: size) : .systemFont(ofSize: size)
-    }
 }
 
 private extension Array {
