@@ -24,12 +24,10 @@ class DengageRequestSetStartToken: APIRequest, DengageLiveActivityRequest, Denga
               let deviceId = config?.applicationIdentifier else {
             return nil
         }
-        let contactKey = config?.getContactKey() ?? ""
         let body: [String: Any] = [
             "accountGuid": accountGuid,
             "appGuid": appId,
             "deviceId": deviceId,
-            "contactKey": contactKey,
             "livePushToStartToken": self.token
         ]
         return body.json

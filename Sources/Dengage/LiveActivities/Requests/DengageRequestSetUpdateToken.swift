@@ -24,12 +24,10 @@ class DengageRequestSetUpdateToken: APIRequest, DengageLiveActivityRequest, Deng
               let deviceId = config?.applicationIdentifier else {
             return nil
         }
-        let contactKey = config?.getContactKey() ?? ""
         let body: [String: Any] = [
             "accountGuid": accountGuid,
             "appGuid": appId,
             "deviceId": deviceId,
-            "contactKey": contactKey,
             "updateToken": self.token,
             "activityId": self.key,
             "activityType": self.activityType

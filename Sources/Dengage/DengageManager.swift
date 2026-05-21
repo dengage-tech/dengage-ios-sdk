@@ -104,7 +104,6 @@ extension DengageManager {
             _ = sessionManager.createSession(force: true)
             resetUsageStats()
             Dengage.syncSubscription()
-            DengageLiveActivitiesManagerImpl.resendAllRequests()
         }
     }
     
