@@ -237,7 +237,14 @@ final class DengageInAppMessageUtils{
     
     private class func isInLineInApp(inAppMessage:InAppMessage, propertyID : String?, storyPropertyId : String? = nil) -> Bool
     {
-        if("STORY".caseInsensitiveCompare(inAppMessage.data.content.type ?? "")) == .orderedSame {
+        // A/B test campaigns have no top-level content; their variants typically aren't
+        // STORY or INLINE. Match them only when neither selector is requested.
+        if inAppMessage.data.content == nil {
+            let isPropertyEmpty = propertyID == nil || propertyID == ""
+            let isStoryPropertyEmpty = storyPropertyId == nil || storyPropertyId == ""
+            return isPropertyEmpty && isStoryPropertyEmpty
+        }
+        if("STORY".caseInsensitiveCompare(inAppMessage.data.content?.type ?? "")) == .orderedSame {
             let isPropertyEmpty = storyPropertyId == nil || storyPropertyId == ""
             let isSelectorEmpty = inAppMessage.data.inlineTarget?.iosSelector == "" || inAppMessage.data.inlineTarget?.iosSelector == nil
             if isPropertyEmpty || isSelectorEmpty {
@@ -245,7 +252,7 @@ final class DengageInAppMessageUtils{
             } else {
                 return inAppMessage.data.inlineTarget?.iosSelector == storyPropertyId
             }
-        } else if("INLINE".caseInsensitiveCompare(inAppMessage.data.content.type ?? "")) == .orderedSame {
+        } else if("INLINE".caseInsensitiveCompare(inAppMessage.data.content?.type ?? "")) == .orderedSame {
             let isPropertyEmpty = propertyID == nil || propertyID == ""
             let isSelectorEmpty = inAppMessage.data.inlineTarget?.iosSelector == "" || inAppMessage.data.inlineTarget?.iosSelector == nil
             if isPropertyEmpty || isSelectorEmpty {
@@ -921,8 +928,8 @@ final class DengageInAppMessageUtils{
     /// Parses the dn-countdown-settings script tag from HTML and checks if the absolute end date has passed.
     /// Returns true if the countdown has expired and the message should be suppressed.
     class func isCountdownToWinExpired(_ message: InAppMessage) -> Bool {
-        guard ("COUNTDOWN_TO_WIN".caseInsensitiveCompare(message.data.content.type ?? "") == .orderedSame),
-              let html = message.data.content.props.html else {
+        guard ("COUNTDOWN_TO_WIN".caseInsensitiveCompare(message.data.content?.type ?? "") == .orderedSame),
+              let html = message.data.content?.props.html else {
             return false
         }
 

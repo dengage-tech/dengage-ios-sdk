@@ -11,7 +11,7 @@ public final class StoryDisplayViewController: UIViewController, UIGestureRecogn
     private(set) var inAppMessage: InAppMessage
     
     var storyCovers: [StoryCover] {
-        return inAppMessage.data.content.props.storySet?.covers ?? StorySet().covers
+        return inAppMessage.data.content?.props.storySet?.covers ?? StorySet().covers
     }
     
     
@@ -152,7 +152,7 @@ extension StoryDisplayViewController: UICollectionViewDelegate {
         }
         //Prepare the setup for first time story launch
         if storyCoverCopy == nil {
-            if let storyCoverId = cell.storyCover?.id, let storySetId = inAppMessage.data.content.props.storySet?.id {
+            if let storyCoverId = cell.storyCover?.id, let storySetId = inAppMessage.data.content?.props.storySet?.id {
                 storyActionsDelegate?.setStoryCoverShown(storyCoverId: storyCoverId, storySetId: storySetId)
             }
             // handPickedStoryIndex carries the resume index (computed in StoriesListViewController).
@@ -162,7 +162,7 @@ extension StoryDisplayViewController: UICollectionViewDelegate {
         }
         if indexPath.item == nStoryCoverIndex {
             let storyCover = storyCovers[nStoryCoverIndex+handPickedStoryCoverIndex]
-            if let storySetId = inAppMessage.data.content.props.storySet?.id {
+            if let storySetId = inAppMessage.data.content?.props.storySet?.id {
                 storyActionsDelegate?.setStoryCoverShown(storyCoverId: storyCover.id, storySetId: storySetId)
             }
             // If this displayed cover is BEFORE the previously displayed one, the user navigated

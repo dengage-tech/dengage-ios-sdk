@@ -42,17 +42,19 @@ final class InAppMessageHTMLViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        isIosURLNPresent = message.data.content.props.html?.contains("Dn.iosUrlN") ?? false
+        isIosURLNPresent = message.data.content?.props.html?.contains("Dn.iosUrlN") ?? false
         setupBridge()
         setupJavascript()
-        viewSource.setupConstraints(for: message.data.content.props, message: message)
+        if let props = message.data.content?.props {
+            viewSource.setupConstraints(for: props, message: message)
+        }
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapView(sender:)))
         view.addGestureRecognizer(tapGesture)
     }
 
     @objc private func didTapView(sender: UITapGestureRecognizer) {
-        guard message.data.content.props.dismissOnTouchOutside else { return }
+        guard message.data.content?.props.dismissOnTouchOutside == true else { return }
         UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseOut, animations: {
             self.viewSource.webView.alpha = 0.0
         }, completion: { _ in
@@ -133,7 +135,7 @@ final class InAppMessageHTMLViewController: UIViewController {
         )
         contentController.addUserScript(consoleScript)
 
-        if let htmlString = message.data.content.props.html {
+        if let htmlString = message.data.content?.props.html {
 
             var processedHtml = htmlString
 

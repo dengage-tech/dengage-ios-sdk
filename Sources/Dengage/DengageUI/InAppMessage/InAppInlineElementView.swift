@@ -72,7 +72,7 @@ open class InAppInlineElementView: WKWebView, WKScriptMessageHandler {
         configuration.userContentController.add(self, name: "openSettings")
         configuration.userContentController.add(self, name: "copyToClipboard")
 
-        loadHTMLString(message?.data.content.props.html ?? "", baseURL: nil)
+        loadHTMLString(message?.data.content?.props.html ?? "", baseURL: nil)
 
         self.contentMode = .scaleAspectFit
         self.sizeToFit()

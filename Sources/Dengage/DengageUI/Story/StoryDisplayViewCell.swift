@@ -733,7 +733,7 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
     // MARK: - Styling helpers (migration guide parity with Android SDK)
 
     private var styling: StorySetStyling? {
-        return inAppMessage?.data.content.props.storySet?.styling
+        return inAppMessage?.data.content?.props.storySet?.styling
     }
 
     private var isDarkMode: Bool {
@@ -827,7 +827,7 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
     }
 
     private func recordStoryViewed(story: Story, in storyCover: StoryCover) {
-        guard let storySetId = inAppMessage?.data.content.props.storySet?.id else { return }
+        guard let storySetId = inAppMessage?.data.content?.props.storySet?.id else { return }
         let allIds = storyCover.coverStories.map { $0.id }
         storyActionsDelegate?.setStoryViewed(
             storyId: story.id,

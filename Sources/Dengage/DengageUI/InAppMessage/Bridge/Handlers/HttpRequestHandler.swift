@@ -146,7 +146,7 @@ final class HttpRequestHandler: AsyncBridgeHandler {
         result = result.replacingOccurrences(of: "${accountName}", with: sdkParams?.accountName ?? "")
         result = result.replacingOccurrences(of: "${appId}", with: sdkParams?.appId ?? "")
         result = result.replacingOccurrences(of: "${campaign.publicId}", with: inAppMessage?.data.publicId ?? "")
-        result = result.replacingOccurrences(of: "${campaign.content.contentId}", with: inAppMessage?.data.content.contentId ?? "")
+        result = result.replacingOccurrences(of: "${campaign.content.contentId}", with: inAppMessage?.data.content?.contentId ?? "")
         result = result.replacingOccurrences(of: "${visitor.deviceId}", with: deviceId)
         result = result.replacingOccurrences(of: "${visitor.contactKey}", with: contactKey)
 

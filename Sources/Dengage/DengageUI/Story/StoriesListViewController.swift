@@ -16,7 +16,7 @@ public final class StoriesListViewController: UIViewController {
 
     var inAppMessage: InAppMessage!
     var storySet: StorySet! {
-        return inAppMessage.data.content.props.storySet ?? StorySet()
+        return inAppMessage.data.content?.props.storySet ?? StorySet()
     }
     var publicId: String?
     var contentId: String?

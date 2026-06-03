@@ -108,6 +108,11 @@ final public class DengageLocalStorage: NSObject {
         
         case sentOpenEventMessageDetails = "sentOpenEventMessageDetails"
 
+        /// Persistent sticky cache of resolved A/B variants. Keyed by campaign publicId,
+        /// value is the resolved contentId or the literal `__CONTROL__` marker if the user
+        /// was bucketed into the control group. Survives sessions and app restarts;
+        /// bypassed once the campaign reaches the winner phase (single variant @ 100%).
+        case abTestAssignments = "abTestAssignments"
     }
 }
 
@@ -606,6 +611,29 @@ extension DengageLocalStorage {
     
     func clearStoryLastDisplayTimes() {
         userDefaults.removeObject(forKey: Key.storyLastDisplayTime.rawValue)
+        userDefaults.synchronize()
+    }
+}
+
+// MARK: A/B Test Sticky Assignments
+extension DengageLocalStorage {
+
+    /// Marker stored as the assignment value when the user was bucketed into the control
+    /// group. Kept distinct from any valid GUID contentId.
+    static let abTestControlGroupMarker = "__CONTROL__"
+
+    func getAbTestAssignments() -> [String: String] {
+        return userDefaults.dictionary(forKey: Key.abTestAssignments.rawValue) as? [String: String] ?? [:]
+    }
+
+    func getAbTestAssignment(campaignId: String) -> String? {
+        return getAbTestAssignments()[campaignId]
+    }
+
+    func setAbTestAssignment(campaignId: String, contentId: String) {
+        var assignments = getAbTestAssignments()
+        assignments[campaignId] = contentId
+        userDefaults.set(assignments, forKey: Key.abTestAssignments.rawValue)
         userDefaults.synchronize()
     }
 }

@@ -91,30 +91,41 @@ extension DengageInAppMessageManager{
               let appId = remoteConfig.appId
         else { return }
         Logger.log(message: "fetchRealTimeInAppMessages request started")
-        let version2Request = GetRealTimeMesagesRequest(accountName: accountName, appId: appId, version: "v2")
-        apiClient.send(request: version2Request) { [weak self] result in
+
+        // V3 supports A/B test campaigns. V2 strips out abTest blocks; V1 strips them too plus
+        // any unsupported criterion / coupon-tag carrying campaigns. We try v3 first and fall
+        // back through v2 → v1 so older deploy environments and partial failures stay healthy.
+        let handleSuccess: ([InAppMessageData]) -> Void = { [weak self] response in
+            let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchIntervalInMin)
+            DengageLocalStorage.shared.set(value: nextFetchTime, for: .lastFetchedRealTimeInAppMessageTime)
+            DengageLocalStorage.shared.set(value: Date().timeMiliseconds, for: .lastSuccessfulRealTimeInAppMessageFetchTime)
+            let arrRealTimeInAppMessages = InAppMessage.mapRealTime(source: response)
+            self?.addInAppMessagesIfNeeded(arrRealTimeInAppMessages, forRealTime: true)
+        }
+
+        let version3Request = GetRealTimeMesagesRequest(accountName: accountName, appId: appId, version: "v3")
+        apiClient.send(request: version3Request) { [weak self] result in
             switch result {
             case .success(let response):
-                let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchIntervalInMin)
-                DengageLocalStorage.shared.set(value: nextFetchTime, for: .lastFetchedRealTimeInAppMessageTime)
-                DengageLocalStorage.shared.set(value: Date().timeMiliseconds, for: .lastSuccessfulRealTimeInAppMessageFetchTime)
-                let arrRealTimeInAppMessages = InAppMessage.mapRealTime(source: response)
-                self?.addInAppMessagesIfNeeded(arrRealTimeInAppMessages, forRealTime: true)
-                
+                handleSuccess(response)
             case .failure(let error):
-                Logger.log(message: "fetchRealTimeInAppMessages_ERROR", argument: error.localizedDescription)
-                let version1Request = GetRealTimeMesagesRequest(accountName: accountName, appId: appId, version: "")
-                self?.apiClient.send(request: version1Request) { [weak self] result in
+                Logger.log(message: "fetchRealTimeInAppMessages_V3_ERROR", argument: error.localizedDescription)
+                let version2Request = GetRealTimeMesagesRequest(accountName: accountName, appId: appId, version: "v2")
+                self?.apiClient.send(request: version2Request) { [weak self] result in
                     switch result {
                     case .success(let response):
-                        let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchIntervalInMin)
-                        DengageLocalStorage.shared.set(value: nextFetchTime, for: .lastFetchedRealTimeInAppMessageTime)
-                        DengageLocalStorage.shared.set(value: Date().timeMiliseconds, for: .lastSuccessfulRealTimeInAppMessageFetchTime)
-                        let arrRealTimeInAppMessages = InAppMessage.mapRealTime(source: response)
-                        self?.addInAppMessagesIfNeeded(arrRealTimeInAppMessages, forRealTime: true)
-                        
+                        handleSuccess(response)
                     case .failure(let error):
-                        Logger.log(message: "fetchRealTimeInAppMessages_ERROR", argument: error.localizedDescription)
+                        Logger.log(message: "fetchRealTimeInAppMessages_V2_ERROR", argument: error.localizedDescription)
+                        let version1Request = GetRealTimeMesagesRequest(accountName: accountName, appId: appId, version: "")
+                        self?.apiClient.send(request: version1Request) { result in
+                            switch result {
+                            case .success(let response):
+                                handleSuccess(response)
+                            case .failure(let error):
+                                Logger.log(message: "fetchRealTimeInAppMessages_ERROR", argument: error.localizedDescription)
+                            }
+                        }
                     }
                 }
             }
@@ -258,7 +269,7 @@ extension DengageInAppMessageManager{
                                                                  sessionId: sessionManager.currentSessionId,
                                                                  campaignId: publicId,
                                                                  appId: appId,
-                                                                 contentId: message.data.content.contentId)
+                                                                 contentId: message.data.content?.contentId)
         
         apiClient.send(request: request) { result in
             switch result {
@@ -286,7 +297,7 @@ extension DengageInAppMessageManager{
                                                                sessionId: sessionManager.currentSessionId,
                                                                campaignId: publicId,
                                                                appid: remoteConfig.appId ?? "",
-                                                               contentId: message.data.content.contentId)
+                                                               contentId: message.data.content?.contentId)
         
         apiClient.send(request: request) { [weak self] result in
             switch result {
@@ -313,7 +324,7 @@ extension DengageInAppMessageManager{
                                                                    sessionId: sessionManager.currentSessionId,
                                                                    campaignId: publicId,
                                                                    appId: remoteConfig.appId ?? "",
-                                                                   contentId: message.data.content.contentId)
+                                                                   contentId: message.data.content?.contentId)
         
         apiClient.send(request: request) { result in
             switch result {
@@ -346,14 +357,14 @@ extension DengageInAppMessageManager {
             }
         }
         
-        if let storySet = data.content.props.storySet {
+        if let storySet = data.content?.props.storySet, let storyContentId = data.content?.contentId {
             let storiesListView = StoriesListView()
             let storiesListViewController = StoriesListViewController()
             storiesListView.controller = storiesListViewController
             storiesListView.controller?.storyActionsDelegate = self
             storiesListView.setProperties(title: storySet.title, styling: storySet.styling)
             storiesListViewController.collectionView = storiesListView.collectionView
-            storiesListViewController.loadInAppMessage(inAppMessage, data.publicId, data.content.contentId!)
+            storiesListViewController.loadInAppMessage(inAppMessage, data.publicId, storyContentId)
             storiesListView.collectionView.reloadData()
             storiesListView.setDelegates()
             storiesListViewController.collectionView = storiesListView.collectionView
@@ -372,7 +383,7 @@ extension DengageInAppMessageManager {
     
     func showinlineInapp(propertyId : String , webView : InAppInlineElementView , inAppMessage: InAppMessage)
     {
-        if let htmlSTR = inAppMessage.data.content.props.html
+        if let htmlSTR = inAppMessage.data.content?.props.html
         {
           
             webView.message = inAppMessage
@@ -441,48 +452,72 @@ extension DengageInAppMessageManager {
             storyCompletion?(nil)
             return
         }
-        
+
         let delay = priorInAppMessage.data.displayTiming.delay ?? 0
-        
         DengageLocalStorage.shared.set(value: delay, for: .delayForInAppMessage)
-        
-        if propertyID != nil
-        {
-            if let ID = propertyID, let vw = inAppInlineElement
-            {
-                if priorInAppMessage.data.inlineTarget?.iosSelector == propertyID
-                {
+
+        // A/B test campaigns carry their renderable payload inside `abTest.variants[]`,
+        // not `content`. Resolve the chosen variant first (deterministic synchronously,
+        // active phase async via /ab/assign) and dispatch only when we have a renderable
+        // Content materialized on the message.
+        if priorInAppMessage.data.isAbTest && priorInAppMessage.data.content == nil {
+            resolveAbVariant(
+                for: priorInAppMessage,
+                propertyID: propertyID,
+                inAppInlineElement: inAppInlineElement,
+                hideIfNotFound: hideIfNotFound,
+                storyPropertyID: storyPropertyID,
+                storyCompletion: storyCompletion
+            )
+            return
+        }
+
+        dispatchPriorInAppMessage(
+            priorInAppMessage,
+            propertyID: propertyID,
+            inAppInlineElement: inAppInlineElement,
+            hideIfNotFound: hideIfNotFound,
+            storyPropertyID: storyPropertyID,
+            storyCompletion: storyCompletion
+        )
+    }
+
+    /// Routes a resolved campaign through the appropriate display path: story, inline, or
+    /// full-screen with coupon handling. Extracted from `setNavigation` so the A/B resolver
+    /// can dispatch directly with the materialized content (re-entering `setNavigation`
+    /// would lose the in-memory mutation because it re-reads cached state).
+    private func dispatchPriorInAppMessage(
+        _ priorInAppMessage: InAppMessage,
+        propertyID: String?,
+        inAppInlineElement: InAppInlineElementView?,
+        hideIfNotFound: Bool,
+        storyPropertyID: String?,
+        storyCompletion: ((StoriesListView?) -> Void)?
+    ) {
+        if propertyID != nil {
+            if let ID = propertyID, let vw = inAppInlineElement {
+                if priorInAppMessage.data.inlineTarget?.iosSelector == propertyID {
                     showinlineInapp(propertyId: ID, webView: vw, inAppMessage: priorInAppMessage)
-                }
-                else if propertyID != "" && hideIfNotFound
-                {
+                } else if propertyID != "" && hideIfNotFound {
                     inAppInlineElement?.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
                     inAppInlineElement?.isHidden = true
-
                 }
-            }
-            else if propertyID != "" && hideIfNotFound
-            {
+            } else if propertyID != "" && hideIfNotFound {
                 inAppInlineElement?.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
                 inAppInlineElement?.isHidden = true
-
             }
         } else if let id = storyPropertyID {
-            if let iosSelector = priorInAppMessage.data.inlineTarget?.iosSelector, iosSelector == id, ("STORY".caseInsensitiveCompare(priorInAppMessage.data.content.type ?? "")) == .orderedSame
-            {
+            if let iosSelector = priorInAppMessage.data.inlineTarget?.iosSelector, iosSelector == id, ("STORY".caseInsensitiveCompare(priorInAppMessage.data.content?.type ?? "")) == .orderedSame {
                 showAppStory(inAppMessage: priorInAppMessage, storyCompletion: storyCompletion)
                 return
             }
         } else {
-            if let html = priorInAppMessage.data.content.props.html, Mustache.hasCouponSection(html) {
+            if let html = priorInAppMessage.data.content?.props.html, Mustache.hasCouponSection(html) {
                 let couponContent = Mustache.getCouponContent(html)
-                
-                // Validate coupon before showing the message
                 guard let accountName = config.remoteConfiguration?.accountName,
                       let couponListKey = couponContent else {
                     return
                 }
-                
                 validateCoupon(
                     accountId: accountName,
                     listKey: couponListKey,
@@ -493,7 +528,159 @@ extension DengageInAppMessageManager {
             }
         }
         storyCompletion?(nil)
+    }
 
+    /// Resolves the A/B variant for an active A/B campaign and dispatches the resulting
+    /// materialized message.
+    ///
+    /// - Single variant at 100% (winner phase or single-bucket config) is deterministic:
+    ///   no `/ab/assign` call is needed, the lone variant is rendered.
+    /// - Control-group buckets render nothing.
+    /// - Multi-variant active phase calls `/ab/assign`, with a persistent sticky cache so
+    ///   the same user keeps getting the same variant until the campaign deterministicizes.
+    private func resolveAbVariant(
+        for inAppMessage: InAppMessage,
+        propertyID: String?,
+        inAppInlineElement: InAppInlineElementView?,
+        hideIfNotFound: Bool,
+        storyPropertyID: String?,
+        storyCompletion: ((StoriesListView?) -> Void)?
+    ) {
+        guard let abTest = inAppMessage.data.abTest,
+              let variants = abTest.variants,
+              !variants.isEmpty else {
+            storyCompletion?(nil)
+            return
+        }
+
+        // Deterministic path: single variant @ 100%.
+        if abTest.isDeterministic {
+            let only = variants[0]
+            if only.isControlGroup == true {
+                storyCompletion?(nil)
+                return
+            }
+            guard let materialized = Content.fromVariant(only) else {
+                Logger.log(message: "A/B deterministic variant missing renderable content")
+                storyCompletion?(nil)
+                return
+            }
+            var resolved = inAppMessage
+            resolved.data.content = materialized
+            dispatchPriorInAppMessage(
+                resolved,
+                propertyID: propertyID,
+                inAppInlineElement: inAppInlineElement,
+                hideIfNotFound: hideIfNotFound,
+                storyPropertyID: storyPropertyID,
+                storyCompletion: storyCompletion
+            )
+            return
+        }
+
+        guard let campaignId = inAppMessage.data.publicId else {
+            storyCompletion?(nil)
+            return
+        }
+
+        // Sticky cache: backend doesn't guarantee per-user stickiness (deficit-weighted
+        // random across aggregate counts). Reuse the first assignment until the campaign
+        // becomes deterministic — `isDeterministic` short-circuits above so a stale entry
+        // doesn't out-live the winner phase.
+        if let cachedContentId = DengageLocalStorage.shared.getAbTestAssignment(campaignId: campaignId) {
+            if cachedContentId == DengageLocalStorage.abTestControlGroupMarker {
+                storyCompletion?(nil)
+                return
+            }
+            applyAssignedVariant(
+                assignedContentId: cachedContentId,
+                inAppMessage: inAppMessage,
+                variants: variants,
+                propertyID: propertyID,
+                inAppInlineElement: inAppInlineElement,
+                hideIfNotFound: hideIfNotFound,
+                storyPropertyID: storyPropertyID,
+                storyCompletion: storyCompletion
+            )
+            return
+        }
+
+        guard let accountName = config.remoteConfiguration?.accountName,
+              let appId = config.remoteConfiguration?.appId else {
+            storyCompletion?(nil)
+            return
+        }
+
+        let request = AssignAbTestVariantRequest(accountName: accountName, appId: appId, campaignId: campaignId)
+        apiClient.send(request: request) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let response):
+                    if response.isControlBucket {
+                        DengageLocalStorage.shared.setAbTestAssignment(
+                            campaignId: campaignId,
+                            contentId: DengageLocalStorage.abTestControlGroupMarker
+                        )
+                        storyCompletion?(nil)
+                        return
+                    }
+                    guard let assignedId = response.contentId, !assignedId.isEmpty else {
+                        storyCompletion?(nil)
+                        return
+                    }
+                    DengageLocalStorage.shared.setAbTestAssignment(campaignId: campaignId, contentId: assignedId)
+                    self?.applyAssignedVariant(
+                        assignedContentId: assignedId,
+                        inAppMessage: inAppMessage,
+                        variants: variants,
+                        propertyID: propertyID,
+                        inAppInlineElement: inAppInlineElement,
+                        hideIfNotFound: hideIfNotFound,
+                        storyPropertyID: storyPropertyID,
+                        storyCompletion: storyCompletion
+                    )
+                case .failure(let error):
+                    // Don't poison the sticky cache on failure — next impression retries.
+                    Logger.log(message: "assignAbTestVariant_ERROR", argument: error.localizedDescription)
+                    storyCompletion?(nil)
+                }
+            }
+        }
+    }
+
+    private func applyAssignedVariant(
+        assignedContentId: String,
+        inAppMessage: InAppMessage,
+        variants: [AbTestVariant],
+        propertyID: String?,
+        inAppInlineElement: InAppInlineElementView?,
+        hideIfNotFound: Bool,
+        storyPropertyID: String?,
+        storyCompletion: ((StoriesListView?) -> Void)?
+    ) {
+        guard let variant = variants.first(where: {
+            $0.isControlGroup != true &&
+            $0.contentId?.lowercased() == assignedContentId.lowercased()
+        }) else {
+            // Defensive: payload and assignment can briefly disagree across cache refreshes.
+            Logger.log(message: "A/B assignment contentId not found among local variants; skipping impression")
+            storyCompletion?(nil)
+            return
+        }
+        guard let materialized = Content.fromVariant(variant) else {
+            storyCompletion?(nil)
+            return
+        }
+        var resolved = inAppMessage
+        resolved.data.content = materialized
+        dispatchPriorInAppMessage(
+            resolved,
+            propertyID: propertyID,
+            inAppInlineElement: inAppInlineElement,
+            hideIfNotFound: hideIfNotFound,
+            storyPropertyID: storyPropertyID,
+            storyCompletion: storyCompletion
+        )
     }
     
     private func validateCoupon(accountId: String, listKey: String, message: InAppMessage) {
@@ -618,7 +805,7 @@ extension DengageInAppMessageManager {
                         if inAppMessage.data.isRealTime {
                             self.markAsRealTimeInAppMessageAsDisplayed(message: inAppMessage)
                         } else {
-                            self.markAsInAppMessageAsDisplayed(inAppMessageId: inAppMessage.data.messageDetails, contentId: inAppMessage.data.content.contentId ?? "")
+                            self.markAsInAppMessageAsDisplayed(inAppMessageId: inAppMessage.data.messageDetails, contentId: inAppMessage.data.content?.contentId ?? "")
                         }
                         var updatedMessage = inAppMessage
                         if let showEveryXMinutes = inAppMessage.data.displayTiming.showEveryXMinutes,
@@ -665,7 +852,7 @@ extension DengageInAppMessageManager {
                               if inAppMessage.data.isRealTime {
                                   self.markAsRealTimeInAppMessageAsDisplayed(message: inAppMessage)
                               } else {
-                                  self.markAsInAppMessageAsDisplayed(inAppMessageId: inAppMessage.data.messageDetails, contentId: inAppMessage.data.content.contentId ?? "")
+                                  self.markAsInAppMessageAsDisplayed(inAppMessageId: inAppMessage.data.messageDetails, contentId: inAppMessage.data.content?.contentId ?? "")
                               }
                               var updatedMessage = inAppMessage
                               if let showEveryXMinutes = inAppMessage.data.displayTiming.showEveryXMinutes,
@@ -704,7 +891,7 @@ extension DengageInAppMessageManager {
     
     private func showInAppMessageController(with message:InAppMessage, couponCode: String){
        
-        guard message.data.content.props.html != nil else {return}
+        guard message.data.content?.props.html != nil else {return}
         let controller = InAppMessageHTMLViewController(with: message, couponCode: couponCode)
         controller.delegate = self
         self.createInAppWindow(for: controller)
@@ -1164,7 +1351,7 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
         if message.data.isRealTime {
             setRealTimeInAppMessageAsDismissed(message)
         }else {
-            setInAppMessageAsDismissed(message, contentId: message.data.content.contentId)
+            setInAppMessageAsDismissed(message, contentId: message.data.content?.contentId)
         }
     }
     
@@ -1173,7 +1360,7 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
         if message.data.isRealTime {
             setRealtimeInAppMessageAsClicked(message, buttonId, buttonType)
         } else {
-            setInAppMessageAsClicked(message, buttonId, buttonType, message.data.content.contentId ?? "")
+            setInAppMessageAsClicked(message, buttonId, buttonType, message.data.content?.contentId ?? "")
         }
     }
     
@@ -1227,7 +1414,7 @@ extension DengageInAppMessageManager: StoryActionsDelegate {
                                    sessionId: sessionManager.currentSessionId,
                                    campaignId: publicId,
                                    appid: appId,
-                                   contentId: message.data.content.contentId,
+                                   contentId: message.data.content?.contentId,
                                    storyEventType: eventType,
                                    storyProfileId: storyProfileId,
                                    storyProfileName: storyProfileName,

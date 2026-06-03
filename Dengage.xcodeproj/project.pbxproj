@@ -20,6 +20,8 @@
 		8817092E2C91807100FA8B63 /* GeofenceEventSignalRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817092B2C91807100FA8B63 /* GeofenceEventSignalRequest.swift */; };
 		8817092F2C91807100FA8B63 /* GetGeofencesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8817092C2C91807100FA8B63 /* GetGeofencesRequest.swift */; };
 		881709362C91808800FA8B63 /* GetRealTimeMesagesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709302C91808800FA8B63 /* GetRealTimeMesagesRequest.swift */; };
+		AB1E5701000000000000AB01 /* AbTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1E5700000000000000AB01 /* AbTest.swift */; };
+		AB1E5703000000000000AB01 /* AssignAbTestVariantRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1E5702000000000000AB01 /* AssignAbTestVariantRequest.swift */; };
 		881709372C91808800FA8B63 /* GetVisitorInfoRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709312C91808800FA8B63 /* GetVisitorInfoRequest.swift */; };
 		881709382C91808800FA8B63 /* MarkAsRealTimeInAppMessageAsDismissedRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709322C91808800FA8B63 /* MarkAsRealTimeInAppMessageAsDismissedRequest.swift */; };
 		881709392C91808800FA8B63 /* MarkAsRealTimeInAppMessageClickedRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881709332C91808800FA8B63 /* MarkAsRealTimeInAppMessageClickedRequest.swift */; };
@@ -189,6 +191,8 @@
 		8817092B2C91807100FA8B63 /* GeofenceEventSignalRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeofenceEventSignalRequest.swift; sourceTree = "<group>"; };
 		8817092C2C91807100FA8B63 /* GetGeofencesRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetGeofencesRequest.swift; sourceTree = "<group>"; };
 		881709302C91808800FA8B63 /* GetRealTimeMesagesRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetRealTimeMesagesRequest.swift; sourceTree = "<group>"; };
+		AB1E5700000000000000AB01 /* AbTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AbTest.swift; sourceTree = "<group>"; };
+		AB1E5702000000000000AB01 /* AssignAbTestVariantRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssignAbTestVariantRequest.swift; sourceTree = "<group>"; };
 		881709312C91808800FA8B63 /* GetVisitorInfoRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetVisitorInfoRequest.swift; sourceTree = "<group>"; };
 		881709322C91808800FA8B63 /* MarkAsRealTimeInAppMessageAsDismissedRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkAsRealTimeInAppMessageAsDismissedRequest.swift; sourceTree = "<group>"; };
 		881709332C91808800FA8B63 /* MarkAsRealTimeInAppMessageClickedRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkAsRealTimeInAppMessageClickedRequest.swift; sourceTree = "<group>"; };
@@ -339,6 +343,7 @@
 				881709322C91808800FA8B63 /* MarkAsRealTimeInAppMessageAsDismissedRequest.swift */,
 				881709332C91808800FA8B63 /* MarkAsRealTimeInAppMessageClickedRequest.swift */,
 				881709342C91808800FA8B63 /* MarkAsRealTimeInAppMessageDisplayedRequest.swift */,
+				AB1E5702000000000000AB01 /* AssignAbTestVariantRequest.swift */,
 			);
 			path = RealTime;
 			sourceTree = "<group>";
@@ -524,6 +529,7 @@
 				A0765BA527CEB4700007215B /* ContentParams.swift */,
 				A0765BA327CEB4700007215B /* DengageMessage.swift */,
 				A0765BA227CEB4700007215B /* InAppMessage.swift */,
+				AB1E5700000000000000AB01 /* AbTest.swift */,
 				A0765BA627CEB4700007215B /* PushContent.swift */,
 				A00EFCBD280777B8004659DE /* RFMScore.swift */,
 				88E93AE92C923C2200EE3F5E /* StorySet.swift */,
@@ -833,6 +839,8 @@
 				A0765BCB27CEB4700007215B /* TestInAppMessageViewController.swift in Sources */,
 				A0765BDC27CEB4700007215B /* PushContent.swift in Sources */,
 				881709362C91808800FA8B63 /* GetRealTimeMesagesRequest.swift in Sources */,
+				AB1E5701000000000000AB01 /* AbTest.swift in Sources */,
+				AB1E5703000000000000AB01 /* AssignAbTestVariantRequest.swift in Sources */,
 				8843892F2E706B4800422E78 /* Cart.swift in Sources */,
 				A0765BC827CEB4700007215B /* CarouselMessage.swift in Sources */,
 				A0765BE427CEB4700007215B /* MarkAsInAppMessageDisplayedRequest.swift in Sources */,

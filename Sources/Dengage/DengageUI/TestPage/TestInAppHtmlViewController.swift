@@ -303,7 +303,8 @@ final class TestInAppHtmlViewController: UIViewController {
             displayCondition: displayCondition,
             displayTiming: displayTiming,
             publicId: publicIdTextField.text ?? "",
-            inlineTarget: nil
+            inlineTarget: nil,
+            abTest: nil
         )
         
         // InAppMessage oluşturma

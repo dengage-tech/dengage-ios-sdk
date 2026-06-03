@@ -93,8 +93,8 @@ final class InAppMessageHTMLView: UIView {
         guard let margin = margin else { return 0 }
         
         if margin == 0 {
-            switch message.data.content.props.position {
-            case .full, .top, .bottom:
+            switch message.data.content?.props.position {
+            case .full?, .top?, .bottom?:
                 return 0
             default:
                 return UIScreen.main.bounds.width * 0.04

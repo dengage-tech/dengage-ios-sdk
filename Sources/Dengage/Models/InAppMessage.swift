@@ -2,7 +2,7 @@ import Foundation
 
 struct InAppMessage: Codable {
     let id: String
-    let data: InAppMessageData
+    var data: InAppMessageData
     var nextDisplayTime: Double?
     var showCount: Int?
     var dismissCount: Int?
@@ -82,16 +82,28 @@ struct InAppMessageData: Codable {
     let messageDetailId: String?
     let expireDate: String
     let priority: Priority
-    let content: Content
+    /// Nullable because A/B test campaigns carry their renderable payload inside
+    /// `abTest.variants[]` instead of `content`. After a variant is resolved (deterministic
+    /// or via /ab/assign), the SDK constructs a `Content` from the chosen variant and assigns
+    /// it here for the lifetime of that single impression.
+    var content: Content?
     let displayCondition: DisplayCondition
     let displayTiming: DisplayTiming
     let publicId: String?
     let inlineTarget: InlineTarget?
+    /// A/B test block. When non-nil, `content` is nil and the SDK must resolve a variant
+    /// before rendering. Once the campaign reaches the winner phase, `abTest.variants[]`
+    /// collapses to a single entry at 100%.
+    let abTest: AbTest?
 
     var isRealTime: Bool {
         return publicId != nil
     }
-    
+
+    var isAbTest: Bool {
+        return (abTest?.variants?.isEmpty == false)
+    }
+
     enum CodingKeys: String, CodingKey {
         case messageDetailId = "messageDetails"
         case expireDate = "expireDate"
@@ -101,7 +113,7 @@ struct InAppMessageData: Codable {
         case displayTiming = "displayTiming"
         case publicId = "publicId"
         case inlineTarget = "inlineTarget"
-
+        case abTest = "abTest"
     }
 }
 
@@ -109,6 +121,13 @@ struct Content: Codable {
     let type: String?
     let props: ContentParams
     let contentId: String?
+
+    /// Build a `Content` from a resolved A/B variant. Returns nil when the variant lacks
+    /// renderable props (defensive — shouldn't happen for non-control variants).
+    static func fromVariant(_ variant: AbTestVariant) -> Content? {
+        guard let props = variant.props, let type = variant.type else { return nil }
+        return Content(type: type, props: props, contentId: variant.contentId)
+    }
 }
 
 extension InAppMessage: Equatable {
