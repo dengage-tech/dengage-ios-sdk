@@ -48,7 +48,8 @@ private extension AppDelegate {
             denPushApiUrl: "https://push.dengage.com",
             denInAppApiUrl: "https://push.dengage.com",
             denGeofenceApiUrl: "https://push.dengage.com/geoapi/",
-            fetchRealTimeInAppApiUrl: "https://tr-inapp.lib.dengage.com/"
+            fetchRealTimeInAppApiUrl: "https://tr-inapp.lib.dengage.com/",
+            denLiveActivityApiUrl: "https://dev-push.dengage.com"
         )
         
         let options = DengageOptions(
@@ -94,6 +95,12 @@ private extension AppDelegate {
         
         DengageGeofence.geofenceInterceptor = self
         DengageGeofence.startGeofence()
+        
+        // Initialize Live Activities
+        if #available(iOS 16.1, *) {
+            DengageLiveActivityController.start()
+            //DengageLiveActivityController.createDengageAwareActivity(activityId: "asdf")
+        }
     }
 }
 
@@ -194,39 +201,5 @@ extension AppDelegate {
     ) -> Bool {
         print("UIApplication.OpenURLOptionsKey \(url.host ?? "")")
         return true
-    }
-}
-
-// MARK: - Live Activities (iOS 17.2+)
-extension AppDelegate {
-    static func listenForTokenToStartActivityViaPush() {
-        if #available(iOS 17.2, *) {
-            Task {
-                for await pushToken in Activity<DengageWidgetAttributes>.pushToStartTokenUpdates {
-                    let tokenString = pushToken.map { String(format: "%02x", $0) }.joined()
-                    liveActivityPushTokenString = tokenString
-                    print("=== [START] DengageWidgetAttributes: \(tokenString)")
-                }
-            }
-        }
-    }
-    
-    static func listenForTokenToUpdateActivityViaPush() {
-        if #available(iOS 17.2, *) {
-            Task {
-                for await activity in Activity<DengageWidgetAttributes>.activityUpdates {
-                    for await tokenData in activity.pushTokenUpdates {
-                        let token = tokenData.map { String(format: "%02x", $0) }.joined()
-                        print("=== [UPDATE] DengageWidgetAttributes [\(activity.id)] : \(token)")
-                    }
-                    for await state in activity.activityStateUpdates {
-                        print("=== [STATE] DengageWidgetAttributes [\(activity.id)] : \(state)")
-                    }
-                    for await content in activity.contentUpdates {
-                        print("=== [CONTENT] DengageWidgetAttributes [\(activity.id)] : \(content)")
-                    }
-                }
-            }
-        }
     }
 }

@@ -38,6 +38,15 @@
   - [getDeviceToken](#getdevicetoken)
   - [User Permission Management (optional)](#user-permission-management-optional)
   - [Carousel Push](#carousel-push)
+- [Live Activities](#live-activities)
+  - [How It Works](#how-it-works)
+  - [Requirements](#live-activities-requirements)
+  - [Permissions](#live-activities-permissions)
+  - [Defining the Activity Attributes](#defining-the-activity-attributes)
+  - [Creating the Widget](#creating-the-widget)
+  - [Registering with the SDK](#registering-with-the-sdk)
+  - [Starting an Activity](#starting-an-activity)
+  - [Updating and Ending via Push](#updating-and-ending-via-push)
 - [App Inbox](#app-inbox)
     - [Methods](#methods)
         - [Getting Inbox Messages](#getting-inbox-messages)
@@ -73,7 +82,7 @@
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.95'
+pod 'Dengage', '~> 5.96'
 ```
 
 Run `pod install` via terminal
@@ -513,7 +522,7 @@ Add the Dengage SDK to your Notification Service Extension target in your `Podfi
 
 ```ruby
 target 'DengageNotificationServiceExtension' do
-    pod 'Dengage', '~> 5.95'
+    pod 'Dengage', '~> 5.96'
 end
 ```
 
@@ -690,6 +699,149 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 }
 ```
 
+
+## Live Activities
+
+Live Activities let you display real-time, glanceable information on the Lock Screen and in the Dynamic Island for an ongoing activity — such as a delivery, a live score, or a ride. Dengage drives Live Activities through ActivityKit and APNs: the SDK captures and synchronizes the **push-to-start** and **update** tokens on your behalf, and the Dengage backend sends the start/update/end pushes.
+
+### How It Works
+
+You define an `ActivityAttributes` structure that conforms to `DengageLiveActivityAttributes`, build a Live Activity widget for it in a Widget Extension, and register the type with `Dengage.setupLiveActivity(_:)`. From there:
+
+- The SDK listens for the **push-to-start token** (iOS 17.2+) so the activity can be started remotely from Dengage.
+- When an activity starts, the SDK listens for its **update token** so the activity can be updated/ended remotely.
+- The `dengage` attribute carries the `activityId` Dengage uses to target the right activity.
+
+You only build the widget UI and register the type — token capture and synchronization are handled by the SDK.
+
+<a name="live-activities-requirements"></a>
+### Requirements
+
+- iOS **16.1+** for Live Activities; **17.2+** for remote push-to-start.
+- A **Widget Extension** in your app containing an `ActivityConfiguration` for your attributes type.
+- `NSSupportsLiveActivities` set to `YES` in the **app target's** `Info.plist`.
+- The `ActivityAttributes` struct must be a member of **both** the app target and the Widget Extension target (otherwise the widget fails to compile with "Cannot find ... in scope").
+
+<a name="live-activities-permissions"></a>
+### Permissions
+
+Live Activities do **not** require the standard notification permission. Showing and updating a Live Activity works independently of `UNUserNotificationCenter` authorization, so you do **not** need to call `requestAuthorization` (alert/badge/sound) for this feature — a Live Activity still appears and updates even if the user declined notifications.
+
+What is actually involved:
+
+| Item | Required? | Notes |
+|------|-----------|-------|
+| Notification permission (`requestAuthorization`) | ❌ No | Not needed to show or push-update Live Activities. |
+| Live Activities enabled (`areActivitiesEnabled`) | ✅ Yes | **On by default** — there is no prompt. The user can turn it off in **Settings → (app) → Live Activities**; when off, nothing is shown. |
+| Push Notifications capability (APNs) | ✅ For push | A developer-side capability/entitlement, not a user prompt. Needed to receive remote start/update/end pushes. |
+| `NSSupportsLiveActivities = YES` | ✅ Yes | In the app target's `Info.plist`. |
+
+Because Live Activities are enabled by default, there is no permission dialog to present. You can, however, check the current state before relying on the feature:
+
+```swift
+if #available(iOS 16.1, *) {
+    let enabled = ActivityAuthorizationInfo().areActivitiesEnabled
+    print("Live Activities enabled: \(enabled)")
+}
+```
+
+> **Note**: If `areActivitiesEnabled` is `false`, the user has disabled Live Activities for your app in Settings. In that case activities won't appear even though an APNs push may still return a `200` status — so this is a useful first check when a Live Activity does not show.
+
+### Defining the Activity Attributes
+
+Conform your attributes to `DengageLiveActivityAttributes` and your content state to `DengageLiveActivityContentState`. Both reserve a `dengage` field used by the SDK.
+
+```swift
+import ActivityKit
+import Dengage
+
+@available(iOS 16.1, *)
+struct DeliveryActivityAttributes: DengageLiveActivityAttributes {
+    // Reserved by Dengage — carries the activityId used to target updates.
+    var dengage: DengageLiveActivityAttributeData
+
+    // Your static attributes:
+    var orderId: String
+
+    struct ContentState: DengageLiveActivityContentState {
+        // Reserved by Dengage (optional) — populated by the backend on updates.
+        var dengage: DengageLiveActivityContentStateData?
+
+        // Your dynamic content:
+        var status: String
+        var etaMinutes: Int
+    }
+}
+```
+
+> **Note**: Put this file in a location shared by the app and the Widget Extension, and enable **Target Membership** for both targets (File Inspector → Target Membership).
+
+### Creating the Widget
+
+Add a Live Activity widget for the attributes type in your Widget Extension and register it in your `WidgetBundle`.
+
+```swift
+import WidgetKit
+import SwiftUI
+import ActivityKit
+
+@available(iOS 16.1, *)
+struct DeliveryLiveActivity: Widget {
+    var body: some WidgetConfiguration {
+        ActivityConfiguration(for: DeliveryActivityAttributes.self) { context in
+            // Lock Screen / banner UI
+            VStack(alignment: .leading) {
+                Text("Order #\(context.attributes.orderId)")
+                Text("\(context.state.status) · ETA \(context.state.etaMinutes) min")
+            }
+            .padding()
+        } dynamicIsland: { context in
+            DynamicIsland {
+                DynamicIslandExpandedRegion(.center) {
+                    Text(context.state.status)
+                }
+            } compactLeading: {
+                Text("🚚")
+            } compactTrailing: {
+                Text("\(context.state.etaMinutes)m")
+            } minimal: {
+                Text("🚚")
+            }
+        }
+    }
+}
+```
+
+```swift
+@main
+struct MyWidgetBundle: WidgetBundle {
+    var body: some Widget {
+        DeliveryLiveActivity()
+    }
+}
+```
+
+### Registering with the SDK
+
+Register each attributes type once, after initializing Dengage (for example in `application(_:didFinishLaunchingWithOptions:)`). This is the only call needed — Dengage captures and synchronizes both the push-to-start and update tokens.
+
+```swift
+import Dengage
+
+if #available(iOS 16.1, *) {
+    Dengage.setupLiveActivity(DeliveryActivityAttributes.self)
+}
+```
+
+This single call is all most apps need — the SDK captures and synchronizes both the push-to-start and update tokens for the registered type.
+
+### Starting an Activity
+
+Once a type is registered with `setupLiveActivity`, the device reports its **push-to-start token** to Dengage (iOS 17.2+), so an activity can be **started remotely** from Dengage — no extra in-app code is required. When an activity starts, the SDK automatically captures its **update token**, making it eligible for remote updates.
+
+### Updating and Ending via Push
+
+Updates and the final end event are delivered as APNs Live Activity pushes sent by Dengage to the activity's update token (synchronized by the SDK). The push `content-state` must decode into your `ContentState`, so make sure the fields the backend sends match your struct. The `dengage` field in attributes/content state is reserved and populated by the backend to target the correct activity.
 
 ## App Inbox
 
@@ -951,8 +1103,8 @@ Parameters:
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.95'
-pod 'DengageGeofence', '~> 5.95'
+pod 'Dengage', '~> 5.96'
+pod 'DengageGeofence', '~> 5.96'
 ```
 
 Run `pod install` via terminal

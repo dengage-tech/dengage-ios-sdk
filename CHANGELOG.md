@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [5.96] - 2026-06-03
+
+### New Features
+
+- Implement Live Activities
+- Add new features to App Story
+
+
 ## [5.95] - 2026-05-09
 
 ### New Features

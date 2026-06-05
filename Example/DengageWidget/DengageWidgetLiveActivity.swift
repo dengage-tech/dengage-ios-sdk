@@ -11,12 +11,13 @@ import SwiftUI
 import Dengage
 
 
+@available(iOS 16.1, *)
 struct DengageWidgetLiveActivity: Widget {
     var body: some WidgetConfiguration {
-        ActivityConfiguration(for: DengageWidgetAttributes.self) { context in
+        ActivityConfiguration(for: ExampleAppFirstWidgetAttributes.self) { context in
             // Lock screen/banner UI goes here
             VStack {
-                Text("Hello \(context.state.emoji)")
+                Text("Hello \(context.state.message)")
             }
             .activityBackgroundTint(Color.cyan)
             .activitySystemActionForegroundColor(Color.black)
@@ -32,15 +33,15 @@ struct DengageWidgetLiveActivity: Widget {
                     Text("Trailing")
                 }
                 DynamicIslandExpandedRegion(.bottom) {
-                    Text("Bottom \(context.state.emoji)")
+                    Text("Bottom \(context.state.message)")
                     // more content
                 }
             } compactLeading: {
                 Text("L")
             } compactTrailing: {
-                Text("T \(context.state.emoji)")
+                Text("T \(context.state.message)")
             } minimal: {
-                Text(context.state.emoji)
+                Text(context.state.message)
             }
             .widgetURL(URL(string: "http://www.apple.com"))
             .keylineTint(Color.red)
@@ -48,25 +49,70 @@ struct DengageWidgetLiveActivity: Widget {
     }
 }
 
-extension DengageWidgetAttributes {
-    fileprivate static var preview: DengageWidgetAttributes {
-        DengageWidgetAttributes(name: "World")
+@available(iOS 16.1, *)
+struct DengageWidgetSecondLiveActivity: Widget {
+    var body: some WidgetConfiguration {
+        ActivityConfiguration(for: ExampleAppSecondWidgetAttributes.self) { context in
+            // Lock screen/banner UI goes here
+            VStack(alignment: .leading, spacing: 8) {
+                Text(context.attributes.title)
+                    .font(.headline)
+                    .fontWeight(.bold)
+                
+                Text(context.state.message)
+                    .font(.body)
+                
+                ProgressView(value: context.state.progress)
+                    .progressViewStyle(LinearProgressViewStyle())
+                
+                
+                HStack {
+                    Text("Status: \(context.state.status)")
+                        .font(.caption)
+                    Spacer()
+                    Text("Bugs: \(context.state.bugs)")
+                        .font(.caption)
+                }
+            }
+            .padding()
+            .activityBackgroundTint(Color.cyan)
+            .activitySystemActionForegroundColor(Color.white)
+
+        } dynamicIsland: { context in
+            DynamicIsland {
+                // Expanded UI goes here
+                DynamicIslandExpandedRegion(.leading) {
+                    Text(context.attributes.title)
+                        .font(.headline)
+                }
+                DynamicIslandExpandedRegion(.trailing) {
+                    Text("\(Int(context.state.progress * 100))%")
+                        .font(.headline)
+                }
+                DynamicIslandExpandedRegion(.bottom) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(context.state.message)
+                        ProgressView(value: context.state.progress)
+                        HStack {
+                            Text(context.state.status)
+                            Spacer()
+                            Text("Bugs: \(context.state.bugs)")
+                        }
+                        .font(.caption)
+                    }
+                }
+            } compactLeading: {
+                Text(context.attributes.title)
+                    .font(.caption2)
+            } compactTrailing: {
+                Text("\(Int(context.state.progress * 100))%")
+                    .font(.caption2)
+            } minimal: {
+                Text("\(Int(context.state.progress * 100))%")
+            }
+            .widgetURL(URL(string: "http://www.apple.com"))
+            .keylineTint(Color.blue)
+        }
     }
 }
 
-extension DengageWidgetAttributes.ContentState {
-    fileprivate static var smiley: DengageWidgetAttributes.ContentState {
-        DengageWidgetAttributes.ContentState(emoji: "😀")
-     }
-     
-     fileprivate static var starEyes: DengageWidgetAttributes.ContentState {
-         DengageWidgetAttributes.ContentState(emoji: "🤩")
-     }
-}
-
-#Preview("Notification", as: .content, using: DengageWidgetAttributes.preview) {
-   DengageWidgetLiveActivity()
-} contentStates: {
-    DengageWidgetAttributes.ContentState.smiley
-    DengageWidgetAttributes.ContentState.starEyes
-}

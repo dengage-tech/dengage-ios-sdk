@@ -107,6 +107,10 @@ final public class DengageLocalStorage: NSObject {
         case storyLastDisplayTime = "storyLastDisplayTime"
         
         case sentOpenEventMessageDetails = "sentOpenEventMessageDetails"
+        
+        // LiveActivities
+        case liveActivitiesUpdateTokens = "liveActivitiesUpdateTokens"
+        case liveActivitiesStartTokens = "liveActivitiesStartTokens"
 
     }
 }
