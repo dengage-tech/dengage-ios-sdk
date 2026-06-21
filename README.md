@@ -82,7 +82,7 @@
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.96'
+pod 'Dengage', '~> 5.97'
 ```
 
 Run `pod install` via terminal
@@ -522,7 +522,7 @@ Add the Dengage SDK to your Notification Service Extension target in your `Podfi
 
 ```ruby
 target 'DengageNotificationServiceExtension' do
-    pod 'Dengage', '~> 5.96'
+    pod 'Dengage', '~> 5.97'
 end
 ```
 
@@ -1076,9 +1076,11 @@ The `showAppStory` method accepts a completion handler that yields an optional `
 
 ```swift
 Dengage.showAppStory(storyPropertyID: storyPropertyID,
+                        storiesListView: storiesListView,
                         screenName: screenName,
                         customParams: customParams,
-                        storyCompletion: { storiesListView in
+                        hideIfNotFound: true
+) { storiesListView in
     
     if let storiesListView = storiesListView {
         self.view.addSubview(storiesListView)
@@ -1090,7 +1092,9 @@ Parameters:
 
 - **`screenName`** _(optional)_ Specifies the screen where the app stories should be displayed.
 - **`storyPropertyID`** The story property ID associated with the app stories campaign created in the Dengage panel.
+- **`storiesListView`** _(optional)_ A pre-created `StoriesListView` placed in your layout. When provided, the SDK loads stories into this view or hides it when `hideIfNotFound` is `true` and no campaign matches.
 - **`customParams`** _(optional)_ A `Dictionary` of custom parameters used for filtering stories.
+- **`hideIfNotFound`** _(optional, default: `false`)_ If set to `true`, the embedded `StoriesListView` is hidden when no matching story campaign is found. When using the completion handler without an embedded view, a `nil` completion result indicates no match.
 - **`storyCompletion`** A completion handler that yields an optional `StoriesListView` reference.
 
 
@@ -1103,8 +1107,8 @@ Parameters:
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.96'
-pod 'DengageGeofence', '~> 5.96'
+pod 'Dengage', '~> 5.97'
+pod 'DengageGeofence', '~> 5.97'
 ```
 
 Run `pod install` via terminal

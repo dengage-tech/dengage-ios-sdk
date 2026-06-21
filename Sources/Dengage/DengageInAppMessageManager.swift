@@ -329,7 +329,13 @@ extension DengageInAppMessageManager{
 //MARK: - Workers
 extension DengageInAppMessageManager {
     
-    func showAppStory(inAppMessage: InAppMessage, storyCompletion: ((StoriesListView?) -> Void)?) {
+    func showAppStory(
+        inAppMessage: InAppMessage,
+        storiesListView: StoriesListView? = nil,
+        storyPropertyID: String? = nil,
+        hideIfNotFound: Bool = false,
+        storyCompletion: ((StoriesListView?) -> Void)?
+    ) {
         let data = inAppMessage.data
         
         // Check if same publicId was displayed within last 2 seconds
@@ -338,43 +344,88 @@ extension DengageInAppMessageManager {
             if let lastDisplayTime = DengageLocalStorage.shared.getStoryLastDisplayTime(publicId: publicId) {
                 let timeDifference = currentTime - lastDisplayTime
                 if timeDifference < 2.0 {
-                    // Same publicId displayed within 2 seconds, prevent duplicate display
+                    // Same publicId displayed within 2 seconds, prevent duplicate display event only.
+                    // Keep the embedded story visible on manual refresh with the same property id.
                     Logger.log(message: "showAppStory: Duplicate display prevented for publicId: \(publicId), timeDifference: \(timeDifference)")
-                    storyCompletion?(nil)
+                    storyCompletion?(storiesListView)
                     return
                 }
             }
         }
         
-        if let storySet = data.content.props.storySet {
-            let storiesListView = StoriesListView()
-            let storiesListViewController = StoriesListViewController()
-            storiesListView.controller = storiesListViewController
-            storiesListView.controller?.storyActionsDelegate = self
-            storiesListView.setProperties(title: storySet.title, styling: storySet.styling)
-            storiesListViewController.collectionView = storiesListView.collectionView
-            storiesListViewController.loadInAppMessage(inAppMessage, data.publicId, data.content.contentId!)
-            storiesListView.collectionView.reloadData()
-            storiesListView.setDelegates()
-            storiesListViewController.collectionView = storiesListView.collectionView
-            storyCompletion?(storiesListView)
-            
-            self.storyEvent(eventType: .display, message: inAppMessage)
-            
-            // Update last display time after successfully displaying the story
-            if let publicId = data.publicId {
-                let currentTime = Date().timeIntervalSince1970
-                DengageLocalStorage.shared.setStoryLastDisplayTime(publicId: publicId, timestamp: currentTime)
-            }
-            
+        guard let storySet = data.content.props.storySet,
+              let contentId = data.content.contentId,
+              !contentId.isEmpty,
+              let publicId = data.publicId,
+              !publicId.isEmpty else {
+            handleStoryNotFound(storiesListView, storyPropertyID: storyPropertyID, hideIfNotFound: hideIfNotFound)
+            storyCompletion?(nil)
+            return
         }
+        
+        let targetView = storiesListView ?? StoriesListView()
+        targetView.isHidden = false
+        let storiesListViewController = StoriesListViewController()
+        targetView.controller = storiesListViewController
+        targetView.controller?.storyActionsDelegate = self
+        targetView.setProperties(title: storySet.title, styling: storySet.styling)
+        storiesListViewController.collectionView = targetView.collectionView
+        storiesListViewController.loadInAppMessage(inAppMessage, publicId, contentId)
+        targetView.collectionView.reloadData()
+        targetView.setDelegates()
+        storiesListViewController.collectionView = targetView.collectionView
+        storyCompletion?(targetView)
+        
+        self.storyEvent(eventType: .display, message: inAppMessage)
+        
+        // Update last display time after successfully displaying the story
+        let currentTime = Date().timeIntervalSince1970
+        DengageLocalStorage.shared.setStoryLastDisplayTime(publicId: publicId, timestamp: currentTime)
+    }
+    
+    private func hideInlineIfNeeded(
+        _ inAppInlineElement: InAppInlineElementView?,
+        propertyID: String?,
+        hideIfNotFound: Bool
+    ) {
+        guard hideIfNotFound,
+              let propertyID = propertyID,
+              !propertyID.isEmpty else { return }
+        inAppInlineElement?.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
+        inAppInlineElement?.isHidden = true
+    }
+    
+    private func handleStoryNotFound(
+        _ storiesListView: StoriesListView?,
+        storyPropertyID: String?,
+        hideIfNotFound: Bool
+    ) {
+        guard let storyPropertyID = storyPropertyID, !storyPropertyID.isEmpty,
+              let storiesListView = storiesListView else { return }
+        storiesListView.clearContent()
+        if hideIfNotFound {
+            storiesListView.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
+            storiesListView.isHidden = true
+        }
+    }
+    
+    private func hidePlacementIfNeeded(
+        inAppInlineElement: InAppInlineElementView?,
+        propertyID: String?,
+        storiesListView: StoriesListView?,
+        storyPropertyID: String?,
+        hideIfNotFound: Bool
+    ) {
+        handleStoryNotFound(storiesListView, storyPropertyID: storyPropertyID, hideIfNotFound: hideIfNotFound)
+        guard hideIfNotFound else { return }
+        hideInlineIfNeeded(inAppInlineElement, propertyID: propertyID, hideIfNotFound: hideIfNotFound)
     }
     
     func showinlineInapp(propertyId : String , webView : InAppInlineElementView , inAppMessage: InAppMessage)
     {
         if let htmlSTR = inAppMessage.data.content.props.html
         {
-          
+            webView.isHidden = false
             webView.message = inAppMessage
             webView.delegate = self
             webView.loadHTMLString(htmlSTR, baseURL: nil)
@@ -387,7 +438,9 @@ extension DengageInAppMessageManager {
     
     func setNavigation(screenName: String? = nil, params: Dictionary<String,String>? = nil , propertyID : String? = nil
                        , inAppInlineElement : InAppInlineElementView? = nil
-                       , hideIfNotFound: Bool = false, storyPropertyID: String? = nil, storyCompletion: ((StoriesListView?) -> Void)? = nil) {
+                       , hideIfNotFound: Bool = false, storyPropertyID: String? = nil
+                       , storiesListView: StoriesListView? = nil
+                       , storyCompletion: ((StoriesListView?) -> Void)? = nil) {
 
         // Check if an in-app message is already being displayed (skip inline and story messages)
         if isInAppMessageShowing && inAppInlineElement == nil && storyPropertyID == nil {
@@ -398,6 +451,13 @@ extension DengageInAppMessageManager {
 
         // Check if we've received successful responses within the required time frame
         guard let remoteConfig = config.remoteConfiguration else {
+            hidePlacementIfNeeded(
+                inAppInlineElement: inAppInlineElement,
+                propertyID: propertyID,
+                storiesListView: storiesListView,
+                storyPropertyID: storyPropertyID,
+                hideIfNotFound: hideIfNotFound
+            )
             storyCompletion?(nil)
             return
         }
@@ -416,11 +476,25 @@ extension DengageInAppMessageManager {
         // If both fetches are older than the timeout return
         if timeSinceLastInAppFetch > timeoutMilliseconds && timeSinceLastRealTimeFetch > timeoutMilliseconds {
             Logger.log(message: "setNavigation blocked: No successful in-app message fetch in the last \(timeoutMinutes) minutes")
+            hidePlacementIfNeeded(
+                inAppInlineElement: inAppInlineElement,
+                propertyID: propertyID,
+                storiesListView: storiesListView,
+                storyPropertyID: storyPropertyID,
+                hideIfNotFound: hideIfNotFound
+            )
             storyCompletion?(nil)
             return
         }
         
         guard !(config.inAppMessageShowTime != 0 && Date().timeMiliseconds < config.inAppMessageShowTime) else {
+            hidePlacementIfNeeded(
+                inAppInlineElement: inAppInlineElement,
+                propertyID: propertyID,
+                storiesListView: storiesListView,
+                storyPropertyID: storyPropertyID,
+                hideIfNotFound: hideIfNotFound
+            )
             storyCompletion?(nil)
             return
         }
@@ -431,6 +505,13 @@ extension DengageInAppMessageManager {
 
         let messages = DengageLocalStorage.shared.getInAppMessages()
         guard !messages.isEmpty else {
+            hidePlacementIfNeeded(
+                inAppInlineElement: inAppInlineElement,
+                propertyID: propertyID,
+                storiesListView: storiesListView,
+                storyPropertyID: storyPropertyID,
+                hideIfNotFound: hideIfNotFound
+            )
             storyCompletion?(nil)
             return
         }
@@ -438,6 +519,13 @@ extension DengageInAppMessageManager {
         let inAppMessages = DengageInAppMessageUtils.findNotExpiredInAppMessages(untilDate: Date(), messages)
         
         guard let priorInAppMessage = DengageInAppMessageUtils.findPriorInAppMessage(inAppMessages: inAppMessages, screenName: screenName, params:params, config: config, propertyId: propertyID, storyPropertyId: storyPropertyID ) else {
+            hidePlacementIfNeeded(
+                inAppInlineElement: inAppInlineElement,
+                propertyID: propertyID,
+                storiesListView: storiesListView,
+                storyPropertyID: storyPropertyID,
+                hideIfNotFound: hideIfNotFound
+            )
             storyCompletion?(nil)
             return
         }
@@ -454,24 +542,28 @@ extension DengageInAppMessageManager {
                 {
                     showinlineInapp(propertyId: ID, webView: vw, inAppMessage: priorInAppMessage)
                 }
-                else if propertyID != "" && hideIfNotFound
+                else
                 {
-                    inAppInlineElement?.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
-                    inAppInlineElement?.isHidden = true
-
+                    hideInlineIfNeeded(inAppInlineElement, propertyID: propertyID, hideIfNotFound: hideIfNotFound)
                 }
             }
-            else if propertyID != "" && hideIfNotFound
+            else
             {
-                inAppInlineElement?.frame = CGRect(x: 0, y: 0, width: 0, height: 0)
-                inAppInlineElement?.isHidden = true
-
+                hideInlineIfNeeded(inAppInlineElement, propertyID: propertyID, hideIfNotFound: hideIfNotFound)
             }
         } else if let id = storyPropertyID {
             if let iosSelector = priorInAppMessage.data.inlineTarget?.iosSelector, iosSelector == id, ("STORY".caseInsensitiveCompare(priorInAppMessage.data.content.type ?? "")) == .orderedSame
             {
-                showAppStory(inAppMessage: priorInAppMessage, storyCompletion: storyCompletion)
+                showAppStory(
+                    inAppMessage: priorInAppMessage,
+                    storiesListView: storiesListView,
+                    storyPropertyID: id,
+                    hideIfNotFound: hideIfNotFound,
+                    storyCompletion: storyCompletion
+                )
                 return
+            } else {
+                handleStoryNotFound(storiesListView, storyPropertyID: id, hideIfNotFound: hideIfNotFound)
             }
         } else {
             if let html = priorInAppMessage.data.content.props.html, Mustache.hasCouponSection(html) {

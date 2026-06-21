@@ -14,9 +14,9 @@ public final class StoriesListViewController: UIViewController {
         }
     }
 
-    var inAppMessage: InAppMessage!
-    var storySet: StorySet! {
-        return inAppMessage.data.content.props.storySet ?? StorySet()
+    var inAppMessage: InAppMessage?
+    var storySet: StorySet {
+        return inAppMessage?.data.content.props.storySet ?? StorySet()
     }
     var publicId: String?
     var contentId: String?
@@ -29,16 +29,26 @@ public final class StoriesListViewController: UIViewController {
         self.contentId = contentId
         self.storySetLoaded = true
     }
+
+    func clearStoryContent() {
+        storySetLoaded = false
+        inAppMessage = nil
+        publicId = nil
+        contentId = nil
+    }
     
 }
 
 extension StoriesListViewController: UICollectionViewDelegate,UICollectionViewDataSource,
                                      UICollectionViewDelegateFlowLayout {
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if !storySetLoaded {
+            return inAppMessage == nil ? 0 : 1
+        }
         if let covers = storyActionsDelegate?.sortStoryCovers(storyCovers: storySet.covers, storySetId: storySet.id) {
             storySet.covers = covers
         }
-        return storySetLoaded ? storySet.covers.count : 1
+        return storySet.covers.count
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -68,8 +78,7 @@ extension StoriesListViewController: UICollectionViewDelegate,UICollectionViewDa
     
     
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        guard let _ = self.storySet else {return}
+        guard storySetLoaded, let inAppMessage = inAppMessage else { return }
         if self.storySet.covers.count == 0 {
             return
         }
@@ -103,7 +112,7 @@ extension StoriesListViewController: UICollectionViewDelegate,UICollectionViewDa
             // starts on the correct story right away.
             self.storySet.covers[indexPath.row].lastPlayedSnapIndex = resumeIndex
 
-            let storyPreviewScene = StoryDisplayViewController.init(inAppMessage: self.inAppMessage, handPickedStoryCoverIndex:  indexPath.row, handPickedStoryIndex: resumeIndex)
+            let storyPreviewScene = StoryDisplayViewController.init(inAppMessage: inAppMessage, handPickedStoryCoverIndex:  indexPath.row, handPickedStoryIndex: resumeIndex)
             storyPreviewScene.storyActionsDelegate = self.storyActionsDelegate
             storyPreviewScene.modalPresentationStyle = .fullScreen
             Utilities.getRootViewController()?.present(storyPreviewScene, animated: true, completion: collectionView.reloadData)
@@ -114,7 +123,9 @@ extension StoriesListViewController: UICollectionViewDelegate,UICollectionViewDa
     public func collectionView(_ collectionView: UICollectionView,
                                layout collectionViewLayout: UICollectionViewLayout,
                                sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
+        guard storySetLoaded || inAppMessage != nil else {
+            return .zero
+        }
         
         let size = storySet.styling.headerCover.size
         
