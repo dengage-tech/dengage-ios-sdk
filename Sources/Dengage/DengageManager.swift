@@ -290,7 +290,7 @@ extension DengageManager {
                 DengageLocalStorage.shared.set(value: Date(), for: .lastFetchedConfigTime)
                 self.inAppManager.fetchInAppMessages()
                 self.sendFirstLaunchTimeIfNeeded()
-                self.inAppManager.fetchInAppExpiredMessageIds()
+                self.inAppManager.fetchCancelledInAppMessageIds()
                 self.eventManager.cleanupClientEvents()
                 
             case .failure:

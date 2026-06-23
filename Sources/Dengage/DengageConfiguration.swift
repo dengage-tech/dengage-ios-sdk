@@ -100,11 +100,6 @@ final public class DengageConfiguration: Encodable {
         return (DengageLocalStorage.shared.value(for: .lastSuccessfulRealTimeInAppMessageFetchTime) as? Double)
     }
     
-    var expiredMessagesFetchIntervalInMin:Double? {
-        return (DengageLocalStorage.shared.value(for: .expiredMessagesFetchIntervalInMin) as? Double)
-    }
-    
-    
     var inAppMessageShowTime: Double{
         return (DengageLocalStorage.shared.value(for: .inAppMessageShowTime) as? Double) ?? 0
     }
@@ -632,7 +627,23 @@ final class UserAgentUtils { // todo dusun
         return "\(name)/\(version)"
     }
     
+    private static let turkishToAscii: [Character: Character] = [
+        "ı": "i", "İ": "I",
+        "ş": "s", "Ş": "S",
+        "ğ": "g", "Ğ": "G",
+        "ç": "c", "Ç": "C",
+        "ö": "o", "Ö": "O",
+        "ü": "u", "Ü": "U"
+    ]
+
     class var userAgent: String {
-        return "\(appNameAndVersion) \(deviceName) \(deviceVersion) \(CFNetworkVersion) \(darwinVersion)"
+        let raw = "\(appNameAndVersion) \(deviceName) \(deviceVersion) \(CFNetworkVersion) \(darwinVersion)"
+        // HTTP header values must be visible ASCII (0x20–0x7E); non-ASCII bytes cause URLSession to truncate the header.
+        return raw.flatMap { char -> String in
+            if let mapped = turkishToAscii[char] { return String(mapped) }
+            guard let scalar = char.unicodeScalars.first,
+                  scalar.value >= 0x20 && scalar.value <= 0x7E else { return "" }
+            return String(char)
+        }.joined()
     }
 }

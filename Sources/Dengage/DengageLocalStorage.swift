@@ -54,7 +54,6 @@ final public class DengageLocalStorage: NSObject {
         case geofenceStopped = "geofenceStopped"
         case geofenceLastSentAt = "geofenceLastSentAt"
         case geofenceLastFailedStoppedLocation = "geofenceLastFailedStoppedLocation"
-        case expiredMessagesFetchIntervalInMin = "expiredMessagesFetchIntervalInMin"
         case deviceIdRoute = "deviceIdRoute"
         case session = "session"
         case firstLaunchTime = "firstLaunchTime"

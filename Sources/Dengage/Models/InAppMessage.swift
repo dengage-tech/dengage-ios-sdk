@@ -157,11 +157,11 @@ extension Array where Element == InAppMessage {
 // -1 .orderedAscending
 
 
-struct InAppRemovalId: Codable {
-    let id: String
-    
+struct InAppCancelledSendId: Codable {
+    let sendId: Int
+
     enum CodingKeys: String, CodingKey {
-        case id = "smsg_id"
+        case sendId = "send_id"
     }
 }
 

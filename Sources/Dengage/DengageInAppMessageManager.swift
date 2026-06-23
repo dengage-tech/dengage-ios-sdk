@@ -54,36 +54,30 @@ extension DengageInAppMessageManager{
                 DengageLocalStorage.shared.set(value: nextFetchTime, for: .lastFetchedInAppMessageTime)
                 DengageLocalStorage.shared.set(value: Date().timeMiliseconds, for: .lastSuccessfulInAppMessageFetchTime)
                 self?.addInAppMessagesIfNeeded(response)
-                self?.fetchInAppExpiredMessageIds()
-                
+                self?.fetchCancelledInAppMessageIds()
+
             case .failure(let error):
                 Logger.log(message: "fetchInAppMessages_ERROR", argument: error.localizedDescription)
             }
         }
     }
     
-    func fetchInAppExpiredMessageIds() {
-        Logger.log(message: "fetchInAppExpiredMessageIds called")
-        guard expiredMessagesFetchIntervalInMin else {return}
-        if DengageLocalStorage.shared.getInAppMessages().count == 0
-        {
-            return
-        }
-        guard let remoteConfig = config.remoteConfiguration, let accountName = remoteConfig.accountName ,let appid = remoteConfig.appId else { return }
-        Logger.log(message: "fetchInAppExpiredMessageIds request started")
-        let request = ExpiredInAppMessageRequest.init(accountName: accountName, contactKey: config.contactKey.key, appid: appid)
+    func fetchCancelledInAppMessageIds() {
+        Logger.log(message: "fetchCancelledInAppMessageIds called")
+        if DengageLocalStorage.shared.getInAppMessages().count == 0 { return }
+        guard let remoteConfig = config.remoteConfiguration, let accountName = remoteConfig.accountName else { return }
+        Logger.log(message: "fetchCancelledInAppMessageIds request started")
+        let request = CancelledInAppMessageRequest(accountName: accountName)
         apiClient.send(request: request) { [weak self] result in
             switch result {
             case .success(let response):
-                let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchexpiredMessagesFetchIntervalInMin)
-                DengageLocalStorage.shared.set(value: nextFetchTime, for: .expiredMessagesFetchIntervalInMin)
-                self?.removeExpiredInAppMessageFromCache(response)
+                self?.removeCancelledInAppMessagesFromCache(response)
             case .failure(let error):
-                Logger.log(message: "fetchInAppExpiredMessageIds_ERROR", argument: error.localizedDescription)
+                Logger.log(message: "fetchCancelledInAppMessageIds_ERROR", argument: error.localizedDescription)
             }
         }
     }
-    
+
     func fetchRealTimeMessages(){
         guard shouldFetchRealTimeInAppMessages else { return }
         guard let remoteConfig = config.remoteConfiguration,
@@ -944,11 +938,14 @@ extension DengageInAppMessageManager {
         DengageLocalStorage.shared.save(previousMessages.filter{($0.data.messageDetails ?? "") != messageDetails})
     }
     
-    private func removeExpiredInAppMessageFromCache(_ messageIds:[InAppRemovalId]){
+    private func removeCancelledInAppMessagesFromCache(_ cancelledSendIds: [InAppCancelledSendId]) {
+        let cancelledIds = Set(cancelledSendIds.map { $0.sendId })
         let previousMessages = DengageLocalStorage.shared.getInAppMessages()
-        for messageId in messageIds {
-            DengageLocalStorage.shared.save(previousMessages.filter{($0.id) != messageId.id})
-        }
+        DengageLocalStorage.shared.save(previousMessages.filter { message in
+            let components = message.id.split(separator: "-")
+            guard components.count >= 2, let sendId = Int(components[1]) else { return true }
+            return !cancelledIds.contains(sendId)
+        })
     }
     
     private var isEnabledInAppMessage:Bool{
@@ -989,13 +986,6 @@ extension DengageInAppMessageManager {
             guard Date().timeMiliseconds >= lastFetchedTime else { return false }
             return true
         }
-    }
-    
-    private var expiredMessagesFetchIntervalInMin:Bool{
-        guard isEnabledInAppMessage else {return false}
-        guard let expiredMessagesFetchIntervalInMin = config.expiredMessagesFetchIntervalInMin else {return true}
-        guard Date().timeMiliseconds >= expiredMessagesFetchIntervalInMin else {return false}
-        return true
     }
     
     private var shouldFetchRealTimeInAppMessages:Bool {
@@ -1331,7 +1321,7 @@ protocol DengageInAppMessageManagerInterface: AnyObject{
     func setNavigation(screenName: String?, params: Dictionary<String,String>? , propertyID : String? , webView : InAppInlineElementView?
                        ,storyPropertyID: String?, storyCompletion: ((StoriesListView?) -> Void)?)
     func showInAppMessage(inAppMessage: InAppMessage, couponCode: String)
-    func fetchInAppExpiredMessageIds()
+    func fetchCancelledInAppMessageIds()
     func removeInAppMessageDisplay()
     
     
