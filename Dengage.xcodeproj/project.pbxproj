@@ -49,6 +49,23 @@
 		884389312E7076A500422E78 /* DengageCartUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884389302E7076A500422E78 /* DengageCartUtils.swift */; };
 		8845BBF02D5CF24A00715B38 /* Mustache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8845BBEF2D5CF24A00715B38 /* Mustache.swift */; };
 		88BDCF6A2D09D3E100DAE52C /* TestInAppHtmlViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BDCF662D09D3DE00DAE52C /* TestInAppHtmlViewController.swift */; };
+		88C294422FEAA265004C4561 /* RecommendationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C294402FEAA265004C4561 /* RecommendationView.swift */; };
+		88C2945D2FEAA634004C4561 /* BridgeHandlerRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C2944E2FEAA634004C4561 /* BridgeHandlerRegistry.swift */; };
+		88C2945E2FEAA634004C4561 /* BridgeCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C294472FEAA634004C4561 /* BridgeCallback.swift */; };
+		88C2945F2FEAA634004C4561 /* AsyncBridgeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C2944C2FEAA634004C4561 /* AsyncBridgeHandler.swift */; };
+		88C294602FEAA634004C4561 /* BridgeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C294492FEAA634004C4561 /* BridgeResponse.swift */; };
+		88C294612FEAA634004C4561 /* BridgeMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C294482FEAA634004C4561 /* BridgeMessage.swift */; };
+		88C294622FEAA634004C4561 /* FireAndForgetHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C2944F2FEAA634004C4561 /* FireAndForgetHandler.swift */; };
+		88C294632FEAA634004C4561 /* HttpRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C294532FEAA634004C4561 /* HttpRequestHandler.swift */; };
+		88C294642FEAA634004C4561 /* BridgeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C2944D2FEAA634004C4561 /* BridgeHandler.swift */; };
+		88C294652FEAA634004C4561 /* RecommendationEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C294542FEAA634004C4561 /* RecommendationEventHandler.swift */; };
+		88C294662FEAA634004C4561 /* DeviceInfoHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C294522FEAA634004C4561 /* DeviceInfoHandler.swift */; };
+		88C294672FEAA634004C4561 /* DengageBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C2944A2FEAA634004C4561 /* DengageBridge.swift */; };
+		88C294682FEAA634004C4561 /* SyncBridgeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C294502FEAA634004C4561 /* SyncBridgeHandler.swift */; };
+		88C294692FEAA634004C4561 /* BridgeErrorCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C2945A2FEAA634004C4561 /* BridgeErrorCodes.swift */; };
+		88C2946A2FEAA634004C4561 /* StorageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C294562FEAA634004C4561 /* StorageHandler.swift */; };
+		88C2946B2FEAA634004C4561 /* RecommendationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C294552FEAA634004C4561 /* RecommendationHandler.swift */; };
+		88C2946C2FEAA634004C4561 /* BridgeJavaScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C294582FEAA634004C4561 /* BridgeJavaScript.swift */; };
 		88D812E62D64DF90009816E4 /* ApiUrlConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D812E22D64DF8E009816E4 /* ApiUrlConfiguration.swift */; };
 		88E4D7292D16A8A00033A501 /* DengageSubscriptionQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E4D7252D16A89C0033A501 /* DengageSubscriptionQueue.swift */; };
 		88E93AD42C923AC600EE3F5E /* CircleImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E93ABD2C923AC600EE3F5E /* CircleImageView.swift */; };
@@ -211,6 +228,23 @@
 		884389302E7076A500422E78 /* DengageCartUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageCartUtils.swift; sourceTree = "<group>"; };
 		8845BBEF2D5CF24A00715B38 /* Mustache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mustache.swift; sourceTree = "<group>"; };
 		88BDCF662D09D3DE00DAE52C /* TestInAppHtmlViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInAppHtmlViewController.swift; sourceTree = "<group>"; };
+		88C294402FEAA265004C4561 /* RecommendationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationView.swift; sourceTree = "<group>"; };
+		88C294472FEAA634004C4561 /* BridgeCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgeCallback.swift; sourceTree = "<group>"; };
+		88C294482FEAA634004C4561 /* BridgeMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgeMessage.swift; sourceTree = "<group>"; };
+		88C294492FEAA634004C4561 /* BridgeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgeResponse.swift; sourceTree = "<group>"; };
+		88C2944A2FEAA634004C4561 /* DengageBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageBridge.swift; sourceTree = "<group>"; };
+		88C2944C2FEAA634004C4561 /* AsyncBridgeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncBridgeHandler.swift; sourceTree = "<group>"; };
+		88C2944D2FEAA634004C4561 /* BridgeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgeHandler.swift; sourceTree = "<group>"; };
+		88C2944E2FEAA634004C4561 /* BridgeHandlerRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgeHandlerRegistry.swift; sourceTree = "<group>"; };
+		88C2944F2FEAA634004C4561 /* FireAndForgetHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireAndForgetHandler.swift; sourceTree = "<group>"; };
+		88C294502FEAA634004C4561 /* SyncBridgeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncBridgeHandler.swift; sourceTree = "<group>"; };
+		88C294522FEAA634004C4561 /* DeviceInfoHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfoHandler.swift; sourceTree = "<group>"; };
+		88C294532FEAA634004C4561 /* HttpRequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpRequestHandler.swift; sourceTree = "<group>"; };
+		88C294542FEAA634004C4561 /* RecommendationEventHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationEventHandler.swift; sourceTree = "<group>"; };
+		88C294552FEAA634004C4561 /* RecommendationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationHandler.swift; sourceTree = "<group>"; };
+		88C294562FEAA634004C4561 /* StorageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageHandler.swift; sourceTree = "<group>"; };
+		88C294582FEAA634004C4561 /* BridgeJavaScript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgeJavaScript.swift; sourceTree = "<group>"; };
+		88C2945A2FEAA634004C4561 /* BridgeErrorCodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgeErrorCodes.swift; sourceTree = "<group>"; };
 		88D812E22D64DF8E009816E4 /* ApiUrlConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiUrlConfiguration.swift; sourceTree = "<group>"; };
 		88E4D7252D16A89C0033A501 /* DengageSubscriptionQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageSubscriptionQueue.swift; sourceTree = "<group>"; };
 		88E93ABD2C923AC600EE3F5E /* CircleImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleImageView.swift; sourceTree = "<group>"; };
@@ -366,6 +400,77 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		88C294412FEAA265004C4561 /* Recommendation */ = {
+			isa = PBXGroup;
+			children = (
+				88C294402FEAA265004C4561 /* RecommendationView.swift */,
+			);
+			path = Recommendation;
+			sourceTree = "<group>";
+		};
+		88C2944B2FEAA634004C4561 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				88C294472FEAA634004C4561 /* BridgeCallback.swift */,
+				88C294482FEAA634004C4561 /* BridgeMessage.swift */,
+				88C294492FEAA634004C4561 /* BridgeResponse.swift */,
+				88C2944A2FEAA634004C4561 /* DengageBridge.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		88C294512FEAA634004C4561 /* Handler */ = {
+			isa = PBXGroup;
+			children = (
+				88C2944C2FEAA634004C4561 /* AsyncBridgeHandler.swift */,
+				88C2944D2FEAA634004C4561 /* BridgeHandler.swift */,
+				88C2944E2FEAA634004C4561 /* BridgeHandlerRegistry.swift */,
+				88C2944F2FEAA634004C4561 /* FireAndForgetHandler.swift */,
+				88C294502FEAA634004C4561 /* SyncBridgeHandler.swift */,
+			);
+			path = Handler;
+			sourceTree = "<group>";
+		};
+		88C294572FEAA634004C4561 /* Handlers */ = {
+			isa = PBXGroup;
+			children = (
+				88C294522FEAA634004C4561 /* DeviceInfoHandler.swift */,
+				88C294532FEAA634004C4561 /* HttpRequestHandler.swift */,
+				88C294542FEAA634004C4561 /* RecommendationEventHandler.swift */,
+				88C294552FEAA634004C4561 /* RecommendationHandler.swift */,
+				88C294562FEAA634004C4561 /* StorageHandler.swift */,
+			);
+			path = Handlers;
+			sourceTree = "<group>";
+		};
+		88C294592FEAA634004C4561 /* JS */ = {
+			isa = PBXGroup;
+			children = (
+				88C294582FEAA634004C4561 /* BridgeJavaScript.swift */,
+			);
+			path = JS;
+			sourceTree = "<group>";
+		};
+		88C2945B2FEAA634004C4561 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				88C2945A2FEAA634004C4561 /* BridgeErrorCodes.swift */,
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
+		88C2945C2FEAA634004C4561 /* Bridge */ = {
+			isa = PBXGroup;
+			children = (
+				88C2944B2FEAA634004C4561 /* Core */,
+				88C294512FEAA634004C4561 /* Handler */,
+				88C294572FEAA634004C4561 /* Handlers */,
+				88C294592FEAA634004C4561 /* JS */,
+				88C2945B2FEAA634004C4561 /* Util */,
+			);
+			path = Bridge;
+			sourceTree = "<group>";
+		};
 		88E93AD02C923AC600EE3F5E /* Story */ = {
 			isa = PBXGroup;
 			children = (
@@ -471,6 +576,7 @@
 			children = (
 				A0765B8C27CEB4700007215B /* CarouselNotificationUI */,
 				A0765B9727CEB4700007215B /* InAppMessage */,
+				88C294412FEAA265004C4561 /* Recommendation */,
 				88E93AD02C923AC600EE3F5E /* Story */,
 				A0765B9027CEB4700007215B /* TestPage */,
 			);
@@ -504,6 +610,7 @@
 		A0765B9727CEB4700007215B /* InAppMessage */ = {
 			isa = PBXGroup;
 			children = (
+				88C2945C2FEAA634004C4561 /* Bridge */,
 				8800688D2C931E1A00881F71 /* InAppBrowserViewController.swift */,
 				880068882C931DDA00881F71 /* InAppInlineElementView.swift */,
 				A0765B9A27CEB4700007215B /* InAppMessageHTMLView.swift */,
@@ -815,6 +922,23 @@
 				88ED30D12E708987002F9A99 /* CouponAssignRequest.swift in Sources */,
 				88E93ADB2C923AC600EE3F5E /* StoryDisplayHeaderView.swift in Sources */,
 				A0765BCA27CEB4700007215B /* TestPageViewController.swift in Sources */,
+				88C294422FEAA265004C4561 /* RecommendationView.swift in Sources */,
+				88C2945D2FEAA634004C4561 /* BridgeHandlerRegistry.swift in Sources */,
+				88C2945E2FEAA634004C4561 /* BridgeCallback.swift in Sources */,
+				88C2945F2FEAA634004C4561 /* AsyncBridgeHandler.swift in Sources */,
+				88C294602FEAA634004C4561 /* BridgeResponse.swift in Sources */,
+				88C294612FEAA634004C4561 /* BridgeMessage.swift in Sources */,
+				88C294622FEAA634004C4561 /* FireAndForgetHandler.swift in Sources */,
+				88C294632FEAA634004C4561 /* HttpRequestHandler.swift in Sources */,
+				88C294642FEAA634004C4561 /* BridgeHandler.swift in Sources */,
+				88C294652FEAA634004C4561 /* RecommendationEventHandler.swift in Sources */,
+				88C294662FEAA634004C4561 /* DeviceInfoHandler.swift in Sources */,
+				88C294672FEAA634004C4561 /* DengageBridge.swift in Sources */,
+				88C294682FEAA634004C4561 /* SyncBridgeHandler.swift in Sources */,
+				88C294692FEAA634004C4561 /* BridgeErrorCodes.swift in Sources */,
+				88C2946A2FEAA634004C4561 /* StorageHandler.swift in Sources */,
+				88C2946B2FEAA634004C4561 /* RecommendationHandler.swift in Sources */,
+				88C2946C2FEAA634004C4561 /* BridgeJavaScript.swift in Sources */,
 				881709392C91808800FA8B63 /* MarkAsRealTimeInAppMessageClickedRequest.swift in Sources */,
 				881709412C91955E00FA8B63 /* VisitorInfo.swift in Sources */,
 				A0765BD927CEB4700007215B /* DengageMessage.swift in Sources */,
