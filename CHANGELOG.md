@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.97] - 2026-06-22
+
+### New Features
+
+- Implement getCancelledSendIds
+- Fix user agent non ASCII characters
+
 
 ## [5.96] - 2026-06-03
 
