@@ -12,13 +12,15 @@ public struct GetSDKParamsResponse: Codable {
     let realTimeInAppSessionTimeoutMinutes: Int
     public let eventMappings: [EventMapping]
     let debugDeviceIds: [String]?
+    let sdkErrorLoggingEnabled: Bool
     
     let inAppFetchIntervalInMin: Int
     private let inAppMinSecBetweenMessages: Int
+    
     var fetchIntervalInMin: Double {
         Double(inAppFetchIntervalInMin * 60000)
     }
-
+    
     var minSecBetweenMessages: Double {
         Double(inAppMinSecBetweenMessages * 1000)
     }
@@ -38,6 +40,7 @@ public struct GetSDKParamsResponse: Codable {
         realTimeInAppSessionTimeoutMinutes = (try? container.decode(Int.self, forKey: .realTimeInAppSessionTimeoutMinutes)) ?? 1800
         eventMappings = (try? container.decode([EventMapping].self, forKey: .eventMappings)) ?? []
         debugDeviceIds = try? container.decode([String].self, forKey: .debugDeviceIds)
+        sdkErrorLoggingEnabled = (try? container.decode(Bool.self, forKey: .sdkErrorLoggingEnabled)) ?? false
     }
     
     enum CodingKeys: String, CodingKey {
@@ -54,6 +57,7 @@ public struct GetSDKParamsResponse: Codable {
         case realTimeInAppSessionTimeoutMinutes
         case eventMappings
         case debugDeviceIds
+        case sdkErrorLoggingEnabled
     }
 }
 
@@ -96,3 +100,4 @@ public struct EventAttribute: Codable {
     public let dataType: String?
     public let tableColumnName: String?
 }
+

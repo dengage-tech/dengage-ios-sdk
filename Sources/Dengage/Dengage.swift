@@ -41,7 +41,7 @@ public class Dengage {
             dengage?.config.set(deviceId: id)
 
             if !id.isEmpty {
-                DengageKeychain.set(id, forKey: "\(Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier")")
+                DengageDeviceIdKeychainStore.set(id)
                 dengage?.config.applicationIdentifier = id
             }
         }

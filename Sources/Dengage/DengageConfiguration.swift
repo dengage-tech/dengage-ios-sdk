@@ -64,6 +64,13 @@ final public class DengageConfiguration: Encodable {
         
     }
     
+    func flushPendingDeviceIdValidationLogIfNeeded() {
+        guard remoteConfiguration != nil,
+              let report = DengageConfiguration.pendingCorruptedDeviceIdReport else { return }
+        DengageConfiguration.pendingCorruptedDeviceIdReport = nil
+        sendDeviceIdValidationLog(invalidDeviceId: report.value, message: report.message, bypassFlag: true)
+    }
+    
     public var contactKey: (key: String, type:String) {
         let key = getContactKey() ?? applicationIdentifier
         let type = getContactKey() != nil ? "c" : "d"
@@ -195,7 +202,7 @@ final public class DengageConfiguration: Encodable {
     
     func set(deviceId: String){
         
-        DengageKeychain.set(deviceId, forKey: "\(Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier")")
+        DengageDeviceIdKeychainStore.set(deviceId)
         let previous = self.applicationIdentifier
         
         if previous != deviceId {
@@ -207,6 +214,47 @@ final public class DengageConfiguration: Encodable {
         
         
     }
+    
+    /// Reports an invalid (pipe-containing) device id to the backend via the felogging pipeline,
+    /// which forwards it to Graylog. Only sent when the backend has SDK error logging enabled.
+    func sendDeviceIdValidationLog(invalidDeviceId: String, message: String, bypassFlag: Bool = false) {
+        
+        if remoteConfiguration?.sdkErrorLoggingEnabled == true, !bypassFlag {
+            Logger.log(message: "SDK error logging disabled, skipping device id validation log")
+            return
+        }
+        
+        let debugLog = DebugLog(
+            traceId: UUID().uuidString,
+            appGuid: remoteConfiguration?.appId,
+            appId: remoteConfiguration?.appId,
+            account: remoteConfiguration?.accountName,
+            device: applicationIdentifier,
+            sessionId: "",
+            sdkVersion: SDK_VERSION,
+            currentCampaignList: [],
+            campaignId: nil,
+            campaignType: nil,
+            sendId: nil,
+            message: message,
+            context: ["invalid_device_id": invalidDeviceId],
+            contactKey: getContactKey(),
+            channel: "ios",
+            currentRules: [:]
+        )
+        
+        let request = DebugLogRequest(screenName: "device-id-validation", debugLog: debugLog)
+        DengageNetworking(config: self).send(request: request) { result in
+            switch result {
+            case .success:
+                Logger.log(message: "Device id validation log sent")
+            case .failure(let error):
+                Logger.log(message: "Failed sending device id validation log", argument: error.localizedDescription)
+            }
+        }
+    }
+    
+    
     
     func set(permission: Bool) {
         self.permission = permission
@@ -485,21 +533,60 @@ final public class DengageConfiguration: Encodable {
     
     static func getApplicationId() -> String {
         
-        if let uuidString = DengageKeychain.string(forKey: "DengageApplicationIdentifier"), !uuidString.isEmpty {
-            
-            DengageKeychain.remove("DengageApplicationIdentifier")
-            DengageKeychain.set(uuidString, forKey: "\(Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier")")
-            
-        }
+        let legacyKey = "\(Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier")"
         
-        if let uuidString = DengageKeychain.string(forKey: "\(Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier")"), !uuidString.isEmpty {
-            return uuidString
-        } else {
-            let uuidString = NSUUID().uuidString.lowercased()
-            DengageKeychain.set(uuidString, forKey: "\(Bundle.main.bundleIdentifier ?? "DengageApplicationIdentifier")")
-            return uuidString
+        // 1. The namespaced store is the source of truth.
+        if let deviceId = DengageDeviceIdKeychainStore.string(), !deviceId.isEmpty {
+            return deviceId
+        }
+
+        // 2. Nothing there yet → fall back to the legacy `DengageKeychain` and migrate.
+        //    Only service-less items are ours; foreign SDK items are skipped by `legacyDeviceId`.
+        //    The historical "DengageApplicationIdentifier" account is checked first for old installs.
+        if let legacy = DengageKeychain.legacyDeviceId(forKey: "DengageApplicationIdentifier"), !legacy.isEmpty {
+            migrateDeviceId(legacy)
+            return legacy
+        }
+        if let legacy = DengageKeychain.legacyDeviceId(forKey: legacyKey), !legacy.isEmpty {
+            migrateDeviceId(legacy)
+            return legacy
+        }
+
+        // 3. Fresh install (or no recoverable legacy value) → generate a new id.
+        let newId = NSUUID().uuidString.lowercased()
+        let status = DengageDeviceIdKeychainStore.set(newId)
+        
+        
+        
+        if status != errSecSuccess {
+            stashKeychainWriteFailure(deviceId: newId, status: status, context: "create")
+        }
+        return newId
+    }
+
+    /// Copies a recovered legacy device id into `DengageDeviceIdKeychainStore`. The legacy item is left
+    /// in place so a failed write can be retried (and succeed) on the next launch instead of
+    /// losing the id. A persistent write failure is queued for a Graylog report.
+    private static func migrateDeviceId(_ deviceId: String) {
+        let status = DengageDeviceIdKeychainStore.set(deviceId)
+        if status != errSecSuccess {
+            stashKeychainWriteFailure(deviceId: deviceId, status: status, context: "migrate")
         }
     }
+
+    /// Queues a `DengageDeviceIdKeychainStore` write failure so it can be reported via
+    /// `sendDeviceIdValidationLog` once the config (and remote configuration) is ready.
+    private static func stashKeychainWriteFailure(deviceId: String, status: OSStatus, context: String) {
+        let message = "DeviceId keychain write failed (\(context)) with OSStatus \(status)"
+        Logger.log(message: message)
+        pendingCorruptedDeviceIdReport = (value: deviceId, message: message)
+    }
+
+    /// A device id problem found during `getApplicationId` (a corrupted/pipe-containing value or a
+    /// keychain write failure), stashed so the felogging/Graylog report can be sent once the config
+    /// instance is fully constructed.
+    private static var pendingCorruptedDeviceIdReport: (value: String, message: String)?
+    
     
     static func getAdvertisingId() -> String{
         
