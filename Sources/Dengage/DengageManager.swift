@@ -1,6 +1,7 @@
 import Foundation
 import UserNotifications
 import UIKit
+
 public class DengageManager {
     
     public var config: DengageConfiguration
@@ -142,7 +143,7 @@ extension DengageManager {
     
     private func shouldMakeSubscriptionRequestBasedOnTime() -> Bool {
         if let lastSyncedSubscription = DengageLocalStorage.shared.value(for: .lastSyncdSubscription) as? Date {
-            let nextSyncedSubscription = lastSyncedSubscription.addingTimeInterval(1200) // 20 minutes
+            let nextSyncedSubscription = lastSyncedSubscription.addingTimeInterval(300) // 5 minutes
             let now = Date()
             if now > nextSyncedSubscription {
                 return true
@@ -271,6 +272,8 @@ extension DengageManager {
         if let fetchedDate = lastFetchedDate {
             let timeSinceLastFetch = Date().timeIntervalSince(fetchedDate)
             if timeSinceLastFetch < 60 { // 1 minute in seconds
+                // Remote config is already cached; flush any pending device id validation report.
+                config.flushPendingDeviceIdValidationLogIfNeeded()
                 inAppManager.fetchInAppMessages()
                 return
             }
@@ -288,6 +291,7 @@ extension DengageManager {
             case .success(let response):
                 DengageLocalStorage.shared.saveConfig(with: response)
                 DengageLocalStorage.shared.set(value: Date(), for: .lastFetchedConfigTime)
+                self.config.flushPendingDeviceIdValidationLogIfNeeded()
                 self.inAppManager.fetchInAppMessages()
                 self.sendFirstLaunchTimeIfNeeded()
                 self.inAppManager.fetchCancelledInAppMessageIds()

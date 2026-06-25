@@ -87,6 +87,8 @@ final class DengageSubscriptionQueue {
         DengageLocalStorage.shared.set(value: config.deviceTimeZone, for: .timezoneSubscription)
         DengageLocalStorage.shared.set(value: config.getPartnerDeviceID() ?? "", for: .partner_device_idSubscription)
         DengageLocalStorage.shared.set(value: config.advertisingIdentifier, for: .advertisingIdSubscription)
+        DengageLocalStorage.shared.set(value: config.locationPermission, for: .locationPermissionSubscription)
         DengageLocalStorage.shared.set(value: Date(), for: .lastSyncdSubscription)
+
     }
 }
