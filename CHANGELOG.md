@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.98] - 2026-06-25
+
+### Bug Fixes
+
+- Implement DengageDeviceIdKeychainStore to fix device id keychain problems.
+
 ## [5.97] - 2026-06-22
 
 ### New Features
