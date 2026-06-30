@@ -7,6 +7,7 @@
 
 - Add `hideIfNotFound` support for App Story via `Dengage.showAppStory`
 - Support embedded `StoriesListView` placement with clear-on-not-found behavior matching inline in-app
+- Hide status bar in fullscreen inapp
 
 ### Bug Fixes
 

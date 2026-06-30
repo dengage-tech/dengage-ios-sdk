@@ -40,6 +40,13 @@ final class InAppMessageHTMLViewController: UIViewController {
         view = viewSource
     }
 
+    // Hide the system status bar for FULL in-app messages so they truly cover the
+    // whole screen. This controller is the root of its own (key) in-app window, so it
+    // controls the status bar appearance.
+    override var prefersStatusBarHidden: Bool {
+        message.data.content.props.position == .full
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         isIosURLNPresent = message.data.content.props.html?.contains("Dn.iosUrlN") ?? false

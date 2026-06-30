@@ -18,7 +18,14 @@ final class InAppMessageHTMLView: UIView {
     private var topConstraint: NSLayoutConstraint?
     private var leftConstraint: NSLayoutConstraint?
     private var rightConstraint: NSLayoutConstraint?
-    
+
+    // Edge (non-safe-area) constraints used for the .full position so the content
+    // covers the entire screen, including the status bar/notch and home indicator.
+    private var fullTopConstraint: NSLayoutConstraint?
+    private var fullBottomConstraint: NSLayoutConstraint?
+    private var fullLeadingConstraint: NSLayoutConstraint?
+    private var fullTrailingConstraint: NSLayoutConstraint?
+
     var height: NSLayoutConstraint?
     
     init() {
@@ -40,7 +47,12 @@ final class InAppMessageHTMLView: UIView {
         topConstraint = webView.topAnchor.constraint(equalTo: safeArea.topAnchor)
         bottomConstraint = webView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor)
         centerConstraint = webView.centerYAnchor.constraint(equalTo: safeArea.centerYAnchor)
-        
+
+        fullTopConstraint = webView.topAnchor.constraint(equalTo: topAnchor)
+        fullBottomConstraint = webView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        fullLeadingConstraint = webView.leadingAnchor.constraint(equalTo: leadingAnchor)
+        fullTrailingConstraint = webView.trailingAnchor.constraint(equalTo: trailingAnchor)
+
         height = webView.heightAnchor.constraint(equalToConstant: 0)
         height?.isActive = true
     }
@@ -57,19 +69,29 @@ final class InAppMessageHTMLView: UIView {
         leftConstraint?.constant = horizontalPercentage(params.marginLeft, message: message)
         rightConstraint?.constant = -horizontalPercentage(params.marginRight, message: message)
         
-        leftConstraint?.isActive = true
-        rightConstraint?.isActive = true
-        
         switch params.position {
         case .top:
+            leftConstraint?.isActive = true
+            rightConstraint?.isActive = true
             topConstraint?.isActive = true
         case .middle:
+            leftConstraint?.isActive = true
+            rightConstraint?.isActive = true
             centerConstraint?.isActive = true
         case .bottom:
+            leftConstraint?.isActive = true
+            rightConstraint?.isActive = true
             bottomConstraint?.isActive = true
         case .full:
-            topConstraint?.isActive = true
-            bottomConstraint?.isActive = true
+            // Cover the whole screen: pin to the view's real edges instead of the
+            // safe area, and let the WebView fill top-to-bottom (drop the height
+            // constraint so it isn't capped to the measured content height).
+            height?.isActive = false
+            webView.scrollView.contentInsetAdjustmentBehavior = .never
+            fullLeadingConstraint?.isActive = true
+            fullTrailingConstraint?.isActive = true
+            fullTopConstraint?.isActive = true
+            fullBottomConstraint?.isActive = true
         }
     }
     
