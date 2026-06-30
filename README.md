@@ -82,7 +82,7 @@
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.98'
+pod 'Dengage', '~> 5.99'
 ```
 
 Run `pod install` via terminal
@@ -522,7 +522,7 @@ Add the Dengage SDK to your Notification Service Extension target in your `Podfi
 
 ```ruby
 target 'DengageNotificationServiceExtension' do
-    pod 'Dengage', '~> 5.98'
+    pod 'Dengage', '~> 5.99'
 end
 ```
 
@@ -1076,9 +1076,11 @@ The `showAppStory` method accepts a completion handler that yields an optional `
 
 ```swift
 Dengage.showAppStory(storyPropertyID: storyPropertyID,
+                        storiesListView: storiesListView,
                         screenName: screenName,
                         customParams: customParams,
-                        storyCompletion: { storiesListView in
+                        hideIfNotFound: true
+) { storiesListView in
     
     if let storiesListView = storiesListView {
         self.view.addSubview(storiesListView)
@@ -1103,8 +1105,8 @@ Parameters:
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.98'
-pod 'DengageGeofence', '~> 5.98'
+pod 'Dengage', '~> 5.99'
+pod 'DengageGeofence', '~> 5.99'
 ```
 
 Run `pod install` via terminal

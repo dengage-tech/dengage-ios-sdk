@@ -1,5 +1,20 @@
 # Changelog
 
+
+## [5.99] - 2026-06-30
+
+### New Features
+
+- Add `hideIfNotFound` support for App Story via `Dengage.showAppStory`
+- Support embedded `StoriesListView` placement with clear-on-not-found behavior matching inline in-app
+
+### Bug Fixes
+
+- Fix in-app message overlay remaining visible when opening a deeplink from the message
+- Fix crash when clearing story content after a failed property id lookup
+- Hide the story placement when `hideIfNotFound` is `true` and property id / targeting does not match
+
+
 ## [5.98] - 2026-06-25
 
 ### Bug Fixes
