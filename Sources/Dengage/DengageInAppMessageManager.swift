@@ -1186,6 +1186,14 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     
     func open(url: String?) {
         isInAppMessageShowing = false
+        inAppMessageWindow?.isHidden = true
+        inAppMessageWindow?.rootViewController = nil
+        
+        if #available(iOS 13.0, *) {
+            inAppMessageWindow?.windowScene = nil
+        } else {
+            // Fallback on earlier versions
+        }
         inAppMessageWindow = nil
         
         guard let urlDeeplink = url, let urlStr = URL(string: urlDeeplink) else { return }
@@ -1236,6 +1244,15 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     
     func sendDismissEvent(message: InAppMessage) {
         isInAppMessageShowing = false
+        inAppMessageWindow?.isHidden = true
+        inAppMessageWindow?.rootViewController = nil
+        
+        if #available(iOS 13.0, *) {
+            inAppMessageWindow?.windowScene = nil
+        } else {
+            // Fallback on earlier versions
+        }
+        
         inAppMessageWindow = nil
         if message.data.isRealTime {
             setRealTimeInAppMessageAsDismissed(message)
@@ -1276,6 +1293,15 @@ extension DengageInAppMessageManager: InAppMessagesActionsDelegate{
     
     func close() {
         isInAppMessageShowing = false
+        inAppMessageWindow?.isHidden = true
+        inAppMessageWindow?.rootViewController = nil
+        
+        if #available(iOS 13.0, *) {
+            inAppMessageWindow?.windowScene = nil
+        } else {
+            // Fallback on earlier versions
+        }
+        
         inAppMessageWindow = nil
     }
     
