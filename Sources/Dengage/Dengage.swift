@@ -301,15 +301,24 @@ public class Dengage {
     }
     
     @objc public static func showAppStory(
-        storyPropertyID: String? = nil, inAppInlineElement: InAppInlineElementView? = nil,
-        screenName: String? = nil, customParams: [String: String]? = nil, hideIfNotFound: Bool = false,
+        storyPropertyID: String? = nil,
+        storiesListView: StoriesListView? = nil,
+        inAppInlineElement: InAppInlineElementView? = nil,
+        screenName: String? = nil,
+        customParams: [String: String]? = nil,
+        hideIfNotFound: Bool = false,
         storyCompletion: @escaping (StoriesListView?) -> Void
     ) {
         dengage?.inAppManager.setNavigation(
-            screenName: screenName, params: customParams, storyPropertyID: storyPropertyID, storyCompletion: storyCompletion)
+            screenName: screenName,
+            params: customParams,
+            hideIfNotFound: hideIfNotFound,
+            storyPropertyID: storyPropertyID,
+            storiesListView: storiesListView,
+            storyCompletion: storyCompletion
+        )
     }
-    
-    
+        
     @objc public static func removeInAppMessageDisplay(){
         dengage?.inAppManager.removeInAppMessageDisplay()
     }

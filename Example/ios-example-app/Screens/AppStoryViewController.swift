@@ -66,6 +66,24 @@ final class AppStoryViewController: UIViewController {
         return view
     }()
     
+    private lazy var embeddedStoriesListView: StoriesListView = {
+        let view = StoriesListView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.tag = STORY_VIEW_TAG
+        return view
+    }()
+
+    private lazy var sizeTestLabel: UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 0
+        label.font = .systemFont(ofSize: 13)
+        label.textColor = UIColor(red: 0.27, green: 0.27, blue: 0.27, alpha: 1)
+        label.text = """
+        Testing size: this line should sit directly below the story container when hideIfNotFound hides the slot (wrong property id / no match). If you still see a big gap above this text, the story view did not release layout space.
+        """
+        return label
+    }()
+    
     var storiesListView: StoriesListView?
     
     override func viewDidLoad() {
@@ -87,6 +105,8 @@ final class AppStoryViewController: UIViewController {
         stackView.topAnchor.constraint(equalTo: view.safeAreaTopAnchor, constant: 20).isActive = true
         stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15).isActive = true
         stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15).isActive = true
+        stackView.addArrangedSubview(embeddedStoriesListView)
+        stackView.addArrangedSubview(sizeTestLabel)
     }
     
     
@@ -97,27 +117,18 @@ final class AppStoryViewController: UIViewController {
     }
     
     @objc private func didTapRefreshStoryButton() {
-        
-        
-        if let viewWithTag = stackView.viewWithTag(STORY_VIEW_TAG) {
-            viewWithTag.removeFromSuperview()
-        }
-        
         let storyPropertyID = propertyIdTextField.text
         let screenName = screenNameTextField.text
         let customParams = [String: String]()
         
-        Dengage.showAppStory(storyPropertyID: storyPropertyID, screenName: screenName, customParams: customParams) { storyView in
-            
-            if let storyView = storyView {
-                self.storiesListView = storyView
-                self.storiesListView?.translatesAutoresizingMaskIntoConstraints = false
-                if let storiesListView = self.storiesListView {
-                    self.storiesListView?.tag = STORY_VIEW_TAG
-                    self.stackView.insertArrangedSubview(storiesListView, at: self.stackView.subviews.count)
-                }
-            }
-            
+        Dengage.showAppStory(
+            storyPropertyID: storyPropertyID,
+            storiesListView: embeddedStoriesListView,
+            screenName: screenName,
+            customParams: customParams,
+            hideIfNotFound: true
+        ) { storyView in
+            self.storiesListView = storyView
         }
     }
     

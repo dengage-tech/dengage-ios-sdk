@@ -27,6 +27,13 @@ public class StoriesListView: UIView {
         installLayoutConstraints(title: title, styling: styling)
     }
     
+    public func clearContent() {
+        titleLabel.text = ""
+        titleLabel.isHidden = true
+        controller?.clearStoryContent()
+        collectionView.reloadData()
+    }
+    
     public var controller: StoriesListViewController?
     
     private lazy var titleLabel: UILabel = {
