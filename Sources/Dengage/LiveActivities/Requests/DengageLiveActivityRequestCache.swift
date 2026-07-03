@@ -10,5 +10,8 @@ struct CachedRequest: Codable {
     let timestamp: Date
     let requestType: String // "SetUpdateToken", "SetStartToken", "RemoveUpdateToken", "RemoveStartToken"
     let activityType: String?
+    // The live activity permission captured when a SetStartToken request was created. Optional so that
+    // caches persisted before this field existed still decode successfully.
+    let liveActivityPermission: Bool?
 }
 

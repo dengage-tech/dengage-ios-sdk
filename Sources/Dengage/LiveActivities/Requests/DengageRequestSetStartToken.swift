@@ -1,4 +1,5 @@
 import Foundation
+import ActivityKit
 
 class DengageRequestSetStartToken: APIRequest, DengageLiveActivityRequest, DengageLiveActivityStartTokenRequest {
     
@@ -28,15 +29,27 @@ class DengageRequestSetStartToken: APIRequest, DengageLiveActivityRequest, Denga
             "accountGuid": accountGuid,
             "appGuid": appId,
             "deviceId": deviceId,
-            "livePushToStartToken": self.token
+            "livePushToStartToken": self.token,
+            "liveActivityPermission": self.liveActivityPermission
         ]
         return body.json
+    }
+
+    /// Reads the current Live Activity authorization state. Returns false on OS versions where
+    /// ActivityKit is unavailable.
+    static func currentLiveActivityPermission() -> Bool {
+        if #available(iOS 16.1, *) {
+            return ActivityAuthorizationInfo().areActivitiesEnabled
+        } else {
+            return false
+        }
     }
     
     typealias Response = EmptyResponse
     
     var key: String
     var token: String
+    var liveActivityPermission: Bool
     var requestSuccessful: Bool
     var shouldForgetWhenSuccessful: Bool = false
     var timestamp: Date
@@ -60,7 +73,9 @@ class DengageRequestSetStartToken: APIRequest, DengageLiveActivityRequest, Denga
     func supersedes(_ existing: DengageLiveActivityRequest) -> Bool {
         if let existingSetRequest = existing as? DengageRequestSetStartToken {
             if self.token == existingSetRequest.token {
-                return false
+                // Same token: only supersede (and thus resend) if the live activity permission changed,
+                // so that a permission toggle is reflected server-side even when the token is unchanged.
+                return self.liveActivityPermission != existingSetRequest.liveActivityPermission
             }
         }
 
@@ -69,9 +84,13 @@ class DengageRequestSetStartToken: APIRequest, DengageLiveActivityRequest, Denga
         return self.timestamp >= existing.timestamp
     }
 
-    init(key: String, token: String, config: DengageConfiguration) {
+    /// - Parameter liveActivityPermission: Pass an explicit value to preserve a previously captured
+    ///   permission (e.g. when restoring from cache or re-injecting config). Pass nil to capture the
+    ///   current permission state now.
+    init(key: String, token: String, config: DengageConfiguration, liveActivityPermission: Bool? = nil) {
         self.key = key
         self.token = token
+        self.liveActivityPermission = liveActivityPermission ?? DengageRequestSetStartToken.currentLiveActivityPermission()
         self.requestSuccessful = false
         self.timestamp = Date()
         self.config = config
@@ -80,6 +99,7 @@ class DengageRequestSetStartToken: APIRequest, DengageLiveActivityRequest, Denga
     func encode(with coder: NSCoder) {
         coder.encode(key, forKey: "key")
         coder.encode(token, forKey: "token")
+        coder.encode(liveActivityPermission, forKey: "liveActivityPermission")
         coder.encode(requestSuccessful, forKey: "requestSuccessful")
         coder.encode(timestamp, forKey: "timestamp")
     }
@@ -94,6 +114,7 @@ class DengageRequestSetStartToken: APIRequest, DengageLiveActivityRequest, Denga
         }
         self.key = key
         self.token = token
+        self.liveActivityPermission = coder.decodeBool(forKey: "liveActivityPermission")
         self.requestSuccessful = coder.decodeBool(forKey: "requestSuccessful")
         self.timestamp = timestamp
         self.config = nil

@@ -40,7 +40,8 @@ class RequestCache {
                 guard let token = cachedRequest.token else { continue }
                 // Normalize to the canonical key regardless of what was stored (old cache may have
                 // used the activity type name as the key; we now use a single constant key).
-                let req = DengageRequestSetStartToken(key: "pushToStartToken", token: token, config: config)
+                // Restore the previously captured permission so a resend is only triggered on a real change.
+                let req = DengageRequestSetStartToken(key: "pushToStartToken", token: token, config: config, liveActivityPermission: cachedRequest.liveActivityPermission ?? DengageRequestSetStartToken.currentLiveActivityPermission())
                 req.requestSuccessful = cachedRequest.requestSuccessful
                 req.timestamp = cachedRequest.timestamp
                 request = req
@@ -132,13 +133,21 @@ class RequestCache {
             activityTypeValue = nil
         }
 
+        let liveActivityPermissionValue: Bool?
+        if let setStart = request as? DengageRequestSetStartToken {
+            liveActivityPermissionValue = setStart.liveActivityPermission
+        } else {
+            liveActivityPermissionValue = nil
+        }
+
         self.cachedRequests[request.key] = CachedRequest(
             key: request.key,
             token: token,
             requestSuccessful: request.requestSuccessful,
             timestamp: request.timestamp,
             requestType: requestType,
-            activityType: activityTypeValue
+            activityType: activityTypeValue,
+            liveActivityPermission: liveActivityPermissionValue
         )
         self.save()
     }
@@ -162,7 +171,8 @@ class RequestCache {
                     requestSuccessful: false,
                     timestamp: cachedRequest.timestamp,
                     requestType: cachedRequest.requestType,
-                    activityType: cachedRequest.activityType
+                    activityType: cachedRequest.activityType,
+                    liveActivityPermission: cachedRequest.liveActivityPermission
                 )
                 self.cachedRequests[key] = updated
             }
@@ -191,7 +201,8 @@ class RequestCache {
                         requestSuccessful: true,
                         timestamp: cachedRequest.timestamp,
                         requestType: cachedRequest.requestType,
-                        activityType: cachedRequest.activityType
+                        activityType: cachedRequest.activityType,
+                        liveActivityPermission: cachedRequest.liveActivityPermission
                     )
                     self.cachedRequests[request.key] = updated
                 }
@@ -286,9 +297,40 @@ class DengageLiveActivitiesExecutor {
             self.updateTokens.recreateRequests(with: config)
             self.startTokens.recreateRequests(with: config)
         }
-        
+
+        // Re-evaluate the live activity permission for any cached start token. This is required because
+        // when the permission is revoked the OS stops delivering push-to-start tokens, so the normal
+        // token listener never fires and a permission drop would otherwise go unnoticed.
+        self.refreshStartTokenPermissions()
+
         // drive a poll in case there are any outstanding requests in the cache.
         self.pollPendingRequests()
+    }
+
+    /// For each cached start token, compare the *current* live activity permission against the value that was
+    /// last reported to the server (read straight from the persisted cache). A request is (re)sent when:
+    ///   - the permission changed since it was last reported, or
+    ///   - no permission has ever been reported for this install (cache predates permission tracking) — this
+    ///     lets existing installs report their permission without requiring an uninstall/reinstall.
+    /// An unchanged, already-reported permission is skipped, preserving the original dedup behavior.
+    ///
+    /// This bypasses `supersedes` on purpose: when the permission is revoked the OS stops delivering
+    /// push-to-start tokens, so the normal token listener never fires and this startup pass is the only
+    /// place a permission drop is detected.
+    private func refreshStartTokenPermissions() {
+        self.requestDispatch.async { [weak self] in
+            guard let self = self, let config = self.config else { return }
+            let currentPermission = DengageRequestSetStartToken.currentLiveActivityPermission()
+            for (_, cached) in self.startTokens.cachedRequests where cached.requestType == "SetStartToken" {
+                guard let token = cached.token else { continue }
+                // nil (never reported) or a differing value both trigger a send; an equal value is skipped.
+                guard cached.liveActivityPermission != currentPermission else { continue }
+                Logger.log(message: "Dengage.LiveActivities start token permission changed (\(String(describing: cached.liveActivityPermission)) -> \(currentPermission)), resending")
+                let refreshed = DengageRequestSetStartToken(key: "pushToStartToken", token: token, config: config, liveActivityPermission: currentPermission)
+                self.startTokens.add(refreshed)
+                self.executeRequest(self.startTokens, request: refreshed)
+            }
+        }
     }
 
     func append(_ request: DengageLiveActivityRequest) {
@@ -396,7 +438,7 @@ class DengageLiveActivitiesExecutor {
 
         if let setStartRequest = request as? DengageRequestSetStartToken,
            setStartRequest.config == nil {
-            let newRequest = DengageRequestSetStartToken(key: setStartRequest.key, token: setStartRequest.token, config: config)
+            let newRequest = DengageRequestSetStartToken(key: setStartRequest.key, token: setStartRequest.token, config: config, liveActivityPermission: setStartRequest.liveActivityPermission)
             newRequest.requestSuccessful = setStartRequest.requestSuccessful
             newRequest.timestamp = setStartRequest.timestamp
             executeAPIRequest(cache, request: request, apiRequest: newRequest)
