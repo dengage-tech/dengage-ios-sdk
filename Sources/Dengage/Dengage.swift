@@ -193,6 +193,7 @@ public class Dengage {
             if let jsonData = try? JSONSerialization.data(withJSONObject: userInfoData, options: .prettyPrinted),
                let message = try? JSONDecoder().decode(PushContent.self, from: jsonData)  {
                 
+                
                 if let messageSource = message.messageSource
                 {
                     if MESSAGE_SOURCE == messageSource

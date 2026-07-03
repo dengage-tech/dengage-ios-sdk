@@ -47,19 +47,37 @@ extension GeofenceViewController: UITableViewDelegate{
             DengageGeofence.requestLocationPermissions()
         case .stopGeofencing:
             DengageGeofence.stopGeofence()
+        case .showLastSilentPushSync:
+            showLastSilentPushSync()
         }
+    }
+
+    private func showLastSilentPushSync() {
+        let message: String
+        if let date = DengageGeofenceEngine.shared.lastSilentPushSyncDate() {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "dd.MM.yyyy HH:mm:ss"
+            message = "Last silent push sync: \(formatter.string(from: date))"
+        } else {
+            message = "Last silent push sync: none yet"
+        }
+        let alert = UIAlertController(title: "Geofence", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }
 
 extension GeofenceViewController{
     enum Actions: CaseIterable{
-        case requestLocationAlwaysAuthorization, stopGeofencing
+        case requestLocationAlwaysAuthorization, stopGeofencing, showLastSilentPushSync
         var title: String{
             switch self{
             case .requestLocationAlwaysAuthorization:
                 return "REQUEST LOCATION ALWAYS AUTHORIZATION"
             case .stopGeofencing:
                 return "STOP GEOFENCING"
+            case .showLastSilentPushSync:
+                return "SHOW LAST SILENT PUSH SYNC"
             }
         }
     }

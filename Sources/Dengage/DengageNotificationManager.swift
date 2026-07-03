@@ -79,6 +79,12 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
     }
     
     func didReceive(with userInfo: [AnyHashable: Any]) {
+        // Silent push: sourceType == geofence ise fence'leri sunucudan yeniden çek (resync)
+        if GeofenceSilentPushDispatcher.isGeofenceSilentPush(userInfo) {
+            GeofenceSilentPushDispatcher.dispatch(userInfo)
+            return
+        }
+
         if let jsonData = try? JSONSerialization.data(withJSONObject: userInfo, options: .prettyPrinted),
            let message = try? JSONDecoder().decode(PushContent.self, from: jsonData)  {
             

@@ -85,7 +85,54 @@ final public class DengageNetworking {
         }
         dataTask.resume()
     }
-    
+
+    /// `GET /geofences/sync` — ETag/304 farkındalıklı (contract §1). Generic `send` 304'ü ve
+    /// response header'larını ayırt edemediği için ayrı bir yol kullanılır.
+    public func sendGeofenceSync(request: GeofenceSyncRequest,
+                                 completion: @escaping (Result<GeofenceSyncResult, Error>) -> Void) {
+        let baseURL = createBaseURL(for: request.endpointType)
+        var apiRequest = request.asURLRequest(with: baseURL)
+        apiRequest.setValue(config.userAgent, forHTTPHeaderField: "User-Agent")
+
+        let task = session.dataTask(with: apiRequest) { data, response, _ in
+            guard let http = response as? HTTPURLResponse else {
+                completion(.failure(ServiceError.noHttpResponse))
+                return
+            }
+            if http.statusCode == 304 {
+                completion(.success(.notModified))
+                return
+            }
+            switch http.statusCode {
+            case 200..<300:
+                guard let data = data else {
+                    completion(.failure(ServiceError.noData))
+                    return
+                }
+                do {
+                    let decoded = try JSONDecoder().decode(GeofenceSyncResponse.self, from: data)
+                    let etag = DengageNetworking.headerValue(http, "ETag") ?? decoded.etag
+                    completion(.success(.updated(decoded, etag: etag)))
+                } catch let decodingError {
+                    completion(.failure(ServiceError.decoding(decodingError)))
+                }
+            default:
+                completion(.failure(ServiceError.fail(http.statusCode)))
+            }
+        }
+        task.resume()
+    }
+
+    /// HTTP header'ı case-insensitive okur (iOS 10+ uyumlu; `value(forHTTPHeaderField:)` iOS 13+).
+    private static func headerValue(_ response: HTTPURLResponse, _ name: String) -> String? {
+        for (key, value) in response.allHeaderFields {
+            if let key = key as? String, key.caseInsensitiveCompare(name) == .orderedSame {
+                return value as? String
+            }
+        }
+        return nil
+    }
+
     func createBaseURL(for endpointType:EndpointType) -> URL{
         
         switch endpointType {
@@ -108,7 +155,7 @@ final public class DengageNetworking {
     }
 }
 
-internal enum ServiceError: Error {
+public enum ServiceError: Error {
     case invalidRefreshToken
     case noHttpResponse
     case noData
