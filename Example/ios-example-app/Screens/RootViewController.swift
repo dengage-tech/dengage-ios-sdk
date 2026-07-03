@@ -55,6 +55,8 @@ extension RootViewController: UITableViewDelegate{
             self.navigationController?.pushViewController(ContactKeyViewController(), animated: true)
         case .inboxMessages:
             self.navigationController?.pushViewController(InboxMessagesViewController(), animated: true)
+        case .inboxChannel:
+            self.navigationController?.pushViewController(InboxChannelViewController(), animated: true)
         case .customEvent:
             self.navigationController?.pushViewController(EventViewController(), animated: true)
         case .inAppMessage:
@@ -86,7 +88,7 @@ extension RootViewController: UITableViewDelegate{
 
 extension RootViewController{
     enum Actions: CaseIterable{
-        case allowNotification, deviceInfo, contactKey, inboxMessages, customEvent, inAppMessage,realTime, tags, testPage , geoFence,inAppInLine, appStory, realTimeInAppFilters, liveActivity
+        case allowNotification, deviceInfo, contactKey, inboxMessages, inboxChannel, customEvent, inAppMessage,realTime, tags, testPage , geoFence,inAppInLine, appStory, realTimeInAppFilters, liveActivity
         var title: String{
             switch self{
             case .allowNotification:
@@ -97,6 +99,8 @@ extension RootViewController{
                 return "CHANGE CONTACT KEY"
             case .inboxMessages:
                 return "INBOX MESSAGES"
+            case .inboxChannel:
+                return "INBOX CHANNEL"
             case .customEvent:
                 return "SEND CUSTOM EVENT"
             case .inAppMessage:

@@ -279,7 +279,34 @@ public class Dengage {
             completion(result)
         }
     }
-    
+
+    // MARK: - Inbox Channel (new /api/inbox endpoints)
+
+    /// Get Inbox Channel messages.
+    ///
+    /// - Parameters:
+    ///   - limit: max number of messages to fetch (min: 1, max: 100, default: 20).
+    ///   - completion: delivers the fetched messages or an error.
+    public static func getInboxChannelMessages(limit: Int = 20,
+                                               completion: @escaping (Result<[DengageInboxChannelMessage], Error>) -> Void) {
+        dengage?.channelInboxManager.getInboxChannelMessages(limit: limit) { result in
+            completion(result)
+        }
+    }
+
+    /// Send one or more Inbox Channel events (IM/OP/CL/DT) in a single bulk
+    /// request. The event date is stamped as UTC now by the SDK.
+    ///
+    /// - Parameters:
+    ///   - events: the interactions to report.
+    ///   - completion: delivers success or an error.
+    public static func sendInboxChannelEvents(_ events: [DengageInboxChannelEvent],
+                                              completion: @escaping (Result<Void, Error>) -> Void) {
+        dengage?.channelInboxManager.sendInboxChannelEvents(events) { result in
+            completion(result)
+        }
+    }
+
     @objc public static func setTags(_ tags: [TagItem]){
         dengage?.set(tags)
     }
