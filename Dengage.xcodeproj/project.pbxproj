@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		166E59D0CBF174CEF549245D /* GetInboxChannelMessagesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19C84EEB09A53BD2B3262441 /* GetInboxChannelMessagesRequest.swift */; };
+		4AF41591AA720C3C0B77CC67 /* DengageInboxChannelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FB9EBE3E64DBB13EF8D6B64 /* DengageInboxChannelManager.swift */; };
 		8800688C2C931DDA00881F71 /* InAppInlineElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880068882C931DDA00881F71 /* InAppInlineElementView.swift */; };
 		8800688E2C931E1A00881F71 /* InAppBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8800688D2C931E1A00881F71 /* InAppBrowserViewController.swift */; };
 		880068942C931F3600881F71 /* AppForegroundEventRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880068932C931F3600881F71 /* AppForegroundEventRequest.swift */; };
@@ -101,6 +103,7 @@
 		88F3103A2FD0788100299466 /* DeviceInfoHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F310232FD0788100299466 /* DeviceInfoHandler.swift */; };
 		88F3103B2FD0788100299466 /* SyncBridgeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F310212FD0788100299466 /* SyncBridgeHandler.swift */; };
 		88F3103F2FD07B2000299466 /* DengageGeofenceInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F3103E2FD07B2000299466 /* DengageGeofenceInterceptor.swift */; };
+		95C37F9F415E6DFB8F9B85FC /* DengageInboxChannelEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F57206187547D00F8D8218F0 /* DengageInboxChannelEvent.swift */; };
 		A00EFCBE280777B8004659DE /* RFMScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EFCBD280777B8004659DE /* RFMScore.swift */; };
 		A00EFCC328077869004659DE /* DengageRFMManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EFCC228077869004659DE /* DengageRFMManager.swift */; };
 		A0765BBF27CEB4700007215B /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765B8227CEB4700007215B /* Constants.swift */; };
@@ -153,6 +156,8 @@
 		A0765BEE27CEB4700007215B /* DengageLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765BBC27CEB4700007215B /* DengageLog.swift */; };
 		A0765BEF27CEB4700007215B /* DengageKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765BBD27CEB4700007215B /* DengageKeychain.swift */; };
 		A0765BF027CEB4700007215B /* DengageEventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765BBE27CEB4700007215B /* DengageEventManager.swift */; };
+		D6BEDDE239A29BCEA801F3A2 /* SendInboxChannelEventsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1A2EC3256F7CE3BC48B010 /* SendInboxChannelEventsRequest.swift */; };
+		DE15B1209DA405B4EB5DD323 /* DengageInboxChannelMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33B55F7B1019F97A89574FC1 /* DengageInboxChannelMessage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -194,6 +199,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		19C84EEB09A53BD2B3262441 /* GetInboxChannelMessagesRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GetInboxChannelMessagesRequest.swift; path = Sources/Dengage/Models/Request/InboxChannel/GetInboxChannelMessagesRequest.swift; sourceTree = "<group>"; };
+		33B55F7B1019F97A89574FC1 /* DengageInboxChannelMessage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DengageInboxChannelMessage.swift; path = Sources/Dengage/Models/InboxChannel/DengageInboxChannelMessage.swift; sourceTree = "<group>"; };
+		6FB9EBE3E64DBB13EF8D6B64 /* DengageInboxChannelManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DengageInboxChannelManager.swift; path = Sources/Dengage/DengageInboxChannelManager.swift; sourceTree = "<group>"; };
 		880068882C931DDA00881F71 /* InAppInlineElementView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InAppInlineElementView.swift; sourceTree = "<group>"; };
 		8800688D2C931E1A00881F71 /* InAppBrowserViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InAppBrowserViewController.swift; sourceTree = "<group>"; };
 		880068932C931F3600881F71 /* AppForegroundEventRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppForegroundEventRequest.swift; sourceTree = "<group>"; };
@@ -345,6 +353,8 @@
 		A0765BBD27CEB4700007215B /* DengageKeychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageKeychain.swift; sourceTree = "<group>"; };
 		A0765BBE27CEB4700007215B /* DengageEventManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageEventManager.swift; sourceTree = "<group>"; };
 		A092216727CED6D600BDA35E /* ios-example-app.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "ios-example-app.xcodeproj"; path = "Example/ios-example-app.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		F57206187547D00F8D8218F0 /* DengageInboxChannelEvent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DengageInboxChannelEvent.swift; path = Sources/Dengage/Models/InboxChannel/DengageInboxChannelEvent.swift; sourceTree = "<group>"; };
+		FC1A2EC3256F7CE3BC48B010 /* SendInboxChannelEventsRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SendInboxChannelEventsRequest.swift; path = Sources/Dengage/Models/Request/InboxChannel/SendInboxChannelEventsRequest.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -546,6 +556,11 @@
 				A0765B8027CEB4700007215B /* Sources */,
 				A0765B7727CEB4300007215B /* Products */,
 				881EE0192C996B0D00838C23 /* Frameworks */,
+				6FB9EBE3E64DBB13EF8D6B64 /* DengageInboxChannelManager.swift */,
+				33B55F7B1019F97A89574FC1 /* DengageInboxChannelMessage.swift */,
+				F57206187547D00F8D8218F0 /* DengageInboxChannelEvent.swift */,
+				19C84EEB09A53BD2B3262441 /* GetInboxChannelMessagesRequest.swift */,
+				FC1A2EC3256F7CE3BC48B010 /* SendInboxChannelEventsRequest.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1063,6 +1078,11 @@
 				A0765BC727CEB4700007215B /* DengageNotificationCarouselView.swift in Sources */,
 				881709422C91955E00FA8B63 /* VisitCountItem.swift in Sources */,
 				A0765BC527CEB4700007215B /* DengageAPIRequest.swift in Sources */,
+				4AF41591AA720C3C0B77CC67 /* DengageInboxChannelManager.swift in Sources */,
+				DE15B1209DA405B4EB5DD323 /* DengageInboxChannelMessage.swift in Sources */,
+				95C37F9F415E6DFB8F9B85FC /* DengageInboxChannelEvent.swift in Sources */,
+				166E59D0CBF174CEF549245D /* GetInboxChannelMessagesRequest.swift in Sources */,
+				D6BEDDE239A29BCEA801F3A2 /* SendInboxChannelEventsRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

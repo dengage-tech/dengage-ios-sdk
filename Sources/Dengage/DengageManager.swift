@@ -13,6 +13,7 @@ public class DengageManager {
     var eventManager: DengageEventProtocolInterface
     var sessionManager: DengageSessionManagerInterface
     var inboxManager: DengageInboxManager
+    var channelInboxManager: DengageInboxChannelManager
     var inAppManager: DengageInAppMessageManager
     var notificationManager: DengageNotificationManagerInterface
     var dengageRFMManager: DengageRFMManager
@@ -38,6 +39,7 @@ public class DengageManager {
         self.apiClient = DengageNetworking(config: config)
         self.sessionManager = DengageSessionManager(config: config)
         self.inboxManager = DengageInboxManager(config: config, service: apiClient)
+        self.channelInboxManager = DengageInboxChannelManager(config: config, service: apiClient)
         self.eventManager = DengageEventManager(config: config,
                                                 service: apiClient,
                                                 sessionManager: sessionManager)
