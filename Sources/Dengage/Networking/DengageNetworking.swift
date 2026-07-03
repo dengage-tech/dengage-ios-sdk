@@ -94,11 +94,17 @@ final public class DengageNetworking {
         var apiRequest = request.asURLRequest(with: baseURL)
         apiRequest.setValue(config.userAgent, forHTTPHeaderField: "User-Agent")
 
+        let urlString = apiRequest.url?.absoluteString ?? ""
+        Logger.log(message: "HTTP GEOFENCE SYNC REQUEST:\n \(apiRequest.httpMethod ?? "GET") \(urlString)",
+                   argument: apiRequest.value(forHTTPHeaderField: "If-None-Match") ?? "")
+
         let task = session.dataTask(with: apiRequest) { data, response, _ in
             guard let http = response as? HTTPURLResponse else {
                 completion(.failure(ServiceError.noHttpResponse))
                 return
             }
+            Logger.log(message: "HTTP GEOFENCE SYNC STATUS:\n for \(urlString)",
+                       argument: http.statusCode.description)
             if http.statusCode == 304 {
                 completion(.success(.notModified))
                 return
@@ -109,6 +115,7 @@ final public class DengageNetworking {
                     completion(.failure(ServiceError.noData))
                     return
                 }
+                Logger.log(message: "HTTP GEOFENCE SYNC RESPONSE:\n for \(urlString)", argument: data.pretty)
                 do {
                     let decoded = try JSONDecoder().decode(GeofenceSyncResponse.self, from: data)
                     let etag = DengageNetworking.headerValue(http, "ETag") ?? decoded.etag

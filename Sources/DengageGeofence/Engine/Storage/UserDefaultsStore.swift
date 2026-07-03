@@ -57,8 +57,8 @@ final class DefaultFenceRepository: FenceRepository {
             .map { $0 }
     }
 
-    func findById(_ fenceId: Int) -> EngineFence? {
-        loadAll().first { $0.fenceId == fenceId }
+    func findById(_ geofenceId: Int) -> EngineFence? {
+        loadAll().first { $0.geofenceId == geofenceId }
     }
 
     func clear() { queue.sync { store.setData(key, nil) } }
@@ -88,13 +88,13 @@ final class DefaultDeviceStateRepository: DeviceStateRepository {
     func setState(_ state: DeviceFenceState) {
         queue.sync {
             var states = load()
-            states[state.fenceId] = state
+            states[state.geofenceId] = state
             persist(states)
         }
     }
 
-    func getState(fenceId: Int) -> DeviceFenceState? {
-        queue.sync { load()[fenceId] }
+    func getState(geofenceId: Int) -> DeviceFenceState? {
+        queue.sync { load()[geofenceId] }
     }
 
     func clear() { queue.sync { store.setData(key, nil) } }

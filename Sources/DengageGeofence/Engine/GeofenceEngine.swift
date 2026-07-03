@@ -45,6 +45,7 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
 
     private var lastReevalLocation: CLLocation?
     private var running = false
+    private var startRequested = false
 
     override init() {
         super.init()
@@ -56,27 +57,52 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
     // MARK: - Lifecycle
 
     func start() {
+        startRequested = true
         guard remoteConfig.geofenceEnabled() else {
             Logger.log(message: "GeofenceEngine -> disabled by server config")
             stop(); return
         }
         guard hasLocationPermission() else {
-            Logger.log(message: "GeofenceEngine -> location permission missing")
+            // İzin sonradan verilirse locationManagerDidChangeAuthorization ile başlatılır.
+            Logger.log(message: "GeofenceEngine -> location permission missing, waiting for authorization")
             return
         }
         running = true
         configureBackground()
         movementListener.start()
         reeval(location: currentLocation(), syncAllowed: true, force: true)
+        // Başlangıçta cihaz konumu henüz yoksa bir kez taze fix iste → gelince register olur.
+        // (SLC tek başına, özellikle simülatörde, ilk fix'i geç/hiç vermeyebilir.)
+        if currentLocation() == nil {
+            Logger.log(message: "GeofenceEngine -> no cached location, requesting a fix for registration")
+            locationManager.requestLocation()
+        }
     }
 
     func stop() {
+        startRequested = false
         running = false
         movementListener.stop()
         registrar.removeAll()
         activeWindowScheduler.cancel()
         adaptiveThreshold.reset()
         wakeupCap.reset()
+    }
+
+    func requestLocationPermissions() {
+        let status: CLAuthorizationStatus
+        if #available(iOS 14.0, *) { status = locationManager.authorizationStatus }
+        else { status = CLLocationManager.authorizationStatus() }
+
+        if #available(iOS 13.4, *) {
+            if status == .notDetermined {
+                locationManager.requestWhenInUseAuthorization()
+            } else if status == .authorizedWhenInUse {
+                locationManager.requestAlwaysAuthorization()
+            }
+        } else {
+            locationManager.requestAlwaysAuthorization()
+        }
     }
 
     func forceResync() {
@@ -143,7 +169,10 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
     }
 
     private func registerTopN(location: CLLocation?) {
-        guard let location = location else { return }
+        guard let location = location else {
+            Logger.log(message: "GeofenceEngine -> registerTopN skipped: no location yet")
+            return
+        }
         let config = remoteConfig.config()
         let all = storage.fenceRepository.loadAll()
         let selected = topNSelector.select(fences: all,
@@ -156,6 +185,23 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
     }
 
     // MARK: - CLLocationManagerDelegate
+
+    @available(iOS 14.0, *)
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        handleAuthorizationChange()
+    }
+
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        // iOS 14 öncesi. iOS 14+ locationManagerDidChangeAuthorization kullanır.
+        if #available(iOS 14.0, *) { return }
+        handleAuthorizationChange()
+    }
+
+    private func handleAuthorizationChange() {
+        guard startRequested, !running, hasLocationPermission() else { return }
+        Logger.log(message: "GeofenceEngine -> authorization granted, starting")
+        start()
+    }
 
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         handleTransition(.enter, region: region)
@@ -225,10 +271,10 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
     /// gecikmeli kontrol planlanır (best-effort, process canlıyken).
     private func scheduleDwellIfNeeded(requestId: String, location: CLLocation?) {
         guard let ids = EngineFence.parseRequestId(requestId),
-              let dwellMinutes = triggerHandler.dwellMinutes(forFenceId: ids.fenceId) else { return }
+              let dwellMinutes = triggerHandler.dwellMinutes(forFenceId: ids.geofenceId) else { return }
         let delay = TimeInterval(dwellMinutes * 60)
         workQueue.asyncAfter(deadline: .now() + delay) { [weak self] in
-            guard let self = self, self.triggerHandler.isInside(fenceId: ids.fenceId) else { return }
+            guard let self = self, self.triggerHandler.isInside(geofenceId: ids.geofenceId) else { return }
             self.triggerHandler.handle(eventType: .dwell, requestId: requestId, location: self.locationManager.location ?? location)
         }
     }

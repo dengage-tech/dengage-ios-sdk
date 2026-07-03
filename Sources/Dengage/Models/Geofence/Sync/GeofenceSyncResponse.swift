@@ -4,7 +4,7 @@ import Foundation
 ///
 /// Tuning/remote config (topN, reevaluationDistanceMeters, adaptiveThreshold ...) bu cevapta DEĞİLDİR;
 /// merkezi `SdkParameters.geofence` bloğundan okunur (contract §4).
-public struct GeofenceSyncResponse: Codable {
+public struct GeofenceSyncResponse: Decodable {
     public let etag: String?
     public let syncedAt: String?
     public let horizonUntil: String?
@@ -24,8 +24,9 @@ public struct GeofenceSyncResponse: Codable {
 }
 
 /// Cihazın izlemesi gereken tek bir fence (contract §1 `SyncFence`).
-public struct SyncFence: Codable {
-    public let fenceId: Int
+/// Sadece `Decodable` — response modeli, hiç encode edilmez (storage `EngineFence` kullanır).
+public struct SyncFence: Decodable {
+    public let geofenceId: Int
     public let clusterId: Int
     public let latitude: Double
     public let longitude: Double
@@ -38,7 +39,7 @@ public struct SyncFence: Codable {
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
-        fenceId = (try? c.decode(Int.self, forKey: .fenceId)) ?? 0
+        geofenceId = (try? c.decode(Int.self, forKey: .geofenceId)) ?? 0
         clusterId = (try? c.decode(Int.self, forKey: .clusterId)) ?? 0
         latitude = (try? c.decode(Double.self, forKey: .latitude)) ?? 0
         longitude = (try? c.decode(Double.self, forKey: .longitude)) ?? 0
@@ -51,7 +52,7 @@ public struct SyncFence: Codable {
     }
 
     enum CodingKeys: String, CodingKey {
-        case fenceId, clusterId, latitude, longitude, radiusM, title
+        case geofenceId, clusterId, latitude, longitude, radiusM, title
         case activeNow, nextStateChangeAt, nextStateChangeTo, campaigns
     }
 }

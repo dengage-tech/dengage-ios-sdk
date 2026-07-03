@@ -7,14 +7,14 @@ protocol FenceRepository {
     func loadAll() -> [EngineFence]
     /// Cihaz konumuna en yakın `limit` fence (haversine sort). `activeOnly` ise sadece activeNow.
     func nearest(lat: Double, lon: Double, limit: Int, activeOnly: Bool) -> [EngineFence]
-    func findById(_ fenceId: Int) -> EngineFence?
+    func findById(_ geofenceId: Int) -> EngineFence?
     func clear()
 }
 
 /// Cihaz başına fence dwell/state tracking (doc 21 §6.2).
 protocol DeviceStateRepository {
     func setState(_ state: DeviceFenceState)
-    func getState(fenceId: Int) -> DeviceFenceState?
+    func getState(geofenceId: Int) -> DeviceFenceState?
     func clear()
 }
 

@@ -12,23 +12,20 @@ import Dengage
 @objc(DengageGeofence)
 public class DengageGeofence: NSObject {
 
-    private static let geofenceManager = DengageGeofenceManager()
-    
+    /// Enter olayında tetiklenen host hook'u (v2 engine tarafından çağrılır).
     @objc public static var geofenceInterceptor: DengageGeofenceInterceptor?
 
+    /// Geofence takibini başlatır. Artık yeni Geofence Engine (v2) kullanılır;
+    /// eski `DengageGeofenceManager` (v1) devre dışıdır. `geofenceEnabled` + izin kontrolü engine içinde yapılır.
     @objc public static func startGeofence() {
-        if let sdkParams = Dengage.getSdkParameters(), sdkParams.geofenceEnabled {
-            geofenceManager.startTracking(options: DengageGeofenceTrackingOptions(), fromInitialize: true)
-        } else {
-            stopGeofence()
-        }
+        DengageGeofenceEngine.shared.start()
     }
 
     @objc public static func stopGeofence() {
-        geofenceManager.stopGeofence()
+        DengageGeofenceEngine.shared.stop()
     }
 
     @objc public static func requestLocationPermissions() {
-        geofenceManager.requestLocationPermissions()
+        DengageGeofenceEngine.shared.requestLocationPermissions()
     }
 }

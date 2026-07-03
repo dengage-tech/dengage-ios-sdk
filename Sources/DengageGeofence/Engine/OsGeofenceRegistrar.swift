@@ -32,8 +32,17 @@ final class OsGeofenceRegistrar {
     }
 
     func removeAll() {
-        for region in manager.monitoredRegions where region.identifier.hasPrefix(kEngineRequestIdPrefix) {
+        // v2 (dengage_v2_*) + eski modülle (v1) oluşturulmuş region'ları da temizler
+        // (dengage_geofence_*, dengage_bubble_*). Hepsi `kIdentifierPrefix` = "dengage_" ile başlar.
+        // Aksi halde v1 leftover region'ları iOS 20-region limitini yer ve boş uyandırma üretir.
+        for region in manager.monitoredRegions where isDengageRegion(region.identifier) {
             manager.stopMonitoring(for: region)
         }
+    }
+
+    private func isDengageRegion(_ identifier: String) -> Bool {
+        identifier.hasPrefix(kEngineRequestIdPrefix) ||          // v2: dengage_v2_*
+            identifier.hasPrefix(kSyncGeofenceIdentifierPrefix) || // v1 synced: dengage_geofence_*
+            identifier.hasPrefix(kBubbleGeofenceIdentifierPrefix)  // v1 bubble: dengage_bubble_*
     }
 }

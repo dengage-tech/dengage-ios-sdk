@@ -45,6 +45,11 @@ public class DengageGeofenceEngine: NSObject, DengageGeofenceSilentPushBridging 
         engine.onAppForeground()
     }
 
+    /// Konum iznini ister (notDetermined → WhenInUse, WhenInUse → Always).
+    @objc public func requestLocationPermissions() {
+        engine.requestLocationPermissions()
+    }
+
     /// Silent push hook. `sourceType == geofence` ise fence'leri sunucudan yeniden çeker (force resync)
     /// ve son silent-push senkronizasyon zamanını kaydeder.
     @objc @discardableResult

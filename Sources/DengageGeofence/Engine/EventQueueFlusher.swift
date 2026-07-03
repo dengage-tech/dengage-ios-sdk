@@ -16,7 +16,17 @@ final class EventQueueFlusher {
         guard EngineSubscription.current() != nil else { return }
         let batch = eventQueue.dequeueBatch(maxSize: batchSize)
         guard !batch.isEmpty else { return }
-        sendSequentially(batch, index: 0, acked: [])
+
+        // Geçersiz (geofenceId <= 0) event'leri gönderme; kuyruktan temizle.
+        // (Eski geofenceId alan uyumsuzluğundan kalan bayat replay event'leri buraya düşer.)
+        let invalid = batch.filter { !$0.isValid }
+        let valid = batch.filter { $0.isValid }
+        if !invalid.isEmpty {
+            eventQueue.ack(idempotencyKeys: invalid.map { $0.idempotencyKey })
+            Logger.log(message: "EventQueueFlusher -> purged \(invalid.count) invalid (geofenceId<=0) events")
+        }
+        guard !valid.isEmpty else { return }
+        sendSequentially(valid, index: 0, acked: [])
     }
 
     private func sendSequentially(_ batch: [QueuedEvent], index: Int, acked: [String]) {
@@ -40,6 +50,11 @@ final class EventQueueFlusher {
 
     /// Online tek event gönderimi; başarısızsa kuyruğa bırakmak çağırana aittir.
     func sendOnline(_ event: QueuedEvent, completion: @escaping (Bool) -> Void) {
+        guard event.isValid else {
+            Logger.log(message: "EventQueueFlusher -> dropping invalid event (geofenceId<=0)")
+            completion(true) // geçersiz event kuyruğa bırakılmasın
+            return
+        }
         send(event, source: .online, completion: completion)
     }
 
