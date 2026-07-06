@@ -1,6 +1,12 @@
 # Changelog
 
 
+## [5.100] - 2026-07-06
+
+### New Features
+
+- Add liveActivityPermission to DengageRequestSetStartToken
+
 ## [5.99] - 2026-06-30
 
 ### New Features
