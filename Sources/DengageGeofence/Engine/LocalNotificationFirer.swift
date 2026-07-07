@@ -18,7 +18,14 @@ final class LocalNotificationFirer {
         notification.title = title
         notification.body = body
         notification.sound = .default
-        var userInfo: [String: Any] = ["dengage_geofence_fence_id": geofenceId]
+        // Tıklanınca Dengage'in tap handler'ı (DengageNotificationManager.didReceivePush) bunu bir
+        // Dengage push'u olarak tanısın diye `messageSource` şart; yoksa handler erken return eder ve
+        // ne uygulama açılır ne deeplink çalışır. `targetUrl` PushContent üzerinden deeplink olarak okunur.
+        // (MESSAGE_SOURCE Dengage modülünde `internal` olduğundan string sabit tutuluyor.)
+        var userInfo: [String: Any] = [
+            "messageSource": "DENGAGE",
+            "dengage_geofence_fence_id": geofenceId
+        ]
         if let campaignId = campaignId { userInfo["dengage_geofence_campaign_id"] = campaignId }
         if let deepLink = content.deepLink { userInfo["targetUrl"] = deepLink }
         if let customParams = content.customParams {
