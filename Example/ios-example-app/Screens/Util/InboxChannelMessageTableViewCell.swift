@@ -25,8 +25,16 @@ final class InboxChannelMessageTableViewCell: UITableViewCell {
         return view
     }()
 
+    private lazy var linksLabel: UILabel = {
+        let view = UILabel()
+        view.font = .systemFont(ofSize: 10)
+        view.textColor = #colorLiteral(red: 0.08235294118, green: 0.396078431, blue: 0.7529411765, alpha: 1)
+        view.numberOfLines = 0
+        return view
+    }()
+
     private lazy var stackView: UIStackView = {
-        let view = UIStackView(arrangedSubviews: [titleLabel, messageLabel, metaLabel])
+        let view = UIStackView(arrangedSubviews: [titleLabel, messageLabel, metaLabel, linksLabel])
         view.axis = .vertical
         view.spacing = 4
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -51,6 +59,13 @@ final class InboxChannelMessageTableViewCell: UITableViewCell {
         let ctaCount = message.data.ctaButtons?.count ?? 0
         let date = message.data.receiveDateValue?.description ?? (message.data.receiveDate ?? "-")
         metaLabel.text = "Priority: \(message.priority) | Pinned: \(message.data.isPinned) | Read: \(message.isRead) | CTA: \(ctaCount) | \(date)"
+
+        let cta = message.data.ctaButtons?.first
+        var links = [String]()
+        if let deeplink = cta?.iosDeeplink, !deeplink.isEmpty { links.append("iosDeeplink: \(deeplink)") }
+        if let webUrl = cta?.webUrl, !webUrl.isEmpty { links.append("webUrl: \(webUrl)") }
+        linksLabel.text = links.joined(separator: "\n")
+        linksLabel.isHidden = links.isEmpty
 
         contentView.backgroundColor = message.isRead
             ? #colorLiteral(red: 1, green: 0.983807385, blue: 0, alpha: 0.4312555018)

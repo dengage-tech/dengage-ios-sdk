@@ -160,17 +160,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		88C4E1DB2FB6FBAA000E065F /* Font */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
-			path = Font;
-			sourceTree = "<group>";
-		};
+		88C4E1DB2FB6FBAA000E065F /* Font */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Font; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -278,6 +268,7 @@
 				A09951A927ACB2A30089D98D /* EventViewController.swift */,
 				D6472F4D28E88D670076523C /* GeofenceViewController.swift */,
 				A09951A627ACB12E0089D98D /* InAppMessageViewController.swift */,
+				E989949AA2D62F1BF2DA2D85 /* InboxChannelViewController.swift */,
 				A099519C27ACAD380089D98D /* InboxMessagesViewController.swift */,
 				882A92002D6CAC6900179FC1 /* LiveActivityViewController.swift */,
 				8840B86D2E8D59FE00868EFB /* RealTimeInAppFiltersViewController.swift */,
@@ -285,7 +276,6 @@
 				A0B884FD27B1CF44004D4360 /* RootViewController.swift */,
 				D68141002BB33CEC00663AC8 /* ShowInLineInAPP.swift */,
 				A09951A327ACB0D30089D98D /* TagsViewController.swift */,
-				E989949AA2D62F1BF2DA2D85 /* InboxChannelViewController.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
