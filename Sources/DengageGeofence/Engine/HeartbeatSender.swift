@@ -36,6 +36,7 @@ final class HeartbeatSender {
                 Logger.log(message: "HeartbeatSender -> sent heartbeat")
             case .failure(let error):
                 Logger.log(message: "HeartbeatSender_ERROR", argument: error.localizedDescription)
+                GeofenceDebugLog.error("Geofence heartbeat failed", context: ["error": error.localizedDescription])
             }
         }
     }

@@ -1,6 +1,9 @@
 import Foundation
 import CoreLocation
 import Dengage
+#if canImport(UIKit)
+import UIKit
+#endif
 
 /// Geofence Engine orchestrator (doc 21 §6.5 `GeofenceEngine`).
 /// Sync, reeval, OS region register, movement (SLC), trigger, wake-up cap ve event flush'ı koordine eder.
@@ -58,6 +61,8 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
 
     func start() {
         startRequested = true
+        // İzin zaten verilmişse authorization-change event'i gelmeyebilir; mevcut izni burada da persist et.
+        persistLocationPermission(currentAuthorizationStatus())
         guard remoteConfig.geofenceEnabled() else {
             Logger.log(message: "GeofenceEngine -> disabled by server config")
             stop(); return
@@ -188,12 +193,14 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
 
     @available(iOS 14.0, *)
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        persistLocationPermission(manager.authorizationStatus)
         handleAuthorizationChange()
     }
 
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         // iOS 14 öncesi. iOS 14+ locationManagerDidChangeAuthorization kullanır.
         if #available(iOS 14.0, *) { return }
+        persistLocationPermission(status)
         handleAuthorizationChange()
     }
 
@@ -201,6 +208,12 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
         guard startRequested, !running, hasLocationPermission() else { return }
         Logger.log(message: "GeofenceEngine -> authorization granted, starting")
         start()
+    }
+
+    /// Konum izni string'ini (`none`/`always`/`appinuse`) subscription request'i için persist eder.
+    /// v1 `DengageGeofenceManager` bu değeri yazıyordu; v2'ye geçince yazan kalmamıştı → subscription'da boş gidiyordu.
+    private func persistLocationPermission(_ status: CLAuthorizationStatus) {
+        Dengage.setLocationPermission(status: status.string)
     }
 
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
@@ -228,10 +241,15 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
 
     func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
         Logger.log(message: "GeofenceEngine -> monitoring failed: \(error.localizedDescription)")
+        GeofenceDebugLog.error("Geofence region monitoring failed", context: [
+            "error": error.localizedDescription,
+            "region": region?.identifier ?? "nil"
+        ])
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         Logger.log(message: "GeofenceEngine -> location failed: \(error.localizedDescription)")
+        GeofenceDebugLog.error("Geofence location update failed", context: ["error": error.localizedDescription])
     }
 
     // MARK: - Transition / movement
@@ -242,9 +260,14 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
         wakeupCap.attemptResume()
         let location = locationManager.location
         let requestId = region.identifier
+        // Arka planda uyandırıldıysak event-signal POST'u bitene kadar uygulamayı canlı tut
+        // (Android goAsync() muadili); yoksa iOS suspend eder ve push saatlerce gecikir.
+        let bgTask = BackgroundTaskAssertion(name: "com.dengage.geofence.trigger")
         workQueue.async { [weak self] in
-            guard let self = self else { return }
-            self.triggerHandler.handle(eventType: eventType, requestId: requestId, location: location)
+            guard let self = self else { bgTask.end(); return }
+            self.triggerHandler.handle(eventType: eventType, requestId: requestId, location: location) {
+                bgTask.end()
+            }
             if eventType == .enter { self.scheduleDwellIfNeeded(requestId: requestId, location: location) }
         }
     }
@@ -285,10 +308,13 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
         lastReevalLocation ?? locationManager.location
     }
 
+    private func currentAuthorizationStatus() -> CLAuthorizationStatus {
+        if #available(iOS 14.0, *) { return locationManager.authorizationStatus }
+        return CLLocationManager.authorizationStatus()
+    }
+
     private func hasLocationPermission() -> Bool {
-        let status: CLAuthorizationStatus
-        if #available(iOS 14.0, *) { status = locationManager.authorizationStatus }
-        else { status = CLLocationManager.authorizationStatus() }
+        let status = currentAuthorizationStatus()
         return status == .authorizedAlways || status == .authorizedWhenInUse
     }
 
@@ -308,4 +334,41 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
             self?.attemptResume()
         }
     }
+}
+
+/// Geofence engine hata loglaması için ince köprü. Dengage modülündeki flag-gate'li
+/// (`sdkErrorLoggingEnabled`) helper'a yönlendirir; `DebugLog`/`DebugLogRequest` Dengage'de
+/// internal olduğundan engine bunları doğrudan kuramaz.
+enum GeofenceDebugLog {
+    static func error(_ message: String, context: [String: String] = [:]) {
+        Dengage.dengage?.config.sendGeofenceErrorLog(message: message, context: context)
+    }
+}
+
+/// Arka planda (region event ile uyanma) ağ işini tamamlayana kadar uygulamayı canlı tutan
+/// UIApplication background task assertion sarmalayıcısı — Android'deki `BroadcastReceiver.goAsync()`
+/// muadili. `end()` idempotent'tir ve expiration handler ile bir kez daha çağrılabilir.
+final class BackgroundTaskAssertion {
+    #if canImport(UIKit) && !os(watchOS)
+    private let lock = NSLock()
+    private var taskId: UIBackgroundTaskIdentifier = .invalid
+
+    init(name: String) {
+        taskId = UIApplication.shared.beginBackgroundTask(withName: name) { [weak self] in
+            // Süre dolarsa iOS assertion'ı geri ister; task'ı kapat.
+            self?.end()
+        }
+    }
+
+    func end() {
+        lock.lock(); defer { lock.unlock() }
+        guard taskId != .invalid else { return }
+        let id = taskId
+        taskId = .invalid
+        UIApplication.shared.endBackgroundTask(id)
+    }
+    #else
+    init(name: String) {}
+    func end() {}
+    #endif
 }

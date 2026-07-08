@@ -38,6 +38,10 @@ final class LocalNotificationFirer {
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
                 Logger.log(message: "LocalNotificationFirer_ERROR", argument: error.localizedDescription)
+                GeofenceDebugLog.error("Geofence local notification failed", context: [
+                    "error": error.localizedDescription,
+                    "geofenceId": String(geofenceId)
+                ])
             } else {
                 Logger.log(message: "LocalNotificationFirer -> fired (fence=\(geofenceId))")
             }

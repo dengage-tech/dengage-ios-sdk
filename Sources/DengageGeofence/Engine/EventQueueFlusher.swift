@@ -12,10 +12,11 @@ final class EventQueueFlusher {
     }
 
     /// Kuyruğu sırayla flush eder; bir gönderim başarısız olursa kalanı sonraki flush'a bırakır.
-    func flush(batchSize: Int) {
-        guard EngineSubscription.current() != nil else { return }
+    /// [completion] tüm gönderimler bittiğinde çağrılır (background task assertion'ı için).
+    func flush(batchSize: Int, completion: @escaping () -> Void = {}) {
+        guard EngineSubscription.current() != nil else { completion(); return }
         let batch = eventQueue.dequeueBatch(maxSize: batchSize)
-        guard !batch.isEmpty else { return }
+        guard !batch.isEmpty else { completion(); return }
 
         // Geçersiz (geofenceId <= 0) event'leri gönderme; kuyruktan temizle.
         // (Eski geofenceId alan uyumsuzluğundan kalan bayat replay event'leri buraya düşer.)
@@ -25,25 +26,27 @@ final class EventQueueFlusher {
             eventQueue.ack(idempotencyKeys: invalid.map { $0.idempotencyKey })
             Logger.log(message: "EventQueueFlusher -> purged \(invalid.count) invalid (geofenceId<=0) events")
         }
-        guard !valid.isEmpty else { return }
-        sendSequentially(valid, index: 0, acked: [])
+        guard !valid.isEmpty else { completion(); return }
+        sendSequentially(valid, index: 0, acked: [], completion: completion)
     }
 
-    private func sendSequentially(_ batch: [QueuedEvent], index: Int, acked: [String]) {
+    private func sendSequentially(_ batch: [QueuedEvent], index: Int, acked: [String], completion: @escaping () -> Void) {
         guard index < batch.count else {
             if !acked.isEmpty {
                 eventQueue.ack(idempotencyKeys: acked)
                 Logger.log(message: "EventQueueFlusher -> flushed \(acked.count) events")
             }
+            completion()
             return
         }
         send(batch[index], source: .replay) { [weak self] success in
-            guard let self = self else { return }
+            guard let self = self else { completion(); return }
             if success {
-                self.sendSequentially(batch, index: index + 1, acked: acked + [batch[index].idempotencyKey])
+                self.sendSequentially(batch, index: index + 1, acked: acked + [batch[index].idempotencyKey], completion: completion)
             } else {
                 // network düştü: şimdiye dek başarılı olanları ack'le, kalanı bırak
                 if !acked.isEmpty { self.eventQueue.ack(idempotencyKeys: acked) }
+                completion()
             }
         }
     }
@@ -87,6 +90,12 @@ final class EventQueueFlusher {
                     completion(true)
                 } else {
                     Logger.log(message: "EventQueueFlusher_ERROR", argument: error.localizedDescription)
+                    GeofenceDebugLog.error("Geofence event-signal send failed", context: [
+                        "error": error.localizedDescription,
+                        "geofenceId": String(event.geofenceId),
+                        "eventType": event.eventType.rawValue,
+                        "source": source.rawValue
+                    ])
                     completion(false)
                 }
             }

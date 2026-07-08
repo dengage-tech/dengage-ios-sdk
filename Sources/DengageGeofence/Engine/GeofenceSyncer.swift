@@ -50,6 +50,7 @@ final class GeofenceSyncer {
                 completion(.updated(fences))
             case .failure(let error):
                 Logger.log(message: "GeofenceSyncer_ERROR", argument: error.localizedDescription)
+                GeofenceDebugLog.error("Geofence sync failed", context: ["error": error.localizedDescription])
                 completion(.error(error))
             }
         }

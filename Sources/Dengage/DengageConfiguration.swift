@@ -253,9 +253,38 @@ final public class DengageConfiguration: Encodable {
             }
         }
     }
-    
-    
-    
+
+    /// Geofence engine hata loglaması (felogging → Graylog). Yalnızca server `sdkErrorLoggingEnabled == true`
+    /// iken gönderilir. In-app debug log ile aynı `/felogging/{screenName}` pipeline'ını kullanır.
+    /// (`DebugLog`/`DebugLogRequest` Dengage modülünde internal; engine bu public köprüyü çağırır.)
+    public func sendGeofenceErrorLog(message: String, context: [String: String] = [:]) {
+        guard remoteConfiguration?.sdkErrorLoggingEnabled == true else { return }
+
+        let debugLog = DebugLog(
+            traceId: UUID().uuidString,
+            appGuid: remoteConfiguration?.appId,
+            appId: remoteConfiguration?.appId,
+            account: remoteConfiguration?.accountName,
+            device: applicationIdentifier,
+            sessionId: "",
+            sdkVersion: SDK_VERSION,
+            currentCampaignList: [],
+            campaignId: nil,
+            campaignType: nil,
+            sendId: nil,
+            message: message,
+            context: context,
+            contactKey: getContactKey(),
+            channel: "ios",
+            currentRules: [:]
+        )
+
+        let request = DebugLogRequest(screenName: "geofence-engine", debugLog: debugLog)
+        DengageNetworking(config: self).send(request: request) { _ in }
+    }
+
+
+
     func set(permission: Bool) {
         self.permission = permission
         DengageLocalStorage.shared.set(value: permission, for: .userPermission)

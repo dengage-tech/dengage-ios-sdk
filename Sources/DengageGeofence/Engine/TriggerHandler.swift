@@ -29,12 +29,15 @@ final class TriggerHandler {
         self.offlineQueueMaxSize = offlineQueueMaxSize
     }
 
-    func handle(eventType: GeofenceEventType, requestId: String, location: CLLocation?) {
+    /// [completion] async event-signal gönderimleri (+ flush) bittiğinde çağrılır; orchestrator
+    /// bunu background task assertion'ının `end()`'ine bağlar ki iOS uygulamayı POST bitmeden
+    /// suspend edip push'u geciktirmesin.
+    func handle(eventType: GeofenceEventType, requestId: String, location: CLLocation?, completion: @escaping () -> Void = {}) {
         guard let ids = EngineFence.parseRequestId(requestId),
-              let fence = fenceRepository.findById(ids.geofenceId) else { return }
+              let fence = fenceRepository.findById(ids.geofenceId) else { completion(); return }
         guard fence.geofenceId > 0 else {
             Logger.log(message: "TriggerHandler -> skipping invalid fence (geofenceId<=0)")
-            return
+            completion(); return
         }
 
         let now = Date().timeIntervalSince1970
@@ -45,7 +48,7 @@ final class TriggerHandler {
         let previous = deviceStateRepository.getState(geofenceId: fence.geofenceId)
         if isDuplicateTransition(eventType: eventType, previous: previous) {
             Logger.log(message: "TriggerHandler -> duplicate \(eventType.rawValue) for fence \(fence.geofenceId), skipping")
-            return
+            completion(); return
         }
 
         updateDeviceState(fence: fence, eventType: eventType, now: now)
@@ -69,20 +72,28 @@ final class TriggerHandler {
         let matchingCampaigns = fence.campaigns.filter { $0.triggerType == matchingTrigger }
         guard !matchingCampaigns.isEmpty else {
             Logger.log(message: "TriggerHandler -> no \(matchingTrigger.rawValue) campaign for fence \(fence.geofenceId)")
-            return
+            completion(); return
         }
 
         let online = Reachability.isOnline()
         let lat = location?.coordinate.latitude ?? fence.latitude
         let lon = location?.coordinate.longitude ?? fence.longitude
 
+        // Async gönderimleri grupla; hepsi (+ flush) bitince completion → background task end.
+        let group = DispatchGroup()
         for campaign in matchingCampaigns {
-            dispatch(fence: fence, campaign: campaign, eventType: eventType, lat: lat, lon: lon, now: now, online: online)
+            group.enter()
+            dispatch(fence: fence, campaign: campaign, eventType: eventType, lat: lat, lon: lon, now: now, online: online) {
+                group.leave()
+            }
         }
 
         if online {
-            eventFlusher.flush(batchSize: offlineQueueMaxSize())
+            group.enter()
+            eventFlusher.flush(batchSize: offlineQueueMaxSize()) { group.leave() }
         }
+
+        group.notify(queue: DispatchQueue.global(qos: .utility)) { completion() }
     }
 
     private func dispatch(fence: EngineFence,
@@ -90,7 +101,8 @@ final class TriggerHandler {
                           eventType: GeofenceEventType,
                           lat: Double, lon: Double,
                           now: TimeInterval,
-                          online: Bool) {
+                          online: Bool,
+                          completion: @escaping () -> Void) {
         let event = QueuedEvent(
             idempotencyKey: UUID().uuidString,
             geofenceId: fence.geofenceId,
@@ -105,6 +117,7 @@ final class TriggerHandler {
 
         if online {
             eventFlusher.sendOnline(event) { [weak self] success in
+                defer { completion() }
                 guard let self = self, !success else { return }
                 Logger.log(message: "TriggerHandler -> online send failed, queueing \(event.idempotencyKey)")
                 self.eventQueue.enqueue(event, maxSize: self.offlineQueueMaxSize())
@@ -116,6 +129,7 @@ final class TriggerHandler {
             }
             eventQueue.enqueue(event, maxSize: offlineQueueMaxSize())
             Logger.log(message: "TriggerHandler -> offline trigger queued \(event.idempotencyKey)")
+            completion()
         }
     }
 
@@ -126,9 +140,11 @@ final class TriggerHandler {
                 geofenceId: fence.geofenceId, clusterId: fence.clusterId, state: .inside,
                 enteredAt: now, lastSeenAt: now, exitedAt: nil))
         case .dwell:
+            // Dwell atıldı → `.dwellPending` = "inside ve bu ziyarette dwell zaten fire edildi".
+            // Sonraki dwell callback'leri (biriken timer / OS tekrarı) böylece dedup edilir.
             let existing = deviceStateRepository.getState(geofenceId: fence.geofenceId)
             deviceStateRepository.setState(DeviceFenceState(
-                geofenceId: fence.geofenceId, clusterId: fence.clusterId, state: .inside,
+                geofenceId: fence.geofenceId, clusterId: fence.clusterId, state: .dwellPending,
                 enteredAt: existing?.enteredAt ?? now, lastSeenAt: now, exitedAt: nil))
         case .exit:
             let existing = deviceStateRepository.getState(geofenceId: fence.geofenceId)
@@ -138,13 +154,17 @@ final class TriggerHandler {
         }
     }
 
-    /// Aynı geçiş için tekrarlanan OS callback'lerini ele: enter yalnızca cihaz `inside` değilken,
-    /// exit yalnızca `inside`'ken gerçek geçiştir. Dwell explicit zamanlandığı için hariç.
+    /// Aynı geçiş için tekrarlanan OS callback'lerini ele; her tetik tipi ziyaret başına en fazla bir kez fire eder.
+    /// State makinesi: enter→inside, dwell→dwellPending (dwell atıldı), exit→outside.
+    /// - enter: cihaz zaten fence içindeyse (inside veya dwellPending) yinelenmedir.
+    /// - dwell: yalnızca taze `inside` iken bir kez; `dwellPending` (zaten atıldı) veya outside/nil (bayat timer) → yinelenmedir.
+    /// - exit: cihaz zaten dışarıdaysa (outside/nil) yinelenmedir.
     private func isDuplicateTransition(eventType: GeofenceEventType, previous: DeviceFenceState?) -> Bool {
+        let state = previous?.state
         switch eventType {
-        case .enter: return previous?.state == .inside
-        case .exit:  return previous == nil || previous?.state == .outside
-        case .dwell: return false
+        case .enter: return state == .inside || state == .dwellPending
+        case .exit:  return previous == nil || state == .outside
+        case .dwell: return state != .inside
         }
     }
 
