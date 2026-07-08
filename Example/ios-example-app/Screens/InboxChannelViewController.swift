@@ -73,13 +73,28 @@ extension InboxChannelViewController: UITableViewDataSource {
 
 extension InboxChannelViewController: UITableViewDelegate {
 
-    // Tapping a row that has a CTA button reports a click (CL).
+    // Tapping a row reports a click (CL) and routes to the message's deeplink.
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let message = messages[indexPath.row]
-        guard let cta = message.data.ctaButtons?.first else { return }
         send(.click, for: message)
-        print("CTA clicked (CL sent): \(cta.label ?? cta.buttonId ?? "-")")
+        messages[indexPath.row].isRead = true
+        tableView.reloadRows(at: [indexPath], with: .automatic)
+        openDeeplink(for: message)
+    }
+
+    private func openDeeplink(for message: DengageInboxChannelMessage) {
+        let cta = message.data.ctaButtons?.first
+        let target = [cta?.iosDeeplink, cta?.webUrl]
+            .compactMap { $0 }
+            .first { !$0.isEmpty }
+        guard let target = target, let url = URL(string: target) else {
+            print("No deeplink for this message")
+            return
+        }
+        UIApplication.shared.open(url, options: [:]) { success in
+            if !success { print("Cannot open: \(target)") }
+        }
     }
 
     func tableView(_ tableView: UITableView,

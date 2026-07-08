@@ -8,6 +8,9 @@ public struct DengageInboxChannelMessage: Decodable {
     public let priority: Int
     public let data: DengageInboxChannelMessageData
 
+    /// Local-only flag; not returned by the server. Reflects a pending delete.
+    public var isDeleted: Bool = false
+
     enum CodingKeys: String, CodingKey {
         case id = "smsgId"
         case isRead
@@ -22,6 +25,15 @@ public struct DengageInboxChannelMessage: Decodable {
         priority = (try? container.decode(Int.self, forKey: .priority)) ?? 0
         data = try container.decode(DengageInboxChannelMessageData.self, forKey: .data)
     }
+}
+
+/// Lightweight local record of an Inbox Channel message's interaction state,
+/// persisted in `DengageLocalStorage` so read/deleted state survives fetches.
+struct InboxChannelMessageCache: Codable {
+    var id: String
+    var isRead: Bool
+    var isDeleted: Bool
+    var receiveDate: String?
 }
 
 /// Content payload of an Inbox Channel message (the "messageJson" object).

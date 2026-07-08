@@ -33,6 +33,7 @@ final public class DengageLocalStorage: NSObject {
         case userPermission = "userPermission"
         case trackingPermission = "trackingPermission"
         case inboxMessages = "inboxMessages"
+        case inboxChannelMessages = "inboxChannelMessages"
         case configParams = "configParams"
         case lastFetchedConfigTime = "lastFetchedConfigTime"
         case lastFetchedInAppMessageTime = "lastFetchedInAppMessageTime"
@@ -310,6 +311,26 @@ extension DengageLocalStorage {
             userDefaults.synchronize()
         } catch {
             Logger.log(message: "saving inbox messages fail")
+        }
+    }
+
+    func getInboxChannelMessages() -> [InboxChannelMessageCache] {
+        guard let messagesData = userDefaults.object(forKey: Key.inboxChannelMessages.rawValue) as? Data else { return [] }
+        do {
+            return try JSONDecoder().decode([InboxChannelMessageCache].self, from: messagesData)
+        } catch {
+            Logger.log(message: "getInboxChannelMessages fail")
+            return []
+        }
+    }
+
+    func save(_ inboxChannelMessages:[InboxChannelMessageCache]){
+        do {
+            let encoded = try JSONEncoder().encode(inboxChannelMessages)
+            userDefaults.set(encoded, forKey: Key.inboxChannelMessages.rawValue)
+            userDefaults.synchronize()
+        } catch {
+            Logger.log(message: "saving inbox channel messages fail")
         }
     }
     
