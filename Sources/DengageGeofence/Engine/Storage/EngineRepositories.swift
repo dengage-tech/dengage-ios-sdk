@@ -34,4 +34,7 @@ protocol SyncMetadataRepository: AnyObject {
     var lastHeartbeatAt: Double? { get set }
     /// Silent push (sourceType=geofence) ile yapılan son resync zamanı (epoch seconds).
     var lastSilentPushAt: Double? { get set }
+    /// Wake-up cap pause başlangıcı (epoch seconds); nil = pause yok.
+    /// Persist edilir ki process ölüp yeniden doğduğunda pause penceresi doğru değerlendirilebilsin.
+    var wakeupPausedAt: Double? { get set }
 }

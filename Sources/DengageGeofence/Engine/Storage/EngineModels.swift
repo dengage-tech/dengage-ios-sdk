@@ -3,6 +3,15 @@ import Dengage
 
 let kEngineRequestIdPrefix = "dengage_v2"
 
+/// Wake-up cap pause penceresi boyunca kayıtlı tutulan yer-değiştirme dedektörü region'ı.
+/// Kampanya fence'i DEĞİLDİR: SLC kapalıyken uygulamayı uyandıracak, process ölümünden sağ çıkan
+/// tek kaynaktır (region monitoring, SLC'den bağımsız bir OS alt sistemidir).
+let kWakeupBubbleIdentifier = "dengage_v2_wakeup_bubble"
+
+/// Bubble yarıçapı. Küçük olursa pause boyunca sık uyanılır (cap'in amacı kaçar), büyük olursa
+/// toparlanma yavaşlar. "Kullanıcı kayda değer biçimde yer değiştirdi" eşiği olarak seçildi.
+let kWakeupBubbleRadiusMeters: Double = 3000
+
 /// Engine-içi flattened fence modeli. Sync response'taki `SyncFence` -> `EngineFence` map edilir,
 /// JSON store'a persist edilir. (Android tarafındaki `Fence` ile eşdeğer.)
 struct EngineFence: Codable {

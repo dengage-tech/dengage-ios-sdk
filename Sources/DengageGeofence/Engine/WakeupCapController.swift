@@ -12,6 +12,7 @@ final class WakeupCapController {
     private let onPause: () -> Void
     private let onResume: () -> Void
     private let scheduleResume: (_ delayMinutes: Int) -> Void
+    private let syncMetadata: SyncMetadataRepository
 
     private var timestamps: [TimeInterval] = []
     private(set) var isPaused = false
@@ -21,11 +22,20 @@ final class WakeupCapController {
     init(configProvider: @escaping () -> WakeupCapConfig,
          onPause: @escaping () -> Void,
          onResume: @escaping () -> Void,
-         scheduleResume: @escaping (_ delayMinutes: Int) -> Void) {
+         scheduleResume: @escaping (_ delayMinutes: Int) -> Void,
+         syncMetadata: SyncMetadataRepository) {
         self.configProvider = configProvider
         self.onPause = onPause
         self.onResume = onResume
         self.scheduleResume = scheduleResume
+        self.syncMetadata = syncMetadata
+
+        // Taze process: pause durumunu diskten hidrate et. Aksi halde `isPaused = false` sanılır,
+        // `attemptResume()` erken döner ve OS seviyesinde kapatılmış SLC bir daha açılmaz.
+        if let persisted = syncMetadata.wakeupPausedAt, persisted > 0 {
+            isPaused = true
+            pausedAt = persisted
+        }
     }
 
     /// Her SLC wake-up'ta çağrılır. Cap aşıldıysa pause başlatır.
@@ -55,6 +65,7 @@ final class WakeupCapController {
         }
         isPaused = false
         timestamps.removeAll()
+        syncMetadata.wakeupPausedAt = nil
         lock.unlock()
         Logger.log(message: "WakeupCap -> resume")
         onResume()
@@ -65,11 +76,13 @@ final class WakeupCapController {
         isPaused = false
         timestamps.removeAll()
         pausedAt = 0
+        syncMetadata.wakeupPausedAt = nil
     }
 
     private func pause(now: TimeInterval, config: WakeupCapConfig) {
         isPaused = true
         pausedAt = now
+        syncMetadata.wakeupPausedAt = now
         Logger.log(message: "WakeupCap -> cap exceeded, pausing for \(config.pauseMinutes)min")
         onPause()
         scheduleResume(config.pauseMinutes)
