@@ -49,6 +49,8 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
     private var lastReevalLocation: CLLocation?
     private var running = false
     private var startRequested = false
+    /// Dwell timer'ı arm edilmiş fence'ler; fence başına tek timer. Yalnızca `workQueue` üzerinde erişilir.
+    private var armedDwellFences = Set<Int>()
 
     override init() {
         super.init()
@@ -92,6 +94,7 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
         activeWindowScheduler.cancel()
         adaptiveThreshold.reset()
         wakeupCap.reset()
+        workQueue.async { [weak self] in self?.armedDwellFences.removeAll() }
     }
 
     func requestLocationPermissions() {
@@ -292,12 +295,23 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
 
     /// iOS region monitoring native DWELL desteklemez; dwell kampanyası varsa enter sonrası
     /// gecikmeli kontrol planlanır (best-effort, process canlıyken).
+    ///
+    /// Her enter callback'inde çağrılır — ki bunların çoğu yinelenmedir (her `registerTopN`
+    /// re-register'ı `didDetermineState(.inside)` üretir). Bu yüzden fence başına en fazla bir
+    /// timer arm edilir ve yalnızca cihaz `.inside` iken (dwell henüz atılmamışken; `.dwellPending`
+    /// durumunda `isInside` false döner) kurulur.
     private func scheduleDwellIfNeeded(requestId: String, location: CLLocation?) {
         guard let ids = EngineFence.parseRequestId(requestId),
               let dwellMinutes = triggerHandler.dwellMinutes(forFenceId: ids.geofenceId) else { return }
+        guard triggerHandler.isInside(geofenceId: ids.geofenceId),
+              !armedDwellFences.contains(ids.geofenceId) else { return }
+        armedDwellFences.insert(ids.geofenceId)
+
         let delay = TimeInterval(dwellMinutes * 60)
         workQueue.asyncAfter(deadline: .now() + delay) { [weak self] in
-            guard let self = self, self.triggerHandler.isInside(geofenceId: ids.geofenceId) else { return }
+            guard let self = self else { return }
+            self.armedDwellFences.remove(ids.geofenceId)
+            guard self.triggerHandler.isInside(geofenceId: ids.geofenceId) else { return }
             self.triggerHandler.handle(eventType: .dwell, requestId: requestId, location: self.locationManager.location ?? location)
         }
     }
