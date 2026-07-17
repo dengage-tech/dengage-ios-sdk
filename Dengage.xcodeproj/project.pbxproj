@@ -177,6 +177,7 @@
 		C422A627799E325F7C2537A2 /* EngineRepositories.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0F1FD5EC64408BA66849B6A /* EngineRepositories.swift */; };
 		CCBAE1CE3A6F79E8CF43F33D /* EngineSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94932E888E32ACA7DE33B8E8 /* EngineSubscription.swift */; };
 		CE8CD001DE55E77AFF1470AB /* GeofenceSilentPushDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2482A7C6DE250AA6C18D7F6 /* GeofenceSilentPushDispatcher.swift */; };
+		E318646F363330B68D9E27AA /* ContainmentReconciler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAB66BF20FB978675DCDCAD /* ContainmentReconciler.swift */; };
 		EE2B7F125A80D928FB776C86 /* GeofenceEventSignalRequestV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C9500CC168C317146644534 /* GeofenceEventSignalRequestV2.swift */; };
 		F20D654D29DB37560FD62F47 /* AdaptiveThresholdCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB82F2A31E62AC18A8848B7D /* AdaptiveThresholdCalculator.swift */; };
 		F4538B2C7A7493A956CFB83F /* GeofenceSyncRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64CBADA009A8C26DB0253DD7 /* GeofenceSyncRequest.swift */; };
@@ -335,6 +336,7 @@
 		88F3103E2FD07B2000299466 /* DengageGeofenceInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageGeofenceInterceptor.swift; sourceTree = "<group>"; };
 		91C00D5A98BAFDDA12032391 /* GeofenceSyncResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GeofenceSyncResponse.swift; path = Sources/Dengage/Models/Geofence/Sync/GeofenceSyncResponse.swift; sourceTree = "<group>"; };
 		94932E888E32ACA7DE33B8E8 /* EngineSubscription.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EngineSubscription.swift; path = Sources/DengageGeofence/Engine/EngineSubscription.swift; sourceTree = "<group>"; };
+		9AAB66BF20FB978675DCDCAD /* ContainmentReconciler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Sources/DengageGeofence/Engine/ContainmentReconciler.swift; sourceTree = "<group>"; };
 		9FA3E4AB74319E96B1064F27 /* DengageGeofenceEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DengageGeofenceEngine.swift; path = Sources/DengageGeofence/Engine/DengageGeofenceEngine.swift; sourceTree = "<group>"; };
 		A00EFCBD280777B8004659DE /* RFMScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RFMScore.swift; sourceTree = "<group>"; };
 		A00EFCC228077869004659DE /* DengageRFMManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageRFMManager.swift; sourceTree = "<group>"; };
@@ -466,6 +468,7 @@
 				9FA3E4AB74319E96B1064F27 /* DengageGeofenceEngine.swift */,
 				1F712B77B6DD2B446815461D /* OrganicSyncTrigger.swift */,
 				CB82F2A31E62AC18A8848B7D /* AdaptiveThresholdCalculator.swift */,
+				9AAB66BF20FB978675DCDCAD /* ContainmentReconciler.swift */,
 			);
 			name = AddedGeofenceEngine;
 			sourceTree = SOURCE_ROOT;
@@ -1047,6 +1050,7 @@
 				9B467564ED996655032EE0C0 /* DengageGeofenceEngine.swift in Sources */,
 				FEA7CB1062E62B6D87E8C7AB /* OrganicSyncTrigger.swift in Sources */,
 				F20D654D29DB37560FD62F47 /* AdaptiveThresholdCalculator.swift in Sources */,
+				E318646F363330B68D9E27AA /* ContainmentReconciler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

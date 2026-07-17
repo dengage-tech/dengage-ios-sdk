@@ -33,6 +33,10 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
         eventFlusher: eventFlusher,
         offlineQueueMaxSize: { [weak self] in self?.remoteConfig.config().offlineQueueMaxSize ?? 100 }
     )
+    private lazy var containmentReconciler = ContainmentReconciler(
+        fenceRepository: storage.fenceRepository,
+        deviceStateRepository: storage.deviceStateRepository
+    )
     private lazy var adaptiveThreshold = AdaptiveThresholdCalculator(
         configProvider: { [weak self] in self?.remoteConfig.config().adaptiveThreshold ?? AdaptiveThresholdConfig() }
     )
@@ -212,6 +216,7 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
                 guard let self = self else { return }
                 self.registerTopN(location: location)
                 if let loc = location {
+                    self.reconcileContainment(location: loc)
                     self.heartbeatSender.maybeSend(location: loc, intervalMinutes: self.remoteConfig.config().heartbeatIntervalMinutes, force: force)
                 }
             }
@@ -219,8 +224,35 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
             Logger.log(message: "GeofenceEngine -> transit mode: local top-N only, server sync skipped")
             registerTopN(location: location)
             if let loc = location {
+                reconcileContainment(location: loc)
                 heartbeatSender.maybeSend(location: loc, intervalMinutes: remoteConfig.config().heartbeatIntervalMinutes, force: force)
             }
+        }
+    }
+
+    /// Synthetic transition check (doc 22 §2.1). Without waiting for the OS callback, closes the
+    /// gaps between the location and the state table with our own events (missed exit, enter that
+    /// never arrived). Produced transitions go through the normal trigger path, so dedup, campaign
+    /// matching and event-signal are identical.
+    private func reconcileContainment(location: CLLocation) {
+        // Same serial queue as OS transitions, so the dedup's check-then-set stays atomic against them.
+        workQueue.async { [weak self] in
+            guard let self = self else { return }
+            let pending = self.containmentReconciler.reconcile(location: location)
+            guard !pending.isEmpty else { return }
+
+            // A synthetic event POSTs event-signal too — stay alive if we were woken in the background.
+            let bgTask = BackgroundTaskAssertion(name: "com.dengage.geofence.reconcile")
+            let group = DispatchGroup()
+            for item in pending {
+                group.enter()
+                self.triggerHandler.handle(eventType: item.eventType,
+                                           requestId: item.fence.requestId,
+                                           location: location) {
+                    group.leave()
+                }
+            }
+            group.notify(queue: self.workQueue) { bgTask.end() }
         }
     }
 
