@@ -35,6 +35,13 @@ final class OsGeofenceRegistrar {
         Logger.log(message: "OsGeofenceRegistrar -> registered \(min(fences.count, available)) regions")
     }
 
+    /// OS'ta hâlen izlenen kampanya region'larının requestId'leri (wake-up bubble hariç).
+    var monitoredFenceRequestIds: [String] {
+        manager.monitoredRegions
+            .map { $0.identifier }
+            .filter { $0.hasPrefix(kEngineRequestIdPrefix) && $0 != kWakeupBubbleIdentifier }
+    }
+
     /// Kampanya region'larını kaldırır, wake-up bubble'ı korur.
     func removeAllFences() {
         for region in manager.monitoredRegions

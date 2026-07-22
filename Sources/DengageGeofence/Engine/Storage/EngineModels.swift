@@ -77,6 +77,24 @@ struct DeviceFenceState: Codable {
     var exitedAt: Double?
 }
 
+/// Tetiklenen bir transition'ın geçmiş kaydı (teşhis/QA — `TriggerHistoryRepository`).
+/// Dedup'tan geçmiş, yani *gerçekten* tetiklenmiş geçişleri temsil eder.
+struct TriggerHistoryEntry: Codable {
+    let geofenceId: Int
+    let clusterId: Int
+    let title: String?
+    let eventType: GeofenceEventType
+    /// epoch millis
+    let occurredAtMillis: Double
+    /// Geçiş anındaki yatay konum doğruluğu (metre); yoksa nil. Codable optional → eski kayıtlarda nil.
+    let accuracyM: Double?
+    /// Bu geçişle eşleşen kampanyalar; boşsa geçiş oldu ama kampanya eşleşmedi.
+    let campaignIds: [Int]
+    /// true → state-only reconcile (silent/sync-only reeval): state güncellendi ama kampanya atılmadı.
+    /// Codable optional → eski kayıtlarda nil (false gibi ele alınır).
+    let stateOnly: Bool?
+}
+
 /// Offline durumda kuyruklanan, online olunca `POST /event-signal` v2 ile flush edilen trigger.
 struct QueuedEvent: Codable {
     let idempotencyKey: String
@@ -86,6 +104,8 @@ struct QueuedEvent: Codable {
     let eventType: GeofenceEventType
     let latitude: Double
     let longitude: Double
+    /// Yatay konum doğruluğu (metre); yoksa nil. Codable optional → eski kayıtlarda eksik key nil olur.
+    let accuracyM: Double?
     let occurredAtMillis: Double
     let createdAtMillis: Double
 

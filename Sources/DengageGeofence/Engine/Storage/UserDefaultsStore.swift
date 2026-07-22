@@ -155,6 +155,40 @@ final class DefaultEventQueueRepository: EventQueueRepository {
     func clear() { queue.sync { store.setData(key, nil) } }
 }
 
+// MARK: - Trigger history repository
+
+final class DefaultTriggerHistoryRepository: TriggerHistoryRepository {
+    private let store: EngineDefaults
+    private let key = "trigger_history"
+    private let encoder = JSONEncoder()
+    private let decoder = JSONDecoder()
+    private let queue = DispatchQueue(label: "com.dengage.geofence.engine.history")
+
+    init(store: EngineDefaults) { self.store = store }
+
+    private func load() -> [TriggerHistoryEntry] {
+        guard let data = store.data(key),
+              let entries = try? decoder.decode([TriggerHistoryEntry].self, from: data) else { return [] }
+        return entries
+    }
+
+    func record(_ entry: TriggerHistoryEntry, maxSize: Int) {
+        queue.sync {
+            // En yeni başta; cap aşılınca en eskiler düşer.
+            var entries = load()
+            entries.insert(entry, at: 0)
+            if entries.count > maxSize { entries = Array(entries.prefix(maxSize)) }
+            if let data = try? encoder.encode(entries) { store.setData(key, data) }
+        }
+    }
+
+    func recent(limit: Int) -> [TriggerHistoryEntry] {
+        queue.sync { Array(load().prefix(limit)) }
+    }
+
+    func clear() { queue.sync { store.setData(key, nil) } }
+}
+
 // MARK: - Sync metadata repository
 
 final class DefaultSyncMetadataRepository: SyncMetadataRepository {

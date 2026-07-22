@@ -26,6 +26,7 @@ public struct GeofenceEventSignalRequestV2: APIRequest {
         ]
         if let contactKey = contactKey { parameters["contactKey"] = contactKey }
         if let campaignId = campaignId { parameters["campaignId"] = campaignId }
+        if let accuracyM = accuracyM { parameters["accuracyM"] = accuracyM }
         return parameters.json
     }
 
@@ -38,6 +39,7 @@ public struct GeofenceEventSignalRequestV2: APIRequest {
     let eventType: GeofenceEventType
     let latitude: Double
     let longitude: Double
+    let accuracyM: Double?
     let occurredAt: Date
     let ingestedAt: Date
     let idempotencyKey: String
@@ -52,6 +54,7 @@ public struct GeofenceEventSignalRequestV2: APIRequest {
                 eventType: GeofenceEventType,
                 latitude: Double,
                 longitude: Double,
+                accuracyM: Double?,
                 occurredAt: Date,
                 ingestedAt: Date,
                 idempotencyKey: String,
@@ -65,6 +68,7 @@ public struct GeofenceEventSignalRequestV2: APIRequest {
         self.eventType = eventType
         self.latitude = latitude
         self.longitude = longitude
+        self.accuracyM = accuracyM
         self.occurredAt = occurredAt
         self.ingestedAt = ingestedAt
         self.idempotencyKey = idempotencyKey

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		80EEFD8D05A42A287B0628EF /* GeofenceInfoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDE85E6E8D8889C4C6FE3802 /* GeofenceInfoListViewController.swift */; };
 		880068872C931B7400881F71 /* AppStoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880068852C931B7400881F71 /* AppStoryViewController.swift */; };
 		880138252D14256600F06B40 /* Location.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 880138242D14256600F06B40 /* Location.gpx */; };
 		882A91EB2D6CAAC300179FC1 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 882A91B12D6CA67400179FC1 /* WidgetKit.framework */; };
@@ -153,6 +154,7 @@
 		D6472F4D28E88D670076523C /* GeofenceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeofenceViewController.swift; sourceTree = "<group>"; };
 		D6810E68293F341200611E55 /* RealTimeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealTimeViewController.swift; sourceTree = "<group>"; };
 		D68141002BB33CEC00663AC8 /* ShowInLineInAPP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShowInLineInAPP.swift; sourceTree = "<group>"; };
+		EDE85E6E8D8889C4C6FE3802 /* GeofenceInfoListViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceInfoListViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -270,6 +272,7 @@
 				A0B884FD27B1CF44004D4360 /* RootViewController.swift */,
 				D68141002BB33CEC00663AC8 /* ShowInLineInAPP.swift */,
 				A09951A327ACB0D30089D98D /* TagsViewController.swift */,
+				EDE85E6E8D8889C4C6FE3802 /* GeofenceInfoListViewController.swift */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -563,6 +566,7 @@
 				8840B86A2E8D59ED00868EFB /* CartViewController.swift in Sources */,
 				D68141012BB33CEC00663AC8 /* ShowInLineInAPP.swift in Sources */,
 				88F3103D2FD07AF700299466 /* DengageLiveActivityController.swift in Sources */,
+				80EEFD8D05A42A287B0628EF /* GeofenceInfoListViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -609,7 +613,7 @@
 				CODE_SIGN_ENTITLEMENTS = DengageWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 113;
+				CURRENT_PROJECT_VERSION = 119;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -645,7 +649,7 @@
 				CODE_SIGN_ENTITLEMENTS = DengageWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 113;
+				CURRENT_PROJECT_VERSION = 119;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -676,7 +680,7 @@
 				CODE_SIGN_ENTITLEMENTS = NoticationExtension/NoticationExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 113;
+				CURRENT_PROJECT_VERSION = 119;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NoticationExtension/Info.plist;
@@ -705,7 +709,7 @@
 				CODE_SIGN_ENTITLEMENTS = NoticationExtension/NoticationExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 113;
+				CURRENT_PROJECT_VERSION = 119;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NoticationExtension/Info.plist;
@@ -734,7 +738,7 @@
 				CODE_SIGN_ENTITLEMENTS = NotificationContentExtension/NotificationContentExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 113;
+				CURRENT_PROJECT_VERSION = 119;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NotificationContentExtension/Info.plist;
@@ -763,7 +767,7 @@
 				CODE_SIGN_ENTITLEMENTS = NotificationContentExtension/NotificationContentExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 113;
+				CURRENT_PROJECT_VERSION = 119;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NotificationContentExtension/Info.plist;
@@ -913,7 +917,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ios-example-app/ios-example-app.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 113;
+				CURRENT_PROJECT_VERSION = 119;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-example-app/Info.plist";
@@ -952,7 +956,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ios-example-app/ios-example-app.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 113;
+				CURRENT_PROJECT_VERSION = 119;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-example-app/Info.plist";

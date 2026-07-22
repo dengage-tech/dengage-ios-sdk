@@ -31,6 +31,7 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
         eventQueue: storage.eventQueueRepository,
         notificationFirer: notificationFirer,
         eventFlusher: eventFlusher,
+        triggerHistory: storage.triggerHistoryRepository,
         offlineQueueMaxSize: { [weak self] in self?.remoteConfig.config().offlineQueueMaxSize ?? 100 }
     )
     private lazy var containmentReconciler = ContainmentReconciler(
@@ -165,6 +166,52 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
 
     func attemptResume() { wakeupCap.attemptResume() }
 
+    // MARK: - Diagnostics
+
+    /// OS'ta hâlen izlenen fence'ler (teşhis). Kaynak `monitoredRegions`'tır — yani depodaki
+    /// listenin tamamı değil, top-N seçimi sonrası gerçekten register edilmiş olanlar.
+    func monitoredGeofences() -> [MonitoredGeofenceInfo] {
+        let fencesById = Dictionary(
+            fenceRepository_loadAll().map { ($0.geofenceId, $0) },
+            uniquingKeysWith: { first, _ in first }
+        )
+        return registrar.monitoredFenceRequestIds.compactMap { requestId in
+            guard let ids = EngineFence.parseRequestId(requestId) else { return nil }
+            let fence = fencesById[ids.geofenceId]
+            let state = storage.deviceStateRepository.getState(geofenceId: ids.geofenceId)?.state
+            return MonitoredGeofenceInfo(
+                geofenceId: ids.geofenceId,
+                clusterId: ids.clusterId,
+                title: fence?.title,
+                latitude: fence?.latitude ?? 0,
+                longitude: fence?.longitude ?? 0,
+                radiusM: fence?.radiusM ?? 0,
+                state: state?.rawValue ?? "unknown"
+            )
+        }
+        .sorted { $0.geofenceId < $1.geofenceId }
+    }
+
+    /// Son tetiklenen geçişler (en yeniden eskiye).
+    func recentTriggeredEvents(limit: Int) -> [TriggeredEventInfo] {
+        storage.triggerHistoryRepository.recent(limit: limit).map {
+            TriggeredEventInfo(
+                geofenceId: $0.geofenceId,
+                clusterId: $0.clusterId,
+                title: $0.title,
+                eventType: $0.eventType.rawValue,
+                occurredAt: Date(timeIntervalSince1970: $0.occurredAtMillis / 1000.0),
+                accuracyM: $0.accuracyM,
+                campaignIds: $0.campaignIds,
+                stateOnly: $0.stateOnly ?? false
+            )
+        }
+    }
+
+    private func fenceRepository_loadAll() -> [EngineFence] {
+        storage.fenceRepository.loadAll()
+    }
+
     // MARK: - Wake-up cap pause / bubble
 
     /// Cap aşıldı: SLC kapatılır. Bunun yerine bir bubble region'ı bırakılır — region monitoring
@@ -208,7 +255,9 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
 
     // MARK: - Core reeval
 
-    private func reeval(location: CLLocation?, syncAllowed: Bool, force: Bool) {
+    /// [fireCampaigns] yalnızca movement kaynaklı reeval'de `true`. Diğer (start / organic sync /
+    /// silent push / active-window) reeval'lerde sentetik geçiş state-only işlenir, kampanya atmaz.
+    private func reeval(location: CLLocation?, syncAllowed: Bool, force: Bool, fireCampaigns: Bool = false) {
         if let location = location { lastReevalLocation = location }
 
         if syncAllowed {
@@ -216,7 +265,7 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
                 guard let self = self else { return }
                 self.registerTopN(location: location)
                 if let loc = location {
-                    self.reconcileContainment(location: loc)
+                    self.reconcileContainment(location: loc, fireCampaigns: fireCampaigns)
                     self.heartbeatSender.maybeSend(location: loc, intervalMinutes: self.remoteConfig.config().heartbeatIntervalMinutes, force: force)
                 }
             }
@@ -224,7 +273,7 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
             Logger.log(message: "GeofenceEngine -> transit mode: local top-N only, server sync skipped")
             registerTopN(location: location)
             if let loc = location {
-                reconcileContainment(location: loc)
+                reconcileContainment(location: loc, fireCampaigns: fireCampaigns)
                 heartbeatSender.maybeSend(location: loc, intervalMinutes: remoteConfig.config().heartbeatIntervalMinutes, force: force)
             }
         }
@@ -232,9 +281,12 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
 
     /// Synthetic transition check (doc 22 §2.1). Without waiting for the OS callback, closes the
     /// gaps between the location and the state table with our own events (missed exit, enter that
-    /// never arrived). Produced transitions go through the normal trigger path, so dedup, campaign
-    /// matching and event-signal are identical.
-    private func reconcileContainment(location: CLLocation) {
+    /// never arrived).
+    ///
+    /// [fireCampaigns]: movement kaynaklı reeval'de `true` → kampanya tetiklenebilir. Silent push /
+    /// sync-only reeval'de `false` → yalnızca state reconcile edilir; `occurredAt = now` bir pasif
+    /// wake'te dürüst olmadığından bayat/sahte push üretmemek için kampanya bastırılır.
+    private func reconcileContainment(location: CLLocation, fireCampaigns: Bool) {
         // Same serial queue as OS transitions, so the dedup's check-then-set stays atomic against them.
         workQueue.async { [weak self] in
             guard let self = self else { return }
@@ -248,7 +300,8 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
                 group.enter()
                 self.triggerHandler.handle(eventType: item.eventType,
                                            requestId: item.fence.requestId,
-                                           location: location) {
+                                           location: location,
+                                           fireCampaigns: fireCampaigns) {
                     group.leave()
                 }
             }
@@ -352,12 +405,15 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
         wakeupCap.attemptResume()
         let location = locationManager.location
         let requestId = region.identifier
+        // OS geçişi: occurredAt fix zamanından türetilir (OS beklettiyse geçmiş bir zaman).
+        let occurredAt = TriggerHandler.occurredAtMillis(fixTime: location)
         // Arka planda uyandırıldıysak event-signal POST'u bitene kadar uygulamayı canlı tut
         // (Android goAsync() muadili); yoksa iOS suspend eder ve push saatlerce gecikir.
         let bgTask = BackgroundTaskAssertion(name: "com.dengage.geofence.trigger")
         workQueue.async { [weak self] in
             guard let self = self else { bgTask.end(); return }
-            self.triggerHandler.handle(eventType: eventType, requestId: requestId, location: location) {
+            self.triggerHandler.handle(eventType: eventType, requestId: requestId, location: location,
+                                       occurredAtMillis: occurredAt) {
                 bgTask.end()
             }
             if eventType == .enter { self.scheduleDwellIfNeeded(requestId: requestId, location: location) }
@@ -375,7 +431,8 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
             self.heartbeatSender.maybeSend(location: location, intervalMinutes: self.remoteConfig.config().heartbeatIntervalMinutes)
             switch self.adaptiveThreshold.shouldReeval(current: location, lastReevalLocation: self.lastReevalLocation) {
             case .reeval(let syncAllowed):
-                self.reeval(location: location, syncAllowed: syncAllowed, force: false)
+                // Movement kaynaklı → sentetik geçiş kampanya tetikleyebilir (occurredAt=now dürüst).
+                self.reeval(location: location, syncAllowed: syncAllowed, force: false, fireCampaigns: true)
             case .skip(let reason):
                 Logger.log(message: "GeofenceEngine -> reeval skipped (\(reason))")
             }

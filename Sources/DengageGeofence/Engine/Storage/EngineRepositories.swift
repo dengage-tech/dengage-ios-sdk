@@ -27,6 +27,16 @@ protocol EventQueueRepository {
     func clear()
 }
 
+/// Tetiklenen transition'ların kısa geçmişi (teşhis/QA). Event kuyruğu yalnızca *gönderilmemiş*
+/// event'leri tutar (başarılıysa ack'lenip silinir), dolayısıyla "ne tetiklendi?" sorusunu
+/// cevaplayamaz. Bu depo sabit boyutlu bir ring buffer'dır; en yeni kayıt başta döner.
+protocol TriggerHistoryRepository {
+    func record(_ entry: TriggerHistoryEntry, maxSize: Int)
+    /// En yeniden eskiye sıralı.
+    func recent(limit: Int) -> [TriggerHistoryEntry]
+    func clear()
+}
+
 /// Son ETag / sync zamanı / silent-push zamanı metadata'sı (doc 21 §6.2).
 protocol SyncMetadataRepository: AnyObject {
     var lastETag: String? { get set }

@@ -2,6 +2,34 @@ import Foundation
 import CoreLocation
 import Dengage
 
+/// OS'ta hâlen izlenen bir fence'in teşhis görünümü.
+public struct MonitoredGeofenceInfo {
+    public let geofenceId: Int
+    public let clusterId: Int
+    public let title: String?
+    public let latitude: Double
+    public let longitude: Double
+    public let radiusM: Double
+    /// `inside` / `outside` / `dwell_pending` / `unknown`
+    public let state: String
+}
+
+/// Tetiklenmiş bir geçişin teşhis görünümü.
+public struct TriggeredEventInfo {
+    public let geofenceId: Int
+    public let clusterId: Int
+    public let title: String?
+    /// `enter` / `exit` / `dwell`
+    public let eventType: String
+    public let occurredAt: Date
+    /// Geçiş anındaki yatay konum doğruluğu (metre); yoksa nil.
+    public let accuracyM: Double?
+    /// Bu geçişle eşleşen kampanyalar; boşsa geçiş oldu ama kampanya eşleşmedi.
+    public let campaignIds: [Int]
+    /// true → state-only reconcile (silent/sync-only reeval): state güncellendi ama kampanya atılmadı.
+    public let stateOnly: Bool
+}
+
 /// Geofence Engine v2 public API (doc 21 §6.4).
 ///
 /// Mevcut `DengageGeofence` (v1) ile coexist eder; geçiş server feature-flag / `geofenceEnabled`
@@ -64,6 +92,19 @@ public class DengageGeofenceEngine: NSObject, DengageGeofenceSilentPushBridging 
     /// Silent push ile yapılan son resync zamanı veya henüz yoksa nil.
     @objc public func lastSilentPushSyncDate() -> Date? {
         engine.lastSilentPushAt()
+    }
+
+    // MARK: - Diagnostics
+
+    /// OS'ta o an aktif olarak izlenen fence'ler. Depodaki listenin tamamı değil — top-N seçimi
+    /// ve OS'un region limiti sonrası gerçekten register edilmiş olanlar.
+    public func monitoredGeofences() -> [MonitoredGeofenceInfo] {
+        engine.monitoredGeofences()
+    }
+
+    /// Son tetiklenen geçişler (en yeniden eskiye). Kampanya eşleşmeyen geçişler de listelenir.
+    public func recentTriggeredEvents(limit: Int = 50) -> [TriggeredEventInfo] {
+        engine.recentTriggeredEvents(limit: limit)
     }
 
     private func ensureStarted() {

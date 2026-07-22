@@ -75,6 +75,7 @@ final class EventQueueFlusher {
             eventType: event.eventType,
             latitude: event.latitude,
             longitude: event.longitude,
+            accuracyM: event.accuracyM,
             occurredAt: Date(timeIntervalSince1970: event.occurredAtMillis / 1000.0),
             ingestedAt: Date(),
             idempotencyKey: event.idempotencyKey,

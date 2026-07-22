@@ -6,6 +6,7 @@ final class GeofenceStorage {
     let deviceStateRepository: DeviceStateRepository
     let eventQueueRepository: EventQueueRepository
     let syncMetadataRepository: SyncMetadataRepository
+    let triggerHistoryRepository: TriggerHistoryRepository
 
     init() {
         let store = EngineDefaults()
@@ -13,11 +14,13 @@ final class GeofenceStorage {
         deviceStateRepository = DefaultDeviceStateRepository(store: store)
         eventQueueRepository = DefaultEventQueueRepository(store: store)
         syncMetadataRepository = DefaultSyncMetadataRepository(store: store)
+        triggerHistoryRepository = DefaultTriggerHistoryRepository(store: store)
     }
 
     func clearAll() {
         fenceRepository.clear()
         deviceStateRepository.clear()
         eventQueueRepository.clear()
+        triggerHistoryRepository.clear()
     }
 }

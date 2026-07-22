@@ -8,11 +8,15 @@ import Dengage
 /// - Offline: cache'lenen `offlinePushContent` ile local notification anında fire (K10) + event kuyruğa.
 final class TriggerHandler {
 
+    /// Teşhis geçmişinde tutulan azami kayıt sayısı.
+    private let triggerHistoryMaxSize = 50
+
     private let fenceRepository: FenceRepository
     private let deviceStateRepository: DeviceStateRepository
     private let eventQueue: EventQueueRepository
     private let notificationFirer: LocalNotificationFirer
     private let eventFlusher: EventQueueFlusher
+    private let triggerHistory: TriggerHistoryRepository
     private let offlineQueueMaxSize: () -> Int
 
     init(fenceRepository: FenceRepository,
@@ -20,19 +24,26 @@ final class TriggerHandler {
          eventQueue: EventQueueRepository,
          notificationFirer: LocalNotificationFirer,
          eventFlusher: EventQueueFlusher,
+         triggerHistory: TriggerHistoryRepository,
          offlineQueueMaxSize: @escaping () -> Int) {
         self.fenceRepository = fenceRepository
         self.deviceStateRepository = deviceStateRepository
         self.eventQueue = eventQueue
         self.notificationFirer = notificationFirer
         self.eventFlusher = eventFlusher
+        self.triggerHistory = triggerHistory
         self.offlineQueueMaxSize = offlineQueueMaxSize
     }
 
     /// [completion] async event-signal gönderimleri (+ flush) bittiğinde çağrılır; orchestrator
     /// bunu background task assertion'ının `end()`'ine bağlar ki iOS uygulamayı POST bitmeden
     /// suspend edip push'u geciktirmesin.
-    func handle(eventType: GeofenceEventType, requestId: String, location: CLLocation?, completion: @escaping () -> Void = {}) {
+    /// [occurredAtMillis] verilmezse (`nil`) işlenme anı kullanılır. OS-kaynaklı geçişlerde çağıran
+    /// fix zamanını geçer (OS beklettiyse geçmiş bir zaman); sentetik/dwell yollarında `nil` → şimdi.
+    /// [fireCampaigns] `false` ise state güncellenir + geçmişe yazılır ama interceptor ve event-signal
+    /// atlanır (state-only). Sentetik geçiş yalnızca movement/OS-wake'ten çıktığında kampanya tetikler;
+    /// silent push / sync-only reeval "sessiz" kalır.
+    func handle(eventType: GeofenceEventType, requestId: String, location: CLLocation?, occurredAtMillis: Double? = nil, fireCampaigns: Bool = true, completion: @escaping () -> Void = {}) {
         guard let ids = EngineFence.parseRequestId(requestId),
               let fence = fenceRepository.findById(ids.geofenceId) else { completion(); return }
         guard fence.geofenceId > 0 else {
@@ -41,6 +52,8 @@ final class TriggerHandler {
         }
 
         let now = Date().timeIntervalSince1970
+        // occurredAt: geçişin gerçekleştiği an (fix zamanı). createdAt/state/dedup ise işlenme anı (`now`).
+        let occurredMillis = occurredAtMillis ?? now * 1000.0
 
         // Edge-detection / dedup: OS aynı fiziksel geçiş için birden fazla callback verebilir
         // (didEnterRegion + register sonrası requestState→didDetermineState(.inside), vb.).
@@ -53,8 +66,9 @@ final class TriggerHandler {
 
         updateDeviceState(fence: fence, eventType: eventType, now: now)
 
-        // Davranış paritesi: enter'da host interceptor'ı tetikle (v1 ile aynı hook)
-        if eventType == .enter {
+        // Davranış paritesi: enter'da host interceptor'ı tetikle (v1 ile aynı hook).
+        // state-only (fireCampaigns=false) modda interceptor da atlanır.
+        if eventType == .enter, fireCampaigns {
             DispatchQueue.main.async {
                 DengageGeofence.geofenceInterceptor?.onGeofenceEnter(
                     latitude: fence.latitude,
@@ -70,8 +84,33 @@ final class TriggerHandler {
 
         let matchingTrigger = trigger(for: eventType)
         let matchingCampaigns = fence.campaigns.filter { $0.triggerType == matchingTrigger }
+        // Yatay doğruluk (metre); negatif = geçersiz → nil (heartbeat ile aynı kural).
+        let accuracyM = location.flatMap { $0.horizontalAccuracy > 0 ? $0.horizontalAccuracy : nil }
+
+        // Teşhis geçmişi: dedup'tan geçmiş, yani gerçekten olmuş geçiş. Kampanya eşleşmese de
+        // kaydedilir — "geçiş oldu ama kampanya yoktu" ile "geçiş hiç olmadı" ayırt edilebilsin.
+        triggerHistory.record(
+            TriggerHistoryEntry(
+                geofenceId: fence.geofenceId,
+                clusterId: fence.clusterId,
+                title: fence.title,
+                eventType: eventType,
+                occurredAtMillis: occurredMillis,
+                accuracyM: accuracyM,
+                campaignIds: matchingCampaigns.map { $0.campaignId },
+                stateOnly: !fireCampaigns
+            ),
+            maxSize: triggerHistoryMaxSize
+        )
+
         guard !matchingCampaigns.isEmpty else {
             Logger.log(message: "TriggerHandler -> no \(matchingTrigger.rawValue) campaign for fence \(fence.geofenceId)")
+            completion(); return
+        }
+
+        // state-only: state güncellendi + geçmişe yazıldı; kampanya (interceptor + event-signal) atlanır.
+        guard fireCampaigns else {
+            Logger.log(message: "TriggerHandler -> state-only reconcile for fence \(fence.geofenceId), campaigns suppressed")
             completion(); return
         }
 
@@ -83,7 +122,9 @@ final class TriggerHandler {
         let group = DispatchGroup()
         for campaign in matchingCampaigns {
             group.enter()
-            dispatch(fence: fence, campaign: campaign, eventType: eventType, lat: lat, lon: lon, now: now, online: online) {
+            dispatch(fence: fence, campaign: campaign, eventType: eventType, lat: lat, lon: lon,
+                     accuracyM: accuracyM, occurredAtMillis: occurredMillis, createdAtMillis: now * 1000.0,
+                     online: online) {
                 group.leave()
             }
         }
@@ -100,7 +141,9 @@ final class TriggerHandler {
                           campaign: SyncCampaign,
                           eventType: GeofenceEventType,
                           lat: Double, lon: Double,
-                          now: TimeInterval,
+                          accuracyM: Double?,
+                          occurredAtMillis: Double,
+                          createdAtMillis: Double,
                           online: Bool,
                           completion: @escaping () -> Void) {
         let event = QueuedEvent(
@@ -111,8 +154,9 @@ final class TriggerHandler {
             eventType: eventType,
             latitude: lat,
             longitude: lon,
-            occurredAtMillis: now * 1000.0,
-            createdAtMillis: now * 1000.0
+            accuracyM: accuracyM,
+            occurredAtMillis: occurredAtMillis,
+            createdAtMillis: createdAtMillis
         )
 
         if online {
@@ -175,6 +219,25 @@ final class TriggerHandler {
         case .dwell: return .dwell
         }
     }
+
+    /// OS geçişinin fix zamanından `occurredAt` (epoch millis) türetir. OS event'i beklettiyse fix
+    /// zamanı işlenme anından eskidir → sunucu bunun bayat olduğunu anlayıp push basmayabilir (doc 22 §3.1).
+    /// `CLLocation.timestamp` "son bilinen fix"tir, region geçişinin tam anı değildir; yine de işlenme
+    /// anından iyidir. Makul değilse (yok / gelecek / aşırı eski = bozuk saat) işlenme anına düşer.
+    static func occurredAtMillis(fixTime: CLLocation?, now: TimeInterval = Date().timeIntervalSince1970) -> Double {
+        let nowMillis = now * 1000.0
+        guard let fixTime = fixTime else { return nowMillis }
+        let fixMillis = fixTime.timestamp.timeIntervalSince1970 * 1000.0
+        guard fixMillis > 0,
+              fixMillis <= nowMillis + maxFutureSkewMillis,
+              fixMillis >= nowMillis - maxFixAgeMillis else { return nowMillis }
+        return fixMillis
+    }
+
+    /// Saat kayması toleransı: fix zamanı bu kadar gelecekteyse yok say.
+    private static let maxFutureSkewMillis: Double = 60_000
+    /// Fix zamanı bu kadar eskiyse bozuk kabul edip işlenme anına düş (Doze ~4 saat bekletmesini kapsar).
+    private static let maxFixAgeMillis: Double = 48 * 60 * 60 * 1000
 
     /// Bir fence'in `dwell` kampanyası var mı (orchestrator dwell zamanlaması için)?
     func dwellMinutes(forFenceId geofenceId: Int) -> Int? {
