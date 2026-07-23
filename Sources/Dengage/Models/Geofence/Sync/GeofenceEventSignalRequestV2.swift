@@ -22,7 +22,9 @@ public struct GeofenceEventSignalRequestV2: APIRequest {
             "occurredAt": GeofenceIso.string(from: occurredAt),
             "ingestedAt": GeofenceIso.string(from: ingestedAt),
             "idempotencyKey": idempotencyKey,
-            "source": source.rawValue
+            "source": source.rawValue,
+            // Geçişi OS mu bildirdi (false) yoksa SDK mı çıkarsadı (true) — doc 22 §2.1.
+            "syntheticTransition": syntheticTransition
         ]
         if let contactKey = contactKey { parameters["contactKey"] = contactKey }
         if let campaignId = campaignId { parameters["campaignId"] = campaignId }
@@ -44,6 +46,7 @@ public struct GeofenceEventSignalRequestV2: APIRequest {
     let ingestedAt: Date
     let idempotencyKey: String
     let source: GeofenceEventSource
+    let syntheticTransition: Bool
 
     public init(integrationKey: String,
                 deviceId: String,
@@ -58,7 +61,8 @@ public struct GeofenceEventSignalRequestV2: APIRequest {
                 occurredAt: Date,
                 ingestedAt: Date,
                 idempotencyKey: String,
-                source: GeofenceEventSource) {
+                source: GeofenceEventSource,
+                syntheticTransition: Bool = false) {
         self.integrationKey = integrationKey
         self.deviceId = deviceId
         self.contactKey = contactKey
@@ -73,5 +77,6 @@ public struct GeofenceEventSignalRequestV2: APIRequest {
         self.ingestedAt = ingestedAt
         self.idempotencyKey = idempotencyKey
         self.source = source
+        self.syntheticTransition = syntheticTransition
     }
 }

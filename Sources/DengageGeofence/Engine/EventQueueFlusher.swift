@@ -79,7 +79,8 @@ final class EventQueueFlusher {
             occurredAt: Date(timeIntervalSince1970: event.occurredAtMillis / 1000.0),
             ingestedAt: Date(),
             idempotencyKey: event.idempotencyKey,
-            source: source
+            source: source,
+            syntheticTransition: event.syntheticTransition ?? false
         )
         apiClient.send(request: request) { result in
             switch result {

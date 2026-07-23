@@ -43,7 +43,9 @@ final class TriggerHandler {
     /// [fireCampaigns] `false` ise state güncellenir + geçmişe yazılır ama interceptor ve event-signal
     /// atlanır (state-only). Sentetik geçiş yalnızca movement/OS-wake'ten çıktığında kampanya tetikler;
     /// silent push / sync-only reeval "sessiz" kalır.
-    func handle(eventType: GeofenceEventType, requestId: String, location: CLLocation?, occurredAtMillis: Double? = nil, fireCampaigns: Bool = true, completion: @escaping () -> Void = {}) {
+    /// [syntheticTransition] `true` → geçişi OS bildirmedi, SDK çıkarsadı (`ContainmentReconciler`);
+    /// event-signal'de aynı adla raporlanır. OS callback'lerinde `false`.
+    func handle(eventType: GeofenceEventType, requestId: String, location: CLLocation?, occurredAtMillis: Double? = nil, fireCampaigns: Bool = true, syntheticTransition: Bool = false, completion: @escaping () -> Void = {}) {
         guard let ids = EngineFence.parseRequestId(requestId),
               let fence = fenceRepository.findById(ids.geofenceId) else { completion(); return }
         guard fence.geofenceId > 0 else {
@@ -98,7 +100,8 @@ final class TriggerHandler {
                 occurredAtMillis: occurredMillis,
                 accuracyM: accuracyM,
                 campaignIds: matchingCampaigns.map { $0.campaignId },
-                stateOnly: !fireCampaigns
+                stateOnly: !fireCampaigns,
+                syntheticTransition: syntheticTransition
             ),
             maxSize: triggerHistoryMaxSize
         )
@@ -124,7 +127,7 @@ final class TriggerHandler {
             group.enter()
             dispatch(fence: fence, campaign: campaign, eventType: eventType, lat: lat, lon: lon,
                      accuracyM: accuracyM, occurredAtMillis: occurredMillis, createdAtMillis: now * 1000.0,
-                     online: online) {
+                     syntheticTransition: syntheticTransition, online: online) {
                 group.leave()
             }
         }
@@ -144,6 +147,7 @@ final class TriggerHandler {
                           accuracyM: Double?,
                           occurredAtMillis: Double,
                           createdAtMillis: Double,
+                          syntheticTransition: Bool,
                           online: Bool,
                           completion: @escaping () -> Void) {
         let event = QueuedEvent(
@@ -156,7 +160,8 @@ final class TriggerHandler {
             longitude: lon,
             accuracyM: accuracyM,
             occurredAtMillis: occurredAtMillis,
-            createdAtMillis: createdAtMillis
+            createdAtMillis: createdAtMillis,
+            syntheticTransition: syntheticTransition
         )
 
         if online {

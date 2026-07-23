@@ -28,6 +28,8 @@ public struct TriggeredEventInfo {
     public let campaignIds: [Int]
     /// true → state-only reconcile (silent/sync-only reeval): state güncellendi ama kampanya atılmadı.
     public let stateOnly: Bool
+    /// true → geçişi OS bildirmedi, SDK çıkarsadı (`ContainmentReconciler`).
+    public let syntheticTransition: Bool
 }
 
 /// Geofence Engine v2 public API (doc 21 §6.4).

@@ -203,7 +203,8 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
                 occurredAt: Date(timeIntervalSince1970: $0.occurredAtMillis / 1000.0),
                 accuracyM: $0.accuracyM,
                 campaignIds: $0.campaignIds,
-                stateOnly: $0.stateOnly ?? false
+                stateOnly: $0.stateOnly ?? false,
+                syntheticTransition: $0.syntheticTransition ?? false
             )
         }
     }
@@ -301,7 +302,8 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
                 self.triggerHandler.handle(eventType: item.eventType,
                                            requestId: item.fence.requestId,
                                            location: location,
-                                           fireCampaigns: fireCampaigns) {
+                                           fireCampaigns: fireCampaigns,
+                                           syntheticTransition: true) {
                     group.leave()
                 }
             }
@@ -417,6 +419,22 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
                 bgTask.end()
             }
             if eventType == .enter { self.scheduleDwellIfNeeded(requestId: requestId, location: location) }
+
+            // Cross-fence reconcile. The OS only tells us about the region it fired for, so
+            // entering B never repairs a missed exit from A — A stays `inside` and dedup swallows
+            // every later enter there. This wake is the cheapest repair opportunity we get: the
+            // process is already up and we already hold a location.
+            //
+            // Enqueued after `handle` returns, which has written the state synchronously — the
+            // reconciler would otherwise synthesize the very transition that woke us, and the real
+            // OS callback would then lose to dedup, with campaigns suppressed, silently dropping it.
+            //
+            // fireCampaigns: false — a repaired exit happened at an unknown point in the past, so
+            // `occurredAt = now` would be a lie and the push would be stale. Same reasoning as the
+            // sync-wake path: fix the state, stay silent.
+            if let location = location {
+                self.reconcileContainment(location: location, fireCampaigns: false)
+            }
         }
     }
 

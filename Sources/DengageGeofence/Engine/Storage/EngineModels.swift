@@ -93,6 +93,8 @@ struct TriggerHistoryEntry: Codable {
     /// true → state-only reconcile (silent/sync-only reeval): state güncellendi ama kampanya atılmadı.
     /// Codable optional → eski kayıtlarda nil (false gibi ele alınır).
     let stateOnly: Bool?
+    /// true → geçişi OS bildirmedi, SDK çıkarsadı (`ContainmentReconciler`). Codable optional.
+    let syntheticTransition: Bool?
 }
 
 /// Offline durumda kuyruklanan, online olunca `POST /event-signal` v2 ile flush edilen trigger.
@@ -108,6 +110,10 @@ struct QueuedEvent: Codable {
     let accuracyM: Double?
     let occurredAtMillis: Double
     let createdAtMillis: Double
+    /// true → geçişi OS bildirmedi, SDK çıkarsadı (`ContainmentReconciler`, doc 22 §2.1).
+    /// Kuyrukta da tutulur ki offline replay'de bayrak kaybolmasın.
+    /// Codable optional → eski kayıtlarda eksik key nil olur (false gibi ele alınır).
+    let syntheticTransition: Bool?
 
     /// geofenceId <= 0 (ör. eski alan uyumsuzluğundan kalan bayat event'ler) geçersiz sayılır.
     var isValid: Bool { geofenceId > 0 }

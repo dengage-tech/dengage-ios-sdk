@@ -82,10 +82,11 @@ extension GeofenceViewController: UITableViewDelegate{
                 : "campaigns: \(event.campaignIds.map(String.init).joined(separator: ", "))"
             let accuracy = event.accuracyM.map { "accuracy: \(Int($0.rounded()))m" } ?? "accuracy: n/a"
             let campaignsLine = event.stateOnly ? "state-only (no push) · \(campaigns)" : campaigns
+            let origin = event.syntheticTransition ? "synthetic (SDK inferred)" : "OS callback"
             return """
             \(event.eventType.uppercased()) · #\(event.geofenceId) \(name)
               \(formatter.string(from: event.occurredAt))
-              \(accuracy)
+              \(origin) · \(accuracy)
               \(campaignsLine)
             """
         }

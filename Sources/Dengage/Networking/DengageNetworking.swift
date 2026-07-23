@@ -93,6 +93,12 @@ final public class DengageNetworking {
         let baseURL = createBaseURL(for: request.endpointType)
         var apiRequest = request.asURLRequest(with: baseURL)
         apiRequest.setValue(config.userAgent, forHTTPHeaderField: "User-Agent")
+        // Bypass URLCache: we do conditional revalidation ourselves via the ETag we persist, and a
+        // second cache underneath breaks it. The server sends `Cache-Control: max-age=300`, so with
+        // the default policy URLSession answers from its own store — our `If-None-Match` never
+        // reaches the server, and a 304 is silently rewritten into a 200 carrying the *cached* body.
+        // The result is a stale fence list delivered as if it were fresh, with no way to detect it.
+        apiRequest.cachePolicy = .reloadIgnoringLocalCacheData
 
         let urlString = apiRequest.url?.absoluteString ?? ""
         Logger.log(message: "HTTP GEOFENCE SYNC REQUEST:\n \(apiRequest.httpMethod ?? "GET") \(urlString)",
