@@ -1,6 +1,16 @@
 # Changelog
 
 
+## [5.101] - 2026-07-24
+
+### Bug Fixes
+
+- Fix App Story cover ring staying active after stories are watched
+- Mark cover as watched when closing while on the last snap
+- Persist story seen/resume state reliably via JSON UserDefaults storage
+- Refresh story list ring state after dismissing the fullscreen viewer
+
+
 ## [5.100] - 2026-07-06
 
 ### New Features
