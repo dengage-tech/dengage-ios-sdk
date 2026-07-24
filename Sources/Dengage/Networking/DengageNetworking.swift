@@ -85,7 +85,67 @@ final public class DengageNetworking {
         }
         dataTask.resume()
     }
-    
+
+    /// `GET /geofences/sync` — ETag/304 farkındalıklı (contract §1). Generic `send` 304'ü ve
+    /// response header'larını ayırt edemediği için ayrı bir yol kullanılır.
+    public func sendGeofenceSync(request: GeofenceSyncRequest,
+                                 completion: @escaping (Result<GeofenceSyncResult, Error>) -> Void) {
+        let baseURL = createBaseURL(for: request.endpointType)
+        var apiRequest = request.asURLRequest(with: baseURL)
+        apiRequest.setValue(config.userAgent, forHTTPHeaderField: "User-Agent")
+        // Bypass URLCache: we do conditional revalidation ourselves via the ETag we persist, and a
+        // second cache underneath breaks it. The server sends `Cache-Control: max-age=300`, so with
+        // the default policy URLSession answers from its own store — our `If-None-Match` never
+        // reaches the server, and a 304 is silently rewritten into a 200 carrying the *cached* body.
+        // The result is a stale fence list delivered as if it were fresh, with no way to detect it.
+        apiRequest.cachePolicy = .reloadIgnoringLocalCacheData
+
+        let urlString = apiRequest.url?.absoluteString ?? ""
+        Logger.log(message: "HTTP GEOFENCE SYNC REQUEST:\n \(apiRequest.httpMethod ?? "GET") \(urlString)",
+                   argument: apiRequest.value(forHTTPHeaderField: "If-None-Match") ?? "")
+
+        let task = session.dataTask(with: apiRequest) { data, response, _ in
+            guard let http = response as? HTTPURLResponse else {
+                completion(.failure(ServiceError.noHttpResponse))
+                return
+            }
+            Logger.log(message: "HTTP GEOFENCE SYNC STATUS:\n for \(urlString)",
+                       argument: http.statusCode.description)
+            if http.statusCode == 304 {
+                completion(.success(.notModified))
+                return
+            }
+            switch http.statusCode {
+            case 200..<300:
+                guard let data = data else {
+                    completion(.failure(ServiceError.noData))
+                    return
+                }
+                Logger.log(message: "HTTP GEOFENCE SYNC RESPONSE:\n for \(urlString)", argument: data.pretty)
+                do {
+                    let decoded = try JSONDecoder().decode(GeofenceSyncResponse.self, from: data)
+                    let etag = DengageNetworking.headerValue(http, "ETag") ?? decoded.etag
+                    completion(.success(.updated(decoded, etag: etag)))
+                } catch let decodingError {
+                    completion(.failure(ServiceError.decoding(decodingError)))
+                }
+            default:
+                completion(.failure(ServiceError.fail(http.statusCode)))
+            }
+        }
+        task.resume()
+    }
+
+    /// HTTP header'ı case-insensitive okur (iOS 10+ uyumlu; `value(forHTTPHeaderField:)` iOS 13+).
+    private static func headerValue(_ response: HTTPURLResponse, _ name: String) -> String? {
+        for (key, value) in response.allHeaderFields {
+            if let key = key as? String, key.caseInsensitiveCompare(name) == .orderedSame {
+                return value as? String
+            }
+        }
+        return nil
+    }
+
     func createBaseURL(for endpointType:EndpointType) -> URL{
         
         switch endpointType {
@@ -108,7 +168,7 @@ final public class DengageNetworking {
     }
 }
 
-internal enum ServiceError: Error {
+public enum ServiceError: Error {
     case invalidRefreshToken
     case noHttpResponse
     case noData

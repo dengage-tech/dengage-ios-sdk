@@ -1,6 +1,31 @@
 # Changelog
 
 
+## [5.101] - 2026-07-24
+
+### New Features
+
+- Introduce Geofence Engine v2 (`DengageGeofence/Engine`): server-synced geofences with ETag revalidation, nearest-N region monitoring, and enter / exit / dwell reporting through `POST /event-signal` v2
+- Keep `DengageGeofence` as the public entry point; `startGeofence` / `stopGeofence` / `requestLocationPermissions` now drive the new engine
+- Handle geofence silent push (`sourceType=geofence`) automatically through `GeofenceSilentPushDispatcher`, using a runtime bridge so the core SDK works without the geofence module
+- Emit synthetic transitions when the OS callback is late or missing, so a dropped exit no longer leaves a fence permanently stuck
+- Repair missed exits on other fences when a region transition wakes the engine, without firing campaigns for them
+- Gate synthetic transitions on fix confidence: both horizontal accuracy and fix age feed the decision margin, and fixes older than 15 minutes are ignored
+- Send `occurredAt` from the location fix time instead of processing time, and report `accuracyM`, `syntheticTransition` and `token` in event-signal requests
+- Cache campaign content for offline triggers and fire it as a local notification, queueing the event until connectivity returns
+- Add remote tuning through `SdkParameters.geofence` (top-N, re-evaluation distance, adaptive threshold, wake-up cap, heartbeat interval, offline queue size), clamped to safe ranges on read
+- Keep a wake source alive while the wake-up cap is paused, so the engine can still be woken by significant displacement
+
+### Bug Fixes
+
+- Bypass `URLCache` on geofence sync so ETag revalidation controls freshness; a cached response could previously be served as a fresh fence list for days
+- Hold a background task assertion while geofence events are being sent, fixing push notifications arriving hours after the trigger
+- Deduplicate region callbacks so a single physical crossing no longer produces multiple events
+- Arm at most one dwell timer per fence, preventing repeated dwell notifications after re-registration
+- Populate `locationPermission` in the subscription request, which was previously sent empty
+- Fix `LocalNotificationFirer` so tapping a locally shown notification opens the app or its deep link
+
+
 ## [5.100] - 2026-07-06
 
 ### New Features

@@ -1,4 +1,4 @@
-sdk_version = '5.100'
+sdk_version = '5.101'
 
 Pod::Spec.new do |s|
   s.name             = 'DengageGeofence'

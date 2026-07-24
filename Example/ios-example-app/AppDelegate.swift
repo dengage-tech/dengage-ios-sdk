@@ -114,6 +114,7 @@ extension AppDelegate: DengageGeofenceInterceptor {
                          geofenceItemId: Int,
                          geofenceItemName: String?) {
         print("GeofenceInterceptor enter | lat=\(latitude), lon=\(longitude), radius=\(radius), clusterId=\(clusterId), clusterName=\(clusterName ?? "nil"), itemId=\(geofenceItemId), itemName=\(geofenceItemName ?? "nil")")
+        /*
         showGeofenceEnterNotification(latitude: latitude,
                                       longitude: longitude,
                                       radius: radius,
@@ -121,6 +122,7 @@ extension AppDelegate: DengageGeofenceInterceptor {
                                       clusterName: clusterName,
                                       geofenceItemId: geofenceItemId,
                                       geofenceItemName: geofenceItemName)
+         */
     }
 
     private func showGeofenceEnterNotification(latitude: Double,
