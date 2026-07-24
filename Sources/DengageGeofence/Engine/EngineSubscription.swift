@@ -8,6 +8,7 @@ struct EngineSubscription {
     let integrationKey: String
     let deviceId: String
     let contactKey: String?
+    let token: String?
 
     static func current() -> EngineSubscription? {
         guard let config = Dengage.dengage?.config, !config.integrationKey.isEmpty else { return nil }
@@ -16,7 +17,8 @@ struct EngineSubscription {
         return EngineSubscription(
             integrationKey: config.integrationKey,
             deviceId: config.applicationIdentifier,
-            contactKey: realContactKey
+            contactKey: realContactKey,
+            token: config.deviceToken
         )
     }
 }

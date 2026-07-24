@@ -16,23 +16,55 @@ final class OsGeofenceRegistrar {
     /// iOS uygulama başına 20 region izleyebilir (K4). Wake-up bubble kayıtlıysa bir slot yer.
     private let osRegionLimit = 20
 
-    func register(_ fences: [EngineFence]) {
+    /// Register modu (doc 23 İş 1):
+    /// - `diff`: `monitoredRegions` gerçeğin kaynağı — hedefte olmayan region'lar bırakılır, aynı
+    ///   id + aynı geometriyle izlenen region'a DOKUNULMAZ (SDK dwell timer'ı ve `requestState`
+    ///   churn'ü tetiklenmez), yeni/değişenler `startMonitoring` ile eklenir (aynı id replace olur).
+    /// - `full`: remove-all + tam re-register (eski davranış). Tamir kanalı: forceResync/silent push.
+    enum RegisterMode { case diff, full }
+
+    func register(_ fences: [EngineFence], mode: RegisterMode = .diff) {
         // Bubble'a dokunma: pause penceresindeki tek uyandırma kaynağıdır.
-        removeAllFences()
+        if mode == .full { removeAllFences() }
         guard CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) else {
             Logger.log(message: "OsGeofenceRegistrar -> region monitoring unavailable")
             return
         }
         let available = osRegionLimit - (isBubbleRegistered ? 1 : 0)
-        for fence in fences.prefix(available) {
-            let center = CLLocationCoordinate2D(latitude: fence.latitude, longitude: fence.longitude)
+        let target = Array(fences.prefix(available))
+        let targetIds = Set(target.map { $0.requestId })
+
+        // Full modda removeAllFences sonrası boş kalır → tüm hedef eklenir (eski davranışla aynı).
+        let current = manager.monitoredRegions.filter {
+            $0.identifier.hasPrefix(kEngineRequestIdPrefix) && $0.identifier != kWakeupBubbleIdentifier
+        }
+        for region in current where !targetIds.contains(region.identifier) {
+            manager.stopMonitoring(for: region)
+        }
+        let currentById = Dictionary(
+            current.compactMap { $0 as? CLCircularRegion }.map { ($0.identifier, $0) },
+            uniquingKeysWith: { first, _ in first }
+        )
+
+        var added = 0
+        for fence in target {
             let radius = min(fence.radiusM, manager.maximumRegionMonitoringDistance)
+            // Aynı id + aynı geometri zaten izleniyorsa dokunma: startMonitoring replace edip
+            // didStartMonitoringFor→requestState→didDetermineState(.inside) churn'ü üretmesin.
+            if let existing = currentById[fence.requestId],
+               abs(existing.center.latitude - fence.latitude) < 1e-6,
+               abs(existing.center.longitude - fence.longitude) < 1e-6,
+               abs(existing.radius - radius) < 0.5 {
+                continue
+            }
+            let center = CLLocationCoordinate2D(latitude: fence.latitude, longitude: fence.longitude)
             let region = CLCircularRegion(center: center, radius: radius, identifier: fence.requestId)
             region.notifyOnEntry = true
             region.notifyOnExit = true
             manager.startMonitoring(for: region)
+            added += 1
         }
-        Logger.log(message: "OsGeofenceRegistrar -> registered \(min(fences.count, available)) regions")
+        Logger.log(message: "OsGeofenceRegistrar -> registered +\(added) =\(target.count - added) regions (mode: \(mode))")
     }
 
     /// OS'ta hâlen izlenen kampanya region'larının requestId'leri (wake-up bubble hariç).

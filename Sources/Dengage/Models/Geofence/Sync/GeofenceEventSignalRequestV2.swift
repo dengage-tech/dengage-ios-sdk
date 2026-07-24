@@ -29,6 +29,9 @@ public struct GeofenceEventSignalRequestV2: APIRequest {
         if let contactKey = contactKey { parameters["contactKey"] = contactKey }
         if let campaignId = campaignId { parameters["campaignId"] = campaignId }
         if let accuracyM = accuracyM { parameters["accuracyM"] = accuracyM }
+        // Push token: backend'in geçişi push'lanabilir bir cihaza bağlaması için. Gönderim anında
+        // subscription'dan taze çözülür (per-event saklanmaz) ki offline replay bayat token göndermesin.
+        if let token = token, !token.isEmpty { parameters["token"] = token }
         return parameters.json
     }
 
@@ -47,6 +50,7 @@ public struct GeofenceEventSignalRequestV2: APIRequest {
     let idempotencyKey: String
     let source: GeofenceEventSource
     let syntheticTransition: Bool
+    let token: String?
 
     public init(integrationKey: String,
                 deviceId: String,
@@ -62,7 +66,8 @@ public struct GeofenceEventSignalRequestV2: APIRequest {
                 ingestedAt: Date,
                 idempotencyKey: String,
                 source: GeofenceEventSource,
-                syntheticTransition: Bool = false) {
+                syntheticTransition: Bool = false,
+                token: String? = nil) {
         self.integrationKey = integrationKey
         self.deviceId = deviceId
         self.contactKey = contactKey
@@ -78,5 +83,6 @@ public struct GeofenceEventSignalRequestV2: APIRequest {
         self.idempotencyKey = idempotencyKey
         self.source = source
         self.syntheticTransition = syntheticTransition
+        self.token = token
     }
 }

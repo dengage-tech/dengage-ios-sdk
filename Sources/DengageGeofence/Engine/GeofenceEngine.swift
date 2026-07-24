@@ -148,8 +148,22 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
 
     // MARK: - Organic sync / lifecycle
 
+    /// Son foreground kaynaklı organik sync anı + asgari aralık (doc 23 İş 5 debounce).
+    private var lastForegroundSyncAt: TimeInterval = 0
+    private let foregroundSyncDebounce: TimeInterval = 60
+
     func requestOrganicSync(reason: OrganicSyncTrigger.Reason) {
         guard remoteConfig.geofenceEnabled() else { return }
+        // Foreground debounce: kısa aralıklı foreground'lar (bildirim çekmecesi, app switcher)
+        // reeval churn'ü üretmesin. Diğer reason'lar (push delivered / manual) debounce'lanmaz.
+        if reason == .appForeground {
+            let now = Date().timeIntervalSince1970
+            guard now - lastForegroundSyncAt >= foregroundSyncDebounce else {
+                Logger.log(message: "GeofenceEngine -> foreground sync debounced")
+                return
+            }
+            lastForegroundSyncAt = now
+        }
         wakeupCap.attemptResume()
         reeval(location: currentLocation(), syncAllowed: true, force: false)
         eventFlusher.flush(batchSize: remoteConfig.config().offlineQueueMaxSize)
@@ -261,10 +275,15 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
     private func reeval(location: CLLocation?, syncAllowed: Bool, force: Bool, fireCampaigns: Bool = false) {
         if let location = location { lastReevalLocation = location }
 
+        // force=true kanalları (start / forceResync / silent push) tamir kanalıdır → full
+        // (remove-all + re-register). Diğer yollar diff: değişmeyen region'a dokunulmaz,
+        // requestState churn'ü ve dwell timer resetleri önlenir (doc 23 İş 1).
+        let registerMode: OsGeofenceRegistrar.RegisterMode = force ? .full : .diff
+
         if syncAllowed {
             syncer.sync(lat: location?.coordinate.latitude, lon: location?.coordinate.longitude) { [weak self] _ in
                 guard let self = self else { return }
-                self.registerTopN(location: location)
+                self.registerTopN(location: location, mode: registerMode)
                 if let loc = location {
                     self.reconcileContainment(location: loc, fireCampaigns: fireCampaigns)
                     self.heartbeatSender.maybeSend(location: loc, intervalMinutes: self.remoteConfig.config().heartbeatIntervalMinutes, force: force)
@@ -272,7 +291,7 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
             }
         } else {
             Logger.log(message: "GeofenceEngine -> transit mode: local top-N only, server sync skipped")
-            registerTopN(location: location)
+            registerTopN(location: location, mode: registerMode)
             if let loc = location {
                 reconcileContainment(location: loc, fireCampaigns: fireCampaigns)
                 heartbeatSender.maybeSend(location: loc, intervalMinutes: remoteConfig.config().heartbeatIntervalMinutes, force: force)
@@ -284,9 +303,15 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
     /// gaps between the location and the state table with our own events (missed exit, enter that
     /// never arrived).
     ///
-    /// [fireCampaigns]: movement kaynaklı reeval'de `true` → kampanya tetiklenebilir. Silent push /
-    /// sync-only reeval'de `false` → yalnızca state reconcile edilir; `occurredAt = now` bir pasif
-    /// wake'te dürüst olmadığından bayat/sahte push üretmemek için kampanya bastırılır.
+    /// [fireCampaigns]: movement kaynaklı reeval'de `true` → her tip kampanya tetikleyebilir. Pasif
+    /// wake'lerde (silent push / sync-only / cross-fence) yalnız ENTER bastırılır:
+    /// - EXIT/DWELL muğlaklıksız gerçek geçiştir: sentetik EXIT yalnız state `.inside` iken üretilir
+    ///   (daha önce gözlemlenmiş bir enter var), DWELL koşulu ise şu an doğrudur (kullanıcı hâlâ
+    ///   içeride ve süre dolmuş) → `occurredAt = now` dürüst; bastırmak kampanyayı kalıcı
+    ///   kaybettirebilir (OS exit'i hiç gelmeyebilir — ör. region top-N'den düşüp bırakıldıysa).
+    /// - ENTER'da "initial containment" muğlaklığı var (gece sync'lenen ev fence'i: cihaz zaten
+    ///   içerideydi, geçiş yok) → state-only kalır; pending-campaign borcu + register sonrası
+    ///   `requestState` gerçek geçişi kapatır (doc 23 İş 3).
     private func reconcileContainment(location: CLLocation, fireCampaigns: Bool) {
         // Same serial queue as OS transitions, so the dedup's check-then-set stays atomic against them.
         workQueue.async { [weak self] in
@@ -299,10 +324,11 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
             let group = DispatchGroup()
             for item in pending {
                 group.enter()
+                let fire = fireCampaigns || item.eventType != .enter
                 self.triggerHandler.handle(eventType: item.eventType,
                                            requestId: item.fence.requestId,
                                            location: location,
-                                           fireCampaigns: fireCampaigns,
+                                           fireCampaigns: fire,
                                            syntheticTransition: true) {
                     group.leave()
                 }
@@ -311,7 +337,7 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
         }
     }
 
-    private func registerTopN(location: CLLocation?) {
+    private func registerTopN(location: CLLocation?, mode: OsGeofenceRegistrar.RegisterMode) {
         guard let location = location else {
             Logger.log(message: "GeofenceEngine -> registerTopN skipped: no location yet")
             return
@@ -322,9 +348,9 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
                                            lat: location.coordinate.latitude,
                                            lon: location.coordinate.longitude,
                                            topN: config.topN)
-        registrar.register(selected)
+        registrar.register(selected, mode: mode)
         activeWindowScheduler.schedule(fences: selected)
-        Logger.log(message: "GeofenceEngine -> registered \(selected.count)/\(all.count) fences (topN=\(config.topN))")
+        Logger.log(message: "GeofenceEngine -> registered \(selected.count)/\(all.count) fences (topN=\(config.topN), mode: \(mode))")
     }
 
     // MARK: - CLLocationManagerDelegate
@@ -482,8 +508,30 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
 
     // MARK: - Helpers
 
+    /// Bu yaştan taze fix "güncel konum" sayılır; üstünde tek atımlık taze fix istenir (doc 23 İş 4).
+    private let freshLocationMaxAge: TimeInterval = 120
+    /// `requestLocation` spam koruması (start() currentLocation'ı arka arkaya çağırabilir).
+    private let fixRequestThrottle: TimeInterval = 30
+    private var lastFixRequestAt: TimeInterval = 0
+
     private func currentLocation() -> CLLocation? {
-        lastReevalLocation ?? locationManager.location
+        // En taze adayı seç; cache'in yaşına bakılmaksızın önceliği olmasın (doc 23 İş 4 —
+        // bayat cache reconciler'ın 15 dk staleness cap'ine takılır ve foreground reeval'i
+        // sessizce işlevsiz bırakırdı).
+        let best = [locationManager.location, lastReevalLocation]
+            .compactMap { $0 }
+            .max(by: { $0.timestamp < $1.timestamp })
+        if let candidate = best, Date().timeIntervalSince(candidate.timestamp) > freshLocationMaxAge {
+            // Bayat: tek atımlık taze fix iste. Cevap didUpdateLocations → handleMovement →
+            // reeval(fireCampaigns: true) yolundan gelir; kaçan geçişler kampanyayla (ve varsa
+            // pending-campaign borcuyla) tamir edilir.
+            let now = Date().timeIntervalSince1970
+            if now - lastFixRequestAt >= fixRequestThrottle {
+                lastFixRequestAt = now
+                locationManager.requestLocation()
+            }
+        }
+        return best
     }
 
     private func currentAuthorizationStatus() -> CLAuthorizationStatus {

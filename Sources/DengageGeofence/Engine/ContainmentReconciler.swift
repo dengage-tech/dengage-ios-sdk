@@ -79,13 +79,26 @@ final class ContainmentReconciler {
 
         for fence in fenceRepository.loadAll() where fence.geofenceId > 0 {
             let distance = location.distance(from: CLLocation(latitude: fence.latitude, longitude: fence.longitude))
-            let state = deviceStateRepository.getState(geofenceId: fence.geofenceId)?.state
+            let record = deviceStateRepository.getState(geofenceId: fence.geofenceId)
+            let state = record?.state
             let deviceThinksInside = isInsideState(state)
 
             if distance + margin <= fence.radiusM {
                 // Kesin içeride (en kötü uzak nokta bile radius'ta) ama tablo bilmiyor → geç/eksik enter.
                 if !deviceThinksInside {
                     pending.append((fence, .enter))
+                } else if state == .inside,
+                          let enteredAt = record?.enteredAt,
+                          let dwellMinutes = fence.campaigns
+                              .filter({ $0.triggerType == .dwell })
+                              .compactMap({ $0.dwellMinutes })
+                              .max(),
+                          dwellMinutes > 0,
+                          now.timeIntervalSince1970 - enteredAt >= Double(dwellMinutes * 60) {
+                    // Dwell repair (doc 23 İş 2): process suspend'inde ölen in-memory dwell timer'ının
+                    // kalıcı ağı — persist edilen enteredAt üzerinden dwell tamamlanır. `.inside` şartı
+                    // `.dwellPending`'i (bu ziyarette zaten atıldı) dışlar; dedup da aynı kuralı uygular.
+                    pending.append((fence, .dwell))
                 }
             } else if deviceThinksInside, distance - margin > fence.radiusM * exitHysteresisFactor {
                 // Kesin dışarıda (en kötü yakın nokta bile histerezis sınırının ötesinde) → kaçan exit.

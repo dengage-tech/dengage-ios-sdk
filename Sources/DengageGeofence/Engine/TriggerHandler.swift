@@ -60,13 +60,51 @@ final class TriggerHandler {
         // Edge-detection / dedup: OS aynı fiziksel geçiş için birden fazla callback verebilir
         // (didEnterRegion + register sonrası requestState→didDetermineState(.inside), vb.).
         // Sadece gerçek durum değişikliğinde tetikle; aksi halde çift event-signal gider.
+        //
+        // Pending-campaign gate (doc 23 İş 3): state-only (fireCampaigns=false) tüketilen bir geçiş
+        // kampanya hakkını kaybetmesin. Borç marker'a yazılır; aynı geçişin sonraki
+        // fireCampaigns=true tekrarı (gerçek OS callback'i / movement reeval) dedup'a takıldığında
+        // state'e DOKUNMADAN borcu öder (occurredAt = tespit anı, sunucu bayatlığı görebilir).
         let previous = deviceStateRepository.getState(geofenceId: fence.geofenceId)
+        var effectiveOccurredMillis = occurredMillis
+        
         if isDuplicateTransition(eventType: eventType, previous: previous) {
-            Logger.log(message: "TriggerHandler -> duplicate \(eventType.rawValue) for fence \(fence.geofenceId), skipping")
-            completion(); return
+            guard fireCampaigns, let detectedAt = consumePending(fence.geofenceId, eventType, now: now) else {
+                Logger.log(message: "TriggerHandler -> duplicate \(eventType.rawValue) for fence \(fence.geofenceId), skipping")
+                completion(); return
+            }
+            effectiveOccurredMillis = detectedAt * 1000.0
+        } else {
+            clearPending(fence.geofenceId)
+            // Sentetik EXIT: occurredAt = lastSeenAt (gerçek çıkış ondan sonra oldu; 15 dk gate için)
+            if syntheticTransition, eventType == .exit, let lastSeen = previous?.lastSeenAt {
+                effectiveOccurredMillis = lastSeen * 1000.0
+            }
+            updateDeviceState(fence: fence, eventType: eventType, now: now)
+            if !fireCampaigns, fence.campaigns.contains(where: { $0.triggerType == trigger(for: eventType) }) {
+                markPending(fence.geofenceId, eventType, at: now)
+            }
         }
-
-        updateDeviceState(fence: fence, eventType: eventType, now: now)
+        
+        
+        
+        if isDuplicateTransition(eventType: eventType, previous: previous) {
+            guard fireCampaigns,
+                  let detectedAt = consumePending(fence.geofenceId, eventType, now: now) else {
+                Logger.log(message: "TriggerHandler -> duplicate \(eventType.rawValue) for fence \(fence.geofenceId), skipping")
+                completion(); return
+            }
+            // State zaten doğru; yalnızca state-only'de bastırılmış kampanya borcu ödeniyor.
+            effectiveOccurredMillis = detectedAt * 1000.0
+        } else {
+            // Yeni gerçek geçiş → fence'in eski borçları geçersiz (ziyaret sınırı değişti).
+            clearPending(fence.geofenceId)
+            updateDeviceState(fence: fence, eventType: eventType, now: now)
+            if !fireCampaigns,
+               fence.campaigns.contains(where: { $0.triggerType == trigger(for: eventType) }) {
+                markPending(fence.geofenceId, eventType, at: now)
+            }
+        }
 
         // Davranış paritesi: enter'da host interceptor'ı tetikle (v1 ile aynı hook).
         // state-only (fireCampaigns=false) modda interceptor da atlanır.
@@ -97,7 +135,7 @@ final class TriggerHandler {
                 clusterId: fence.clusterId,
                 title: fence.title,
                 eventType: eventType,
-                occurredAtMillis: occurredMillis,
+                occurredAtMillis: effectiveOccurredMillis,
                 accuracyM: accuracyM,
                 campaignIds: matchingCampaigns.map { $0.campaignId },
                 stateOnly: !fireCampaigns,
@@ -126,7 +164,7 @@ final class TriggerHandler {
         for campaign in matchingCampaigns {
             group.enter()
             dispatch(fence: fence, campaign: campaign, eventType: eventType, lat: lat, lon: lon,
-                     accuracyM: accuracyM, occurredAtMillis: occurredMillis, createdAtMillis: now * 1000.0,
+                     accuracyM: accuracyM, occurredAtMillis: effectiveOccurredMillis, createdAtMillis: now * 1000.0,
                      syntheticTransition: syntheticTransition, online: online) {
                 group.leave()
             }
@@ -255,5 +293,39 @@ final class TriggerHandler {
 
     func isInside(geofenceId: Int) -> Bool {
         deviceStateRepository.getState(geofenceId: geofenceId)?.state == .inside
+    }
+
+    // MARK: - Pending campaign debt (doc 23 İş 3)
+
+    /// State-only tüketilen geçişlerin kampanya borcu. Process ölümüne dayanması gerekir
+    /// (arka plan wake'leri arasında process gidebilir) → UserDefaults.
+    private var pendingDefaults: UserDefaults { UserDefaults.standard }
+
+    /// Borcun ödenebilir kalacağı azami süre.
+    private static let pendingCampaignTTL: TimeInterval = 6 * 60 * 60
+
+    private func pendingKey(_ geofenceId: Int, _ eventType: GeofenceEventType) -> String {
+        "dengage_gf_pending_\(geofenceId)_\(eventType.rawValue)"
+    }
+
+    /// Geçiş state-only tüketildi; kampanya borcu tespit anıyla (epoch saniye) yazılır.
+    private func markPending(_ geofenceId: Int, _ eventType: GeofenceEventType, at detectedAt: TimeInterval) {
+        pendingDefaults.set(detectedAt, forKey: pendingKey(geofenceId, eventType))
+    }
+
+    /// Borç varsa tespit anını döner ve siler; yoksa nil. TTL aşımı da nil (bayat borç ödenmez).
+    private func consumePending(_ geofenceId: Int, _ eventType: GeofenceEventType, now: TimeInterval) -> TimeInterval? {
+        let key = pendingKey(geofenceId, eventType)
+        let detectedAt = pendingDefaults.double(forKey: key)
+        guard detectedAt > 0 else { return nil }
+        pendingDefaults.removeObject(forKey: key)
+        return (now - detectedAt) <= TriggerHandler.pendingCampaignTTL ? detectedAt : nil
+    }
+
+    /// Fence için tüm borçları temizle — yeni gerçek geçiş eski ziyaretin borçlarını geçersiz kılar.
+    private func clearPending(_ geofenceId: Int) {
+        for eventType in [GeofenceEventType.enter, .exit, .dwell] {
+            pendingDefaults.removeObject(forKey: pendingKey(geofenceId, eventType))
+        }
     }
 }

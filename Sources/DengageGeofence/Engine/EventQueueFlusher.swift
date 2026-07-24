@@ -80,7 +80,8 @@ final class EventQueueFlusher {
             ingestedAt: Date(),
             idempotencyKey: event.idempotencyKey,
             source: source,
-            syntheticTransition: event.syntheticTransition ?? false
+            syntheticTransition: event.syntheticTransition ?? false,
+            token: subscription.token
         )
         apiClient.send(request: request) { result in
             switch result {
