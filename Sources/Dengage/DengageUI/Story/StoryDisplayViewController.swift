@@ -37,6 +37,9 @@ public final class StoryDisplayViewController: UIViewController, UIGestureRecogn
     }
 
     var storyActionsDelegate: StoryActionsDelegate?
+
+    /// Called after the fullscreen viewer is dismissed so the list can refresh ring state.
+    var onDismiss: (() -> Void)?
     
     public override func loadView() {
         super.loadView()
@@ -71,6 +74,9 @@ public final class StoryDisplayViewController: UIViewController, UIGestureRecogn
     }
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        if isBeingDismissed || isMovingFromParent {
+            onDismiss?()
+        }
     }
     
     public override func didReceiveMemoryWarning() {
@@ -97,7 +103,13 @@ public final class StoryDisplayViewController: UIViewController, UIGestureRecogn
     
     //MARK: - Selectors
     @objc func didSwipeDown(_ sender: Any) {
+        markVisibleCoverIfOnLastSnap()
         dismiss(animated: true, completion: nil)
+    }
+
+    private func markVisibleCoverIfOnLastSnap() {
+        let visibleCells = _view.snapsCollectionView.visibleCells.sortedArrayByPosition()
+        (visibleCells.first as? StoryDisplayViewCell)?.markCoverFullyShownIfOnLastSnap()
     }
  
    private func setup_viewConstraint() {
@@ -152,9 +164,8 @@ extension StoryDisplayViewController: UICollectionViewDelegate {
         }
         //Prepare the setup for first time story launch
         if storyCoverCopy == nil {
-            if let storyCoverId = cell.storyCover?.id, let storySetId = inAppMessage.data.content.props.storySet?.id {
-                storyActionsDelegate?.setStoryCoverShown(storyCoverId: storyCoverId, storySetId: storySetId)
-            }
+            // Do not mark cover shown here — only setStoryViewed escalates to cover-level
+            // shown once every story in the cover has been viewed (Android parity).
             // handPickedStoryIndex carries the resume index (computed in StoriesListViewController).
             cell.willDisplayCellForZerothIndex(with: cell.storyCover?.lastPlayedSnapIndex ?? 0, handpickedSnapIndex: handPickedStoryIndex)
             previousDisplayedIndex = indexPath.item
@@ -162,9 +173,6 @@ extension StoryDisplayViewController: UICollectionViewDelegate {
         }
         if indexPath.item == nStoryCoverIndex {
             let storyCover = storyCovers[nStoryCoverIndex+handPickedStoryCoverIndex]
-            if let storySetId = inAppMessage.data.content.props.storySet?.id {
-                storyActionsDelegate?.setStoryCoverShown(storyCoverId: storyCover.id, storySetId: storySetId)
-            }
             // If this displayed cover is BEFORE the previously displayed one, the user navigated
             // backward — restart it from index 0 per the migration rule.
             let isBackward = previousDisplayedIndex.map { indexPath.item < $0 } ?? false
@@ -254,10 +262,12 @@ extension StoryDisplayViewController {
         let numberOfItems = collectionView(_view.snapsCollectionView, numberOfItemsInSection: 0)-1
         if l_IndexPath?.item == 0 {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+0.2) {
+                self.markVisibleCoverIfOnLastSnap()
                 self.dismiss(animated: true, completion: nil)
             }
         }else if f_IndexPath?.item == numberOfItems {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+0.2) {
+                self.markVisibleCoverIfOnLastSnap()
                 self.dismiss(animated: true, completion: nil)
             }
         }
@@ -283,6 +293,7 @@ extension StoryDisplayViewController: StoryPreviewProtocol {
              Here we are navigating to next snap explictly, So we need to handle the isCompletelyVisible. With help of this Bool variable we are requesting snap. Otherwise cell wont get Image as well as the Progress move :P
              */
         }else {
+            self.markVisibleCoverIfOnLastSnap()
             self.dismiss(animated: true, completion: nil)
         }
     }
@@ -296,11 +307,13 @@ extension StoryDisplayViewController: StoryPreviewProtocol {
             let nIndexPath = IndexPath.init(row: nStoryCoverIndex, section: 0)
             _view.snapsCollectionView.scrollToItem(at: nIndexPath, at: .left, animated: true)
         } else {
+            self.markVisibleCoverIfOnLastSnap()
             self.dismiss(animated: true, completion: nil)
         }
     }
     
     func didTapCloseButton() {
+        markVisibleCoverIfOnLastSnap()
         self.dismiss(animated: true, completion:nil)
     }
 

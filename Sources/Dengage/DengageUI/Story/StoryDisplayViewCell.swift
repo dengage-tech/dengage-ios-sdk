@@ -291,10 +291,12 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
                 guard let strongSelf = self else { return}
                 switch result {
                     case .success(_):
+                        // Only ignore stale callbacks for a snap we've already left.
+                        // Do not require url equality — that gate skipped legitimate views
+                        // (and left the cover ring active forever).
                         if let storyCover = strongSelf.storyCover,
-                           strongSelf.handpickedSnapIndex == strongSelf.snapIndex,
                            initiatedAtIndex == strongSelf.snapIndex,
-                           url == storyCover.coverStories[strongSelf.snapIndex].mediaUrl! {
+                           strongSelf.snapIndex < storyCover.coverStories.count {
 
                             if let inAppMessage = strongSelf.inAppMessage {
                                 let story = storyCover.coverStories[strongSelf.snapIndex]
@@ -338,10 +340,10 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
                     guard let strongSelf = self else { return }
                     switch result {
                         case .success(let videoURL):
-                            if strongSelf.handpickedSnapIndex == strongSelf.snapIndex,
-                               initiatedAtIndex == strongSelf.snapIndex {
+                            if initiatedAtIndex == strongSelf.snapIndex {
 
-                                if let inAppMessage = strongSelf.inAppMessage, let storyCover = strongSelf.storyCover {
+                                if let inAppMessage = strongSelf.inAppMessage, let storyCover = strongSelf.storyCover,
+                                   strongSelf.snapIndex < storyCover.coverStories.count {
                                     let story = storyCover.coverStories[strongSelf.snapIndex]
                                     strongSelf.storyActionsDelegate?.storyEvent(eventType: .storyDisplay, message: inAppMessage, storyProfileId: storyCover.id
                                                                                 , storyProfileName: storyCover.name, storyId: story.id, storyName: story.name, buttonUrl: "")
@@ -443,6 +445,7 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
             
             storyActionsDelegate?.storyEvent(eventType: .storyClick, message: inAppMessage, storyProfileId: storyCover.id, storyProfileName: storyCover.name
                                              , storyId: story.id, storyName: story.name, buttonUrl: story.cta?.iosLink ?? "")
+            markCoverFullyShownIfOnLastSnap()
             delegate?.didTapCloseButton()
         }
     }
@@ -459,6 +462,8 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
                 handpickedSnapIndex = index
                 snapIndex = index
             } else {
+                // Tapped past the last snap — cover is fully watched.
+                markCoverFullyShown()
                 delegate?.didCompletePreview()
             }
         }
@@ -474,8 +479,10 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
                 direction = .forward
                 handpickedSnapIndex = index
                 snapIndex = index
-            }else {
+            } else {
                 stopPlayer()
+                // User finished every snap in this cover — mark ring passive (Android parity).
+                markCoverFullyShown()
                 delegate?.didCompletePreview()
             }
         }
@@ -632,6 +639,8 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
     }
     public func willDisplayCell(with sIndex: Int) {
         //Todo:Make sure to move filling part and creating at one place
+        // Keep handpicked in sync — otherwise image/video load callbacks skip recordStoryViewed.
+        handpickedSnapIndex = sIndex
         //Clear the progressor subviews before the creating new set of progressors.
         storyHeaderView.clearTheProgressorSubviews()
         storyHeaderView.createSnapProgressors()
@@ -839,6 +848,31 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
         storyActionsDelegate?.setLastViewedStoryIndex(storyCoverId: storyCover.id, index: snapIndex)
     }
 
+    private func markCoverFullyShown() {
+        guard let storyCover = storyCover,
+              let storySetId = inAppMessage?.data.content.props.storySet?.id else { return }
+        storyCover.shown = true
+        // Ensure every snap id is persisted as viewed, then escalate cover-level shown.
+        let allIds = storyCover.coverStories.map { $0.id }
+        for story in storyCover.coverStories {
+            storyActionsDelegate?.setStoryViewed(
+                storyId: story.id,
+                storyCoverId: storyCover.id,
+                storySetId: storySetId,
+                allStoryIdsInCover: allIds
+            )
+        }
+        storyActionsDelegate?.setStoryCoverShown(storyCoverId: storyCover.id, storySetId: storySetId)
+    }
+
+    /// Closing while on the last snap counts as fully watched.
+    func markCoverFullyShownIfOnLastSnap() {
+        guard let storyCover = storyCover, storyCover.storiesCount > 0 else { return }
+        if snapIndex >= storyCover.storiesCount - 1 {
+            markCoverFullyShown()
+        }
+    }
+
 }
 
 private extension Array {
@@ -849,6 +883,7 @@ private extension Array {
 
 extension StoryDisplayViewCell: StoryPreviewHeaderProtocol {
     func didTapCloseButton() {
+        markCoverFullyShownIfOnLastSnap()
         delegate?.didTapCloseButton()
     }
 }
