@@ -35,10 +35,10 @@ public class DengageInAppMessageManager: DengageInAppMessageManagerInterface {
 //MARK: - API
 extension DengageInAppMessageManager{
     func fetchInAppMessages(){
-        // Uygulama silent push ile arka planda uyandırıldıysa in-app çekilmez; kullanıcı ekranda
-        // olmadığı için mesaj gösterilemez ve fetch interval'ı boşuna yanar.
-        guard !DengageSilentPushLaunchTracker.shared.shouldSkipInAppFetch else {
-            Logger.log(message: "fetchInAppMessages skipped, app woken by silent push in background")
+        // Arka planda in-app çekilmez: kullanıcı ekranda olmadığı için mesaj gösterilemez ve
+        // fetch interval'ı boşuna yanar.
+        guard !DengageAppStateTracker.shared.shouldSkipRequest else {
+            Logger.log(message: "fetchInAppMessages skipped, app is in background")
             return
         }
         fetchRealTimeMessages()
@@ -69,8 +69,8 @@ extension DengageInAppMessageManager{
     }
     
     func fetchCancelledInAppMessageIds() {
-        guard !DengageSilentPushLaunchTracker.shared.shouldSkipInAppFetch else {
-            Logger.log(message: "fetchCancelledInAppMessageIds skipped, app woken by silent push in background")
+        guard !DengageAppStateTracker.shared.shouldSkipRequest else {
+            Logger.log(message: "fetchCancelledInAppMessageIds skipped, app is in background")
             return
         }
         Logger.log(message: "fetchCancelledInAppMessageIds called")
@@ -89,6 +89,10 @@ extension DengageInAppMessageManager{
     }
     
     func fetchRealTimeMessages(){
+        guard !DengageAppStateTracker.shared.shouldSkipRequest else {
+            Logger.log(message: "fetchRealTimeInAppMessages skipped, app is in background")
+            return
+        }
         guard shouldFetchRealTimeInAppMessages else { return }
         guard let remoteConfig = config.remoteConfiguration,
               let accountName = remoteConfig.accountName,
@@ -126,7 +130,10 @@ extension DengageInAppMessageManager{
     }
     
     public func getVisitorInfo(){
-        
+        guard !DengageAppStateTracker.shared.shouldSkipRequest else {
+            Logger.log(message: "getVisitorInfo skipped, app is in background")
+            return
+        }
         guard isEnabledRealTimeInAppMessage else {return}
         guard let remoteConfig = config.remoteConfiguration,
               let accountName = remoteConfig.accountName

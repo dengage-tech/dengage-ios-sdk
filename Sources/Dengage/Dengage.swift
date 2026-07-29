@@ -34,7 +34,7 @@ public class Dengage {
         startCalled = true
 
         // Silent push ile arka planda uyandırıldıysak in-app fetch'leri bastır.
-        DengageSilentPushLaunchTracker.shared.markLaunchIfNeeded(launchOptions: launchOptions)
+        DengageAppStateTracker.shared.markLaunchIfNeeded(launchOptions: launchOptions)
 
         if let appGroupsKey = options.appGroupsKey, !appGroupsKey.isEmpty {
             DengageLocalStorage.shared.setAppGroupsUserDefaults(appGroupName: appGroupsKey)

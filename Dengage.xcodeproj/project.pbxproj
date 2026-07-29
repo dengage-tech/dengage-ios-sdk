@@ -13,6 +13,7 @@
 		1FCB2C86B557F61188CE2238 /* RemoteConfigClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 209371C20A371CA37C256890 /* RemoteConfigClient.swift */; };
 		21F8BD418A31CFCAF08227A6 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04123EC4E9D2D72CCADE4583 /* Reachability.swift */; };
 		230B412E12B7B30415818C0C /* EngineModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFABD7031C78C532AFA775AA /* EngineModels.swift */; };
+		2D58A273F8D8B3C752098296 /* DengageAppStateTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB02EB07F394117D69182A2F /* DengageAppStateTracker.swift */; };
 		36871572056A30D9C5B953C9 /* GeofenceSilentPushDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C34AC1E97AC4BB95A45192F9 /* GeofenceSilentPushDispatcher.swift */; };
 		3E8C4BE32374A01D429B7B06 /* EngineSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 890274237A356E9B6696D07B /* EngineSubscription.swift */; };
 		4032C89193093BD350D9ECA8 /* OrganicSyncTrigger.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA1FF6B435C1301C0B8269E /* OrganicSyncTrigger.swift */; };
@@ -119,7 +120,6 @@
 		9262BF3140041E0B13DE1807 /* WakeupCapController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA8F9FDCF62163B88B1BF34 /* WakeupCapController.swift */; };
 		96C35C0661EC4DAB5032E099 /* HeartbeatSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B52DD2331D93CDC856D6DE2 /* HeartbeatSender.swift */; };
 		981F102F6694476E1C840028 /* TopNSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D291FB6597D9370672CFC13 /* TopNSelector.swift */; };
-		9FD9A1512969AA2B5F8E2FFE /* DengageSilentPushLaunchTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3043B63F4BD75BDAC320A2B5 /* DengageSilentPushLaunchTracker.swift */; };
 		A00EFCBE280777B8004659DE /* RFMScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EFCBD280777B8004659DE /* RFMScore.swift */; };
 		A00EFCC328077869004659DE /* DengageRFMManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EFCC228077869004659DE /* DengageRFMManager.swift */; };
 		A0765BBF27CEB4700007215B /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765B8227CEB4700007215B /* Constants.swift */; };
@@ -231,7 +231,6 @@
 		04EA87C4BA35A0906E75FA38 /* GeofenceEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceEngine.swift; sourceTree = "<group>"; };
 		209371C20A371CA37C256890 /* RemoteConfigClient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RemoteConfigClient.swift; sourceTree = "<group>"; };
 		27EEF2DC4F7C08E79642D4E8 /* TriggerHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TriggerHandler.swift; sourceTree = "<group>"; };
-		3043B63F4BD75BDAC320A2B5 /* DengageSilentPushLaunchTracker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DengageSilentPushLaunchTracker.swift; sourceTree = "<group>"; };
 		3E61585589720EAF008A6C5B /* GeofenceSyncResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceSyncResponse.swift; sourceTree = "<group>"; };
 		3FA8F9FDCF62163B88B1BF34 /* WakeupCapController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WakeupCapController.swift; sourceTree = "<group>"; };
 		46BC4C718C370657B2A8B257 /* UserDefaultsStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UserDefaultsStore.swift; sourceTree = "<group>"; };
@@ -402,6 +401,7 @@
 		C34AC1E97AC4BB95A45192F9 /* GeofenceSilentPushDispatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceSilentPushDispatcher.swift; sourceTree = "<group>"; };
 		C55AFB2A2FD77B8DE9E35A0A /* EventQueueFlusher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EventQueueFlusher.swift; sourceTree = "<group>"; };
 		C89D6DFA86C60165F5AEE1E7 /* GeofenceSyncRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceSyncRequest.swift; sourceTree = "<group>"; };
+		CB02EB07F394117D69182A2F /* DengageAppStateTracker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DengageAppStateTracker.swift; sourceTree = "<group>"; };
 		DC2855AC3E0BBB0A7F96FCFF /* GeofenceIso.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceIso.swift; sourceTree = "<group>"; };
 		EC6DB33028D0BE055A6461DC /* GeofenceEventSignalRequestV2.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceEventSignalRequestV2.swift; sourceTree = "<group>"; };
 		F23900ED442971A9FF72F5C0 /* GeofenceSyncResult.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceSyncResult.swift; sourceTree = "<group>"; };
@@ -714,8 +714,8 @@
 				A0765B8B27CEB4700007215B /* DengageUI */,
 				A0765B9F27CEB4700007215B /* Models */,
 				A0765B8827CEB4700007215B /* Networking */,
-				3043B63F4BD75BDAC320A2B5 /* DengageSilentPushLaunchTracker.swift */,
 				4CDA387FF0BF4E1E30989D39 /* Geofence */,
+				CB02EB07F394117D69182A2F /* DengageAppStateTracker.swift */,
 			);
 			path = Dengage;
 			sourceTree = "<group>";
@@ -1217,7 +1217,6 @@
 				A0765BC727CEB4700007215B /* DengageNotificationCarouselView.swift in Sources */,
 				881709422C91955E00FA8B63 /* VisitCountItem.swift in Sources */,
 				A0765BC527CEB4700007215B /* DengageAPIRequest.swift in Sources */,
-				9FD9A1512969AA2B5F8E2FFE /* DengageSilentPushLaunchTracker.swift in Sources */,
 				36871572056A30D9C5B953C9 /* GeofenceSilentPushDispatcher.swift in Sources */,
 				6A92CFA712E9AE39360DDE93 /* DeviceHeartbeatRequest.swift in Sources */,
 				ED93665EA1312F856354C43F /* GeofenceConfiguration.swift in Sources */,
@@ -1227,6 +1226,7 @@
 				C6F657EAB7A8061443F8F90C /* GeofenceSyncRequest.swift in Sources */,
 				6E83D0BD954CE821F1895087 /* GeofenceSyncResponse.swift in Sources */,
 				DA5FA9B4444F88CA30CE1EE7 /* GeofenceSyncResult.swift in Sources */,
+				2D58A273F8D8B3C752098296 /* DengageAppStateTracker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
