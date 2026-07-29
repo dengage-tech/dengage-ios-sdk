@@ -40,7 +40,8 @@ public struct GetSDKParamsResponse: Codable {
         inAppMinSecBetweenMessages = (try? container.decode(Int.self, forKey: .inAppMinSecBetweenMessages)) ?? 0
         appId = try? container.decode(String.self, forKey: .appId)
         realTimeInAppEnabled = (try? container.decode(Bool.self, forKey: .realTimeInAppEnabled)) ?? false
-        realTimeInAppSessionTimeoutMinutes = (try? container.decode(Int.self, forKey: .realTimeInAppSessionTimeoutMinutes)) ?? 1800
+        // Dakika cinsinden; alan gelmezse Android ile aynı varsayılan (30 dk) kullanılır.
+        realTimeInAppSessionTimeoutMinutes = (try? container.decode(Int.self, forKey: .realTimeInAppSessionTimeoutMinutes)) ?? 30
         eventMappings = (try? container.decode([EventMapping].self, forKey: .eventMappings)) ?? []
         debugDeviceIds = try? container.decode([String].self, forKey: .debugDeviceIds)
         sdkErrorLoggingEnabled = (try? container.decode(Bool.self, forKey: .sdkErrorLoggingEnabled)) ?? false
