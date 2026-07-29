@@ -283,7 +283,7 @@ extension DengageManager {
             if timeSinceLastFetch < 60 { // 1 minute in seconds
                 // Remote config is already cached; flush any pending device id validation report.
                 config.flushPendingDeviceIdValidationLogIfNeeded()
-                inAppManager.fetchInAppMessages()
+                inAppManager.fetchInAppMessages(trigger: .appForeground)
                 return
             }
         }
@@ -301,7 +301,7 @@ extension DengageManager {
                 DengageLocalStorage.shared.saveConfig(with: response)
                 DengageLocalStorage.shared.set(value: Date(), for: .lastFetchedConfigTime)
                 self.config.flushPendingDeviceIdValidationLogIfNeeded()
-                self.inAppManager.fetchInAppMessages()
+                self.inAppManager.fetchInAppMessages(trigger: .appForeground)
                 self.sendFirstLaunchTimeIfNeeded()
                 self.inAppManager.fetchCancelledInAppMessageIds()
                 self.eventManager.cleanupClientEvents()

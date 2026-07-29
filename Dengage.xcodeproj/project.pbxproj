@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		01500109A0C70CFEF9ECEB8A /* InAppFetchTrigger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41A94856886B00C8163C2AE2 /* InAppFetchTrigger.swift */; };
 		05E385B9314BCBB7B2B21C1F /* TriggerHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27EEF2DC4F7C08E79642D4E8 /* TriggerHandler.swift */; };
 		0D27B42C01768AD03ACB04B7 /* GeofenceSyncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1E1EE0D84BAEE35845B6E4 /* GeofenceSyncer.swift */; };
 		1182DA2ABBDC797D99680CA8 /* ActiveWindowScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9864AE0D5B345C2524BE6B41 /* ActiveWindowScheduler.swift */; };
@@ -233,6 +234,7 @@
 		27EEF2DC4F7C08E79642D4E8 /* TriggerHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TriggerHandler.swift; sourceTree = "<group>"; };
 		3E61585589720EAF008A6C5B /* GeofenceSyncResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceSyncResponse.swift; sourceTree = "<group>"; };
 		3FA8F9FDCF62163B88B1BF34 /* WakeupCapController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WakeupCapController.swift; sourceTree = "<group>"; };
+		41A94856886B00C8163C2AE2 /* InAppFetchTrigger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InAppFetchTrigger.swift; sourceTree = "<group>"; };
 		46BC4C718C370657B2A8B257 /* UserDefaultsStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UserDefaultsStore.swift; sourceTree = "<group>"; };
 		64771E1E04DFB2AECD40BFB4 /* AdaptiveThresholdCalculator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AdaptiveThresholdCalculator.swift; sourceTree = "<group>"; };
 		72027CC7AEDD29C22EEE09A1 /* ContainmentReconciler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ContainmentReconciler.swift; sourceTree = "<group>"; };
@@ -716,6 +718,7 @@
 				A0765B8827CEB4700007215B /* Networking */,
 				4CDA387FF0BF4E1E30989D39 /* Geofence */,
 				CB02EB07F394117D69182A2F /* DengageAppStateTracker.swift */,
+				41A94856886B00C8163C2AE2 /* InAppFetchTrigger.swift */,
 			);
 			path = Dengage;
 			sourceTree = "<group>";
@@ -1227,6 +1230,7 @@
 				6E83D0BD954CE821F1895087 /* GeofenceSyncResponse.swift in Sources */,
 				DA5FA9B4444F88CA30CE1EE7 /* GeofenceSyncResult.swift in Sources */,
 				2D58A273F8D8B3C752098296 /* DengageAppStateTracker.swift in Sources */,
+				01500109A0C70CFEF9ECEB8A /* InAppFetchTrigger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

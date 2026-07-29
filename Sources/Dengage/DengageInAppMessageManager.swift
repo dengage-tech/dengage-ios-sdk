@@ -14,6 +14,12 @@ public class DengageInAppMessageManager: DengageInAppMessageManagerInterface {
     var inAppShowTimer = Timer()
     var hourlyFetchTimer: Timer?
     var isInAppMessageShowing = false
+
+    /// Ön plana dönüşler arasındaki minimum fetch aralığı (saniye).
+    private static let appForegroundFetchFloor: TimeInterval = 60
+
+    /// Process içindeki son ön plan tetikli fetch zamanı; nil ise henüz fetch yapılmadı.
+    private static var lastAppForegroundFetchTime: TimeInterval?
     
     
     init(config: DengageConfiguration,
@@ -34,19 +40,23 @@ public class DengageInAppMessageManager: DengageInAppMessageManagerInterface {
 
 //MARK: - API
 extension DengageInAppMessageManager{
-    func fetchInAppMessages(){
+    func fetchInAppMessages(trigger: InAppFetchTrigger = .other){
         // Arka planda in-app çekilmez: kullanıcı ekranda olmadığı için mesaj gösterilemez ve
         // fetch interval'ı boşuna yanar.
         guard !DengageAppStateTracker.shared.shouldSkipRequest else {
             Logger.log(message: "fetchInAppMessages skipped, app is in background")
             return
         }
-        fetchRealTimeMessages()
+        // Ön plana geçiş her zaman fetch eder; yalnızca kazara arka plan/ön plan çalkantısını
+        // eleyen küçük bir taban uygulanır.
+        if trigger == .appForeground, shouldSkipForAppForegroundFloor() { return }
+
+        fetchRealTimeMessages(trigger: trigger)
         // getVisitorInfo()
         Logger.log(message: "fetchInAppMessages called")
         // Cleanup expired show history entries (older than 2 weeks)
         DengageLocalStorage.shared.cleanupExpiredShowHistory()
-        guard shouldFetchInAppMessages else {return}
+        guard shouldFetchInAppMessages(bypassInterval: trigger == .appForeground) else {return}
         guard let remoteConfig = config.remoteConfiguration, let accountName = remoteConfig.accountName else { return }
         Logger.log(message: "fetchInAppMessages request started")
         let request = GetInAppMessagesRequest(accountName: accountName,
@@ -88,12 +98,12 @@ extension DengageInAppMessageManager{
         }
     }
     
-    func fetchRealTimeMessages(){
+    func fetchRealTimeMessages(trigger: InAppFetchTrigger = .other){
         guard !DengageAppStateTracker.shared.shouldSkipRequest else {
             Logger.log(message: "fetchRealTimeInAppMessages skipped, app is in background")
             return
         }
-        guard shouldFetchRealTimeInAppMessages else { return }
+        guard shouldFetchRealTimeInAppMessages(bypassInterval: trigger == .appForeground) else { return }
         guard let remoteConfig = config.remoteConfiguration,
               let accountName = remoteConfig.accountName,
               let appId = remoteConfig.appId
@@ -1065,18 +1075,22 @@ extension DengageInAppMessageManager {
         return true
     }
     
-    private var shouldFetchInAppMessages:Bool {
+    /// - Parameter bypassInterval: ön plana geçiş tetikleyicisi aralığa takılmaz (bkz. A).
+    ///   Etkinlik kontrolü her durumda uygulanır.
+    private func shouldFetchInAppMessages(bypassInterval: Bool = false) -> Bool {
         guard isEnabledInAppMessage else { return false }
         // Geliştirme modunda (manuel bayrak veya debug cihaz) fetch aralığı uygulanmaz.
-        if config.isDevelopmentStatus { return true }
+        if bypassInterval || config.isDevelopmentStatus { return true }
         guard let lastFetchedTime = config.inAppMessageLastFetchedTime else { return true }
         return Date().timeMiliseconds >= lastFetchedTime
     }
     
-    private var shouldFetchRealTimeInAppMessages:Bool {
+    /// - Parameter bypassInterval: ön plana geçiş tetikleyicisi aralığa takılmaz (bkz. A).
+    ///   Etkinlik kontrolü her durumda uygulanır.
+    private func shouldFetchRealTimeInAppMessages(bypassInterval: Bool = false) -> Bool {
         guard isEnabledRealTimeInAppMessage else { return false }
         // Geliştirme modunda (manuel bayrak veya debug cihaz) fetch aralığı uygulanmaz.
-        if config.isDevelopmentStatus { return true }
+        if bypassInterval || config.isDevelopmentStatus { return true }
         guard let lastFetchedTime = config.realTimeInAppMessageLastFetchedTime else { return true }
         return Date().timeMiliseconds >= lastFetchedTime
     }
@@ -1093,7 +1107,7 @@ extension DengageInAppMessageManager {
     }
     
     @objc private func willEnterForeground() {
-        fetchInAppMessages()
+        fetchInAppMessages(trigger: .appForeground)
         Dengage.dengage?.eventManager.cleanupClientEvents()
         
         // Restart the hourly timer when app comes to foreground
@@ -1137,6 +1151,20 @@ extension DengageInAppMessageManager {
         DengageLocalStorage.shared.set(value: lastSessionDuration, for: .lastSessionDuration)
     }
     
+    /// Ön plan tabanı. Process içindeki **ilk** fetch koşulsuzdur — uygulamayı tamamen kapatıp
+    /// açmak her zaman fetch üretir, bu testçiye deterministik bir yol bırakır. Sonraki ön plana
+    /// dönüşler tabana tabidir.
+    private func shouldSkipForAppForegroundFloor() -> Bool {
+        let now = Date().timeIntervalSince1970
+        if let last = Self.lastAppForegroundFetchTime, now - last < Self.appForegroundFetchFloor {
+            let remaining = Int(Self.appForegroundFetchFloor - (now - last))
+            Logger.log(message: "fetchInAppMessages skipped by foreground floor, \(remaining)s remaining")
+            return true
+        }
+        Self.lastAppForegroundFetchTime = now
+        return false
+    }
+
     private func startHourlyFetchTimer() {
         // Stop any existing timer first
         stopHourlyFetchTimer()
@@ -1408,7 +1436,7 @@ extension DengageInAppMessageManager: StoryActionsDelegate {
 
 protocol DengageInAppMessageManagerInterface: AnyObject{
     
-    func fetchInAppMessages()
+    func fetchInAppMessages(trigger: InAppFetchTrigger)
     func setNavigation(screenName: String?, params: Dictionary<String,String>? , propertyID : String? , webView : InAppInlineElementView?
                        ,storyPropertyID: String?, storyCompletion: ((StoriesListView?) -> Void)?)
     func showInAppMessage(inAppMessage: InAppMessage, couponCode: String)
