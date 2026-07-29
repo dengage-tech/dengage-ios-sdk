@@ -485,7 +485,10 @@ extension DengageInAppMessageManager {
             return
         }
         
-        guard !(config.inAppMessageShowTime != 0 && Date().timeMiliseconds < config.inAppMessageShowTime) else {
+        // Geliştirme modunda (manuel bayrak veya debug cihaz) mesajlar arası minimum süre
+        // uygulanmaz; test cihazı kampanyaları arka arkaya görebilmeli (Android ile aynı davranış).
+        guard config.isDevelopmentStatus ||
+                !(config.inAppMessageShowTime != 0 && Date().timeMiliseconds < config.inAppMessageShowTime) else {
             hidePlacementIfNeeded(
                 inAppInlineElement: inAppInlineElement,
                 propertyID: propertyID,
