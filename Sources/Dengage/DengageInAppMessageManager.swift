@@ -35,6 +35,12 @@ public class DengageInAppMessageManager: DengageInAppMessageManagerInterface {
 //MARK: - API
 extension DengageInAppMessageManager{
     func fetchInAppMessages(){
+        // Uygulama silent push ile arka planda uyandırıldıysa in-app çekilmez; kullanıcı ekranda
+        // olmadığı için mesaj gösterilemez ve fetch interval'ı boşuna yanar.
+        guard !DengageSilentPushLaunchTracker.shared.shouldSkipInAppFetch else {
+            Logger.log(message: "fetchInAppMessages skipped, app woken by silent push in background")
+            return
+        }
         fetchRealTimeMessages()
         // getVisitorInfo()
         Logger.log(message: "fetchInAppMessages called")
@@ -63,6 +69,10 @@ extension DengageInAppMessageManager{
     }
     
     func fetchCancelledInAppMessageIds() {
+        guard !DengageSilentPushLaunchTracker.shared.shouldSkipInAppFetch else {
+            Logger.log(message: "fetchCancelledInAppMessageIds skipped, app woken by silent push in background")
+            return
+        }
         Logger.log(message: "fetchCancelledInAppMessageIds called")
         if DengageLocalStorage.shared.getInAppMessages().count == 0 { return }
         guard let remoteConfig = config.remoteConfiguration, let accountName = remoteConfig.accountName else { return }

@@ -7,6 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		05E385B9314BCBB7B2B21C1F /* TriggerHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27EEF2DC4F7C08E79642D4E8 /* TriggerHandler.swift */; };
+		0D27B42C01768AD03ACB04B7 /* GeofenceSyncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1E1EE0D84BAEE35845B6E4 /* GeofenceSyncer.swift */; };
+		1182DA2ABBDC797D99680CA8 /* ActiveWindowScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9864AE0D5B345C2524BE6B41 /* ActiveWindowScheduler.swift */; };
+		1FCB2C86B557F61188CE2238 /* RemoteConfigClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 209371C20A371CA37C256890 /* RemoteConfigClient.swift */; };
+		21F8BD418A31CFCAF08227A6 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04123EC4E9D2D72CCADE4583 /* Reachability.swift */; };
+		230B412E12B7B30415818C0C /* EngineModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFABD7031C78C532AFA775AA /* EngineModels.swift */; };
+		36871572056A30D9C5B953C9 /* GeofenceSilentPushDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C34AC1E97AC4BB95A45192F9 /* GeofenceSilentPushDispatcher.swift */; };
+		3E8C4BE32374A01D429B7B06 /* EngineSubscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 890274237A356E9B6696D07B /* EngineSubscription.swift */; };
+		4032C89193093BD350D9ECA8 /* OrganicSyncTrigger.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAA1FF6B435C1301C0B8269E /* OrganicSyncTrigger.swift */; };
+		4B71F8F2648BF58F1D61B0B0 /* EngineRepositories.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5346AB72045762AFDB92990 /* EngineRepositories.swift */; };
+		62045977FC0826FA9448F654 /* LocalNotificationFirer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 997C31BDD1C6C085F5A4D541 /* LocalNotificationFirer.swift */; };
+		6A92CFA712E9AE39360DDE93 /* DeviceHeartbeatRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BA4D3AA9DD726C93CF737CB /* DeviceHeartbeatRequest.swift */; };
+		6E83D0BD954CE821F1895087 /* GeofenceSyncResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E61585589720EAF008A6C5B /* GeofenceSyncResponse.swift */; };
+		85D9933B83815C13275C2E21 /* GeofenceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04EA87C4BA35A0906E75FA38 /* GeofenceEngine.swift */; };
 		8800688C2C931DDA00881F71 /* InAppInlineElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880068882C931DDA00881F71 /* InAppInlineElementView.swift */; };
 		8800688E2C931E1A00881F71 /* InAppBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8800688D2C931E1A00881F71 /* InAppBrowserViewController.swift */; };
 		880068942C931F3600881F71 /* AppForegroundEventRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880068932C931F3600881F71 /* AppForegroundEventRequest.swift */; };
@@ -101,6 +115,11 @@
 		88F3103A2FD0788100299466 /* DeviceInfoHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F310232FD0788100299466 /* DeviceInfoHandler.swift */; };
 		88F3103B2FD0788100299466 /* SyncBridgeHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F310212FD0788100299466 /* SyncBridgeHandler.swift */; };
 		88F3103F2FD07B2000299466 /* DengageGeofenceInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F3103E2FD07B2000299466 /* DengageGeofenceInterceptor.swift */; };
+		8E332BE8C3882914DA51FEEC /* AdaptiveThresholdCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64771E1E04DFB2AECD40BFB4 /* AdaptiveThresholdCalculator.swift */; };
+		9262BF3140041E0B13DE1807 /* WakeupCapController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FA8F9FDCF62163B88B1BF34 /* WakeupCapController.swift */; };
+		96C35C0661EC4DAB5032E099 /* HeartbeatSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B52DD2331D93CDC856D6DE2 /* HeartbeatSender.swift */; };
+		981F102F6694476E1C840028 /* TopNSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D291FB6597D9370672CFC13 /* TopNSelector.swift */; };
+		9FD9A1512969AA2B5F8E2FFE /* DengageSilentPushLaunchTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3043B63F4BD75BDAC320A2B5 /* DengageSilentPushLaunchTracker.swift */; };
 		A00EFCBE280777B8004659DE /* RFMScore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EFCBD280777B8004659DE /* RFMScore.swift */; };
 		A00EFCC328077869004659DE /* DengageRFMManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00EFCC228077869004659DE /* DengageRFMManager.swift */; };
 		A0765BBF27CEB4700007215B /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765B8227CEB4700007215B /* Constants.swift */; };
@@ -153,6 +172,19 @@
 		A0765BEE27CEB4700007215B /* DengageLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765BBC27CEB4700007215B /* DengageLog.swift */; };
 		A0765BEF27CEB4700007215B /* DengageKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765BBD27CEB4700007215B /* DengageKeychain.swift */; };
 		A0765BF027CEB4700007215B /* DengageEventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765BBE27CEB4700007215B /* DengageEventManager.swift */; };
+		A359E3BD2576F5285A39FFA8 /* OsGeofenceRegistrar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6B556F424E89F76EDE23A9 /* OsGeofenceRegistrar.swift */; };
+		AA8C373A51772666992B5068 /* GeofenceEventSignalRequestV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC6DB33028D0BE055A6461DC /* GeofenceEventSignalRequestV2.swift */; };
+		AE513749A3BF20CD647E0273 /* UserDefaultsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46BC4C718C370657B2A8B257 /* UserDefaultsStore.swift */; };
+		AEA0F812C9759808E5DB1632 /* DengageGeofenceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F68D36CC48498620F024AA84 /* DengageGeofenceEngine.swift */; };
+		AF0F2009C9079F18335A24F4 /* GeofenceIso.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC2855AC3E0BBB0A7F96FCFF /* GeofenceIso.swift */; };
+		B61A0E2560CFEA2AFDDA3DC2 /* EventQueueFlusher.swift in Sources */ = {isa = PBXBuildFile; fileRef = C55AFB2A2FD77B8DE9E35A0A /* EventQueueFlusher.swift */; };
+		C6F657EAB7A8061443F8F90C /* GeofenceSyncRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89D6DFA86C60165F5AEE1E7 /* GeofenceSyncRequest.swift */; };
+		DA5FA9B4444F88CA30CE1EE7 /* GeofenceSyncResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = F23900ED442971A9FF72F5C0 /* GeofenceSyncResult.swift */; };
+		DB06FC7A716ECA7F2F1A098E /* GeofenceSyncEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4A368729AF0B4B177C7B289 /* GeofenceSyncEnums.swift */; };
+		E2D2F1D8B3EB32700DDB4E73 /* MovementListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0497F966C03854C73856DED4 /* MovementListener.swift */; };
+		EB199CBD35BAC85B0D03FFC7 /* GeofenceStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6C5665E537E313B94E4C3AD /* GeofenceStorage.swift */; };
+		ED93665EA1312F856354C43F /* GeofenceConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD61495F8DC29D6D4A2722D0 /* GeofenceConfiguration.swift */; };
+		F4CAA9EAD16DC3F9F9DEDBC2 /* ContainmentReconciler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72027CC7AEDD29C22EEE09A1 /* ContainmentReconciler.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -194,6 +226,18 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		04123EC4E9D2D72CCADE4583 /* Reachability.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
+		0497F966C03854C73856DED4 /* MovementListener.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MovementListener.swift; sourceTree = "<group>"; };
+		04EA87C4BA35A0906E75FA38 /* GeofenceEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceEngine.swift; sourceTree = "<group>"; };
+		209371C20A371CA37C256890 /* RemoteConfigClient.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RemoteConfigClient.swift; sourceTree = "<group>"; };
+		27EEF2DC4F7C08E79642D4E8 /* TriggerHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TriggerHandler.swift; sourceTree = "<group>"; };
+		3043B63F4BD75BDAC320A2B5 /* DengageSilentPushLaunchTracker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DengageSilentPushLaunchTracker.swift; sourceTree = "<group>"; };
+		3E61585589720EAF008A6C5B /* GeofenceSyncResponse.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceSyncResponse.swift; sourceTree = "<group>"; };
+		3FA8F9FDCF62163B88B1BF34 /* WakeupCapController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WakeupCapController.swift; sourceTree = "<group>"; };
+		46BC4C718C370657B2A8B257 /* UserDefaultsStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UserDefaultsStore.swift; sourceTree = "<group>"; };
+		64771E1E04DFB2AECD40BFB4 /* AdaptiveThresholdCalculator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AdaptiveThresholdCalculator.swift; sourceTree = "<group>"; };
+		72027CC7AEDD29C22EEE09A1 /* ContainmentReconciler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ContainmentReconciler.swift; sourceTree = "<group>"; };
+		7B52DD2331D93CDC856D6DE2 /* HeartbeatSender.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HeartbeatSender.swift; sourceTree = "<group>"; };
 		880068882C931DDA00881F71 /* InAppInlineElementView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InAppInlineElementView.swift; sourceTree = "<group>"; };
 		8800688D2C931E1A00881F71 /* InAppBrowserViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InAppBrowserViewController.swift; sourceTree = "<group>"; };
 		880068932C931F3600881F71 /* AppForegroundEventRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppForegroundEventRequest.swift; sourceTree = "<group>"; };
@@ -291,6 +335,12 @@
 		88F310282FD0788100299466 /* BridgeJavaScript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgeJavaScript.swift; sourceTree = "<group>"; };
 		88F3102A2FD0788100299466 /* BridgeErrorCodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgeErrorCodes.swift; sourceTree = "<group>"; };
 		88F3103E2FD07B2000299466 /* DengageGeofenceInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageGeofenceInterceptor.swift; sourceTree = "<group>"; };
+		890274237A356E9B6696D07B /* EngineSubscription.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EngineSubscription.swift; sourceTree = "<group>"; };
+		8BA4D3AA9DD726C93CF737CB /* DeviceHeartbeatRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DeviceHeartbeatRequest.swift; sourceTree = "<group>"; };
+		8D291FB6597D9370672CFC13 /* TopNSelector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TopNSelector.swift; sourceTree = "<group>"; };
+		9864AE0D5B345C2524BE6B41 /* ActiveWindowScheduler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ActiveWindowScheduler.swift; sourceTree = "<group>"; };
+		997C31BDD1C6C085F5A4D541 /* LocalNotificationFirer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocalNotificationFirer.swift; sourceTree = "<group>"; };
+		9F1E1EE0D84BAEE35845B6E4 /* GeofenceSyncer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceSyncer.swift; sourceTree = "<group>"; };
 		A00EFCBD280777B8004659DE /* RFMScore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RFMScore.swift; sourceTree = "<group>"; };
 		A00EFCC228077869004659DE /* DengageRFMManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageRFMManager.swift; sourceTree = "<group>"; };
 		A0765B7627CEB4300007215B /* Dengage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Dengage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -345,6 +395,20 @@
 		A0765BBD27CEB4700007215B /* DengageKeychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageKeychain.swift; sourceTree = "<group>"; };
 		A0765BBE27CEB4700007215B /* DengageEventManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DengageEventManager.swift; sourceTree = "<group>"; };
 		A092216727CED6D600BDA35E /* ios-example-app.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "ios-example-app.xcodeproj"; path = "Example/ios-example-app.xcodeproj"; sourceTree = SOURCE_ROOT; };
+		AB6B556F424E89F76EDE23A9 /* OsGeofenceRegistrar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OsGeofenceRegistrar.swift; sourceTree = "<group>"; };
+		B5346AB72045762AFDB92990 /* EngineRepositories.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EngineRepositories.swift; sourceTree = "<group>"; };
+		B6C5665E537E313B94E4C3AD /* GeofenceStorage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceStorage.swift; sourceTree = "<group>"; };
+		BAA1FF6B435C1301C0B8269E /* OrganicSyncTrigger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OrganicSyncTrigger.swift; sourceTree = "<group>"; };
+		C34AC1E97AC4BB95A45192F9 /* GeofenceSilentPushDispatcher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceSilentPushDispatcher.swift; sourceTree = "<group>"; };
+		C55AFB2A2FD77B8DE9E35A0A /* EventQueueFlusher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EventQueueFlusher.swift; sourceTree = "<group>"; };
+		C89D6DFA86C60165F5AEE1E7 /* GeofenceSyncRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceSyncRequest.swift; sourceTree = "<group>"; };
+		DC2855AC3E0BBB0A7F96FCFF /* GeofenceIso.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceIso.swift; sourceTree = "<group>"; };
+		EC6DB33028D0BE055A6461DC /* GeofenceEventSignalRequestV2.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceEventSignalRequestV2.swift; sourceTree = "<group>"; };
+		F23900ED442971A9FF72F5C0 /* GeofenceSyncResult.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceSyncResult.swift; sourceTree = "<group>"; };
+		F4A368729AF0B4B177C7B289 /* GeofenceSyncEnums.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceSyncEnums.swift; sourceTree = "<group>"; };
+		F68D36CC48498620F024AA84 /* DengageGeofenceEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DengageGeofenceEngine.swift; sourceTree = "<group>"; };
+		FD61495F8DC29D6D4A2722D0 /* GeofenceConfiguration.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GeofenceConfiguration.swift; sourceTree = "<group>"; };
+		FFABD7031C78C532AFA775AA /* EngineModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EngineModels.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -366,6 +430,58 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A89E0D49B60E49B41520F0D /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				9864AE0D5B345C2524BE6B41 /* ActiveWindowScheduler.swift */,
+				64771E1E04DFB2AECD40BFB4 /* AdaptiveThresholdCalculator.swift */,
+				72027CC7AEDD29C22EEE09A1 /* ContainmentReconciler.swift */,
+				F68D36CC48498620F024AA84 /* DengageGeofenceEngine.swift */,
+				890274237A356E9B6696D07B /* EngineSubscription.swift */,
+				C55AFB2A2FD77B8DE9E35A0A /* EventQueueFlusher.swift */,
+				04EA87C4BA35A0906E75FA38 /* GeofenceEngine.swift */,
+				9F1E1EE0D84BAEE35845B6E4 /* GeofenceSyncer.swift */,
+				7B52DD2331D93CDC856D6DE2 /* HeartbeatSender.swift */,
+				997C31BDD1C6C085F5A4D541 /* LocalNotificationFirer.swift */,
+				0497F966C03854C73856DED4 /* MovementListener.swift */,
+				BAA1FF6B435C1301C0B8269E /* OrganicSyncTrigger.swift */,
+				AB6B556F424E89F76EDE23A9 /* OsGeofenceRegistrar.swift */,
+				04123EC4E9D2D72CCADE4583 /* Reachability.swift */,
+				209371C20A371CA37C256890 /* RemoteConfigClient.swift */,
+				DB9A38BAD1D8071D52FF49B4 /* Storage */,
+				8D291FB6597D9370672CFC13 /* TopNSelector.swift */,
+				27EEF2DC4F7C08E79642D4E8 /* TriggerHandler.swift */,
+				3FA8F9FDCF62163B88B1BF34 /* WakeupCapController.swift */,
+			);
+			name = Engine;
+			path = Engine;
+			sourceTree = "<group>";
+		};
+		3A07DE91061488CAADE41FEC /* Sync */ = {
+			isa = PBXGroup;
+			children = (
+				8BA4D3AA9DD726C93CF737CB /* DeviceHeartbeatRequest.swift */,
+				FD61495F8DC29D6D4A2722D0 /* GeofenceConfiguration.swift */,
+				EC6DB33028D0BE055A6461DC /* GeofenceEventSignalRequestV2.swift */,
+				DC2855AC3E0BBB0A7F96FCFF /* GeofenceIso.swift */,
+				F4A368729AF0B4B177C7B289 /* GeofenceSyncEnums.swift */,
+				C89D6DFA86C60165F5AEE1E7 /* GeofenceSyncRequest.swift */,
+				3E61585589720EAF008A6C5B /* GeofenceSyncResponse.swift */,
+				F23900ED442971A9FF72F5C0 /* GeofenceSyncResult.swift */,
+			);
+			name = Sync;
+			path = Sync;
+			sourceTree = "<group>";
+		};
+		4CDA387FF0BF4E1E30989D39 /* Geofence */ = {
+			isa = PBXGroup;
+			children = (
+				C34AC1E97AC4BB95A45192F9 /* GeofenceSilentPushDispatcher.swift */,
+			);
+			name = Geofence;
+			path = Geofence;
+			sourceTree = "<group>";
+		};
 		880B9D0B2E9CB8AF00EB87DB /* Debug */ = {
 			isa = PBXGroup;
 			children = (
@@ -383,6 +499,7 @@
 				881709192C91803E00FA8B63 /* DengageGeofenceItem.swift */,
 				8817092B2C91807100FA8B63 /* GeofenceEventSignalRequest.swift */,
 				8817092C2C91807100FA8B63 /* GetGeofencesRequest.swift */,
+				3A07DE91061488CAADE41FEC /* Sync */,
 			);
 			path = Geofence;
 			sourceTree = "<group>";
@@ -410,6 +527,7 @@
 				8817091C2C91803E00FA8B63 /* DengageGeofenceTrackingOptions.swift */,
 				8817091D2C91803E00FA8B63 /* DengageLocationSource.swift */,
 				881EE00F2C996A1000838C23 /* DengageGeofence.h */,
+				0A89E0D49B60E49B41520F0D /* Engine */,
 			);
 			path = DengageGeofence;
 			sourceTree = "<group>";
@@ -596,6 +714,8 @@
 				A0765B8B27CEB4700007215B /* DengageUI */,
 				A0765B9F27CEB4700007215B /* Models */,
 				A0765B8827CEB4700007215B /* Networking */,
+				3043B63F4BD75BDAC320A2B5 /* DengageSilentPushLaunchTracker.swift */,
+				4CDA387FF0BF4E1E30989D39 /* Geofence */,
 			);
 			path = Dengage;
 			sourceTree = "<group>";
@@ -756,6 +876,18 @@
 				8815B7352D6E0B24003E9B31 /* DengageWidgetExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		DB9A38BAD1D8071D52FF49B4 /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				FFABD7031C78C532AFA775AA /* EngineModels.swift */,
+				B5346AB72045762AFDB92990 /* EngineRepositories.swift */,
+				B6C5665E537E313B94E4C3AD /* GeofenceStorage.swift */,
+				46BC4C718C370657B2A8B257 /* UserDefaultsStore.swift */,
+			);
+			name = Storage;
+			path = Storage;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -920,6 +1052,28 @@
 				88F3103F2FD07B2000299466 /* DengageGeofenceInterceptor.swift in Sources */,
 				881EE01B2C996B7800838C23 /* DengageGeofenceManager.swift in Sources */,
 				881EE0212C996B7800838C23 /* DengageCLLocation.swift in Sources */,
+				1182DA2ABBDC797D99680CA8 /* ActiveWindowScheduler.swift in Sources */,
+				8E332BE8C3882914DA51FEEC /* AdaptiveThresholdCalculator.swift in Sources */,
+				F4CAA9EAD16DC3F9F9DEDBC2 /* ContainmentReconciler.swift in Sources */,
+				AEA0F812C9759808E5DB1632 /* DengageGeofenceEngine.swift in Sources */,
+				3E8C4BE32374A01D429B7B06 /* EngineSubscription.swift in Sources */,
+				B61A0E2560CFEA2AFDDA3DC2 /* EventQueueFlusher.swift in Sources */,
+				85D9933B83815C13275C2E21 /* GeofenceEngine.swift in Sources */,
+				0D27B42C01768AD03ACB04B7 /* GeofenceSyncer.swift in Sources */,
+				96C35C0661EC4DAB5032E099 /* HeartbeatSender.swift in Sources */,
+				62045977FC0826FA9448F654 /* LocalNotificationFirer.swift in Sources */,
+				E2D2F1D8B3EB32700DDB4E73 /* MovementListener.swift in Sources */,
+				4032C89193093BD350D9ECA8 /* OrganicSyncTrigger.swift in Sources */,
+				A359E3BD2576F5285A39FFA8 /* OsGeofenceRegistrar.swift in Sources */,
+				21F8BD418A31CFCAF08227A6 /* Reachability.swift in Sources */,
+				1FCB2C86B557F61188CE2238 /* RemoteConfigClient.swift in Sources */,
+				230B412E12B7B30415818C0C /* EngineModels.swift in Sources */,
+				4B71F8F2648BF58F1D61B0B0 /* EngineRepositories.swift in Sources */,
+				EB199CBD35BAC85B0D03FFC7 /* GeofenceStorage.swift in Sources */,
+				AE513749A3BF20CD647E0273 /* UserDefaultsStore.swift in Sources */,
+				981F102F6694476E1C840028 /* TopNSelector.swift in Sources */,
+				05E385B9314BCBB7B2B21C1F /* TriggerHandler.swift in Sources */,
+				9262BF3140041E0B13DE1807 /* WakeupCapController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1063,6 +1217,16 @@
 				A0765BC727CEB4700007215B /* DengageNotificationCarouselView.swift in Sources */,
 				881709422C91955E00FA8B63 /* VisitCountItem.swift in Sources */,
 				A0765BC527CEB4700007215B /* DengageAPIRequest.swift in Sources */,
+				9FD9A1512969AA2B5F8E2FFE /* DengageSilentPushLaunchTracker.swift in Sources */,
+				36871572056A30D9C5B953C9 /* GeofenceSilentPushDispatcher.swift in Sources */,
+				6A92CFA712E9AE39360DDE93 /* DeviceHeartbeatRequest.swift in Sources */,
+				ED93665EA1312F856354C43F /* GeofenceConfiguration.swift in Sources */,
+				AA8C373A51772666992B5068 /* GeofenceEventSignalRequestV2.swift in Sources */,
+				AF0F2009C9079F18335A24F4 /* GeofenceIso.swift in Sources */,
+				DB06FC7A716ECA7F2F1A098E /* GeofenceSyncEnums.swift in Sources */,
+				C6F657EAB7A8061443F8F90C /* GeofenceSyncRequest.swift in Sources */,
+				6E83D0BD954CE821F1895087 /* GeofenceSyncResponse.swift in Sources */,
+				DA5FA9B4444F88CA30CE1EE7 /* GeofenceSyncResult.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
