@@ -145,8 +145,7 @@ final class DengageInAppMessageUtils{
     }
     
     private class func isDebugDevice(config: DengageConfiguration) -> Bool {
-        guard let debugDeviceIds = config.remoteConfiguration?.debugDeviceIds else { return false }
-        return debugDeviceIds.contains(config.applicationIdentifier)
+        return config.isDebugDevice
     }
     
     private class func getCurrentCampaignList(inAppMessages: [InAppMessage]) -> [String] {

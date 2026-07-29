@@ -89,7 +89,25 @@ final public class DengageConfiguration: Encodable {
     var remoteConfiguration: GetSDKParamsResponse? {
         return DengageLocalStorage.shared.getConfig()
     }
-    
+
+    /// Cihaz, panel'den gelen `debugDeviceIds` listesinde mi.
+    var isDebugDevice: Bool {
+        guard let debugDeviceIds = remoteConfiguration?.debugDeviceIds,
+              !applicationIdentifier.isEmpty else { return false }
+        return debugDeviceIds.contains(applicationIdentifier)
+    }
+
+    /// Etkin geliştirme modu: `Dengage.setDevelopmentStatus(isDebug: true)` çağrılmışsa **veya**
+    /// cihaz panel'deki `debugDeviceIds` listesindeyse açıktır. Debug cihazlarda fetch/gösterim
+    /// aralıkları uygulanmaz, böylece test cihazı kampanyayı beklemeden görür.
+    var isDevelopmentStatus: Bool {
+        if let manualDevelopmentStatus = DengageLocalStorage.shared.value(for: .appEnvironment) as? Bool,
+           manualDevelopmentStatus {
+            return true
+        }
+        return isDebugDevice
+    }
+
     var realTimeInAppMessageLastFetchedTime:Double? {
         return (DengageLocalStorage.shared.value(for: .lastFetchedRealTimeInAppMessageTime) as? Double)
     }

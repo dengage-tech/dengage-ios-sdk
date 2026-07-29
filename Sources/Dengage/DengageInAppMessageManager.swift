@@ -637,10 +637,7 @@ extension DengageInAppMessageManager {
         DispatchQueue.global(qos: .background).async { [weak self] in
             guard let self = self else { return }
             
-            guard let debugDeviceIds = self.config.remoteConfiguration?.debugDeviceIds,
-                  debugDeviceIds.contains(self.config.applicationIdentifier) else {
-                return
-            }
+            guard self.config.isDebugDevice else { return }
             
             let traceId = UUID().uuidString
             let campaignId = inAppMessage.data.publicId ?? inAppMessage.id
@@ -1059,57 +1056,19 @@ extension DengageInAppMessageManager {
     }
     
     private var shouldFetchInAppMessages:Bool {
-        
-        if let appEnvironment = DengageLocalStorage.shared.value(for: .appEnvironment) as? Bool
-        {
-            if appEnvironment
-            {
-                guard isEnabledInAppMessage else {return false}
-                return true
-            }
-            else
-            {
-                guard isEnabledInAppMessage else {return false}
-                guard let lastFetchedTime = config.inAppMessageLastFetchedTime else { return true }
-                guard Date().timeMiliseconds >= lastFetchedTime else { return false }
-                return true
-            }
-        }
-        else
-        {
-            guard isEnabledInAppMessage else {return false}
-            guard let lastFetchedTime = config.inAppMessageLastFetchedTime else { return true }
-            guard Date().timeMiliseconds >= lastFetchedTime else { return false }
-            return true
-        }
+        guard isEnabledInAppMessage else { return false }
+        // Geliştirme modunda (manuel bayrak veya debug cihaz) fetch aralığı uygulanmaz.
+        if config.isDevelopmentStatus { return true }
+        guard let lastFetchedTime = config.inAppMessageLastFetchedTime else { return true }
+        return Date().timeMiliseconds >= lastFetchedTime
     }
     
     private var shouldFetchRealTimeInAppMessages:Bool {
-        
-        if let appEnvironment = DengageLocalStorage.shared.value(for: .appEnvironment) as? Bool
-        {
-            if appEnvironment
-            {
-                guard isEnabledRealTimeInAppMessage else {return false}
-                return true
-                
-            }
-            else
-            {
-                guard isEnabledRealTimeInAppMessage else {return false}
-                guard let lastFetchedTime = config.realTimeInAppMessageLastFetchedTime else { return true }
-                guard Date().timeMiliseconds >= lastFetchedTime else { return false }
-                return true
-            }
-        }
-        else
-        {
-            guard isEnabledRealTimeInAppMessage else {return false}
-            guard let lastFetchedTime = config.realTimeInAppMessageLastFetchedTime else { return true }
-            guard Date().timeMiliseconds >= lastFetchedTime else { return false }
-            return true
-        }
-        
+        guard isEnabledRealTimeInAppMessage else { return false }
+        // Geliştirme modunda (manuel bayrak veya debug cihaz) fetch aralığı uygulanmaz.
+        if config.isDevelopmentStatus { return true }
+        guard let lastFetchedTime = config.realTimeInAppMessageLastFetchedTime else { return true }
+        return Date().timeMiliseconds >= lastFetchedTime
     }
     
     private func registerLifeCycleTrackers() {
