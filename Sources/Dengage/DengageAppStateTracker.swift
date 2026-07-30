@@ -27,19 +27,20 @@ final class DengageAppStateTracker {
         refreshCachedState()
     }
 
-    /// Uygulama şu an arka planda mı. Main thread'de gerçek durum okunur ve önbellek tazelenir;
-    /// diğer thread'lerde (ör. network callback'leri) lifecycle bildirimlerinden gelen son bilinen
-    /// durum kullanılır.
+    /// Uygulama şu an arka planda mı.
+    ///
+    /// Otoritesi **bildirimlerdir**, `applicationState`'in anlık okuması değil: UIKit
+    /// `willEnterForeground` gönderdiğinde durum hâlâ `.background`'dır, uygulama ise ön plana
+    /// geçmektedir. Canlı okuma o anda hem yanlış cevap veriyor hem de bildirim handler'ının
+    /// yazdığı doğru değeri geri eziyordu.
+    ///
+    /// Önbellek `init` içinde gerçek durumdan tohumlanır (bildirimlerin hiç gelmediği ilk an —
+    /// arka plan uyanışında `.background`, kullanıcı açılışında `.inactive`), sonrasını lifecycle
+    /// bildirimleri yürütür. Thread güvenli: `UIApplication` erişimi gerekmez.
     var isInBackground: Bool {
-        guard Thread.isMainThread else {
-            lock.lock()
-            defer { lock.unlock() }
-            return cachedIsInBackground
-        }
-
-        let isInBackground = UIApplication.shared.applicationState == .background
-        setCachedState(isInBackground)
-        return isInBackground
+        lock.lock()
+        defer { lock.unlock() }
+        return cachedIsInBackground
     }
 
     /// In-app tarafındaki istekler için kapı. Arka planda hiçbir istek atılmaz.

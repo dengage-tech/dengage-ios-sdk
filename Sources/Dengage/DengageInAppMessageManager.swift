@@ -46,7 +46,12 @@ extension DengageInAppMessageManager{
     func fetchInAppMessages(trigger: InAppFetchTrigger = .other){
         // Arka planda in-app çekilmez: kullanıcı ekranda olmadığı için mesaj gösterilemez ve
         // fetch interval'ı boşuna yanar.
-        guard !DengageAppStateTracker.shared.shouldSkipRequest else {
+        //
+        // `.appForeground` kapıdan muaftır: bu tetikleyici yalnızca lifecycle'ın "ön plana
+        // geçiliyor" sinyalinden doğar, yani kendisi ön planda olmanın kanıtıdır. UIKit
+        // `willEnterForeground` anında `applicationState` hâlâ `.background` olduğu için kapı
+        // her ön plana dönüşte kapalı kalıyor ve fetch sessizce düşüyordu.
+        guard trigger == .appForeground || !DengageAppStateTracker.shared.shouldSkipRequest else {
             Logger.log(message: "fetchInAppMessages skipped, app is in background")
             return
         }
@@ -118,7 +123,8 @@ extension DengageInAppMessageManager{
     }
     
     func fetchRealTimeMessages(trigger: InAppFetchTrigger = .other){
-        guard !DengageAppStateTracker.shared.shouldSkipRequest else {
+        // `.appForeground` kapıdan muaf — bkz. `fetchInAppMessages`.
+        guard trigger == .appForeground || !DengageAppStateTracker.shared.shouldSkipRequest else {
             Logger.log(message: "fetchRealTimeInAppMessages skipped, app is in background")
             return
         }
