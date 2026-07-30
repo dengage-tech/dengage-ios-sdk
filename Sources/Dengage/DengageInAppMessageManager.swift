@@ -15,8 +15,8 @@ public class DengageInAppMessageManager: DengageInAppMessageManagerInterface {
     var inSessionFetchTimer: Timer?
     var isInAppMessageShowing = false
 
-    /// Ön plana dönüşler arasındaki minimum fetch aralığı (saniye).
-    private static let appForegroundFetchFloor: TimeInterval = 60
+    /// Ön plana dönüşler arasındaki minimum fetch aralığı (saniye). Geliştirme modunda uygulanmaz.
+    private static let appForegroundFetchFloor: TimeInterval = 10
 
     /// Process içindeki son ön plan tetikli fetch zamanı; nil ise henüz fetch yapılmadı.
     private static var lastAppForegroundFetchTime: TimeInterval?
@@ -64,12 +64,19 @@ extension DengageInAppMessageManager{
         DengageLocalStorage.shared.cleanupExpiredShowHistory()
         guard shouldFetchInAppMessages(bypassInterval: trigger == .appForeground) else {return}
         guard let remoteConfig = config.remoteConfiguration, let accountName = remoteConfig.accountName else { return }
+        // Damga yanıt sonrasında atıldığı için, istek uçuştayken gelen ikinci bir tetikleyici
+        // aralık kontrolünü geçebilir. Aynı çağrı iki kez gitmesin.
+        guard InAppFetchGate.shared.beginRequest(.bulk) else {
+            Logger.log(message: "fetchInAppMessages skipped, a bulk request is already in flight")
+            return
+        }
         Logger.log(message: "fetchInAppMessages request started")
         let request = GetInAppMessagesRequest(accountName: accountName,
                                               contactKey: config.contactKey.key,
                                               type: config.contactKey.type,
                                               deviceId: config.applicationIdentifier, appid: config.remoteConfiguration?.appId ?? "")
         apiClient.send(request: request) { [weak self] result in
+            InAppFetchGate.shared.endRequest(.bulk)
             let base = remoteConfig.fetchIntervalInMin / 1000
             switch result {
             case .success(let response):
@@ -120,12 +127,19 @@ extension DengageInAppMessageManager{
               let accountName = remoteConfig.accountName,
               let appId = remoteConfig.appId
         else { return }
+        // v2 hata verirse v1'e düşülüyor; bayrak o zincirin sonunda bırakılır.
+        guard InAppFetchGate.shared.beginRequest(.realTime) else {
+            Logger.log(message: "fetchRealTimeInAppMessages skipped, a request is already in flight")
+            return
+        }
         Logger.log(message: "fetchRealTimeInAppMessages request started")
         let version2Request = GetRealTimeMesagesRequest(accountName: accountName, appId: appId, version: "v2")
         apiClient.send(request: version2Request) { [weak self] result in
-            let base = remoteConfig.fetchIntervalInMin / 1000
+            // Real-time kanalın tabanı kendi ayarından gelir, bulk'ınkinden değil.
+            let base = remoteConfig.realTimeFetchIntervalInMin / 1000
             switch result {
             case .success(let response):
+                InAppFetchGate.shared.endRequest(.realTime)
                 let gate = InAppFetchGate.shared.onResponse(.realTime, base: base, isEmpty: response.isEmpty)
                 self?.stampNextFetchTime(gate, for: .lastFetchedRealTimeInAppMessageTime)
                 DengageLocalStorage.shared.set(value: Date().timeMiliseconds, for: .lastSuccessfulRealTimeInAppMessageFetchTime)
@@ -136,6 +150,7 @@ extension DengageInAppMessageManager{
                 Logger.log(message: "fetchRealTimeInAppMessages_ERROR", argument: error.localizedDescription)
                 let version1Request = GetRealTimeMesagesRequest(accountName: accountName, appId: appId, version: "")
                 self?.apiClient.send(request: version1Request) { [weak self] result in
+                    InAppFetchGate.shared.endRequest(.realTime)
                     switch result {
                     case .success(let response):
                         let gate = InAppFetchGate.shared.onResponse(.realTime, base: base, isEmpty: response.isEmpty)
@@ -143,7 +158,7 @@ extension DengageInAppMessageManager{
                         DengageLocalStorage.shared.set(value: Date().timeMiliseconds, for: .lastSuccessfulRealTimeInAppMessageFetchTime)
                         let arrRealTimeInAppMessages = InAppMessage.mapRealTime(source: response)
                         self?.addInAppMessagesIfNeeded(arrRealTimeInAppMessages, forRealTime: true)
-                        
+
                     case .failure(let error):
                         self?.stampNextFetchTime(InAppFetchGate.shared.current(.realTime, base: base),
                                                  for: .lastFetchedRealTimeInAppMessageTime)
@@ -1168,11 +1183,13 @@ extension DengageInAppMessageManager {
     
     /// Ön plan tabanı. Process içindeki **ilk** fetch koşulsuzdur — uygulamayı tamamen kapatıp
     /// açmak her zaman fetch üretir, bu testçiye deterministik bir yol bırakır. Sonraki ön plana
-    /// dönüşler tabana tabidir.
+    /// dönüşler tabana tabidir. Geliştirme modunda (manuel bayrak ya da panel `debugDeviceIds`)
+    /// taban sıfırdır: testçinin arka plan/ön plan döngüsü her seferinde fetch üretir.
     private func shouldSkipForAppForegroundFloor() -> Bool {
         let now = Date().timeIntervalSince1970
-        if let last = Self.lastAppForegroundFetchTime, now - last < Self.appForegroundFetchFloor {
-            let remaining = Int(Self.appForegroundFetchFloor - (now - last))
+        let floor: TimeInterval = config.isDevelopmentStatus ? 0 : Self.appForegroundFetchFloor
+        if let last = Self.lastAppForegroundFetchTime, now - last < floor {
+            let remaining = Int(floor - (now - last))
             Logger.log(message: "fetchInAppMessages skipped by foreground floor, \(remaining)s remaining")
             return true
         }
