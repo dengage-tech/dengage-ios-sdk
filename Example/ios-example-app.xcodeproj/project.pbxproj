@@ -31,6 +31,7 @@
 		88426DD42D6379D100B9FBB6 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = 88426DD32D6379D100B9FBB6 /* Dengage */; };
 		88426DD62D6379D100B9FBB6 /* DengageGeofence in Frameworks */ = {isa = PBXBuildFile; productRef = 88426DD52D6379D100B9FBB6 /* DengageGeofence */; };
 		888EB8392D70608B00D15827 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = 888EB8382D70608B00D15827 /* Dengage */; };
+		88A5C5DB3013C0E8001D0691 /* GeofenceInfoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A5C5DA3013C0E5001D0691 /* GeofenceInfoListViewController.swift */; };
 		88F310152FD0774100299466 /* LiveActivityPushTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F310142FD0773F00299466 /* LiveActivityPushTestHelper.swift */; };
 		88F310172FD0776600299466 /* ExampleWidgetAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F310162FD0776300299466 /* ExampleWidgetAttributes.swift */; };
 		88F3103D2FD07AF700299466 /* DengageLiveActivityController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F3103C2FD07AF600299466 /* DengageLiveActivityController.swift */; };
@@ -124,6 +125,7 @@
 		886E50332CE56F0000528A6E /* NotificationContentExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotificationContentExtension.entitlements; sourceTree = "<group>"; };
 		888EB8342D70607600D15827 /* Dengage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Dengage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		88968AFD2D09CF2700312C4C /* ios-example-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ios-example-app.entitlements"; sourceTree = "<group>"; };
+		88A5C5DA3013C0E5001D0691 /* GeofenceInfoListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeofenceInfoListViewController.swift; sourceTree = "<group>"; };
 		88F310142FD0773F00299466 /* LiveActivityPushTestHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityPushTestHelper.swift; sourceTree = "<group>"; };
 		88F310162FD0776300299466 /* ExampleWidgetAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleWidgetAttributes.swift; sourceTree = "<group>"; };
 		88F3103C2FD07AF600299466 /* DengageLiveActivityController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DengageLiveActivityController.swift; sourceTree = "<group>"; };
@@ -261,6 +263,7 @@
 				A0B8857727B1F197004D4360 /* DeviceInfoViewController.swift */,
 				8840B86B2E8D59F400868EFB /* EventHistoryViewController.swift */,
 				A09951A927ACB2A30089D98D /* EventViewController.swift */,
+				88A5C5DA3013C0E5001D0691 /* GeofenceInfoListViewController.swift */,
 				D6472F4D28E88D670076523C /* GeofenceViewController.swift */,
 				A09951A627ACB12E0089D98D /* InAppMessageViewController.swift */,
 				A099519C27ACAD380089D98D /* InboxMessagesViewController.swift */,
@@ -542,6 +545,7 @@
 			files = (
 				D6472F4E28E88D670076523C /* GeofenceViewController.swift in Sources */,
 				88F310152FD0774100299466 /* LiveActivityPushTestHelper.swift in Sources */,
+				88A5C5DB3013C0E8001D0691 /* GeofenceInfoListViewController.swift in Sources */,
 				A0B884FE27B1CF44004D4360 /* RootViewController.swift in Sources */,
 				A0B8857B27B1F4E4004D4360 /* ContactKeyViewController.swift in Sources */,
 				A0F46C66275A85B0003A524C /* ViewController.swift in Sources */,
