@@ -83,13 +83,8 @@ extension StoriesListViewController: UICollectionViewDelegate,UICollectionViewDa
             return
         }
         
-        let storyCoverId = storySet.covers[indexPath.row].id
-        let storySetId = storySet.id
-        
-        storySet.covers[indexPath.row].shown = true
-        storyActionsDelegate?.setStoryCoverShown(storyCoverId: storyCoverId, storySetId: storySetId)
-        
-        
+        // Cover-level "shown" (passive ring) is set only when every story under the
+        // cover has been viewed — via setStoryViewed, matching Android.
         // Resume rule (matches Android SDK):
         // start at lastViewedIndex + 1; if past the end, replay from 0.
         let tappedCover = self.storySet.covers[indexPath.row]
@@ -115,7 +110,10 @@ extension StoriesListViewController: UICollectionViewDelegate,UICollectionViewDa
             let storyPreviewScene = StoryDisplayViewController.init(inAppMessage: inAppMessage, handPickedStoryCoverIndex:  indexPath.row, handPickedStoryIndex: resumeIndex)
             storyPreviewScene.storyActionsDelegate = self.storyActionsDelegate
             storyPreviewScene.modalPresentationStyle = .fullScreen
-            Utilities.getRootViewController()?.present(storyPreviewScene, animated: true, completion: collectionView.reloadData)
+            storyPreviewScene.onDismiss = { [weak self] in
+                self?.collectionView.reloadData()
+            }
+            Utilities.getRootViewController()?.present(storyPreviewScene, animated: true, completion: nil)
             
         }
     }

@@ -3,6 +3,7 @@
 
 ## [5.101] - 2026-07-24
 
+
 ### New Features
 
 - Introduce Geofence Engine v2 (`DengageGeofence/Engine`): server-synced geofences with ETag revalidation, nearest-N region monitoring, and enter / exit / dwell reporting through `POST /event-signal` v2
@@ -24,6 +25,11 @@
 - Arm at most one dwell timer per fence, preventing repeated dwell notifications after re-registration
 - Populate `locationPermission` in the subscription request, which was previously sent empty
 - Fix `LocalNotificationFirer` so tapping a locally shown notification opens the app or its deep link
+- Fix App Story cover ring staying active after stories are watched
+- Mark cover as watched when closing while on the last snap
+- Persist story seen/resume state reliably via JSON UserDefaults storage
+- Refresh story list ring state after dismissing the fullscreen viewer
+
 
 
 ## [5.100] - 2026-07-06

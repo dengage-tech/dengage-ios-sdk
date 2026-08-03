@@ -606,6 +606,82 @@ extension DengageLocalStorage {
         let displayTimes = getStoryLastDisplayTimes()
         return displayTimes[publicId]
     }
+}
+
+// MARK: Story seen / resume dictionaries
+// UserDefaults plist casts like `as? [String: [String]]` / `as? [String: Int]` often fail
+// (NSArray / NSNumber), which wiped viewed story IDs and broke cover-level "shown".
+extension DengageLocalStorage {
+
+    func getShownStoryCoverDic() -> [String: [String]] {
+        return stringArrayDictionary(for: .shownStoryCoverDic)
+    }
+
+    func setShownStoryCoverDic(_ value: [String: [String]]) {
+        setStringArrayDictionary(value, for: .shownStoryCoverDic)
+    }
+
+    func getShownStoryDic() -> [String: [String]] {
+        return stringArrayDictionary(for: .shownStoryDic)
+    }
+
+    func setShownStoryDic(_ value: [String: [String]]) {
+        setStringArrayDictionary(value, for: .shownStoryDic)
+    }
+
+    func getLastViewedStoryIndexDic() -> [String: Int] {
+        if let data = userDefaults.object(forKey: Key.lastViewedStoryIndexDic.rawValue) as? Data,
+           let decoded = try? JSONDecoder().decode([String: Int].self, from: data) {
+            return decoded
+        }
+        // Legacy plist fallback
+        if let raw = userDefaults.object(forKey: Key.lastViewedStoryIndexDic.rawValue) as? [String: Any] {
+            var result: [String: Int] = [:]
+            for (key, value) in raw {
+                if let intValue = value as? Int {
+                    result[key] = intValue
+                } else if let number = value as? NSNumber {
+                    result[key] = number.intValue
+                }
+            }
+            return result
+        }
+        return [:]
+    }
+
+    func setLastViewedStoryIndexDic(_ value: [String: Int]) {
+        if let encoded = try? JSONEncoder().encode(value) {
+            userDefaults.set(encoded, forKey: Key.lastViewedStoryIndexDic.rawValue)
+            userDefaults.synchronize()
+        }
+    }
+
+    private func stringArrayDictionary(for key: Key) -> [String: [String]] {
+        if let data = userDefaults.object(forKey: key.rawValue) as? Data,
+           let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) {
+            return decoded
+        }
+        // Legacy plist fallback (NSDictionary / NSArray)
+        if let raw = userDefaults.object(forKey: key.rawValue) as? [String: Any] {
+            var result: [String: [String]] = [:]
+            for (dictKey, value) in raw {
+                if let strings = value as? [String] {
+                    result[dictKey] = strings
+                } else if let anyArray = value as? [Any] {
+                    result[dictKey] = anyArray.compactMap { $0 as? String }
+                }
+            }
+            return result
+        }
+        return [:]
+    }
+
+    private func setStringArrayDictionary(_ value: [String: [String]], for key: Key) {
+        if let encoded = try? JSONEncoder().encode(value) {
+            userDefaults.set(encoded, forKey: key.rawValue)
+            userDefaults.synchronize()
+        }
+    }
     
     func clearStoryLastDisplayTimes() {
         userDefaults.removeObject(forKey: Key.storyLastDisplayTime.rawValue)

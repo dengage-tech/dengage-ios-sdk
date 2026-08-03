@@ -59,10 +59,11 @@ final class StoriesListCell: UICollectionViewCell {
         }
         
         var fillerUIColors = styling.headerCover.fillerUIColors
-        if let shownStoryCovers = DengageLocalStorage.shared.value(for: .shownStoryCoverDic) as? [String: [String]] {
-            if let shownStoryCoversWithSetId = shownStoryCovers[storySetId], shownStoryCoversWithSetId.contains(storyCover?.id ?? "-") {
-                fillerUIColors = [styling.headerCover.passiveUIColor]
-            }
+        let shownStoryCovers = DengageLocalStorage.shared.getShownStoryCoverDic()
+        let isShown = storyCover?.shown == true
+            || (shownStoryCovers[storySetId]?.contains(storyCover?.id ?? "-") == true)
+        if isShown {
+            fillerUIColors = [styling.headerCover.passiveUIColor]
         }
         
         circleImageView.setSize(size: styling.headerCover.size)
