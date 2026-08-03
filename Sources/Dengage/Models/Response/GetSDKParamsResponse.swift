@@ -17,12 +17,19 @@ public struct GetSDKParamsResponse: Codable {
     let sdkErrorLoggingEnabled: Bool
     
     let inAppFetchIntervalInMin: Int
+    let realTimeInAppFetchIntervalInMinutes: Int
     private let inAppMinSecBetweenMessages: Int
-    
+
     var fetchIntervalInMin: Double {
         Double(inAppFetchIntervalInMin * 60000)
     }
-    
+
+    /// Real-time kanalın kendi aralığı (ms). Bulk'ın `inAppFetchIntervalInMin`'inden ayrı bir
+    /// sistem ayarı; Android da bu alanı kullanıyor.
+    var realTimeFetchIntervalInMin: Double {
+        Double(realTimeInAppFetchIntervalInMinutes * 60000)
+    }
+
     var minSecBetweenMessages: Double {
         Double(inAppMinSecBetweenMessages * 1000)
     }
@@ -37,10 +44,12 @@ public struct GetSDKParamsResponse: Codable {
         geofenceEnabled = (try? container.decode(Bool.self, forKey: .geofenceEnabled)) ?? true
         geofence = try? container.decode(GeofenceConfiguration.self, forKey: .geofence)
         inAppFetchIntervalInMin = (try? container.decode(Int.self, forKey: .inAppFetchIntervalInMin)) ?? 0
+        realTimeInAppFetchIntervalInMinutes = (try? container.decode(Int.self, forKey: .realTimeInAppFetchIntervalInMinutes)) ?? 0
         inAppMinSecBetweenMessages = (try? container.decode(Int.self, forKey: .inAppMinSecBetweenMessages)) ?? 0
         appId = try? container.decode(String.self, forKey: .appId)
         realTimeInAppEnabled = (try? container.decode(Bool.self, forKey: .realTimeInAppEnabled)) ?? false
-        realTimeInAppSessionTimeoutMinutes = (try? container.decode(Int.self, forKey: .realTimeInAppSessionTimeoutMinutes)) ?? 1800
+        // Dakika cinsinden; alan gelmezse Android ile aynı varsayılan (30 dk) kullanılır.
+        realTimeInAppSessionTimeoutMinutes = (try? container.decode(Int.self, forKey: .realTimeInAppSessionTimeoutMinutes)) ?? 30
         eventMappings = (try? container.decode([EventMapping].self, forKey: .eventMappings)) ?? []
         debugDeviceIds = try? container.decode([String].self, forKey: .debugDeviceIds)
         sdkErrorLoggingEnabled = (try? container.decode(Bool.self, forKey: .sdkErrorLoggingEnabled)) ?? false
@@ -55,6 +64,7 @@ public struct GetSDKParamsResponse: Codable {
         case inAppEnabled
         case subscriptionEnabled
         case inAppFetchIntervalInMin
+        case realTimeInAppFetchIntervalInMinutes
         case inAppMinSecBetweenMessages
         case appId
         case realTimeInAppEnabled

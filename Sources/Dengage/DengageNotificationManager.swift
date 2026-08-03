@@ -79,6 +79,9 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
     }
     
     func didReceive(with userInfo: [AnyHashable: Any]) {
+        // Uygulama arka plandayken gelen push ise (silent push dahil) in-app fetch'leri bastır.
+        DengageAppStateTracker.shared.markPushWakeIfInBackground()
+
         // Silent push: sourceType == geofence ise fence'leri sunucudan yeniden çek (resync)
         if GeofenceSilentPushDispatcher.isGeofenceSilentPush(userInfo) {
             GeofenceSilentPushDispatcher.dispatch(userInfo)

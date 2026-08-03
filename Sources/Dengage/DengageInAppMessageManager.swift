@@ -12,8 +12,17 @@ public class DengageInAppMessageManager: DengageInAppMessageManagerInterface {
     var inAppBrowserWindow: UIWindow?
     public var returnAfterDeeplinkRecieved : ((String) -> Void)?
     var inAppShowTimer = Timer()
-    var hourlyFetchTimer: Timer?
+    var inSessionFetchTimer: Timer?
     var isInAppMessageShowing = false
+
+    /// Ön plana dönüşler arasındaki minimum fetch aralığı (saniye). Geliştirme modunda uygulanmaz.
+    private static let appForegroundFetchFloor: TimeInterval = 10
+
+    /// Process içindeki son ön plan tetikli fetch zamanı; nil ise henüz fetch yapılmadı.
+    private static var lastAppForegroundFetchTime: TimeInterval?
+
+    /// Oturum içi turlar arasındaki minimum bekleme (saniye).
+    private static let minInSessionFetchDelay: TimeInterval = 60
     
     
     init(config: DengageConfiguration,
@@ -24,45 +33,80 @@ public class DengageInAppMessageManager: DengageInAppMessageManagerInterface {
         self.sessionManager = sessionManager
         DengageLocalStorage.shared.set(value: Date().timeIntervalSince1970, for: .lastSessionStartTime)
         registerLifeCycleTrackers()
-        startHourlyFetchTimer()
+        startInSessionFetchTimer()
     }
     
     deinit {
-        stopHourlyFetchTimer()
+        stopInSessionFetchTimer()
     }
 }
 
 //MARK: - API
 extension DengageInAppMessageManager{
-    func fetchInAppMessages(){
-        fetchRealTimeMessages()
+    func fetchInAppMessages(trigger: InAppFetchTrigger = .other){
+        // Arka planda in-app çekilmez: kullanıcı ekranda olmadığı için mesaj gösterilemez ve
+        // fetch interval'ı boşuna yanar.
+        //
+        // `.appForeground` kapıdan muaftır: bu tetikleyici yalnızca lifecycle'ın "ön plana
+        // geçiliyor" sinyalinden doğar, yani kendisi ön planda olmanın kanıtıdır. UIKit
+        // `willEnterForeground` anında `applicationState` hâlâ `.background` olduğu için kapı
+        // her ön plana dönüşte kapalı kalıyor ve fetch sessizce düşüyordu.
+        guard trigger == .appForeground || !DengageAppStateTracker.shared.shouldSkipRequest else {
+            Logger.log(message: "fetchInAppMessages skipped, app is in background")
+            return
+        }
+        // Ön plana geçiş her zaman fetch eder; yalnızca kazara arka plan/ön plan çalkantısını
+        // eleyen küçük bir taban uygulanır.
+        if trigger == .appForeground, shouldSkipForAppForegroundFloor() { return }
+
+        // Geri çekilmenin sıfırlama çapası ön plana geçiştir.
+        if trigger == .appForeground { InAppFetchGate.shared.reset() }
+
+        fetchRealTimeMessages(trigger: trigger)
         // getVisitorInfo()
         Logger.log(message: "fetchInAppMessages called")
         // Cleanup expired show history entries (older than 2 weeks)
         DengageLocalStorage.shared.cleanupExpiredShowHistory()
-        guard shouldFetchInAppMessages else {return}
+        guard shouldFetchInAppMessages(bypassInterval: trigger == .appForeground) else {return}
         guard let remoteConfig = config.remoteConfiguration, let accountName = remoteConfig.accountName else { return }
+        // Damga yanıt sonrasında atıldığı için, istek uçuştayken gelen ikinci bir tetikleyici
+        // aralık kontrolünü geçebilir. Aynı çağrı iki kez gitmesin.
+        guard InAppFetchGate.shared.beginRequest(.bulk) else {
+            Logger.log(message: "fetchInAppMessages skipped, a bulk request is already in flight")
+            return
+        }
         Logger.log(message: "fetchInAppMessages request started")
         let request = GetInAppMessagesRequest(accountName: accountName,
                                               contactKey: config.contactKey.key,
                                               type: config.contactKey.type,
                                               deviceId: config.applicationIdentifier, appid: config.remoteConfiguration?.appId ?? "")
         apiClient.send(request: request) { [weak self] result in
+            InAppFetchGate.shared.endRequest(.bulk)
+            let base = remoteConfig.fetchIntervalInMin / 1000
             switch result {
             case .success(let response):
-                let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchIntervalInMin)
-                DengageLocalStorage.shared.set(value: nextFetchTime, for: .lastFetchedInAppMessageTime)
+                // Uyarlamalı gate: boş yanıtta geri çekil, dolu yanıtta tabana dön.
+                let gate = InAppFetchGate.shared.onResponse(.bulk, base: base, isEmpty: response.isEmpty)
+                self?.stampNextFetchTime(gate, for: .lastFetchedInAppMessageTime)
                 DengageLocalStorage.shared.set(value: Date().timeMiliseconds, for: .lastSuccessfulInAppMessageFetchTime)
                 self?.addInAppMessagesIfNeeded(response)
                 self?.fetchCancelledInAppMessageIds()
                 
             case .failure(let error):
+                // Başarısız istek gate'i değiştirmez ama pencereyi de tüketmemeli; mevcut gate
+                // kadar bekleyip yeniden denenir.
+                self?.stampNextFetchTime(InAppFetchGate.shared.current(.bulk, base: base),
+                                         for: .lastFetchedInAppMessageTime)
                 Logger.log(message: "fetchInAppMessages_ERROR", argument: error.localizedDescription)
             }
         }
     }
     
     func fetchCancelledInAppMessageIds() {
+        guard !DengageAppStateTracker.shared.shouldSkipRequest else {
+            Logger.log(message: "fetchCancelledInAppMessageIds skipped, app is in background")
+            return
+        }
         Logger.log(message: "fetchCancelledInAppMessageIds called")
         if DengageLocalStorage.shared.getInAppMessages().count == 0 { return }
         guard let remoteConfig = config.remoteConfiguration, let accountName = remoteConfig.accountName else { return }
@@ -78,19 +122,32 @@ extension DengageInAppMessageManager{
         }
     }
     
-    func fetchRealTimeMessages(){
-        guard shouldFetchRealTimeInAppMessages else { return }
+    func fetchRealTimeMessages(trigger: InAppFetchTrigger = .other){
+        // `.appForeground` kapıdan muaf — bkz. `fetchInAppMessages`.
+        guard trigger == .appForeground || !DengageAppStateTracker.shared.shouldSkipRequest else {
+            Logger.log(message: "fetchRealTimeInAppMessages skipped, app is in background")
+            return
+        }
+        guard shouldFetchRealTimeInAppMessages(bypassInterval: trigger == .appForeground) else { return }
         guard let remoteConfig = config.remoteConfiguration,
               let accountName = remoteConfig.accountName,
               let appId = remoteConfig.appId
         else { return }
+        // v2 hata verirse v1'e düşülüyor; bayrak o zincirin sonunda bırakılır.
+        guard InAppFetchGate.shared.beginRequest(.realTime) else {
+            Logger.log(message: "fetchRealTimeInAppMessages skipped, a request is already in flight")
+            return
+        }
         Logger.log(message: "fetchRealTimeInAppMessages request started")
         let version2Request = GetRealTimeMesagesRequest(accountName: accountName, appId: appId, version: "v2")
         apiClient.send(request: version2Request) { [weak self] result in
+            // Real-time kanalın tabanı kendi ayarından gelir, bulk'ınkinden değil.
+            let base = remoteConfig.realTimeFetchIntervalInMin / 1000
             switch result {
             case .success(let response):
-                let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchIntervalInMin)
-                DengageLocalStorage.shared.set(value: nextFetchTime, for: .lastFetchedRealTimeInAppMessageTime)
+                InAppFetchGate.shared.endRequest(.realTime)
+                let gate = InAppFetchGate.shared.onResponse(.realTime, base: base, isEmpty: response.isEmpty)
+                self?.stampNextFetchTime(gate, for: .lastFetchedRealTimeInAppMessageTime)
                 DengageLocalStorage.shared.set(value: Date().timeMiliseconds, for: .lastSuccessfulRealTimeInAppMessageFetchTime)
                 let arrRealTimeInAppMessages = InAppMessage.mapRealTime(source: response)
                 self?.addInAppMessagesIfNeeded(arrRealTimeInAppMessages, forRealTime: true)
@@ -99,15 +156,18 @@ extension DengageInAppMessageManager{
                 Logger.log(message: "fetchRealTimeInAppMessages_ERROR", argument: error.localizedDescription)
                 let version1Request = GetRealTimeMesagesRequest(accountName: accountName, appId: appId, version: "")
                 self?.apiClient.send(request: version1Request) { [weak self] result in
+                    InAppFetchGate.shared.endRequest(.realTime)
                     switch result {
                     case .success(let response):
-                        let nextFetchTime = (Date().timeMiliseconds) + (remoteConfig.fetchIntervalInMin)
-                        DengageLocalStorage.shared.set(value: nextFetchTime, for: .lastFetchedRealTimeInAppMessageTime)
+                        let gate = InAppFetchGate.shared.onResponse(.realTime, base: base, isEmpty: response.isEmpty)
+                        self?.stampNextFetchTime(gate, for: .lastFetchedRealTimeInAppMessageTime)
                         DengageLocalStorage.shared.set(value: Date().timeMiliseconds, for: .lastSuccessfulRealTimeInAppMessageFetchTime)
                         let arrRealTimeInAppMessages = InAppMessage.mapRealTime(source: response)
                         self?.addInAppMessagesIfNeeded(arrRealTimeInAppMessages, forRealTime: true)
-                        
+
                     case .failure(let error):
+                        self?.stampNextFetchTime(InAppFetchGate.shared.current(.realTime, base: base),
+                                                 for: .lastFetchedRealTimeInAppMessageTime)
                         Logger.log(message: "fetchRealTimeInAppMessages_ERROR", argument: error.localizedDescription)
                     }
                 }
@@ -116,7 +176,10 @@ extension DengageInAppMessageManager{
     }
     
     public func getVisitorInfo(){
-        
+        guard !DengageAppStateTracker.shared.shouldSkipRequest else {
+            Logger.log(message: "getVisitorInfo skipped, app is in background")
+            return
+        }
         guard isEnabledRealTimeInAppMessage else {return}
         guard let remoteConfig = config.remoteConfiguration,
               let accountName = remoteConfig.accountName
@@ -475,7 +538,10 @@ extension DengageInAppMessageManager {
             return
         }
         
-        guard !(config.inAppMessageShowTime != 0 && Date().timeMiliseconds < config.inAppMessageShowTime) else {
+        // Geliştirme modunda (manuel bayrak veya debug cihaz) mesajlar arası minimum süre
+        // uygulanmaz; test cihazı kampanyaları arka arkaya görebilmeli (Android ile aynı davranış).
+        guard config.isDevelopmentStatus ||
+                !(config.inAppMessageShowTime != 0 && Date().timeMiliseconds < config.inAppMessageShowTime) else {
             hidePlacementIfNeeded(
                 inAppInlineElement: inAppInlineElement,
                 propertyID: propertyID,
@@ -627,10 +693,7 @@ extension DengageInAppMessageManager {
         DispatchQueue.global(qos: .background).async { [weak self] in
             guard let self = self else { return }
             
-            guard let debugDeviceIds = self.config.remoteConfiguration?.debugDeviceIds,
-                  debugDeviceIds.contains(self.config.applicationIdentifier) else {
-                return
-            }
+            guard self.config.isDebugDevice else { return }
             
             let traceId = UUID().uuidString
             let campaignId = inAppMessage.data.publicId ?? inAppMessage.id
@@ -1048,58 +1111,24 @@ extension DengageInAppMessageManager {
         return true
     }
     
-    private var shouldFetchInAppMessages:Bool {
-        
-        if let appEnvironment = DengageLocalStorage.shared.value(for: .appEnvironment) as? Bool
-        {
-            if appEnvironment
-            {
-                guard isEnabledInAppMessage else {return false}
-                return true
-            }
-            else
-            {
-                guard isEnabledInAppMessage else {return false}
-                guard let lastFetchedTime = config.inAppMessageLastFetchedTime else { return true }
-                guard Date().timeMiliseconds >= lastFetchedTime else { return false }
-                return true
-            }
-        }
-        else
-        {
-            guard isEnabledInAppMessage else {return false}
-            guard let lastFetchedTime = config.inAppMessageLastFetchedTime else { return true }
-            guard Date().timeMiliseconds >= lastFetchedTime else { return false }
-            return true
-        }
+    /// - Parameter bypassInterval: ön plana geçiş tetikleyicisi aralığa takılmaz (bkz. A).
+    ///   Etkinlik kontrolü her durumda uygulanır.
+    private func shouldFetchInAppMessages(bypassInterval: Bool = false) -> Bool {
+        guard isEnabledInAppMessage else { return false }
+        // Geliştirme modunda (manuel bayrak veya debug cihaz) fetch aralığı uygulanmaz.
+        if bypassInterval || config.isDevelopmentStatus { return true }
+        guard let lastFetchedTime = config.inAppMessageLastFetchedTime else { return true }
+        return Date().timeMiliseconds >= lastFetchedTime
     }
     
-    private var shouldFetchRealTimeInAppMessages:Bool {
-        
-        if let appEnvironment = DengageLocalStorage.shared.value(for: .appEnvironment) as? Bool
-        {
-            if appEnvironment
-            {
-                guard isEnabledRealTimeInAppMessage else {return false}
-                return true
-                
-            }
-            else
-            {
-                guard isEnabledRealTimeInAppMessage else {return false}
-                guard let lastFetchedTime = config.realTimeInAppMessageLastFetchedTime else { return true }
-                guard Date().timeMiliseconds >= lastFetchedTime else { return false }
-                return true
-            }
-        }
-        else
-        {
-            guard isEnabledRealTimeInAppMessage else {return false}
-            guard let lastFetchedTime = config.realTimeInAppMessageLastFetchedTime else { return true }
-            guard Date().timeMiliseconds >= lastFetchedTime else { return false }
-            return true
-        }
-        
+    /// - Parameter bypassInterval: ön plana geçiş tetikleyicisi aralığa takılmaz (bkz. A).
+    ///   Etkinlik kontrolü her durumda uygulanır.
+    private func shouldFetchRealTimeInAppMessages(bypassInterval: Bool = false) -> Bool {
+        guard isEnabledRealTimeInAppMessage else { return false }
+        // Geliştirme modunda (manuel bayrak veya debug cihaz) fetch aralığı uygulanmaz.
+        if bypassInterval || config.isDevelopmentStatus { return true }
+        guard let lastFetchedTime = config.realTimeInAppMessageLastFetchedTime else { return true }
+        return Date().timeMiliseconds >= lastFetchedTime
     }
     
     private func registerLifeCycleTrackers() {
@@ -1114,11 +1143,11 @@ extension DengageInAppMessageManager {
     }
     
     @objc private func willEnterForeground() {
-        fetchInAppMessages()
+        fetchInAppMessages(trigger: .appForeground)
         Dengage.dengage?.eventManager.cleanupClientEvents()
         
-        // Restart the hourly timer when app comes to foreground
-        startHourlyFetchTimer()
+        // Oturum içi periyodik turu yeniden başlat
+        startInSessionFetchTimer()
         
         DengageLocalStorage.shared.set(value: Date().timeIntervalSince1970, for: .lastSessionStartTime)
         
@@ -1149,8 +1178,8 @@ extension DengageInAppMessageManager {
     }
     
     @objc private func didEnterBackground(){
-        // Stop the hourly timer when app goes to background
-        stopHourlyFetchTimer()
+        // Uygulama arka plana düştü, oturum içi turu durdur
+        stopInSessionFetchTimer()
         
         DengageLocalStorage.shared.set(value: Date().timeIntervalSince1970, for: .lastVisitTime)
         guard let lastSessionStartTime = DengageLocalStorage.shared.value(for: .lastSessionStartTime) as? Double else { return }
@@ -1158,22 +1187,75 @@ extension DengageInAppMessageManager {
         DengageLocalStorage.shared.set(value: lastSessionDuration, for: .lastSessionDuration)
     }
     
-    private func startHourlyFetchTimer() {
-        // Stop any existing timer first
-        stopHourlyFetchTimer()
-        
-        // Start a new timer that fires every hour (3600 seconds)
-        hourlyFetchTimer = Timer.scheduledTimer(withTimeInterval: 3600, repeats: true) { [weak self] _ in
-            // Only fetch if app is in foreground
-            if UIApplication.shared.applicationState == .active {
-                self?.fetchInAppMessages()
+    /// Ön plan tabanı. Process içindeki **ilk** fetch koşulsuzdur — uygulamayı tamamen kapatıp
+    /// açmak her zaman fetch üretir, bu testçiye deterministik bir yol bırakır. Sonraki ön plana
+    /// dönüşler tabana tabidir. Geliştirme modunda (manuel bayrak ya da panel `debugDeviceIds`)
+    /// taban sıfırdır: testçinin arka plan/ön plan döngüsü her seferinde fetch üretir.
+    private func shouldSkipForAppForegroundFloor() -> Bool {
+        let now = Date().timeIntervalSince1970
+        let floor: TimeInterval = config.isDevelopmentStatus ? 0 : Self.appForegroundFetchFloor
+        if let last = Self.lastAppForegroundFetchTime, now - last < floor {
+            let remaining = Int(floor - (now - last))
+            Logger.log(message: "fetchInAppMessages skipped by foreground floor, \(remaining)s remaining")
+            return true
+        }
+        Self.lastAppForegroundFetchTime = now
+        return false
+    }
+
+    /// Oturum içi periyodik tur. Sabit bir aralıkta tick atmak yerine timer doğrudan **gate'in
+    /// dolacağı ana** kurulur; her turdan sonra taze damgayla yeniden zamanlanır. Gecikme sık
+    /// tick + gate kontrolüyle aynı, ama saatte onlarca yerine birkaç ateşleme oluyor.
+    private func startInSessionFetchTimer() {
+        let schedule = { [weak self] in
+            guard let self = self else { return }
+            self.stopInSessionFetchTimer()
+            self.inSessionFetchTimer = Timer.scheduledTimer(
+                withTimeInterval: self.nextInSessionFetchDelay(),
+                repeats: false
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                guard UIApplication.shared.applicationState == .active else { return }
+                self.fetchInAppMessages()
+                self.startInSessionFetchTimer()
             }
         }
+
+        if Thread.isMainThread {
+            schedule()
+        } else {
+            DispatchQueue.main.async(execute: schedule)
+        }
     }
-    
-    private func stopHourlyFetchTimer() {
-        hourlyFetchTimer?.invalidate()
-        hourlyFetchTimer = nil
+
+    private func stopInSessionFetchTimer() {
+        inSessionFetchTimer?.invalidate()
+        inSessionFetchTimer = nil
+    }
+
+    /// Bir sonraki turun ne kadar sonra atılacağı: bulk ve real-time gate'lerinden **önce dolanı**.
+    /// Damga henüz atılmamışsa ya da istek başarısız olup damga güncellenmemişse taban gecikmeye
+    /// düşülür — sıkı döngüyü engeller ve başarısız isteği makul bir süre sonra yeniden dener.
+    /// Bir sonraki fetch'e izin verilen anı (ms) depoya yazar.
+    private func stampNextFetchTime(_ gateSeconds: TimeInterval, for key: DengageLocalStorage.Key) {
+        DengageLocalStorage.shared.set(value: Date().timeMiliseconds + (gateSeconds * 1000), for: key)
+    }
+
+    private func nextInSessionFetchDelay() -> TimeInterval {
+        let now = Date().timeMiliseconds
+        // Yalnızca damgalanmış kanallar sayılır. Kapalı bir kanalın damgası hiç yazılmaz ve nil
+        // kalır; onu hesaba katmak timer'ı sonsuza dek taban gecikmede döndürürdü.
+        let stamps = [config.inAppMessageLastFetchedTime,
+                      config.realTimeInAppMessageLastFetchedTime]
+            .compactMap { $0 }
+            .filter { $0 > 0 }
+
+        guard let nextAllowed = stamps.min() else {
+            // Henüz hiç başarılı fetch yok: hesabın kendi aralığı kadar bekle.
+            let intervalSeconds = (config.remoteConfiguration?.fetchIntervalInMin ?? 0) / 1000
+            return max(intervalSeconds, Self.minInSessionFetchDelay)
+        }
+        return max((nextAllowed - now) / 1000, Self.minInSessionFetchDelay)
     }
 }
 
@@ -1364,7 +1446,6 @@ extension DengageInAppMessageManager: StoryActionsDelegate {
         }
     }
     
-    
     func setStoryCoverShown(storyCoverId: String, storySetId: String) {
         var shownStoryCovers = DengageLocalStorage.shared.getShownStoryCoverDic()
         if shownStoryCovers["\(storySetId)"] == nil {
@@ -1399,7 +1480,7 @@ extension DengageInAppMessageManager: StoryActionsDelegate {
         }
         shownStoryDic[storyCoverId] = seenStoryIds
         DengageLocalStorage.shared.setShownStoryDic(shownStoryDic)
-
+        
         let allMatched = !allStoryIdsInCover.isEmpty && allStoryIdsInCover.allSatisfy { seenStoryIds.contains($0) }
         let uniqueAll = Set(allStoryIdsInCover.filter { !$0.isEmpty })
         let uniqueSeen = Set(seenStoryIds.filter { !$0.isEmpty })
@@ -1428,7 +1509,7 @@ extension DengageInAppMessageManager: StoryActionsDelegate {
 
 protocol DengageInAppMessageManagerInterface: AnyObject{
     
-    func fetchInAppMessages()
+    func fetchInAppMessages(trigger: InAppFetchTrigger)
     func setNavigation(screenName: String?, params: Dictionary<String,String>? , propertyID : String? , webView : InAppInlineElementView?
                        ,storyPropertyID: String?, storyCompletion: ((StoriesListView?) -> Void)?)
     func showInAppMessage(inAppMessage: InAppMessage, couponCode: String)

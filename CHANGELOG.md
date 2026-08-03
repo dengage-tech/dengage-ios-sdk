@@ -1,5 +1,23 @@
 # Changelog
 
+## [5.102] - 2026-08-03
+
+### New Features
+
+- Suppress in-app requests while the app is in the background: silent push, location and background-task wake-ups no longer fetch in-app messages, refresh SDK parameters or burn the fetch interval while nobody is on screen
+- Always fetch in-app messages when the app comes to the foreground, regardless of the fetch interval, with a small floor to absorb accidental background / foreground churn
+- Replace the fixed hourly fetch timer with an adaptive per-channel gate that backs off on empty responses and returns to the account interval as soon as a message arrives, capped at 15 minutes
+- Give the real-time channel its own cadence through the `realTimeInAppFetchIntervalInMinutes` SDK parameter instead of reusing the bulk interval
+- Skip the fetch interval and the minimum time between messages in development mode, which now also covers devices listed in `debugDeviceIds`, so test devices see campaigns immediately
+
+### Bug Fixes
+
+- Fix the real-time session timeout being applied in seconds instead of minutes, and persist the sliding expiry so it is actually extended on each touch
+- Fix in-app sorting so rule-based real-time messages take precedence, and compare the second message's own expiry date in the tiebreaker
+- Prevent duplicate in-app requests when a second trigger arrives while a request is still in flight
+- Reschedule the next fetch after a failed request instead of leaving the window consumed
+
+
 
 ## [5.101] - 2026-07-24
 

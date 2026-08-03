@@ -82,7 +82,7 @@
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.101'
+pod 'Dengage', '~> 5.102'
 ```
 
 Run `pod install` via terminal
@@ -522,7 +522,7 @@ Add the Dengage SDK to your Notification Service Extension target in your `Podfi
 
 ```ruby
 target 'DengageNotificationServiceExtension' do
-    pod 'Dengage', '~> 5.101'
+    pod 'Dengage', '~> 5.102'
 end
 ```
 
@@ -1105,8 +1105,8 @@ Parameters:
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.101'
-pod 'DengageGeofence', '~> 5.101'
+pod 'Dengage', '~> 5.102'
+pod 'DengageGeofence', '~> 5.102'
 ```
 
 Run `pod install` via terminal

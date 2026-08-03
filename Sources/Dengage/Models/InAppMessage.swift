@@ -138,15 +138,17 @@ extension Array where Element == InAppMessage {
                 let secondHasRules = second.data.displayCondition.hasRules
                 
                 if first.data.isRealTime && second.data.isRealTime && firstHasRules != secondHasRules {
-                    return firstHasRules && !secondHasRules ? .orderedDescending : .orderedAscending
+                    // Kuralı olan real-time mesaj önce gelir (Android: InAppMessageComparator).
+                    return firstHasRules && !secondHasRules ? .orderedAscending : .orderedDescending
                 } else {
                     guard
                         let firstExpireDate = Utilities.convertDate(to: first.data.expireDate),
-                        let secondExpireDate = Utilities.convertDate(to: first.data.expireDate)
+                        let secondExpireDate = Utilities.convertDate(to: second.data.expireDate)
                     else {
                         return .orderedSame
                     }
-                    
+
+                    // Son kullanma tarihi yakın olan önce gelir.
                     return firstExpireDate.compare(secondExpireDate)
                 }
             }
