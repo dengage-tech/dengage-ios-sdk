@@ -593,6 +593,11 @@ final public class DengageConfiguration: Encodable {
         var advertisingId = ""
         
         if #available(iOS 14, *) {
+            let usageDescription = Bundle.main.object(forInfoDictionaryKey: "NSUserTrackingUsageDescription") as? String
+            guard let usageDescription, !usageDescription.isEmpty else {
+                return ""
+            }
+
             ATTrackingManager.requestTrackingAuthorization { status in
                 switch status {
                 case .authorized:
