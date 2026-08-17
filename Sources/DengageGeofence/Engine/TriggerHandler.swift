@@ -73,8 +73,10 @@ final class TriggerHandler {
                 Logger.log(message: "TriggerHandler -> duplicate \(eventType.rawValue) for fence \(fence.geofenceId), skipping")
                 completion(); return
             }
+            // State zaten doğru; yalnızca state-only'de bastırılmış kampanya borcu ödeniyor.
             effectiveOccurredMillis = detectedAt * 1000.0
         } else {
+            // Yeni gerçek geçiş → fence'in eski borçları geçersiz (ziyaret sınırı değişti).
             clearPending(fence.geofenceId)
             // Sentetik EXIT: occurredAt = lastSeenAt (gerçek çıkış ondan sonra oldu; 15 dk gate için)
             if syntheticTransition, eventType == .exit, let lastSeen = previous?.lastSeenAt {
@@ -82,26 +84,6 @@ final class TriggerHandler {
             }
             updateDeviceState(fence: fence, eventType: eventType, now: now)
             if !fireCampaigns, fence.campaigns.contains(where: { $0.triggerType == trigger(for: eventType) }) {
-                markPending(fence.geofenceId, eventType, at: now)
-            }
-        }
-        
-        
-        
-        if isDuplicateTransition(eventType: eventType, previous: previous) {
-            guard fireCampaigns,
-                  let detectedAt = consumePending(fence.geofenceId, eventType, now: now) else {
-                Logger.log(message: "TriggerHandler -> duplicate \(eventType.rawValue) for fence \(fence.geofenceId), skipping")
-                completion(); return
-            }
-            // State zaten doğru; yalnızca state-only'de bastırılmış kampanya borcu ödeniyor.
-            effectiveOccurredMillis = detectedAt * 1000.0
-        } else {
-            // Yeni gerçek geçiş → fence'in eski borçları geçersiz (ziyaret sınırı değişti).
-            clearPending(fence.geofenceId)
-            updateDeviceState(fence: fence, eventType: eventType, now: now)
-            if !fireCampaigns,
-               fence.campaigns.contains(where: { $0.triggerType == trigger(for: eventType) }) {
                 markPending(fence.geofenceId, eventType, at: now)
             }
         }
