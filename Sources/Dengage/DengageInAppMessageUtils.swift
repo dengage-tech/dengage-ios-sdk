@@ -321,6 +321,10 @@ final class DengageInAppMessageUtils{
             
         }
         
+        if ruleSet.rules.isEmpty {
+            return true
+        }
+
         switch ruleSet.logicOperator {
             
         case .AND:
@@ -339,6 +343,10 @@ final class DengageInAppMessageUtils{
                                       with params: [String:String]? = nil,
                                       config: DengageConfiguration, message:InAppMessage, context: inout [String: String], criterionIndex: inout Int, isDebugDevice: Bool) -> Bool{
         
+        if rule.criterions.isEmpty {
+            return true
+        }
+
         switch rule.logicOperatorBetweenCriterions {
         case .AND:
             return rule.criterions.allSatisfy{ criterion in
