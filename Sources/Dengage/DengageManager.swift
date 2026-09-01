@@ -259,12 +259,10 @@ extension DengageManager {
     private func getSDKParams() {
         Logger.log(message: "getSDKParams Started")
 
-        // Arka planda uyanmada (silent push, konum/geofence, arka plan görevi) bu zincir in-app
-        // fetch'i, iptal listesini, ilk açılış event'ini ve event temizliğini tetikliyor. Kullanıcı
-        // ekranda olmadığı için hiçbirinin faydası yok. Config cache'ten okunmaya devam eder;
-        // yenilenmesi uygulama öne geldiğinde olur. (Android: ConfigurationManager.getSdkParameters)
-        guard !DengageAppStateTracker.shared.shouldSkipRequest else {
-            Logger.log(message: "getSDKParams skipped, app is in background")
+        // User opened the app (icon, notification tap, link) → fetch.
+        // Phone woke it with nobody on screen (silent push, location) → skip.
+        if DengageAppStateTracker.isBackgroundLaunch(launchOptions) {
+            Logger.log(message: "getSDKParams skipped, background launch")
             return
         }
 

@@ -12,8 +12,8 @@ import UIKit
 /// uyanması, arka plan görevleri. Host uygulama SDK'yı `didFinishLaunching` içinde başlattığı için
 /// bunların hepsi `Dengage.start` zincirini kullanıcı yokken çalıştırır.
 ///
-/// **Soğuk başlatma engellenmez:** kullanıcı uygulamayı açtığında `didFinishLaunching` sırasında
-/// durum `.inactive`'dir, `.background` değil. Kapı yalnızca `.background` durumunu keser.
+/// **Soğuk başlatma:** `applicationState` okunmaz. Seed `launchOptions` se:
+/// user (icon / notification tap) vs phone (silent push / location).
 final class DengageAppStateTracker {
 
     static let shared = DengageAppStateTracker()
@@ -24,7 +24,6 @@ final class DengageAppStateTracker {
 
     private init() {
         registerLifeCycleTrackers()
-        refreshCachedState()
     }
 
     /// Uygulama şu an arka planda mı.
@@ -34,8 +33,7 @@ final class DengageAppStateTracker {
     /// geçmektedir. Canlı okuma o anda hem yanlış cevap veriyor hem de bildirim handler'ının
     /// yazdığı doğru değeri geri eziyordu.
     ///
-    /// Önbellek `init` içinde gerçek durumdan tohumlanır (bildirimlerin hiç gelmediği ilk an —
-    /// arka plan uyanışında `.background`, kullanıcı açılışında `.inactive`), sonrasını lifecycle
+    /// Önbellek `Dengage.start` pe `launchOptions` se tohumlanır; sonrasını lifecycle
     /// bildirimleri yürütür. Thread güvenli: `UIApplication` erişimi gerekmez.
     var isInBackground: Bool {
         lock.lock()
@@ -48,11 +46,37 @@ final class DengageAppStateTracker {
         return isInBackground
     }
 
-    /// `didFinishLaunching` akışında çağrılır. launchOptions bir remote notification içeriyor ve
-    /// uygulama arka planda başlatıldıysa bu bir silent push uyanışıdır.
+    /// Called from `Dengage.start`. Skip only when the phone woke the app and the user did not.
     func markLaunchIfNeeded(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
-        guard launchOptions?[.remoteNotification] != nil else { return }
-        markPushWakeIfInBackground()
+        let backgroundLaunch = Self.isBackgroundLaunch(launchOptions)
+        setCachedState(backgroundLaunch)
+        if backgroundLaunch {
+            markPushWakeIfInBackground()
+        }
+    }
+
+    /// Icon tap, notification tap, deep link → false (user is coming).
+    /// Silent push, location, Bluetooth restore → true (nobody on screen).
+    static func isBackgroundLaunch(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        guard let launchOptions, !launchOptions.isEmpty else { return false }
+        if launchOptions[.location] != nil { return true }
+        if launchOptions[.bluetoothCentrals] != nil { return true }
+        if launchOptions[.bluetoothPeripherals] != nil { return true }
+        if let payload = launchOptions[.remoteNotification] as? [AnyHashable: Any] {
+            return isSilentPush(payload)
+        }
+        return false
+    }
+
+    /// Visible notification (user can tap) has alert/sound. Silent is content-available only.
+    private static func isSilentPush(_ userInfo: [AnyHashable: Any]) -> Bool {
+        guard let aps = userInfo["aps"] as? [String: Any] else { return false }
+        let contentAvailable = (aps["content-available"] as? Int) == 1
+            || (aps["content-available"] as? String) == "1"
+            || (aps["content-available"] as? Bool) == true
+        let hasAlert = aps["alert"] != nil
+        let hasSound = aps["sound"] != nil
+        return contentAvailable && !hasAlert && !hasSound
     }
 
     /// Uygulama arka plandayken gelen push için çağrılır. Yalnızca teşhis amaçlıdır — kapı zaten
@@ -74,16 +98,6 @@ final class DengageAppStateTracker {
         lock.lock()
         cachedIsInBackground = isInBackground
         lock.unlock()
-    }
-
-    private func refreshCachedState() {
-        if Thread.isMainThread {
-            setCachedState(UIApplication.shared.applicationState == .background)
-        } else {
-            DispatchQueue.main.async { [weak self] in
-                self?.setCachedState(UIApplication.shared.applicationState == .background)
-            }
-        }
     }
 
     private func registerLifeCycleTrackers() {

@@ -12,6 +12,7 @@
 
 ### Bug Fixes
 
+- Fetch `getSDKParams` on a user launch (icon tap, notification tap, deep link). Skip only for a background wake (silent push, location). Do not read `applicationState` at launch
 - Fix the real-time session timeout being applied in seconds instead of minutes, and persist the sliding expiry so it is actually extended on each touch
 - Fix in-app sorting so rule-based real-time messages take precedence, and compare the second message's own expiry date in the tiebreaker
 - Prevent duplicate in-app requests when a second trigger arrives while a request is still in flight
