@@ -21,6 +21,8 @@ final class DengageAppStateTracker {
     private let lock = NSLock()
     private var cachedIsInBackground = false
     private var wokenInBackgroundByPush = false
+    /// Process-lifetime: resets when the app is killed. True only after getSDKParams actually ran.
+    private var didFetchSDKParams = false
 
     private init() {
         registerLifeCycleTrackers()
@@ -46,6 +48,13 @@ final class DengageAppStateTracker {
     /// In-app tarafındaki istekler için kapı. Arka planda hiçbir istek atılmaz.
     var shouldSkipRequest: Bool {
         return isInBackground
+    }
+
+    /// Call after getSDKParams passes the skip gate, so didBecomeActive will not fetch again.
+    func markSDKParamsFetched() {
+        lock.lock()
+        didFetchSDKParams = true
+        lock.unlock()
     }
 
     /// `didFinishLaunching` akışında çağrılır. launchOptions bir remote notification içeriyor ve
@@ -107,6 +116,7 @@ final class DengageAppStateTracker {
 
     @objc private func appDidBecomeActive() {
         enteredForeground()
+        retrySDKParamsIfNeeded()
     }
 
     @objc private func appDidEnterBackground() {
@@ -118,5 +128,16 @@ final class DengageAppStateTracker {
         cachedIsInBackground = false
         wokenInBackgroundByPush = false
         lock.unlock()
+    }
+
+    /// Scene-based launches skip getSDKParams at start because applicationState is still .background.
+    /// didBecomeActive means the user is on screen; fetch then if start never did.
+    private func retrySDKParamsIfNeeded() {
+        lock.lock()
+        let alreadyFetched = didFetchSDKParams
+        lock.unlock()
+        guard !alreadyFetched else { return }
+        Logger.log(message: "getSDKParams retrying on didBecomeActive")
+        Dengage.manager?.retryGetSDKParamsIfNeeded()
     }
 }

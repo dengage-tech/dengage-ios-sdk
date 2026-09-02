@@ -268,6 +268,8 @@ extension DengageManager {
             return
         }
 
+        DengageAppStateTracker.shared.markSDKParamsFetched()
+
         let hasRemoteConfig = config.remoteConfiguration != nil
         let lastFetchedDate = DengageLocalStorage.shared.value(for: .lastFetchedConfigTime) as? Date
         
@@ -289,6 +291,10 @@ extension DengageManager {
         }
         
         fetchSDK()
+    }
+
+    func retryGetSDKParamsIfNeeded() {
+        getSDKParams()
     }
     
     private func fetchSDK() {
