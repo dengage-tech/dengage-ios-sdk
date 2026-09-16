@@ -54,6 +54,9 @@
         - [Removing all Inbox Messages](#removing-all-inbox-messages)
         - [Marking an Inbox Message as Clicked](#marking-an-inbox-message-as-clicked)
         - [Marking all Inbox Messages as Clicked](#marking-all-inbox-messages-as-clicked)
+- [Inbox Channel](#inbox-channel)
+    - [Getting Inbox Channel Messages](#getting-inbox-channel-messages)
+    - [Reporting Inbox Channel Events](#reporting-inbox-channel-events)
 - [In-App Messaging](#in-app-messaging)
     - [Methods](#methods-1)
     - [Real Time In-App Messaging](#real-time-in-app-messaging)
@@ -82,7 +85,7 @@
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.102'
+pod 'Dengage', '~> 5.103'
 ```
 
 Run `pod install` via terminal
@@ -522,7 +525,7 @@ Add the Dengage SDK to your Notification Service Extension target in your `Podfi
 
 ```ruby
 target 'DengageNotificationServiceExtension' do
-    pod 'Dengage', '~> 5.102'
+    pod 'Dengage', '~> 5.103'
 end
 ```
 
@@ -946,6 +949,54 @@ Dengage.setAllInboxMessageAsClicked(completion: { result in
 
 
 
+## Inbox Channel
+
+Inbox Channel is a newer, dedicated messaging channel served through `/api/inbox`, separate from App Inbox above. Messages are fetched on demand from the server rather than delivered via push, and read/deleted state is cached locally so it survives across fetches even before the server-side event is processed.
+
+> To use the Inbox Channel feature, please send an email to tech@dengage.com.
+
+### Getting Inbox Channel Messages
+
+Fetch the latest Inbox Channel messages:
+
+```swift
+Dengage.getInboxChannelMessages(limit: 20, // Number of messages to retrieve (min: 1, max: 100, default: 20)
+                                completion: { result in
+    switch result {
+    case .success(let messages):
+        // Handle the result
+        print(messages)
+    case .failure(let error):
+        print(error)
+    }
+})
+```
+
+Each `DengageInboxChannelMessage` carries an `id`, a `priority`, an `isRead` flag and a `data` payload (`title`, `message`, `imageUrl`, `ctaButtons`, `isPinned`, `receiveDate`/`receiveDateValue`, and an opaque `messageDetails` token). Locally deleted messages are filtered out of the result automatically.
+
+### Reporting Inbox Channel Events
+
+Report impressions, opens, clicks or deletes for a message. Multiple events can be sent together in a single bulk request:
+
+```swift
+let event = DengageInboxChannelEvent(eventType: .click, // .impression, .open, .click or .delete
+                                     messageId: message.id,
+                                     messageDetails: message.data.messageDetails)
+
+Dengage.sendInboxChannelEvents([event], completion: { result in
+    switch result {
+    case .success:
+        print("Event reported successfully!")
+    case .failure(let error):
+        print("Failed to report event: \(error)")
+    }
+})
+```
+
+> `open` and `click` events mark the message as read locally; `delete` marks it as deleted so it is excluded from subsequent fetches. `messageDetails` must be the token returned in the message's `data.messageDetails` field.
+
+
+
 ## In-App Messaging
 
 An in-app message is a type of mobile message where the notification is displayed within the app. It is not sent at a specific time but it is shown to users when the user is using the app.
@@ -1105,8 +1156,8 @@ Parameters:
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.102'
-pod 'DengageGeofence', '~> 5.102'
+pod 'Dengage', '~> 5.103'
+pod 'DengageGeofence', '~> 5.103'
 ```
 
 Run `pod install` via terminal
