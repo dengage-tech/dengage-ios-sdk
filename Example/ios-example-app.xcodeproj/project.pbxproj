@@ -633,7 +633,7 @@
 				INFOPLIST_FILE = DengageWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = DengageWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -669,7 +669,7 @@
 				INFOPLIST_FILE = DengageWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = DengageWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -698,7 +698,7 @@
 				INFOPLIST_FILE = NoticationExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NoticationExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -727,7 +727,7 @@
 				INFOPLIST_FILE = NoticationExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NoticationExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -756,7 +756,7 @@
 				INFOPLIST_FILE = NotificationContentExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NotificationContentExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -785,7 +785,7 @@
 				INFOPLIST_FILE = NotificationContentExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NotificationContentExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -939,12 +939,13 @@
 				INFOPLIST_KEY_NSLocationUsageDescription = "Application wants to get location for sending notification";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Dengage will use your location when in use!";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = YES;
 				INFOPLIST_KEY_NSUserTrackingUsageDescription = "Dengage uses your advertising identifier!";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -978,12 +979,13 @@
 				INFOPLIST_KEY_NSLocationUsageDescription = "Application wants to get location for sending notification";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Dengage will use your location when in use!";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = YES;
 				INFOPLIST_KEY_NSUserTrackingUsageDescription = "Dengage uses your advertising identifier!";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
