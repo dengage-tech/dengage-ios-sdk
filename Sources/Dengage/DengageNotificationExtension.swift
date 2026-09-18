@@ -79,6 +79,7 @@ final class DengageNotificationExtension {
                 bestAttemptContent.attachments = [ attachment ]
             }
         }
+        Logger.log(message: "contentHandler(bestAttemptContent)")
         contentHandler(bestAttemptContent)
     }
     
@@ -138,3 +139,4 @@ public extension UNNotificationAttachment {
         return nil
     }
 }
+

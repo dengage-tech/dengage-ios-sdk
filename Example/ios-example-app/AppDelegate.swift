@@ -4,6 +4,7 @@ import Dengage
 import DengageGeofence
 import WidgetKit
 import ActivityKit
+import OSLog
 
 // MARK: - Globals
 var liveActivityPushTokenString = ""
@@ -15,18 +16,30 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     // MARK: - Lifecycle
-    func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-    ) -> Bool {
-        window = UIWindow(frame: UIScreen.main.bounds)
-        let nav = UINavigationController(rootViewController: RootViewController())
-        window?.rootViewController = nav
-        window?.makeKeyAndVisible()
-        UNUserNotificationCenter.current().delegate = self
-        configureDengage(application: application)
-        return true
-    }
+        func application(
+            _ application: UIApplication,
+            didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+        ) -> Bool {
+            
+            os_log("[DENGAGE] %@ %@", log: .default, type: .debug, "os", "arg")
+            
+            
+            UNUserNotificationCenter.current().delegate = self
+            configureDengage(application: application)
+            return true
+        }
+
+        // MARK: - UIScene Lifecycle
+        func application(
+            _ application: UIApplication,
+            configurationForConnecting connectingSceneSession: UISceneSession,
+            options: UIScene.ConnectionOptions
+        ) -> UISceneConfiguration {
+            UISceneConfiguration(
+                name: "Default Configuration",
+                sessionRole: connectingSceneSession.role
+            )
+        }
 }
 
 // MARK: - Configuration

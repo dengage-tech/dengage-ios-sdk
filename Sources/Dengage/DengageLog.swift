@@ -12,7 +12,7 @@ public final class DengageLog{
         
         if isEnabled
         {
-            os_log("[DENGAGE] %@ %@", log: .default, type: .debug, message, argument)
+            os_log("[DENGAGE] %@ %@", log: .default, type: .default, message, argument)
             
         }
         

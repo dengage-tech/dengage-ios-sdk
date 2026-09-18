@@ -31,6 +31,7 @@
 		88426DD22D6379B900B9FBB6 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = 88426DD12D6379B900B9FBB6 /* Dengage */; };
 		88426DD42D6379D100B9FBB6 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = 88426DD32D6379D100B9FBB6 /* Dengage */; };
 		88426DD62D6379D100B9FBB6 /* DengageGeofence in Frameworks */ = {isa = PBXBuildFile; productRef = 88426DD52D6379D100B9FBB6 /* DengageGeofence */; };
+		885B46C1305D0F0600C19D65 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885B46C0305D0F0400C19D65 /* SceneDelegate.swift */; };
 		888EB8392D70608B00D15827 /* Dengage in Frameworks */ = {isa = PBXBuildFile; productRef = 888EB8382D70608B00D15827 /* Dengage */; };
 		88A5C5DB3013C0E8001D0691 /* GeofenceInfoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A5C5DA3013C0E5001D0691 /* GeofenceInfoListViewController.swift */; };
 		88F310152FD0774100299466 /* LiveActivityPushTestHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F310142FD0773F00299466 /* LiveActivityPushTestHelper.swift */; };
@@ -124,6 +125,7 @@
 		8845BBFB2D5CF3DC00715B38 /* Dengage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Dengage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8845BBFF2D5CF3E600715B38 /* Dengage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Dengage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		885238E82E98F4B500AC6F37 /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		885B46C0305D0F0400C19D65 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		886E50332CE56F0000528A6E /* NotificationContentExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NotificationContentExtension.entitlements; sourceTree = "<group>"; };
 		888EB8342D70607600D15827 /* Dengage.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Dengage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		88968AFD2D09CF2700312C4C /* ios-example-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "ios-example-app.entitlements"; sourceTree = "<group>"; };
@@ -314,6 +316,7 @@
 				880138242D14256600F06B40 /* Location.gpx */,
 				88968AFD2D09CF2700312C4C /* ios-example-app.entitlements */,
 				A0F46C61275A85B0003A524C /* AppDelegate.swift */,
+				885B46C0305D0F0400C19D65 /* SceneDelegate.swift */,
 				88F3103C2FD07AF600299466 /* DengageLiveActivityController.swift */,
 				88F310162FD0776300299466 /* ExampleWidgetAttributes.swift */,
 				88F310142FD0773F00299466 /* LiveActivityPushTestHelper.swift */,
@@ -560,6 +563,7 @@
 				882A92072D6CAD2700179FC1 /* ActionTableViewCell.swift in Sources */,
 				882A92082D6CAD2700179FC1 /* Extensions.swift in Sources */,
 				882A92092D6CAD2700179FC1 /* InboxMessageTableViewCell.swift in Sources */,
+				885B46C1305D0F0600C19D65 /* SceneDelegate.swift in Sources */,
 				A0B8857827B1F197004D4360 /* DeviceInfoViewController.swift in Sources */,
 				88F310172FD0776600299466 /* ExampleWidgetAttributes.swift in Sources */,
 				D6810E69293F341200611E55 /* RealTimeViewController.swift in Sources */,
