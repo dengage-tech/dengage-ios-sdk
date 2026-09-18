@@ -13,6 +13,8 @@ public final class DengageLog{
         if isEnabled
         {
             os_log("[DENGAGE] %@ %@", log: .default, type: .default, message, argument)
+            os_log("[DENGAGE] %{public}@ %{public}@", log: .default, type: .default, message, argument)
+            NSLog("[DENGAGE] %@ %@", message, argument)
             
         }
         
