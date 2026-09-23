@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.104] - 2026-09-23
+
+### Bug Fixes
+
+- Persist `DengageGeofence.stopGeofence()` so geofence stays stopped until `DengageGeofence.startGeofence()` is called again; previously the stop decision was kept only in memory and ignored by background paths
+- Ignore geofence silent pushes, `forceResync`, organic sync, location updates, region transitions, dwell timers, the wake-up bubble and active window reevaluations while geofence is stopped, so they no longer re-register regions or send heartbeats
+- Cancel a pending one-shot location request on `stopGeofence()` and do not register regions from a sync that completes after it
+- Defer `getSDKParams` to the next foreground instead of dropping it when it is called while the app looks backgrounded; with the UIScene life cycle a user-initiated cold launch reports a background state during `didFinishLaunching`, which left SDK parameters unrefreshed for the whole session
+
 ## [5.103] - 2026-09-16
 
 ### New Features

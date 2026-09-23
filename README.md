@@ -67,6 +67,7 @@
   - [Geofence Installation](#geofence-installation)
   - [Geofence Initialization](#geofence-initialization)
   - [Request Location Permission](#request-location-permission)
+  - [Stopping and Restarting Geofence](#stopping-and-restarting-geofence)
   - [Geofence Interceptor](#geofence-interceptor)
 
 
@@ -85,7 +86,7 @@
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.103'
+pod 'Dengage', '~> 5.104'
 ```
 
 Run `pod install` via terminal
@@ -525,7 +526,7 @@ Add the Dengage SDK to your Notification Service Extension target in your `Podfi
 
 ```ruby
 target 'DengageNotificationServiceExtension' do
-    pod 'Dengage', '~> 5.103'
+    pod 'Dengage', '~> 5.104'
 end
 ```
 
@@ -1156,8 +1157,8 @@ Parameters:
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.103'
-pod 'DengageGeofence', '~> 5.103'
+pod 'Dengage', '~> 5.104'
+pod 'DengageGeofence', '~> 5.104'
 ```
 
 Run `pod install` via terminal
@@ -1200,6 +1201,27 @@ To request location permissions at runtime, use the `DengageGeofence.requestLoca
 
 ```swift
 DengageGeofence.requestLocationPermissions()
+```
+
+### Stopping and Restarting Geofence
+
+To stop geofence tracking (for example, when the user opts out of location-based features), call `DengageGeofence.stopGeofence`. It stops location updates and removes all monitored regions.
+
+```swift
+DengageGeofence.stopGeofence()
+```
+
+The stop decision is persisted. Until `DengageGeofence.startGeofence()` is called again, no background trigger reactivates geofence, even after the app is relaunched: geofence silent pushes, `forceResync`, organic sync, location updates, region callbacks and scheduled reevaluations are all ignored.
+
+Calling `DengageGeofence.startGeofence()` clears the stop decision and starts geofence again.
+
+> **Important**: `application(_:didFinishLaunchingWithOptions:)` also runs when iOS launches your app in the background, for example for a silent push or a location event. If you call `startGeofence()` there unconditionally, it re-enables geofence after the user stopped it. Store the user's choice in your app and only call `startGeofence()` when geofence should be active:
+
+```swift
+// application(_:didFinishLaunchingWithOptions:)
+if isGeofenceEnabledByUser() {
+    DengageGeofence.startGeofence()
+}
 ```
 
 ### Geofence Interceptor
