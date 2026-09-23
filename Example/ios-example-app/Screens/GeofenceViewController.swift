@@ -3,6 +3,18 @@ import UIKit
 import Dengage
 import DengageGeofence
 
+/// Kullanıcının geofence'i açık/kapalı tercihi. SDK `stopGeofence` sonrası `startGeofence`
+/// çağrısını geofence'i yeniden açma isteği sayar; bu yüzden açılışta koşulsuz `startGeofence`
+/// çağırmak kullanıcının durdurma kararını geri alır. Tercih burada saklanır.
+enum GeofencePreference {
+    private static let key = "exampleApp.geofenceEnabled"
+
+    static var isEnabled: Bool {
+        get { UserDefaults.standard.object(forKey: key) as? Bool ?? true }
+        set { UserDefaults.standard.set(newValue, forKey: key) }
+    }
+}
+
 class GeofenceViewController: UIViewController {
     
     private lazy var tableView: UITableView = {
@@ -45,7 +57,11 @@ extension GeofenceViewController: UITableViewDelegate{
         switch rows[indexPath.row]{
         case .requestLocationAlwaysAuthorization:
             DengageGeofence.requestLocationPermissions()
+        case .startGeofencing:
+            GeofencePreference.isEnabled = true
+            DengageGeofence.startGeofence()
         case .stopGeofencing:
+            GeofencePreference.isEnabled = false
             DengageGeofence.stopGeofence()
         case .showLastSilentPushSync:
             showLastSilentPushSync()
@@ -121,12 +137,14 @@ extension GeofenceViewController: UITableViewDelegate{
 
 extension GeofenceViewController{
     enum Actions: CaseIterable{
-        case requestLocationAlwaysAuthorization, stopGeofencing, showLastSilentPushSync,
+        case requestLocationAlwaysAuthorization, startGeofencing, stopGeofencing, showLastSilentPushSync,
              showMonitoredGeofences, showRecentTriggeredEvents
         var title: String{
             switch self{
             case .requestLocationAlwaysAuthorization:
                 return "REQUEST LOCATION ALWAYS AUTHORIZATION"
+            case .startGeofencing:
+                return "START GEOFENCING"
             case .stopGeofencing:
                 return "STOP GEOFENCING"
             case .showLastSilentPushSync:

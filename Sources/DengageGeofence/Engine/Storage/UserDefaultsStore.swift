@@ -215,4 +215,8 @@ final class DefaultSyncMetadataRepository: SyncMetadataRepository {
         get { store.double("wakeup_paused_at") }
         set { store.setDouble("wakeup_paused_at", newValue) }
     }
+    var stoppedAt: Double? {
+        get { store.double("stopped_at") }
+        set { store.setDouble("stopped_at", newValue) }
+    }
 }

@@ -47,4 +47,7 @@ protocol SyncMetadataRepository: AnyObject {
     /// Wake-up cap pause başlangıcı (epoch seconds); nil = pause yok.
     /// Persist edilir ki process ölüp yeniden doğduğunda pause penceresi doğru değerlendirilebilsin.
     var wakeupPausedAt: Double? { get set }
+    /// Host'un `stopGeofence` çağırdığı an (epoch seconds); nil = durdurulmadı. `startGeofence` temizler.
+    /// Persist edilir ki silent push gibi arka plan kanalları yeni bir process'te de stop kararına uysun.
+    var stoppedAt: Double? { get set }
 }

@@ -69,6 +69,7 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
 
     func start() {
         startRequested = true
+        storage.syncMetadataRepository.stoppedAt = nil
         // İzin zaten verilmişse authorization-change event'i gelmeyebilir; mevcut izni burada da persist et.
         persistLocationPermission(currentAuthorizationStatus())
         guard remoteConfig.geofenceEnabled() else {
@@ -103,8 +104,12 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
     }
 
     func stop() {
+        storage.syncMetadataRepository.stoppedAt = Date().timeIntervalSince1970
         startRequested = false
         running = false
+        // Bekleyen tek atımlık `requestLocation` fix'ini de iptal et; yoksa cevabı
+        // handleMovement → reeval yolundan fence'leri yeniden register ediyordu.
+        locationManager.stopUpdatingLocation()
         movementListener.stop()
         registrar.removeAll()
         activeWindowScheduler.cancel()
@@ -130,12 +135,14 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
     }
 
     func forceResync() {
+        guard !isStopped(reason: "force resync") else { return }
         reeval(location: currentLocation(), syncAllowed: true, force: true)
     }
 
     // MARK: - Silent push
 
     func onSilentPush() {
+        guard !isStopped(reason: "silent push") else { return }
         storage.syncMetadataRepository.lastSilentPushAt = Date().timeIntervalSince1970
         Logger.log(message: "GeofenceEngine -> silent push resync")
         forceResync()
@@ -154,6 +161,7 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
 
     func requestOrganicSync(reason: OrganicSyncTrigger.Reason) {
         guard remoteConfig.geofenceEnabled() else { return }
+        guard !isStopped(reason: "organic sync") else { return }
         // Foreground debounce: kısa aralıklı foreground'lar (bildirim çekmecesi, app switcher)
         // reeval churn'ü üretmesin. Diğer reason'lar (push delivered / manual) debounce'lanmaz.
         if reason == .appForeground {
@@ -258,6 +266,7 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
     /// Bubble'dan çıkıldı → kullanıcı kayda değer biçimde yer değiştirdi.
     /// Pause süresi dolduysa normale dönülür; dolmadıysa bubble yeni konuma taşınır (ucuz uyanma).
     private func handleWakeupBubbleExit() {
+        guard !isStopped(reason: "wake-up bubble exit") else { return }
         Logger.log(message: "GeofenceEngine -> wake-up bubble exited")
         wakeupCap.attemptResume()
         guard wakeupCap.isPaused else { return }
@@ -265,6 +274,7 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
     }
 
     func onActiveWindowBoundary() {
+        guard !isStopped(reason: "active window boundary") else { return }
         reeval(location: currentLocation(), syncAllowed: true, force: false)
     }
 
@@ -283,6 +293,8 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
         if syncAllowed {
             syncer.sync(lat: location?.coordinate.latitude, lon: location?.coordinate.longitude) { [weak self] _ in
                 guard let self = self else { return }
+                // Sync sürerken stop çağrıldıysa sonucu register etme.
+                guard !self.isStopped(reason: "sync completion") else { return }
                 self.registerTopN(location: location, mode: registerMode)
                 if let loc = location {
                     self.reconcileContainment(location: loc, fireCampaigns: fireCampaigns)
@@ -429,6 +441,7 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
 
     private func handleTransition(_ eventType: GeofenceEventType, region: CLRegion) {
         guard region.identifier.hasPrefix(kEngineRequestIdPrefix) else { return }
+        guard !isStopped(reason: "region transition") else { return }
         // Region callback'i pause süresini etkilemez; ayrıca resume fırsatı verir (K13)
         wakeupCap.attemptResume()
         let location = locationManager.location
@@ -465,6 +478,7 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
     }
 
     private func handleMovement(_ location: CLLocation) {
+        guard !isStopped(reason: "movement") else { return }
         guard remoteConfig.geofenceEnabled() else { stop(); return }
         switch wakeupCap.recordWakeup() {
         case .skipPaused, .pauseAndSkip: return
@@ -501,12 +515,22 @@ final class GeofenceEngine: NSObject, CLLocationManagerDelegate {
         workQueue.asyncAfter(deadline: .now() + delay) { [weak self] in
             guard let self = self else { return }
             self.armedDwellFences.remove(ids.geofenceId)
+            guard !self.isStopped(reason: "dwell timer") else { return }
             guard self.triggerHandler.isInside(geofenceId: ids.geofenceId) else { return }
             self.triggerHandler.handle(eventType: .dwell, requestId: requestId, location: self.locationManager.location ?? location)
         }
     }
 
     // MARK: - Helpers
+
+    /// Host `stopGeofence` çağırdıysa (ve sonra `startGeofence` çağırmadıysa) true. Arka plan
+    /// kanalları (silent push, organik sync, konum/region callback'leri, zamanlayıcılar) geofence'i
+    /// yeniden aktif edemez; bunu yalnızca `start()` yapabilir. Kalıcıdır: yeni process'te de geçerli.
+    private func isStopped(reason: String) -> Bool {
+        guard storage.syncMetadataRepository.stoppedAt != nil else { return false }
+        Logger.log(message: "GeofenceEngine -> \(reason) ignored, geofence is stopped")
+        return true
+    }
 
     /// Bu yaştan taze fix "güncel konum" sayılır; üstünde tek atımlık taze fix istenir (doc 23 İş 4).
     private let freshLocationMaxAge: TimeInterval = 120

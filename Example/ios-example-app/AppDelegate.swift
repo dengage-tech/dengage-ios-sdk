@@ -133,8 +133,11 @@ private extension AppDelegate {
          */
         
         DengageGeofence.geofenceInterceptor = self
-        DengageGeofence.startGeofence()
-        
+        // Kullanıcı Geofence ekranından durdurduysa açılışta (silent push ile arka plan açılışı dahil)
+        // yeniden başlatma.
+        if GeofencePreference.isEnabled {
+            DengageGeofence.startGeofence()
+        }        
         // Initialize Live Activities
         if #available(iOS 16.1, *) {
             DengageLiveActivityController.start()
