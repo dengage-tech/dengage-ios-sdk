@@ -12,8 +12,11 @@ import UIKit
 /// uyanması, arka plan görevleri. Host uygulama SDK'yı `didFinishLaunching` içinde başlattığı için
 /// bunların hepsi `Dengage.start` zincirini kullanıcı yokken çalıştırır.
 ///
-/// **Soğuk başlatma engellenmez:** kullanıcı uygulamayı açtığında `didFinishLaunching` sırasında
-/// durum `.inactive`'dir, `.background` değil. Kapı yalnızca `.background` durumunu keser.
+/// **Soğuk başlatma:** eski (scene'siz) yaşam döngüsünde kullanıcı açılışında `didFinishLaunching`
+/// sırasında durum `.inactive`'dir. UIScene yaşam döngüsünde ise scene henüz bağlanmadığı için
+/// kullanıcı açılışında da durum `.background`'dır; bu anda kullanıcı açılışı arka plan uyanışından
+/// ayırt edilemez. Bu yüzden arka planda atlanan işler `performOnNextForeground` ile ön plana
+/// geçişe ertelenmelidir, düşürülmemelidir.
 final class DengageAppStateTracker {
 
     static let shared = DengageAppStateTracker()
@@ -21,6 +24,7 @@ final class DengageAppStateTracker {
     private let lock = NSLock()
     private var cachedIsInBackground = false
     private var wokenInBackgroundByPush = false
+    private var foregroundActions: [() -> Void] = []
 
     private init() {
         registerLifeCycleTrackers()
@@ -46,6 +50,19 @@ final class DengageAppStateTracker {
     /// In-app tarafındaki istekler için kapı. Arka planda hiçbir istek atılmaz.
     var shouldSkipRequest: Bool {
         return isInBackground
+    }
+
+    /// İşi uygulama bir sonraki ön plana geçişinde bir kez çalıştırır. Uygulama zaten ön plandaysa
+    /// hemen çalıştırır. İşler ana thread'de çalışır.
+    func performOnNextForeground(_ action: @escaping () -> Void) {
+        lock.lock()
+        guard cachedIsInBackground else {
+            lock.unlock()
+            runOnMain(action)
+            return
+        }
+        foregroundActions.append(action)
+        lock.unlock()
     }
 
     /// `didFinishLaunching` akışında çağrılır. launchOptions bir remote notification içeriyor ve
@@ -117,6 +134,18 @@ final class DengageAppStateTracker {
         lock.lock()
         cachedIsInBackground = false
         wokenInBackgroundByPush = false
+        let actions = foregroundActions
+        foregroundActions.removeAll()
         lock.unlock()
+
+        actions.forEach { runOnMain($0) }
+    }
+
+    private func runOnMain(_ action: @escaping () -> Void) {
+        if Thread.isMainThread {
+            action()
+        } else {
+            DispatchQueue.main.async(execute: action)
+        }
     }
 }

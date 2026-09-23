@@ -12,20 +12,59 @@ var liveActivityPushTokenString = ""
 final class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: - Properties
+    // Set by SceneDelegate; kept so `UIApplication.shared.delegate?.window` lookups still resolve.
     var window: UIWindow?
-    
+
     // MARK: - Lifecycle
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        window = UIWindow(frame: UIScreen.main.bounds)
-        let nav = UINavigationController(rootViewController: RootViewController())
-        window?.rootViewController = nav
-        window?.makeKeyAndVisible()
         UNUserNotificationCenter.current().delegate = self
         configureDengage(application: application)
         return true
+    }
+
+    func application(
+        _ application: UIApplication,
+        configurationForConnecting connectingSceneSession: UISceneSession,
+        options: UIScene.ConnectionOptions
+    ) -> UISceneConfiguration {
+        let configuration = UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+        configuration.delegateClass = SceneDelegate.self
+        return configuration
+    }
+}
+
+// MARK: - SceneDelegate
+final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+
+    var window: UIWindow?
+
+    func scene(
+        _ scene: UIScene,
+        willConnectTo session: UISceneSession,
+        options connectionOptions: UIScene.ConnectionOptions
+    ) {
+        guard let windowScene = scene as? UIWindowScene else { return }
+        let window = UIWindow(windowScene: windowScene)
+        window.rootViewController = UINavigationController(rootViewController: RootViewController())
+        window.makeKeyAndVisible()
+        self.window = window
+        (UIApplication.shared.delegate as? AppDelegate)?.window = window
+
+        if let url = connectionOptions.urlContexts.first?.url {
+            handleOpenURL(url)
+        }
+    }
+
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let url = URLContexts.first?.url else { return }
+        handleOpenURL(url)
+    }
+
+    private func handleOpenURL(_ url: URL) {
+        print("UIScene openURLContexts \(url.host ?? "")")
     }
 }
 

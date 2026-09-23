@@ -265,8 +265,13 @@ extension DengageManager {
         // fetch'i, iptal listesini, ilk açılış event'ini ve event temizliğini tetikliyor. Kullanıcı
         // ekranda olmadığı için hiçbirinin faydası yok. Config cache'ten okunmaya devam eder;
         // yenilenmesi uygulama öne geldiğinde olur. (Android: ConfigurationManager.getSdkParameters)
+        // UIScene yaşam döngüsünde kullanıcı açılışı da `didFinishLaunching` anında arka planda
+        // görünür; bu yüzden atlanan çağrı düşürülmez, ön plana geçişe ertelenir.
         guard !DengageAppStateTracker.shared.shouldSkipRequest else {
-            Logger.log(message: "getSDKParams skipped, app is in background")
+            Logger.log(message: "getSDKParams deferred, app is in background")
+            DengageAppStateTracker.shared.performOnNextForeground { [weak self] in
+                self?.getSDKParams()
+            }
             return
         }
 
