@@ -1,5 +1,18 @@
 # Changelog
 
+## [Unreleased]
+
+### New Features
+
+- Report push dismiss events: dismissing a push sends `/api/mobile/dismiss` (or `/api/transactional/mobile/dismiss` for transactional pushes) with the same parameters and routing as the open event; previously a dismiss was sent to the open endpoint with `buttonId` "DismissAction"
+- Every Dengage push now gets a notification category with `.customDismissAction` in the Notification Service Extension, so dismiss is delivered for text, rich and carousel pushes with or without action buttons; pushes without a category use `DENGAGE_DEFAULT_CATEGORY`
+- Skip a dismiss for a message that was already opened, and send each dismiss at most once per message
+
+### Bug Fixes
+
+- Register push categories by merging them into the existing ones instead of replacing all categories, so the host app's categories and `DENGAGE_CAROUSEL_CATEGORY` are no longer removed
+- Do not start a session with the push target url when a push is dismissed
+
 ## [5.104] - 2026-09-23
 
 ### Bug Fixes

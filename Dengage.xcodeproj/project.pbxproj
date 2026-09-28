@@ -145,6 +145,7 @@
 		A0765BE327CEB4700007215B /* GetInAppMessagesRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765BB027CEB4700007215B /* GetInAppMessagesRequest.swift */; };
 		A0765BE427CEB4700007215B /* MarkAsInAppMessageDisplayedRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765BB127CEB4700007215B /* MarkAsInAppMessageDisplayedRequest.swift */; };
 		A0765BE527CEB4700007215B /* OpenEventRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765BB327CEB4700007215B /* OpenEventRequest.swift */; };
+		D15E0A11C0DE000000000002 /* PushEventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D15E0A11C0DE000000000001 /* PushEventType.swift */; };
 		A0765BE627CEB4700007215B /* TransactionalOpenEventRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765BB427CEB4700007215B /* TransactionalOpenEventRequest.swift */; };
 		A0765BE727CEB4700007215B /* EventRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765BB527CEB4700007215B /* EventRequest.swift */; };
 		A0765BE827CEB4700007215B /* TagsRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0765BB627CEB4700007215B /* TagsRequest.swift */; };
@@ -341,6 +342,7 @@
 		A0765BB027CEB4700007215B /* GetInAppMessagesRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GetInAppMessagesRequest.swift; sourceTree = "<group>"; };
 		A0765BB127CEB4700007215B /* MarkAsInAppMessageDisplayedRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MarkAsInAppMessageDisplayedRequest.swift; sourceTree = "<group>"; };
 		A0765BB327CEB4700007215B /* OpenEventRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenEventRequest.swift; sourceTree = "<group>"; };
+		D15E0A11C0DE000000000001 /* PushEventType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushEventType.swift; sourceTree = "<group>"; };
 		A0765BB427CEB4700007215B /* TransactionalOpenEventRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionalOpenEventRequest.swift; sourceTree = "<group>"; };
 		A0765BB527CEB4700007215B /* EventRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventRequest.swift; sourceTree = "<group>"; };
 		A0765BB627CEB4700007215B /* TagsRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagsRequest.swift; sourceTree = "<group>"; };
@@ -757,6 +759,7 @@
 				A0765BB527CEB4700007215B /* EventRequest.swift */,
 				8817093B2C91809500FA8B63 /* FirstLaunchEventRequest.swift */,
 				A0765BB327CEB4700007215B /* OpenEventRequest.swift */,
+				D15E0A11C0DE000000000001 /* PushEventType.swift */,
 				A0765BB427CEB4700007215B /* TransactionalOpenEventRequest.swift */,
 			);
 			path = Event;
@@ -953,6 +956,7 @@
 				8800688C2C931DDA00881F71 /* InAppInlineElementView.swift in Sources */,
 				884389312E7076A500422E78 /* DengageCartUtils.swift in Sources */,
 				A0765BE527CEB4700007215B /* OpenEventRequest.swift in Sources */,
+				D15E0A11C0DE000000000002 /* PushEventType.swift in Sources */,
 				A0765BC927CEB4700007215B /* DengageCarouselCell.swift in Sources */,
 				881709372C91808800FA8B63 /* GetVisitorInfoRequest.swift in Sources */,
 				880068962C932B8700881F71 /* DengageVisitCountManager.swift in Sources */,

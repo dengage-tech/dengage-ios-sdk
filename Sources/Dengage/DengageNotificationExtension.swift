@@ -62,8 +62,17 @@ final class DengageNotificationExtension {
          */
 
 
-        addActionButtonsIfNeeded(bestAttemptContent)
-        
+        registerDismissableCategory(for: bestAttemptContent) {
+            finishNotificationRequest(bestAttemptContent, message: message, title: title,
+                                      subtitle: subtitle, withContentHandler: contentHandler)
+        }
+    }
+    
+    private static func finishNotificationRequest(_ bestAttemptContent: UNMutableNotificationContent,
+                                                  message: PushContent,
+                                                  title: String,
+                                                  subtitle: String,
+                                                  withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         bestAttemptContent.title = title
         bestAttemptContent.subtitle = subtitle
         
@@ -82,37 +91,81 @@ final class DengageNotificationExtension {
         contentHandler(bestAttemptContent)
     }
     
-    private static func addActionButtonsIfNeeded(_ bestAttemptContent: UNMutableNotificationContent) {
+    /// Category used for Dengage pushes that arrive without one, so that dismissing them is
+    /// still reported (iOS only delivers dismiss for categories with `.customDismissAction`).
+    static let defaultCategoryIdentifier = "DENGAGE_DEFAULT_CATEGORY"
+    
+    /// Makes sure the push has a category with `.customDismissAction` (plus its action buttons)
+    /// for every push type: text, rich and carousel, with or without buttons. Categories that are
+    /// already registered, by the host app or by the carousel content extension, are kept.
+    private static func registerDismissableCategory(for bestAttemptContent: UNMutableNotificationContent,
+                                                    completion: @escaping () -> Void) {
+        let center = UNUserNotificationCenter.current()
+        center.getNotificationCategories { existing in
+            let categories = mergedCategories(for: bestAttemptContent, into: existing)
+            if categories != existing {
+                center.setNotificationCategories(categories)
+            }
+            completion()
+        }
+    }
+    
+    /// Returns `existing` with this push's category added or updated so that it carries
+    /// `.customDismissAction`. Sets a category identifier on the content when the push has none.
+    static func mergedCategories(for bestAttemptContent: UNMutableNotificationContent,
+                                 into existing: Set<UNNotificationCategory>) -> Set<UNNotificationCategory> {
+        let pushActions = actions(for: bestAttemptContent)
         
+        if bestAttemptContent.categoryIdentifier.isEmpty {
+            // Pushes with buttons need their own category so they don't overwrite each other's actions.
+            if pushActions.isEmpty {
+                bestAttemptContent.categoryIdentifier = defaultCategoryIdentifier
+            } else {
+                let messageId = bestAttemptContent.message?.messageId.map(String.init) ?? UUID().uuidString
+                bestAttemptContent.categoryIdentifier = "DENGAGE_ACTIONS_\(messageId)"
+            }
+        }
+        let identifier = bestAttemptContent.categoryIdentifier
+        let current = existing.first { $0.identifier == identifier }
+        
+        let actions = pushActions.isEmpty ? (current?.actions ?? []) : pushActions
+        var options = current?.options ?? []
+        options.insert(.customDismissAction)
+        let intentIdentifiers = current?.intentIdentifiers ?? []
+        
+        let category: UNNotificationCategory
+        if #available(iOS 11.0, *) {
+            category = UNNotificationCategory(identifier: identifier,
+                                              actions: actions,
+                                              intentIdentifiers: intentIdentifiers,
+                                              hiddenPreviewsBodyPlaceholder: current?.hiddenPreviewsBodyPlaceholder ?? "",
+                                              options: options)
+        } else {
+            // Fallback on earlier versions
+            category = UNNotificationCategory(identifier: identifier,
+                                              actions: actions,
+                                              intentIdentifiers: intentIdentifiers,
+                                              options: options)
+        }
+        
+        var merged = existing.filter { $0.identifier != identifier }
+        merged.insert(category)
+        return merged
+    }
+    
+    private static func actions(for bestAttemptContent: UNMutableNotificationContent) -> [UNNotificationAction] {
         guard let actionButtons = bestAttemptContent.message?.actionButtons else {
             Logger.log(message: "Action Buttons not found")
-            return
+            return []
         }
         
         Logger.log(message: "Parsing action buttons")
         
-        let actions: [UNNotificationAction] = actionButtons.compactMap { item in
+        return actionButtons.compactMap { item in
             guard let id = item.id, let title = item.text else { return nil }
             let options: UNNotificationActionOptions = ("NO".caseInsensitiveCompare(id) == .orderedSame)  ? [] : .foreground
             return UNNotificationAction(identifier: id, title: title, options: options)
         }
-        
-        let category: UNNotificationCategory;
-        if #available(iOS 11.0, *) {
-            category = UNNotificationCategory(identifier: bestAttemptContent.categoryIdentifier,
-                                              actions: actions,
-                                              intentIdentifiers: [],
-                                              hiddenPreviewsBodyPlaceholder: "",
-                                              options: .customDismissAction)
-            
-        } else {
-            // Fallback on earlier versions
-            category = UNNotificationCategory(identifier: bestAttemptContent.categoryIdentifier,
-                                              actions: actions,
-                                              intentIdentifiers: [],
-                                              options: .customDismissAction)
-        }
-        UNUserNotificationCenter.current().setNotificationCategories([category])
     }
 }
 

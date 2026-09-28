@@ -50,16 +50,15 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
         
         
         let actionIdentifier = response.actionIdentifier
+        let event = Self.pushEvent(for: actionIdentifier)
+        sendEventWithContent(content: content, actionIdentifier: event.buttonId, eventType: event.type)
         switch actionIdentifier {
         case UNNotificationDismissActionIdentifier:
             Logger.log(message: "UNNotificationDismissActionIdentifier TRIGGERED")
-            sendEventWithContent(content: content, actionIdentifier: "DismissAction")
         case UNNotificationDefaultActionIdentifier:
             Logger.log(message: "UNNotificationDefaultActionIdentifier TRIGGERED")
-            sendEventWithContent(content: content, actionIdentifier: nil)
         default:
             Logger.log(message: "TRIGGERED ACTION_ID", argument: actionIdentifier)
-            sendEventWithContent(content: content, actionIdentifier: actionIdentifier)
             checkTargetUrlInActionButtons(content: content, actionIdentifier: actionIdentifier)
         }
         
@@ -67,7 +66,8 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
     
         if !config.options.disableOpenURL && !Dengage.isPushSilent(response: response)
         {
-            if let targetUrl = content.message?.targetUrl, !targetUrl.isEmpty {
+            if let targetUrl = content.message?.targetUrl, !targetUrl.isEmpty,
+               actionIdentifier != UNNotificationDismissActionIdentifier {
                 if actionIdentifier == UNNotificationDefaultActionIdentifier {
                     openDeeplink(link: targetUrl)
                 }
@@ -118,6 +118,19 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
         }
     }
     
+    /// Maps a notification response to the event it reports: swiping the push away is a dismiss,
+    /// tapping the push or one of its action buttons is an open.
+    static func pushEvent(for actionIdentifier: String) -> (type: PushEventType, buttonId: String?) {
+        switch actionIdentifier {
+        case UNNotificationDismissActionIdentifier:
+            return (.dismiss, nil)
+        case UNNotificationDefaultActionIdentifier:
+            return (.open, nil)
+        default:
+            return (.open, actionIdentifier)
+        }
+    }
+    
     func didClickCarouselItem(content: UNNotificationContent, carouselId: Int) {
         sendEventWithContent(content: content, actionIdentifier: String(carouselId))
     }
@@ -143,60 +156,31 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
         }
     }
     
-    private func sendEventWithContent(content: UNNotificationContent, actionIdentifier: String?) {
-
-        guard let messageId = content.message?.messageId else {
-            Logger.log(message: "MSG_ID is not found")
-            return
-        }
-        Logger.log(message: "MSG_ID is", argument: String(messageId))
-
-        guard let messageDetails = content.message?.messageDetails else {
-            Logger.log(message: "MSG_DETAILS is not found")
-            return
-        }
-        Logger.log(message: "MSG_DETAILS is", argument: messageDetails)
-
-        // Duplicate open event check
-        var sentDetails = (DengageLocalStorage.shared.value(for: .sentOpenEventMessageDetails) as? [String]) ?? []
-        if sentDetails.contains(messageDetails) {
-            Logger.log(message: "Duplicate open event detected for messageDetails: \(messageDetails), skipping.")
-            return
-        }
-        sentDetails.append(messageDetails)
-        if sentDetails.count > 10 {
-            sentDetails.removeFirst()
-        }
-        DengageLocalStorage.shared.set(value: sentDetails, for: .sentOpenEventMessageDetails)
-
-        if let actionIdentifier = actionIdentifier, actionIdentifier.isEmpty == false {
-            Logger.log(message: "BUTTON_ID is", argument: String(actionIdentifier))
-        }
-        
-        if let transactionId = content.message?.transactionId {
-            Logger.log(message: "BUTTON_ID is", argument: String(transactionId))
-
-            let request = TransactionalOpenEventRequest(integrationKey: config.integrationKey,
-                                                        transactionId: transactionId,
-                                                        messageId: messageId,
-                                                        messageDetails: messageDetails,
-                                                        buttonId: actionIdentifier)
-            
-            eventManager.sendTransactionalOpenEvet(request: request)
-        } else {
-            let request = OpenEventRequest(integrationKey: config.integrationKey,
-                                           messageId: messageId,
-                                           messageDetails: messageDetails,
-                                           buttonId: actionIdentifier)
-            eventManager.sendOpenEvet(request: request)
-        }
-        
-        if config.options.badgeCountReset == true {
-            UIApplication.shared.applicationIconBadgeNumber = 0
-        }
+    private func sendEventWithContent(content: UNNotificationContent,
+                                      actionIdentifier: String?,
+                                      eventType: PushEventType = .open) {
+        sendPushEvent(eventType,
+                      messageId: content.message?.messageId,
+                      messageDetails: content.message?.messageDetails,
+                      transactionId: content.message?.transactionId,
+                      buttonId: actionIdentifier)
     }
     
     private func sendEventWithContent(messageId: Int? , messageDetails : String?, transactionId:String? , actionIdentifier: String?) {
+        sendPushEvent(.open,
+                      messageId: messageId,
+                      messageDetails: messageDetails,
+                      transactionId: transactionId,
+                      buttonId: actionIdentifier)
+    }
+    
+    /// Sends an open or dismiss event. Both use the same parameters and the same
+    /// regular/transactional routing; only the endpoint differs.
+    func sendPushEvent(_ eventType: PushEventType,
+                       messageId: Int?,
+                       messageDetails: String?,
+                       transactionId: String?,
+                       buttonId: String?) {
 
         guard let messageId = messageId else {
             Logger.log(message: "MSG_ID is not found")
@@ -210,43 +194,60 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
         }
         Logger.log(message: "MSG_DETAILS is", argument: messageDetails)
 
-        // Duplicate open event check
-        var sentDetails = (DengageLocalStorage.shared.value(for: .sentOpenEventMessageDetails) as? [String]) ?? []
-        if sentDetails.contains(messageDetails) {
-            Logger.log(message: "Duplicate open event detected for messageDetails: \(messageDetails), skipping.")
-            return
-        }
-        sentDetails.append(messageDetails)
-        if sentDetails.count > 10 {
-            sentDetails.removeFirst()
-        }
-        DengageLocalStorage.shared.set(value: sentDetails, for: .sentOpenEventMessageDetails)
+        guard Self.markPushEventSent(eventType, messageDetails: messageDetails) else { return }
 
-        if let actionIdentifier = actionIdentifier, actionIdentifier.isEmpty == false {
-            Logger.log(message: "BUTTON_ID is", argument: String(actionIdentifier))
+        if let buttonId = buttonId, buttonId.isEmpty == false {
+            Logger.log(message: "BUTTON_ID is", argument: String(buttonId))
         }
         
         if let transactionId = transactionId {
-            Logger.log(message: "BUTTON_ID is", argument: String(transactionId))
+            Logger.log(message: "TRANSACTION_ID is", argument: String(transactionId))
             
             let request = TransactionalOpenEventRequest(integrationKey: config.integrationKey,
                                                         transactionId: transactionId,
                                                         messageId: messageId,
                                                         messageDetails: messageDetails,
-                                                        buttonId: actionIdentifier)
+                                                        buttonId: buttonId,
+                                                        eventType: eventType)
             
             eventManager.sendTransactionalOpenEvet(request: request)
         } else {
             let request = OpenEventRequest(integrationKey: config.integrationKey,
                                            messageId: messageId,
                                            messageDetails: messageDetails,
-                                           buttonId: actionIdentifier)
+                                           buttonId: buttonId,
+                                           eventType: eventType)
             eventManager.sendOpenEvet(request: request)
         }
         
-        if config.options.badgeCountReset == true {
+        if eventType == .open, config.options.badgeCountReset == true {
             UIApplication.shared.applicationIconBadgeNumber = 0
         }
+    }
+    
+    /// Records that `eventType` was sent for `messageDetails` and returns false when it must be
+    /// skipped: the same event was already sent for this message, or (for dismiss) the message
+    /// was already opened.
+    static func markPushEventSent(_ eventType: PushEventType,
+                                  messageDetails: String,
+                                  storage: DengageLocalStorage = .shared) -> Bool {
+        if eventType == .dismiss,
+           let opened = storage.value(for: .sentOpenEventMessageDetails) as? [String],
+           opened.contains(messageDetails) {
+            Logger.log(message: "Message already opened, skipping dismiss event for messageDetails: \(messageDetails)")
+            return false
+        }
+        var sentDetails = (storage.value(for: eventType.sentMessageDetailsKey) as? [String]) ?? []
+        if sentDetails.contains(messageDetails) {
+            Logger.log(message: "Duplicate \(eventType.rawValue) event detected for messageDetails: \(messageDetails), skipping.")
+            return false
+        }
+        sentDetails.append(messageDetails)
+        if sentDetails.count > 10 {
+            sentDetails.removeFirst()
+        }
+        storage.set(value: sentDetails, for: eventType.sentMessageDetailsKey)
+        return true
     }
 }
 

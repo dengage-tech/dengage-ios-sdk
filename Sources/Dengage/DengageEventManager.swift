@@ -50,9 +50,9 @@ final class DengageEventManager: DengageEventProtocolInterface {
             self.service.send(request: request) { result in
                 switch result {
                 case .success(_):
-                    Logger.log(message: "Push Open Event success")
+                    Logger.log(message: "Push \(request.eventType.rawValue) event success")
                 case .failure(let error):
-                    Logger.log(message: "Push Open Event fail", argument: error.localizedDescription)
+                    Logger.log(message: "Push \(request.eventType.rawValue) event fail", argument: error.localizedDescription)
                 }
             }
         }
@@ -64,9 +64,9 @@ final class DengageEventManager: DengageEventProtocolInterface {
             self.service.send(request: request) { result in
                 switch result {
                 case .success(_):
-                    Logger.log(message: "Push Transactional Open Event success")
+                    Logger.log(message: "Push transactional \(request.eventType.rawValue) event success")
                 case .failure(let error):
-                    Logger.log(message: "Push Open Transactional Event fail", argument: error.localizedDescription)
+                    Logger.log(message: "Push transactional \(request.eventType.rawValue) event fail", argument: error.localizedDescription)
                 }
             }
         }

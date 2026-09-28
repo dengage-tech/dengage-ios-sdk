@@ -6,7 +6,7 @@ struct TransactionalOpenEventRequest: APIRequest {
 
     let method: HTTPMethod = .post
     let endpointType: EndpointType = .event
-    let path: String = "/api/transactional/mobile/open"
+    var path: String { eventType.path(isTransactional: true) }
     let queryParameters: [URLQueryItem] = []
     
     var httpBody: Data?{
@@ -25,6 +25,7 @@ struct TransactionalOpenEventRequest: APIRequest {
     let messageId: Int
     let messageDetails: String
     let buttonId: String?
+    var eventType: PushEventType = .open
 
 }
 
