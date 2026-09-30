@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.105] - 2026-09-30
+
+### Bug Fixes
+
+- Resize the in-app message web view when its content height changes after the page finished loading (late loading images, JavaScript rendered content); previously the height was measured only once, which could leave the in-app message clipped to a thin strip with its close button out of reach while it kept blocking touches on the screen
+
 ## [5.104] - 2026-09-23
 
 ### Bug Fixes

@@ -127,10 +127,20 @@ final class InAppMessageHTMLViewController: UIViewController {
          "openSettings",
          "setTags",
          "copyToClipboard",
-         "consoleLog"
+         "consoleLog",
+         "contentHeight"
         ].forEach {
             contentController.add(self, name: $0)
         }
+
+        // Report content height changes that happen after the page finished loading
+        // (late images, JS rendered content) so the web view is not left clipped.
+        let contentHeightScript = WKUserScript(
+            source: contentHeightObserver,
+            injectionTime: .atDocumentEnd,
+            forMainFrameOnly: true
+        )
+        contentController.addUserScript(contentHeightScript)
 
         // Add console.log bridge script
         let consoleScript = WKUserScript(
@@ -187,10 +197,16 @@ extension InAppMessageHTMLViewController: WKNavigationDelegate {
         guard viewSource.webView.url?.absoluteString == "about:blank" else { return }
         viewSource.webView.evaluateJavaScript("document.documentElement.scrollHeight") { height, _ in
             guard let scrollHeight = height as? CGFloat else { return }
-            self.viewSource.height?.constant = (scrollHeight > self.viewSource.frame.height)
-                ? self.viewSource.frame.height
-                : scrollHeight
+            self.updateWebViewHeight(scrollHeight)
         }
+    }
+
+    private func updateWebViewHeight(_ scrollHeight: CGFloat) {
+        guard viewSource.webView.url?.absoluteString == "about:blank",
+              viewSource.frame.height > 0 else { return }
+        viewSource.height?.constant = (scrollHeight > viewSource.frame.height)
+            ? viewSource.frame.height
+            : scrollHeight
     }
 }
 
@@ -292,6 +308,10 @@ extension InAppMessageHTMLViewController: WKScriptMessageHandler {
             let level = dict["level"] as? String ?? "log"
             Logger.log(message: "[WebView \(level)] \(logMessage)")
 
+        case "contentHeight":
+            guard let scrollHeight = message.body as? NSNumber else { return }
+            updateWebViewHeight(CGFloat(truncating: scrollHeight))
+
         default:
             break
         }
@@ -355,6 +375,44 @@ extension InAppMessageHTMLViewController {
                 sendToNative('debug', arguments);
                 originalConsole.debug.apply(console, arguments);
             };
+        })();
+        """
+    }
+
+    fileprivate var contentHeightObserver: String {
+        """
+        (function() {
+            var lastHeight = -1;
+            var timer = null;
+
+            function report() {
+                timer = null;
+                var height = document.documentElement.scrollHeight;
+                if (height === lastHeight) { return; }
+                lastHeight = height;
+                try {
+                    window.webkit.messageHandlers.contentHeight.postMessage(height);
+                } catch (e) {}
+            }
+
+            function schedule() {
+                if (timer === null) { timer = setTimeout(report, 50); }
+            }
+
+            if (window.ResizeObserver) {
+                var resizeObserver = new ResizeObserver(schedule);
+                resizeObserver.observe(document.documentElement);
+                if (document.body) { resizeObserver.observe(document.body); }
+            }
+            if (window.MutationObserver) {
+                new MutationObserver(schedule).observe(document.documentElement, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true
+                });
+            }
+            document.addEventListener('load', schedule, true);
+            window.addEventListener('load', schedule);
         })();
         """
     }
