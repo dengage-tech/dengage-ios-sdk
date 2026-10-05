@@ -63,6 +63,7 @@ final public class DengageLocalStorage: NSObject {
         case lastVisitTime = "lastVisitTime"
         case visitCounts = "visitCounts"
         case visitorInfo = "visitorInfo"
+        case visitorInfoFetchTime = "visitorInfoFetchTime"
         case openInAppBrowser = "openInAppBrowser"
         case retrieveLinkOnSameScreen = "retrieveLinkOnSameScreen"
         case deeplink = "deeplink"
