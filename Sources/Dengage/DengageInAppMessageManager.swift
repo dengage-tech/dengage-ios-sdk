@@ -14,6 +14,10 @@ public class DengageInAppMessageManager: DengageInAppMessageManagerInterface {
     var inAppShowTimer = Timer()
     var inSessionFetchTimer: Timer?
     var isInAppMessageShowing = false
+    /// True from the moment an in-app message is scheduled until its delay fires or it is cancelled.
+    private var isInAppDisplayPending = false
+    /// Cancellable delay used by the hybrid (React Native / Flutter / Cordova) path.
+    private var inAppShowWorkItem: DispatchWorkItem?
 
     /// Ön plana dönüşler arasındaki minimum fetch aralığı (saniye). Geliştirme modunda uygulanmaz.
     private static let appForegroundFetchFloor: TimeInterval = 10
@@ -735,119 +739,99 @@ extension DengageInAppMessageManager {
         
         DengageLocalStorage.shared.set(value: true, for: .cancelInAppMessage)
         
+        // Release the pending message right away. Waiting for its delay to fire would keep
+        // `isInAppMessageShowing` true and make setNavigation skip the next screen meanwhile.
+        let cancelPending = { [weak self] in
+            guard let self = self, self.isInAppDisplayPending else { return }
+            self.inAppShowTimer.invalidate()
+            self.inAppShowWorkItem?.cancel()
+            self.inAppShowWorkItem = nil
+            self.isInAppDisplayPending = false
+            self.isInAppMessageShowing = false
+        }
+        if Thread.isMainThread {
+            cancelPending()
+        } else {
+            DispatchQueue.main.async(execute: cancelPending)
+        }
+        
     }
     
     
     func showInAppMessage(inAppMessage: InAppMessage, couponCode: String = "") {
         // Mark as showing immediately to prevent duplicate calls
         isInAppMessageShowing = true
+        isInAppDisplayPending = true
         
         let hybridAppEnv = config.getHybridAppEnvironment()
         
+        let inappShowTime = (Date().timeMiliseconds) + (config.remoteConfiguration?.minSecBetweenMessages ?? 0.0)
+        DengageLocalStorage.shared.set(value: inappShowTime, for: .inAppMessageShowTime)
+        
+        let delay = Double(inAppMessage.data.displayTiming.delay ?? 0)
+        
         if hybridAppEnv
         {
-            let inappShowTime = (Date().timeMiliseconds) + (config.remoteConfiguration?.minSecBetweenMessages ?? 0.0)
-            
-            DengageLocalStorage.shared.set(value: inappShowTime, for: .inAppMessageShowTime)
-            
-            let delay = inAppMessage.data.displayTiming.delay ?? 0
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(delay)) {
-                
-                if let cancelInAppMessage = DengageLocalStorage.shared.value(for: .cancelInAppMessage) as? Bool
-                {
-                    if !cancelInAppMessage
-                    {
-                        if inAppMessage.data.isRealTime {
-                            self.markAsRealTimeInAppMessageAsDisplayed(message: inAppMessage)
-                        } else {
-                            self.markAsInAppMessageAsDisplayed(inAppMessageId: inAppMessage.data.messageDetails, contentId: inAppMessage.data.content.contentId ?? "")
-                        }
-                        var updatedMessage = inAppMessage
-                        if let showEveryXMinutes = inAppMessage.data.displayTiming.showEveryXMinutes,
-                           showEveryXMinutes != 0 {
-                            updatedMessage.nextDisplayTime = Date().timeMiliseconds + Double(showEveryXMinutes) * 60000.0
-                            updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
-                            self.updateInAppMessageOnCache(updatedMessage)
-                            DengageLocalStorage.shared.updateInAppMessageShowCount(messageId: updatedMessage.id, showCount: updatedMessage.showCount ?? 0)
-                        } else {
-                            if updatedMessage.data.isRealTime {
-                                updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
-                                self.updateInAppMessageOnCache(updatedMessage)
-                                DengageLocalStorage.shared.updateInAppMessageShowCount(messageId: updatedMessage.id, showCount: updatedMessage.showCount ?? 0)
-                            } else {
-                                updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
-                                DengageLocalStorage.shared.updateInAppMessageShowCount(messageId: updatedMessage.id, showCount: updatedMessage.showCount ?? 0)
-                                self.removeInAppMessageFromCache(inAppMessage.data
-                                    .messageDetails ?? "")
-                            }
-                        }
-                        
-                        self.showInAppMessageController(with: updatedMessage, couponCode: couponCode)
-                    } else {
-                        self.isInAppMessageShowing = false
-                    }
-                    
-                }
-                
+            let workItem = DispatchWorkItem { [weak self] in
+                self?.presentScheduledInAppMessage(inAppMessage, couponCode: couponCode)
             }
+            inAppShowWorkItem = workItem
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
         }
         else
         {
-            let inappShowTime = (Date().timeMiliseconds) + (config.remoteConfiguration?.minSecBetweenMessages ?? 0.0)
-            DengageLocalStorage.shared.set(value: inappShowTime, for: .inAppMessageShowTime)
-            
-            let delay = inAppMessage.data.displayTiming.delay ?? 0
-            
-            inAppShowTimer = Timer.scheduledTimer(withTimeInterval: Double(delay), repeats: false, block: { _ in
-                
-                if let cancelInAppMessage = DengageLocalStorage.shared.value(for: .cancelInAppMessage) as? Bool
-                {
-                    if !cancelInAppMessage
-                    {
-                        if inAppMessage.data.isRealTime {
-                            self.markAsRealTimeInAppMessageAsDisplayed(message: inAppMessage)
-                        } else {
-                            self.markAsInAppMessageAsDisplayed(inAppMessageId: inAppMessage.data.messageDetails, contentId: inAppMessage.data.content.contentId ?? "")
-                        }
-                        var updatedMessage = inAppMessage
-                        if let showEveryXMinutes = inAppMessage.data.displayTiming.showEveryXMinutes,
-                           showEveryXMinutes != 0 {
-                            updatedMessage.nextDisplayTime = Date().timeMiliseconds + Double(showEveryXMinutes) * 60000.0
-                            updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
-                            self.updateInAppMessageOnCache(updatedMessage)
-                            DengageLocalStorage.shared.updateInAppMessageShowCount(messageId: updatedMessage.id, showCount: updatedMessage.showCount ?? 0)
-                        } else {
-                            if updatedMessage.data.isRealTime {
-                                updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
-                                self.updateInAppMessageOnCache(updatedMessage)
-                                DengageLocalStorage.shared.updateInAppMessageShowCount(messageId: updatedMessage.id, showCount: updatedMessage.showCount ?? 0)
-                            } else {
-                                updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
-                                DengageLocalStorage.shared.updateInAppMessageShowCount(messageId: updatedMessage.id, showCount: updatedMessage.showCount ?? 0)
-                                self.removeInAppMessageFromCache(inAppMessage.data
-                                    .messageDetails ?? "")
-                            }
-                        }
-                        
-                        self.showInAppMessageController(with: updatedMessage, couponCode: couponCode)
-                    } else {
-                        self.isInAppMessageShowing = false
-                    }
-                }
-                
+            inAppShowTimer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false, block: { [weak self] _ in
+                self?.presentScheduledInAppMessage(inAppMessage, couponCode: couponCode)
             })
-            
+        }
+    }
+    
+    /// Runs when the display delay of a scheduled in-app message is over.
+    private func presentScheduledInAppMessage(_ inAppMessage: InAppMessage, couponCode: String) {
+        isInAppDisplayPending = false
+        inAppShowWorkItem = nil
+        
+        // A missing flag must not leave the lock held, otherwise setNavigation would be skipped forever.
+        guard let cancelInAppMessage = DengageLocalStorage.shared.value(for: .cancelInAppMessage) as? Bool,
+              !cancelInAppMessage else {
+            isInAppMessageShowing = false
+            return
         }
         
+        if inAppMessage.data.isRealTime {
+            self.markAsRealTimeInAppMessageAsDisplayed(message: inAppMessage)
+        } else {
+            self.markAsInAppMessageAsDisplayed(inAppMessageId: inAppMessage.data.messageDetails, contentId: inAppMessage.data.content.contentId ?? "")
+        }
+        var updatedMessage = inAppMessage
+        if let showEveryXMinutes = inAppMessage.data.displayTiming.showEveryXMinutes,
+           showEveryXMinutes != 0 {
+            updatedMessage.nextDisplayTime = Date().timeMiliseconds + Double(showEveryXMinutes) * 60000.0
+            updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
+            self.updateInAppMessageOnCache(updatedMessage)
+            DengageLocalStorage.shared.updateInAppMessageShowCount(messageId: updatedMessage.id, showCount: updatedMessage.showCount ?? 0)
+        } else {
+            if updatedMessage.data.isRealTime {
+                updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
+                self.updateInAppMessageOnCache(updatedMessage)
+                DengageLocalStorage.shared.updateInAppMessageShowCount(messageId: updatedMessage.id, showCount: updatedMessage.showCount ?? 0)
+            } else {
+                updatedMessage.showCount = (updatedMessage.showCount ?? 0) + 1
+                DengageLocalStorage.shared.updateInAppMessageShowCount(messageId: updatedMessage.id, showCount: updatedMessage.showCount ?? 0)
+                self.removeInAppMessageFromCache(inAppMessage.data
+                    .messageDetails ?? "")
+            }
+        }
         
-        
-        
+        showInAppMessageController(with: updatedMessage, couponCode: couponCode)
     }
     
     private func showInAppMessageController(with message:InAppMessage, couponCode: String){
         
-        guard message.data.content.props.html != nil else {return}
+        guard message.data.content.props.html != nil else {
+            isInAppMessageShowing = false
+            return
+        }
         let controller = InAppMessageHTMLViewController(with: message, couponCode: couponCode)
         controller.delegate = self
         self.createInAppWindow(for: controller)
