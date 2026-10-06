@@ -1,16 +1,12 @@
 # Changelog
 
-## [Unreleased]
+## [5.105] - 2026-09-30
 
 ### Bug Fixes
 
 - `Dengage.removeInAppMessageDisplay()` now cancels the pending in-app message right away (display timer / delayed work item) and releases the in-app lock; previously the lock stayed held until the message's delay fired, so `setNavigation` for the next screen was skipped in the meantime
 - Release the in-app lock when the delayed display finds no cancel flag or the message has no HTML content, so `setNavigation` can no longer stay blocked until the app restarts
-
-## [5.105] - 2026-09-30
-
-### Bug Fixes
-
+- Throttle visitor info refresh: `getVisitorInfo()` now runs from `fetchInAppMessages` and is skipped when the previous call was less than 2 minutes ago (same behavior as Android); the fixed 120 second delayed call after SDK start is removed
 - Resize the in-app message web view when its content height changes after the page finished loading (late loading images, JavaScript rendered content); previously the height was measured only once, which could leave the in-app message clipped to a thin strip with its close button out of reach while it kept blocking touches on the screen
 
 ## [5.104] - 2026-09-23
