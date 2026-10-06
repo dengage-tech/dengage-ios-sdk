@@ -67,7 +67,7 @@ extension DengageInAppMessageManager{
         if trigger == .appForeground { InAppFetchGate.shared.reset() }
 
         fetchRealTimeMessages(trigger: trigger)
-        // getVisitorInfo()
+        getVisitorInfo()
         Logger.log(message: "fetchInAppMessages called")
         // Cleanup expired show history entries (older than 2 weeks)
         DengageLocalStorage.shared.cleanupExpiredShowHistory()
@@ -185,6 +185,7 @@ extension DengageInAppMessageManager{
             return
         }
         guard isEnabledRealTimeInAppMessage else {return}
+        guard shouldFetchVisitorInfo() else { return }
         guard let remoteConfig = config.remoteConfiguration,
               let accountName = remoteConfig.accountName
         else { return }
@@ -220,6 +221,19 @@ extension DengageInAppMessageManager{
                 Logger.log(message: "getVisitorInfo_ERROR", argument: error.localizedDescription)
             }
         }
+    }
+
+    /// Android jaisa: visitor-info sirf tab dubara jati hai jab pichli call ko kam az kam 2 minute ho chuke hon.
+    private func shouldFetchVisitorInfo() -> Bool {
+        let now = Date().timeMiliseconds
+        if let lastFetchTime = DengageLocalStorage.shared.value(for: .visitorInfoFetchTime) as? Double,
+           now < lastFetchTime {
+            Logger.log(message: "getVisitorInfo skipped, 2 min interval not elapsed")
+            return false
+        }
+        let nextFetchTimePlus: Double = 2 * 60_000
+        DengageLocalStorage.shared.set(value: now + nextFetchTimePlus, for: .visitorInfoFetchTime)
+        return true
     }
     
     private func markAsInAppMessageAsDisplayed(inAppMessageId: String? ,contentId:String ) {

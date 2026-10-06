@@ -68,12 +68,6 @@ public class DengageManager {
         
         syncSubscription()
         getSDKParams()
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 120, execute: {
-            
-            self.inAppManager.getVisitorInfo()
-            
-        })
     }
 }
 
