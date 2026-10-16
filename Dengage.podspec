@@ -1,4 +1,4 @@
-sdk_version = '5.105'
+sdk_version = '5.106'
 
 Pod::Spec.new do |s|
   s.name             = 'Dengage'

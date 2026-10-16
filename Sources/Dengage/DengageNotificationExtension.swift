@@ -1,5 +1,6 @@
 import Foundation
 import UserNotifications
+import Intents
 
 final class DengageNotificationExtension {
     
@@ -79,9 +80,73 @@ final class DengageNotificationExtension {
                 bestAttemptContent.attachments = [ attachment ]
             }
         }
+
+        if #available(iOS 15.0, *), let notificationIcon = message.notificationIcon, !notificationIcon.isEmpty {
+            applyCommunicationStyle(bestAttemptContent,
+                                    notificationIcon: notificationIcon,
+                                    withContentHandler: contentHandler)
+            return
+        }
         contentHandler(bestAttemptContent)
     }
-    
+
+    /// Shows the notification as a communication notification (`notificationIcon` instead of the app icon,
+    /// the title, or the app name when it is empty, as the sender name).
+    /// Requires the Communication Notifications capability on the app target and
+    /// `INSendMessageIntent` in the extension's `IntentsSupported`; otherwise the content is delivered unchanged.
+    @available(iOS 15.0, *)
+    private static func applyCommunicationStyle(_ bestAttemptContent: UNMutableNotificationContent,
+                                                notificationIcon: String,
+                                                withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
+
+        var senderImage: INImage?
+        if let url = URL(string: notificationIcon), let imageData = NSData(contentsOf: url) {
+            senderImage = INImage(imageData: imageData as Data)
+        } else {
+            Logger.log(message: "Communication notification icon not loaded")
+        }
+
+        let senderName = bestAttemptContent.title.isEmpty ? appName() : bestAttemptContent.title
+        let sender = INPerson(personHandle: INPersonHandle(value: notificationIcon, type: .unknown),
+                              nameComponents: nil,
+                              displayName: senderName,
+                              image: senderImage,
+                              contactIdentifier: nil,
+                              customIdentifier: notificationIcon)
+
+        let intent = INSendMessageIntent(recipients: nil,
+                                         outgoingMessageType: .outgoingMessageText,
+                                         content: bestAttemptContent.body,
+                                         speakableGroupName: nil,
+                                         conversationIdentifier: notificationIcon,
+                                         serviceName: nil,
+                                         sender: sender,
+                                         attachments: nil)
+        intent.setImage(senderImage, forParameterNamed: \.sender)
+
+        let interaction = INInteraction(intent: intent, response: nil)
+        interaction.direction = .incoming
+        interaction.donate { error in
+            if let error = error {
+                Logger.log(message: "Communication notification interaction donate failed", argument: error.localizedDescription)
+            }
+            do {
+                contentHandler(try bestAttemptContent.updating(from: intent))
+            } catch {
+                Logger.log(message: "Communication notification content update failed", argument: error.localizedDescription)
+                contentHandler(bestAttemptContent)
+            }
+        }
+    }
+
+    /// The containing app's name; the extension is at `<App>.app/PlugIns/<Extension>.appex`.
+    private static func appName() -> String {
+        let appBundle = Bundle(url: Bundle.main.bundleURL.deletingLastPathComponent().deletingLastPathComponent()) ?? Bundle.main
+        return appBundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
+            ?? appBundle.object(forInfoDictionaryKey: "CFBundleName") as? String
+            ?? ""
+    }
+
     private static func addActionButtonsIfNeeded(_ bestAttemptContent: UNMutableNotificationContent) {
         
         guard let actionButtons = bestAttemptContent.message?.actionButtons else {

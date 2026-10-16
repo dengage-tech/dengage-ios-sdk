@@ -38,6 +38,7 @@
   - [getDeviceToken](#getdevicetoken)
   - [User Permission Management (optional)](#user-permission-management-optional)
   - [Carousel Push](#carousel-push)
+  - [Communication Push](#communication-push)
 - [Live Activities](#live-activities)
   - [How It Works](#how-it-works)
   - [Requirements](#live-activities-requirements)
@@ -86,7 +87,7 @@
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.105'
+pod 'Dengage', '~> 5.106'
 ```
 
 Run `pod install` via terminal
@@ -526,7 +527,7 @@ Add the Dengage SDK to your Notification Service Extension target in your `Podfi
 
 ```ruby
 target 'DengageNotificationServiceExtension' do
-    pod 'Dengage', '~> 5.105'
+    pod 'Dengage', '~> 5.106'
 end
 ```
 
@@ -703,6 +704,50 @@ class NotificationViewController: UIViewController, UNNotificationContentExtensi
 }
 ```
 
+
+### Communication Push
+
+On iOS 15 and later, the SDK shows a push as a communication notification when the payload contains `notificationIcon`: the image at `notificationIcon` is shown in place of the app icon, and the title (or the app name, when the title is empty) as the sender name. Pushes with the same `notificationIcon` are grouped as one conversation.
+
+```json
+{
+  "aps": { "alert": { "title": "Dengage", "body": "..." }, "mutable-content": 1 },
+  "title": "Dengage",
+  "notificationIcon": "https://example.com/icon.jpg",
+  "messageSource": "DENGAGE",
+  ...
+}
+```
+
+No code change is needed beyond the [Notification Service Extension](#notification-service-extension) setup, but the following configuration is required. Without it the push is shown as a regular notification.
+
+1. Main app target: add the **Communication Notifications** capability (`com.apple.developer.usernotifications.communication`), and add `INSendMessageIntent` to `NSUserActivityTypes` in its `Info.plist`:
+
+```xml
+<key>NSUserActivityTypes</key>
+<array>
+    <string>INSendMessageIntent</string>
+</array>
+```
+
+2. Notification Service Extension target: add `IntentsSupported` to `NSExtensionAttributes` in its `Info.plist`:
+
+```xml
+<key>NSExtension</key>
+<dict>
+    <key>NSExtensionAttributes</key>
+    <dict>
+        <key>IntentsSupported</key>
+        <array>
+            <string>INSendMessageIntent</string>
+        </array>
+    </dict>
+    <key>NSExtensionPointIdentifier</key>
+    <string>com.apple.usernotifications.service</string>
+    <key>NSExtensionPrincipalClass</key>
+    <string>$(PRODUCT_MODULE_NAME).NotificationService</string>
+</dict>
+```
 
 ## Live Activities
 
@@ -1157,8 +1202,8 @@ Parameters:
 To install it, simply add the following line to your **Podfile**:
 
 ```ruby
-pod 'Dengage', '~> 5.105'
-pod 'DengageGeofence', '~> 5.105'
+pod 'Dengage', '~> 5.106'
+pod 'DengageGeofence', '~> 5.106'
 ```
 
 Run `pod install` via terminal

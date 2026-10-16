@@ -8,5 +8,7 @@
 	<array>
 		<string>group.com.dengage.Example.dengage</string>
 	</array>
+	<key>com.apple.developer.usernotifications.communication</key>
+	<true/>
 </dict>
 </plist>

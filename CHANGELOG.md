@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.106] - 2026-10-16
+
+### New Features
+
+- Show pushes that contain `notificationIcon` as communication notifications on iOS 15 and later: the `notificationIcon` image replaces the app icon, the title (or the app name when the title is empty) is shown as the sender name, and pushes with the same `notificationIcon` are grouped as one conversation. Requires the Communication Notifications capability and `INSendMessageIntent` in the app's `NSUserActivityTypes` and the Notification Service Extension's `IntentsSupported`; without this configuration the push is shown as a regular notification
+
 ## [5.105] - 2026-09-30
 
 ### Bug Fixes
