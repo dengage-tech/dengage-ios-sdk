@@ -525,18 +525,9 @@ final public class DengageConfiguration: Encodable {
     
     
     func getDeviceCountry() -> String {
-        // Fast path if already on main
-        if Thread.isMainThread {
-            return (Locale.current.regionCode ?? "").uppercased()
-        }
-        
-        // If called from background, ask main thread synchronously (safe)
-        var country: String = ""
-        DispatchQueue.main.sync {
-            country = (Locale.current.regionCode ?? "").uppercased()
-        }
-        
-        return country
+        // Locale.current is thread-safe; never block on main here, callers run on
+        // system callback queues (e.g. getNotificationSettings) and main.sync deadlocks
+        return (Locale.current.regionCode ?? "").uppercased()
     }
     
     private static func dengageDeviceIdApiUrl() -> URL {
