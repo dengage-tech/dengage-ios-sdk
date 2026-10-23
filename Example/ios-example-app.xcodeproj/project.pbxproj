@@ -47,6 +47,8 @@
 		A0F46C66275A85B0003A524C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F46C65275A85B0003A524C /* ViewController.swift */; };
 		A0F46C6B275A85B1003A524C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A0F46C6A275A85B1003A524C /* Assets.xcassets */; };
 		A0F46C6E275A85B1003A524C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0F46C6C275A85B1003A524C /* LaunchScreen.storyboard */; };
+		A0F46C9A275A85B0003A524C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F46C99275A85B0003A524C /* SceneDelegate.swift */; };
+		A0F46C9C275A85B0003A524C /* RecommendationOrderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F46C9B275A85B0003A524C /* RecommendationOrderViewController.swift */; };
 		D6472F4E28E88D670076523C /* GeofenceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6472F4D28E88D670076523C /* GeofenceViewController.swift */; };
 		D6810E69293F341200611E55 /* RealTimeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6810E68293F341200611E55 /* RealTimeViewController.swift */; };
 		D68141012BB33CEC00663AC8 /* ShowInLineInAPP.swift in Sources */ = {isa = PBXBuildFile; fileRef = D68141002BB33CEC00663AC8 /* ShowInLineInAPP.swift */; };
@@ -145,6 +147,8 @@
 		A0F46C6A275A85B1003A524C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A0F46C6D275A85B1003A524C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A0F46C6F275A85B1003A524C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A0F46C99275A85B0003A524C /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		A0F46C9B275A85B0003A524C /* RecommendationOrderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecommendationOrderViewController.swift; sourceTree = "<group>"; };
 		D6472F4D28E88D670076523C /* GeofenceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeofenceViewController.swift; sourceTree = "<group>"; };
 		D6810E68293F341200611E55 /* RealTimeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealTimeViewController.swift; sourceTree = "<group>"; };
 		D68141002BB33CEC00663AC8 /* ShowInLineInAPP.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShowInLineInAPP.swift; sourceTree = "<group>"; };
@@ -259,6 +263,7 @@
 				8840B86D2E8D59FE00868EFB /* RealTimeInAppFiltersViewController.swift */,
 				D6810E68293F341200611E55 /* RealTimeViewController.swift */,
 				886C11DC2F8FBCF9001E6F20 /* RecommendationViewController.swift */,
+				A0F46C9B275A85B0003A524C /* RecommendationOrderViewController.swift */,
 				A0B884FD27B1CF44004D4360 /* RootViewController.swift */,
 				D68141002BB33CEC00663AC8 /* ShowInLineInAPP.swift */,
 				A09951A327ACB0D30089D98D /* TagsViewController.swift */,
@@ -297,6 +302,7 @@
 				880138242D14256600F06B40 /* Location.gpx */,
 				88968AFD2D09CF2700312C4C /* ios-example-app.entitlements */,
 				A0F46C61275A85B0003A524C /* AppDelegate.swift */,
+				A0F46C99275A85B0003A524C /* SceneDelegate.swift */,
 				A0F46C65275A85B0003A524C /* ViewController.swift */,
 				A0F46C6A275A85B1003A524C /* Assets.xcassets */,
 				A0F46C6C275A85B1003A524C /* LaunchScreen.storyboard */,
@@ -537,9 +543,11 @@
 				D6810E69293F341200611E55 /* RealTimeViewController.swift in Sources */,
 				880068872C931B7400881F71 /* AppStoryViewController.swift in Sources */,
 				A0F46C62275A85B0003A524C /* AppDelegate.swift in Sources */,
+				A0F46C9A275A85B0003A524C /* SceneDelegate.swift in Sources */,
 				A09951A427ACB0D30089D98D /* TagsViewController.swift in Sources */,
 				8840B86E2E8D59FE00868EFB /* RealTimeInAppFiltersViewController.swift in Sources */,
 				886C11DD2F8FBCF9001E6F20 /* RecommendationViewController.swift in Sources */,
+				A0F46C9C275A85B0003A524C /* RecommendationOrderViewController.swift in Sources */,
 				A09951AA27ACB2A30089D98D /* EventViewController.swift in Sources */,
 				A09951A727ACB12E0089D98D /* InAppMessageViewController.swift in Sources */,
 				882A92012D6CAC7200179FC1 /* LiveActivityViewController.swift in Sources */,
@@ -591,7 +599,7 @@
 				CODE_SIGN_ENTITLEMENTS = DengageWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -606,7 +614,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.4;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.Example.DengageWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -627,7 +635,7 @@
 				CODE_SIGN_ENTITLEMENTS = DengageWidgetExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -642,7 +650,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.4;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.Example.DengageWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -658,19 +666,19 @@
 				CODE_SIGN_ENTITLEMENTS = NoticationExtension/NoticationExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NoticationExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NoticationExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.Example.NotifServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -687,19 +695,19 @@
 				CODE_SIGN_ENTITLEMENTS = NoticationExtension/NoticationExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NoticationExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NoticationExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.Example.NotifServiceExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -716,19 +724,19 @@
 				CODE_SIGN_ENTITLEMENTS = NotificationContentExtension/NotificationContentExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NotificationContentExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NotificationContentExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.Example.ContentExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -745,19 +753,19 @@
 				CODE_SIGN_ENTITLEMENTS = NotificationContentExtension/NotificationContentExtension.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NotificationContentExtension/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NotificationContentExtension;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.4;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.Example.ContentExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -895,7 +903,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ios-example-app/ios-example-app.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-example-app/Info.plist";
@@ -910,12 +918,12 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.Example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -934,7 +942,7 @@
 				CODE_SIGN_ENTITLEMENTS = "ios-example-app/ios-example-app.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 137;
 				DEVELOPMENT_TEAM = ZWGDPBV9N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ios-example-app/Info.plist";
@@ -949,12 +957,12 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.4;
+				MARKETING_VERSION = 1.3;
 				PRODUCT_BUNDLE_IDENTIFIER = com.dengage.Example;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

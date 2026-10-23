@@ -12,21 +12,26 @@ var liveActivityPushTokenString = ""
 final class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: - Properties
+    /// Set by `SceneDelegate`; kept because the SDK reads `UIApplication.shared.delegate?.window`.
     var window: UIWindow?
-    
+
     // MARK: - Lifecycle
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        window = UIWindow(frame: UIScreen.main.bounds)
-        let nav = UINavigationController(rootViewController: RootViewController())
-        window?.rootViewController = nav
-        window?.makeKeyAndVisible()
-        if #available(iOS 13.0, *) { window?.overrideUserInterfaceStyle = .light }
         UNUserNotificationCenter.current().delegate = self
         configureDengage(application: application)
         return true
+    }
+
+    // MARK: - Scene Configuration
+    func application(
+        _ application: UIApplication,
+        configurationForConnecting connectingSceneSession: UISceneSession,
+        options: UIScene.ConnectionOptions
+    ) -> UISceneConfiguration {
+        UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }
 }
 
@@ -77,6 +82,10 @@ private extension AppDelegate {
             print("Dengage.promptForPushNotifications isUserGranted: \(isUserGranted)")
         }
         Dengage.inAppLinkConfiguration(deeplink: "dengagelink://")
+        // Links opened with retrieveLinkOnSameScreen arrive here instead of application(_:open:options:)
+        Dengage.handleInAppDeeplink { deeplink in
+            RecommendationOrderViewController.route(deeplink)
+        }
         Dengage.handleNotificationActionBlock { response in
             print(response)
         }
@@ -156,6 +165,7 @@ extension AppDelegate {
         options: [UIApplication.OpenURLOptionsKey: Any] = [:]
     ) -> Bool {
         print("UIApplication.OpenURLOptionsKey \(url.host ?? "")")
+        RecommendationOrderViewController.route(url.absoluteString)
         return true
     }
 }
