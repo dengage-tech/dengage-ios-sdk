@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.107] - 2026-10-27
+
+### Changes
+
+- Version bump; no functional changes since 5.106
+
 ## [5.106] - 2026-10-16
 
 ### New Features
