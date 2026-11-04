@@ -9,6 +9,18 @@ public enum StoryLayoutType {
     }
 }
 
+/// Collection view whose paging pan only begins for horizontal-dominant drags, so a downward
+/// (dismiss) swipe never starts the cube transition.
+final class StoryCollectionView: UICollectionView {
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer === panGestureRecognizer {
+            let v = panGestureRecognizer.velocity(in: self)
+            if abs(v.y) > abs(v.x) { return false }
+        }
+        return super.gestureRecognizerShouldBegin(gestureRecognizer)
+    }
+}
+
 class StoryDisplayView: UIView {
     
     var layoutType: StoryLayoutType?
@@ -26,7 +38,7 @@ class StoryDisplayView: UIView {
     }()
     
     lazy var snapsCollectionView: UICollectionView! = {
-        let cv = UICollectionView.init(frame: CGRect(x: 0,y: 0,width: UIScreen.main.bounds.width,height:  UIScreen.main.bounds.height), collectionViewLayout: snapsCollectionViewFlowLayout)
+        let cv = StoryCollectionView.init(frame: CGRect(x: 0,y: 0,width: UIScreen.main.bounds.width,height:  UIScreen.main.bounds.height), collectionViewLayout: snapsCollectionViewFlowLayout)
         cv.backgroundColor = .black
         cv.showsVerticalScrollIndicator = false
         cv.showsHorizontalScrollIndicator = false

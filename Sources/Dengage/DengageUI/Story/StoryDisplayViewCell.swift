@@ -31,6 +31,10 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
         return v
     }()
     
+    private var snapButtonLeading: NSLayoutConstraint?
+    private var snapButtonTrailing: NSLayoutConstraint?
+    private var snapButtonMinHeight: NSLayoutConstraint?
+
     private lazy var snapButton: UIButton = {
         let snapButton = UIButton()
         snapButton.isUserInteractionEnabled = true
@@ -191,6 +195,9 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
             snapButton.bottomAnchor.constraint(equalTo: scrollview.bottomAnchor, constant: -50),
             snapButton.centerXAnchor.constraint(equalTo: scrollview.centerXAnchor)
         ])
+        // Full-width mode (fitContent == false), matches Android MATCH_PARENT. Toggled in applyCtaStyling.
+        snapButtonLeading = snapButton.leadingAnchor.constraint(equalTo: scrollview.leadingAnchor)
+        snapButtonTrailing = snapButton.trailingAnchor.constraint(equalTo: scrollview.trailingAnchor)
         
     }
     private func createSnapView() -> UIImageView {
@@ -818,6 +825,17 @@ final class StoryDisplayViewCell: UICollectionViewCell, UIScrollViewDelegate {
             snapButton.contentHorizontalAlignment = .right
         default:
             snapButton.contentHorizontalAlignment = .center
+        }
+
+        // fitContent=false → full width (Android parity); true → wrap content, centered.
+        let fullWidth = boxStyle?.fitContent != true
+        snapButtonLeading?.isActive = fullWidth
+        snapButtonTrailing?.isActive = fullWidth
+        snapButtonMinHeight?.isActive = false
+        if let h = boxStyle?.height, h > 0 {
+            let c = snapButton.heightAnchor.constraint(greaterThanOrEqualToConstant: CGFloat(h))
+            c.isActive = true
+            snapButtonMinHeight = c
         }
 
         // fitContent=true → ignore padding (per Android SDK parity).
