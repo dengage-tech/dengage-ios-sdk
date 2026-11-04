@@ -2,9 +2,10 @@
 
 ## [5.107] - 2026-10-27
 
-### Changes
+### Bug Fixes
 
-- Version bump; no functional changes since 5.106
+- Story CTA button now honours `styling.button.fitContent`: it is full width when `fitContent` is `false` (matching Android, previously a small centered button) and wraps its content when `true`; `styling.button.height` is applied as the button's minimum height
+- Fix the story viewer tilting sideways (3D cube transition) right before it closes: the cube transform is no longer applied when overscrolling past the first or last story cover, and the paging scroll only starts for horizontal drags so a swipe down to dismiss no longer tilts the story
 
 ## [5.106] - 2026-10-16
 
