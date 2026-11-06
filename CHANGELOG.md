@@ -13,13 +13,20 @@
 
 - Show pushes that contain `notificationIcon` as communication notifications on iOS 15 and later: the `notificationIcon` image replaces the app icon, the title (or the app name when the title is empty) is shown as the sender name, and pushes with the same `notificationIcon` are grouped as one conversation. Requires the Communication Notifications capability and `INSendMessageIntent` in the app's `NSUserActivityTypes` and the Notification Service Extension's `IntentsSupported`; without this configuration the push is shown as a regular notification
 
-## [5.105] - 2026-09-30
-
 ### Bug Fixes
 
 - `Dengage.removeInAppMessageDisplay()` now cancels the pending in-app message right away (display timer / delayed work item) and releases the in-app lock; previously the lock stayed held until the message's delay fired, so `setNavigation` for the next screen was skipped in the meantime
 - Release the in-app lock when the delayed display finds no cancel flag or the message has no HTML content, so `setNavigation` can no longer stay blocked until the app restarts
+- Fix a possible deadlock in `getDeviceCountry`: it no longer calls `DispatchQueue.main.sync` to read `Locale.current`, so calling it from a background or system callback queue (for example during notification configuration) can no longer hang
+
+### Changes
+
 - Throttle visitor info refresh: `getVisitorInfo()` now runs from `fetchInAppMessages` and is skipped when the previous call was less than 2 minutes ago (same behavior as Android); the fixed 120 second delayed call after SDK start is removed
+
+## [5.105] - 2026-09-30
+
+### Bug Fixes
+
 - Resize the in-app message web view when its content height changes after the page finished loading (late loading images, JavaScript rendered content); previously the height was measured only once, which could leave the in-app message clipped to a thin strip with its close button out of reach while it kept blocking touches on the screen
 
 ## [5.104] - 2026-09-23
