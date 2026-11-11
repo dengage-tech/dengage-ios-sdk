@@ -33,6 +33,8 @@ final class DengageNotificationExtension {
             bestAttemptContent.sound = nil
         }
         
+        DengageBadgeManager.applyBadge(bestAttemptContent, aps: message.aps)
+        
         if let addToInbox = message.addToInbox, addToInbox {
             
         }
