@@ -1,5 +1,17 @@
 # Changelog
 
+## [5.108] - 2026-11-11
+
+### New Features
+
+- Support incremental badge numbers: when a push has `aps.isIncrementalBadge` set (1/0, true/false and their string forms are accepted), the Notification Service Extension replaces the payload badge with the current badge + 1. Pushes without it keep their payload badge, which becomes the new current badge. The badge last set by Dengage is stored in the App Group, so `appGroupsKey` must be set in the app and `DengageLocalStorage.shared.setAppGroupsUserDefaults(appGroupName:)` must be called in the extension; without an App Group the badge of the most recently delivered notification is used as the current value
+- Keep the stored badge in line with the badge the user sees: it is updated when the app becomes active and reset to 0 together with the app badge when `badgeCountReset` is enabled
+
+### Bug Fixes
+
+- Prevent duplicate geofence heartbeats: concurrent heartbeat triggers (movement updates and sync completion) could all read the old `lastHeartbeatAt` and send a heartbeat in the same second. The heartbeat slot is now reserved atomically before sending and released if the request fails, so the next trigger retries without waiting a full interval
+- Limit forced heartbeats (start, `forceResync`, silent push) to one per 15 minutes; previously they skipped throttling entirely, so clustered or repeated forced triggers multiplied the heartbeat volume
+
 ## [5.107] - 2026-10-27
 
 ### Changes
