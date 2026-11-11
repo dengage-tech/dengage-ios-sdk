@@ -28,6 +28,9 @@ let package = Package(
             dependencies: []),
         .target(
             name: "DengageGeofence",
-            dependencies: [.target(name: "Dengage")])
+            dependencies: [.target(name: "Dengage")]),
+        .testTarget(
+            name: "DengageGeofenceTests",
+            dependencies: ["DengageGeofence"])
     ]
 )
