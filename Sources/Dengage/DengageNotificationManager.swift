@@ -8,6 +8,7 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
     private let eventManager: DengageEventProtocolInterface
     private let launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     private let notificationCenter = UNUserNotificationCenter.current()
+    private var badgeSyncObserver: NSObjectProtocol?
     
     var openTriggerCompletionHandler: ((_ notificationResponse: UNNotificationResponse) -> Void)?
 
@@ -19,6 +20,13 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
         self.apiClient = service
         self.eventManager = eventManager
         self.launchOptions = launchOptions
+        
+        // The host app may change the badge itself; store what the user sees for incremental badge pushes.
+        badgeSyncObserver = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification,
+                                                                   object: nil,
+                                                                   queue: .main) { _ in
+            DengageBadgeManager.syncBadgeCount(UIApplication.shared.applicationIconBadgeNumber)
+        }
         
         if let userInfo = launchOptions?[UIApplication.LaunchOptionsKey.remoteNotification] as? [String: Any] {
             didReceive(with: userInfo)
@@ -193,6 +201,7 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
         
         if config.options.badgeCountReset == true {
             UIApplication.shared.applicationIconBadgeNumber = 0
+            DengageBadgeManager.syncBadgeCount(0)
         }
     }
     
@@ -246,6 +255,7 @@ final class DengageNotificationManager: DengageNotificationManagerInterface {
         
         if config.options.badgeCountReset == true {
             UIApplication.shared.applicationIconBadgeNumber = 0
+            DengageBadgeManager.syncBadgeCount(0)
         }
     }
 }
