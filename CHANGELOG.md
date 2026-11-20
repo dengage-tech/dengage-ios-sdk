@@ -1,5 +1,11 @@
 # Changelog
 
+## [5.109] - 2026-11-20
+
+### Bug Fixes
+
+- Re-release of 5.108 with no code changes. The `5.106`, `5.107` and `5.108` tags were moved to newer commits after they were released, so Swift Package Manager projects that had already resolved one of them fail with "Revision … does not match previously recorded value". Update to 5.109 to get a tag that will not move
+
 ## [5.108] - 2026-11-11
 
 ### New Features
