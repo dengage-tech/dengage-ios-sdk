@@ -25,6 +25,10 @@
 	<string>https://dev-push.dengage.com</string>
 	<key>DengageLiveActivityApiUrl</key>
 	<string>https://dev-push.dengage.com</string>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>INSendMessageIntent</string>
+	</array>
 	<key>UIAppFonts</key>
 	<array>
 		<string>geistmono.ttf</string>

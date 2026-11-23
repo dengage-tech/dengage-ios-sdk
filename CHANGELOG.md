@@ -13,13 +13,52 @@
 - Register push categories by merging them into the existing ones instead of replacing all categories, so the host app's categories and `DENGAGE_CAROUSEL_CATEGORY` are no longer removed
 - Do not start a session with the push target url when a push is dismissed
 
-## [5.105] - 2026-09-30
+## [5.109] - 2026-11-20
+
+### Bug Fixes
+
+- Re-release of 5.108 with no code changes. The `5.106`, `5.107` and `5.108` tags were moved to newer commits after they were released, so Swift Package Manager projects that had already resolved one of them fail with "Revision … does not match previously recorded value". Update to 5.109 to get a tag that will not move
+
+## [5.108] - 2026-11-11
+
+### New Features
+
+- Support incremental badge numbers: when a push has `aps.isIncrementalBadge` set (1/0, true/false and their string forms are accepted), the Notification Service Extension replaces the payload badge with the current badge + 1. Pushes without it keep their payload badge, which becomes the new current badge. The badge last set by Dengage is stored in the App Group, so `appGroupsKey` must be set in the app and `DengageLocalStorage.shared.setAppGroupsUserDefaults(appGroupName:)` must be called in the extension; without an App Group the badge of the most recently delivered notification is used as the current value
+- Keep the stored badge in line with the badge the user sees: it is updated when the app becomes active and reset to 0 together with the app badge when `badgeCountReset` is enabled
+
+### Bug Fixes
+
+- Prevent duplicate geofence heartbeats: concurrent heartbeat triggers (movement updates and sync completion) could all read the old `lastHeartbeatAt` and send a heartbeat in the same second. The heartbeat slot is now reserved atomically before sending and released if the request fails, so the next trigger retries without waiting a full interval
+- Limit forced heartbeats (start, `forceResync`, silent push) to one per 15 minutes; previously they skipped throttling entirely, so clustered or repeated forced triggers multiplied the heartbeat volume
+
+## [5.107] - 2026-10-27
+
+### Bug Fixes
+
+- Story CTA button now honours `styling.button.fitContent`: it is full width when `fitContent` is `false` (matching Android, previously a small centered button) and wraps its content when `true`; `styling.button.height` is applied as the button's minimum height
+- Fix the story viewer tilting sideways (3D cube transition) right before it closes: the cube transform is no longer applied when overscrolling past the first or last story cover, and the paging scroll only starts for horizontal drags so a swipe down to dismiss no longer tilts the story
+
+## [5.106] - 2026-10-16
+
+### New Features
+
+- Show pushes that contain `notificationIcon` as communication notifications on iOS 15 and later: the `notificationIcon` image replaces the app icon, the title (or the app name when the title is empty) is shown as the sender name, and pushes with the same `notificationIcon` are grouped as one conversation. Requires the Communication Notifications capability and `INSendMessageIntent` in the app's `NSUserActivityTypes` and the Notification Service Extension's `IntentsSupported`; without this configuration the push is shown as a regular notification
 
 ### Bug Fixes
 
 - `Dengage.removeInAppMessageDisplay()` now cancels the pending in-app message right away (display timer / delayed work item) and releases the in-app lock; previously the lock stayed held until the message's delay fired, so `setNavigation` for the next screen was skipped in the meantime
 - Release the in-app lock when the delayed display finds no cancel flag or the message has no HTML content, so `setNavigation` can no longer stay blocked until the app restarts
 - Throttle visitor info refresh: `getVisitorInfo()` now runs from `fetchInAppMessages` and is skipped when the previous call was less than 2 minutes ago (same behavior as Android); the fixed 120 second delayed call after SDK start is removed
+- Fix a possible deadlock in `getDeviceCountry`: it no longer calls `DispatchQueue.main.sync` to read `Locale.current`, so calling it from a background or system callback queue (for example during notification configuration) can no longer hang
+
+### Changes
+
+- Throttle visitor info refresh: `getVisitorInfo()` now runs from `fetchInAppMessages` and is skipped when the previous call was less than 2 minutes ago (same behavior as Android); the fixed 120 second delayed call after SDK start is removed
+
+## [5.105] - 2026-09-30
+
+### Bug Fixes
+
 - Resize the in-app message web view when its content height changes after the page finished loading (late loading images, JavaScript rendered content); previously the height was measured only once, which could leave the in-app message clipped to a thin strip with its close button out of reach while it kept blocking touches on the screen
 
 ## [5.104] - 2026-09-23

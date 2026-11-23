@@ -107,7 +107,11 @@ public struct CubeAttributesAnimator : LayoutAttributesAnimator {
         collectionView: UICollectionView, attributes: AnimatedCollectionViewLayoutAttributes
     ) {
         let position = attributes.middleOffset
-        if abs(position) >= 1 {
+        // Overscroll past the first/last cover (the swipe-to-close case) must not cube-tilt the story.
+        let itemCount = collectionView.numberOfItems(inSection: attributes.indexPath.section)
+        let isEdgeOverscroll = (attributes.indexPath.item == 0 && position > 0)
+            || (attributes.indexPath.item == itemCount - 1 && position < 0)
+        if abs(position) >= 1 || isEdgeOverscroll {
             attributes.contentView?.layer.transform = CATransform3DIdentity
         } else if attributes.scrollDirection == .horizontal {
             let rotateAngle = totalAngle * position
